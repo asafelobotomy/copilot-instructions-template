@@ -4,12 +4,21 @@ A **generic, living** GitHub Copilot instructions template grounded in **Lean / 
 
 ---
 
+## Quickstart — one line
+
+Open a Copilot chat in any project and say:
+
+> *"Setup from asafelobotomy/copilot-instructions-template"*
+
+Copilot fetches the template and setup guide directly from GitHub, runs the full setup process in your current project, and asks you questions as it goes. No downloading, no copying files, no manual steps.
+
+---
+
 ## What this gives you
 
 | File | Purpose |
-|------|---------|
+|------|----------|
 | `.github/copilot-instructions.md` | The primary AI guidance file. Methodology-complete on arrival; project-specific section filled in during setup. |
-| `SETUP.md` | A self-deleting bootstrap that Copilot runs exactly once. |
 | `.copilot/workspace/` | Six workspace identity files Copilot maintains across sessions. |
 | `CHANGELOG.md` | Keep-a-Changelog stub. |
 | `JOURNAL.md` | Architectural decision record (ADR-style) journal. |
@@ -18,15 +27,16 @@ A **generic, living** GitHub Copilot instructions template grounded in **Lean / 
 
 ---
 
-## Quickstart — existing project
+## Alternative: copy files manually
+
+### Existing project
 
 1. Copy `SETUP.md` into the root of your project.
 2. Copy `.github/copilot-instructions.md` into your project's `.github/` directory.
-3. Open a Copilot chat in that project and say:
-   > "Please run the setup process described in SETUP.md."
+3. Open a Copilot chat and say: *"Please run the setup process described in SETUP.md."*
 4. Copilot will discover your stack, fill every `{{PLACEHOLDER}}`, scaffold the workspace identity files, capture an initial METRICS baseline, create the doc stubs, and delete `SETUP.md`.
 
-## Quickstart — new project
+### New project
 
 Click **"Use this template"** on GitHub to create a new repo from this template. Then follow step 3 above.
 
@@ -54,10 +64,11 @@ Every self-edit must be accompanied by a one-line entry in `JOURNAL.md` recordin
 
 ```
 copilot-instructions-template/
+├── AGENTS.md                          # AI agent entry point — trigger phrases + remote bootstrap
 ├── README.md                          # This file
-├── SETUP.md                           # Agentic bootstrap (copy to target project)
+├── SETUP.md                           # Agentic bootstrap (remote-executable or copy to project)
 ├── .github/
-│   └── copilot-instructions.md        # Generic template (copy to target project)
+│   └── copilot-instructions.md        # Generic template (populated during setup)
 ├── template/
 │   ├── CHANGELOG.md                   # Keep-a-Changelog stub
 │   ├── JOURNAL.md                     # ADR journal stub

@@ -1,8 +1,16 @@
 # Copilot Setup — Run Once
 
-> **Instructions for Copilot**: This file defines a one-time setup process. Read **every step** before starting anything. Complete Steps 0a–0e fully before writing a single file. Tell the user exactly what you found, what you plan to do, and wait for confirmation at each decision point before proceeding.
+> **Running in remote mode?** If you arrived here because a user said something like *"Setup from asafelobotomy/copilot-instructions-template"*, you are in **remote mode** — no local file copying is needed.
 >
-> **Instructions for the human**: Open a Copilot chat and say: *"Please run the setup process described in SETUP.md."* Copilot will do the rest, pausing to ask you questions wherever a decision is needed.
+> **Remote fetch sequence (complete before starting Step 0)**:
+> 1. You have already read this file (`SETUP.md`) from GitHub. ✓
+> 2. Fetch the instructions template and hold it in memory:
+>    `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/copilot-instructions.md`
+> 3. Proceed with Steps 0–6 below, operating in the **user's current project** — not the template repo. Do not write anything to `asafelobotomy/copilot-instructions-template`. All file stubs are embedded inline in this document; no further fetching is required.
+
+> **Running in local mode?** If the user manually placed this file in their project, proceed directly to Step 0 below.
+
+> **Instructions for Copilot (both modes)**: Read **every step** before starting anything. Complete Steps 0a–0e fully before writing a single file. Tell the user exactly what you found, what you plan to do, and wait for confirmation at each decision point before proceeding.
 
 ---
 
@@ -444,7 +452,7 @@ If a value cannot be determined, leave the `{{PLACEHOLDER}}` as-is and add a com
 
 > **Skip this step** if Step 0a resulted in **Delete** — the template file was already written fresh in that path. Jump to Step 3.
 
-1. Open `.github/copilot-instructions.md` (the template, or the merged file if Merge was chosen).
+1. Open `.github/copilot-instructions.md` (the template fetched during remote bootstrap, or the merged file if Merge was chosen, or the local copy if running in local mode).
 2. Replace every remaining `{{PLACEHOLDER}}` with the resolved value from Step 1.
 3. In the **Project-Specific Overrides** table (§10), fill the "Resolved value" column.
 4. In the Lean Principles table (§1), update Principle 2 to `{{VALUE_STREAM_DESCRIPTION}}` and Principle 3 to `{{FLOW_DESCRIPTION}}`.
