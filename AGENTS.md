@@ -31,6 +31,16 @@ When a user says any of the following in a project that **already has Copilot in
 
 ...perform the **Remote Update Sequence** below.
 
+### Restore (from backup)
+
+When a user says any of the following:
+
+- *"Restore instructions from backup"*
+- *"Roll back the instructions update"*
+- *"List instruction backups"*
+
+...perform the **Remote Restore Sequence** below.
+
 ---
 
 ## What this repo is
@@ -40,6 +50,7 @@ A generic, **living** GitHub Copilot instructions template grounded in **Lean/Ka
 - A structured `.github/copilot-instructions.md` template with `{{PLACEHOLDER}}` tokens for project-specific values.
 - A one-time setup process (`SETUP.md`) that Copilot runs to tailor everything to the target project's stack.
 - An update process (`UPDATE.md`) that Copilot runs to fetch and apply improvements from this repo to an already-installed project.
+- Automatic pre-write backups so every update is reversible — stored in `.github/archive/`.
 - Six workspace identity files that Copilot maintains across sessions.
 - Documentation stubs (CHANGELOG, JOURNAL, BIBLIOGRAPHY, METRICS).
 - A Living Update Protocol that authorises Copilot to improve the instructions as patterns emerge.
@@ -119,13 +130,44 @@ Follow every step in `UPDATE.md` exactly, operating on the **user's current proj
    - **U — Update all**: apply all available changes at once.
    - **S — Skip**: do nothing.
    - **C — Customise**: review each change individually with Apply / Skip / Customise options.
-6. Writing confirmed changes and updating the version stamp.
-7. Appending to `JOURNAL.md` and `CHANGELOG.md`.
-8. Printing the "Updated! ✓" confirmation.
+6. Creating an automatic backup in `.github/archive/pre-update-YYYY-MM-DD-vX.Y.Z/` before any writes.
+7. Writing confirmed changes and updating the version stamp.
+8. Appending to `JOURNAL.md` and `CHANGELOG.md`.
+9. Printing the "Updated! ✓" confirmation with the backup location.
 
 ### 3 — Do not write to this template repo
 
 You are a guest reading this repo. All writes go to the **user's current project**. Do not create, modify, or delete any files in `asafelobotomy/copilot-instructions-template`.
+
+---
+
+## Remote Restore Sequence
+
+Perform these steps in order. You are operating in the **user's current project** — not this template repo.
+
+### 1 — Fetch UPDATE.md
+
+The restore procedure is fully documented in the "Restore from backup" section of UPDATE.md. Fetch it:
+
+```
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/UPDATE.md
+```
+
+### 2 — Follow the Restore sequence
+
+Locate the **"## Restore from backup"** section in UPDATE.md and follow it exactly. The sequence:
+
+1. Scans `.github/archive/` for `pre-update-*` directories.
+2. Lists backups with version info from each `BACKUP-MANIFEST.md`.
+3. Asks the user which backup to restore.
+4. Creates a **pre-restore snapshot** of the current instructions before overwriting anything (restoration is always reversible).
+5. Copies the selected backup's `copilot-instructions.md` to `.github/copilot-instructions.md`.
+6. Appends to `JOURNAL.md` and `CHANGELOG.md`.
+7. Prints the "Restored! ✓" confirmation.
+
+### 3 — Do not write to this template repo
+
+All writes go to the **user's current project**. Do not create, modify, or delete any files in `asafelobotomy/copilot-instructions-template`.
 
 ---
 
@@ -135,7 +177,7 @@ You are a guest reading this repo. All writes go to the **user's current project
 |------|------|
 | `AGENTS.md` | This file — AI agent entry point |
 | `SETUP.md` | Complete setup guide (remote-executable) |
-| `UPDATE.md` | Complete update protocol (remote-executable) |
+| `UPDATE.md` | Complete update + restore protocol (remote-executable) |
 | `VERSION` | Current template version number (semver) |
 | `CHANGELOG.md` | Template version history |
 | `.github/copilot-instructions.md` | Generic instructions template with `{{PLACEHOLDER}}` tokens |
@@ -160,3 +202,5 @@ You are a guest reading this repo. All writes go to the **user's current project
 | First-time setup | *"Setup from asafelobotomy/copilot-instructions-template"* |
 | Check for updates | *"Update your instructions"* |
 | Force full comparison | *"Force check instruction updates"* |
+| Restore a backup | *"Restore instructions from backup"* |
+| List available backups | *"List instruction backups"* |
