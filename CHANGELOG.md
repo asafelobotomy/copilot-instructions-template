@@ -11,6 +11,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ## [Unreleased]
 
+### Performance
+- Lossless token-reduction pass across both LLM-read files (23 targeted substitutions, zero semantic change):
+  - `copilot-instructions.md`: −163 words / −1 048 chars
+  - `AGENTS.md`: −254 words / −1 614 chars
+  - Combined: −417 words / −2 662 chars (**7.6% reduction**)
+  - Compressions applied: redundant prose collapsed to inline; repeated "do not write to template repo" guards consolidated to a single blockquote; numbered sub-lists compressed to prose sentences; verbose step headers trimmed; duplicate bullet removed from §11.
+
 ### Added
 - CI infrastructure (not a template version bump — repo maintenance):
   - `.github/workflows/ci.yml` — validates VERSION semver, CHANGELOG entries, all required files, §1–§11 sections, README docs-table links, merge-conflict markers, and placeholder token count on every push and PR
