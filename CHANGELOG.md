@@ -11,43 +11,28 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ## [Unreleased]
 
+---
+
+## [1.0.3] — 2026-02-19
+
 ### Fixed
 
-- `SETUP.md §0d` — root-cause fix for agents silently skipping the preference interview:
-  - **RC1 (tool limit)**: `ask_questions` accepts max 4 questions per call; `§0d` previously instructed agents to present all questions in one interaction (physically impossible). Added a dedicated **Tooling and Batch Plan** sub-section with a 7-batch table, per-tier manifests, and explicit "collect answers before issuing the next batch" directives.
-  - **RC2 (option overflow)**: E16 (agent persona) had 7 options (A–G) but the tool enforces a 6-option maximum (auto-appends "Other"). Removed option G ("Custom — type it now"); the tool's built-in "Other" now covers custom input.
-  - **RC3 (no guardrails)**: Added ⛔ **MANDATORY INTERACTIVE PROTOCOL** stop-sign block before §0a; added ⛔ **INTERACTIVE CHECKPOINT** inside §0d. Both blocks instruct the agent to halt if it cannot ask questions interactively.
-  - **RC4 (no verification)**: Added **Interview Verification Gate** between the last question set and §0e — a tier/count check table with an explicit STOP instruction if answers fall short.
-  - **RC5 (improvised output)**: Added rigid template directives above the §0e pre-flight summary and above the Step 6 final summary, preventing agents from paraphrasing or omitting sections.
-- `SETUP.md` inline `setup.agent.md` stub and `.github/agents/setup.agent.md` — added four enforcement guidelines: interactive interview only, batch plan usage, answer-count verification, strict template copying.
-- `SETUP.md` inline `setup.agent.md` stub — closing code-fence and `### .github/agents/coding.agent.md` heading were accidentally dropped by a prior edit; restored.
 - `docs/SETUP-GUIDE.md` §0d — rewrote preference interview section for 3-tier system (was still describing old 2-tier with "5 or 10 questions" and missing A11–A14 / E15–E19).
 - `docs/INSTRUCTIONS-GUIDE.md` — corrected "ten numbered sections (§1–§10)" → "eleven numbered sections (§1–§11)"; added full §11 Tool Protocol section writeup.
 - `docs/AGENTS-GUIDE.md` — corrected stale "handles the 10-question interview" → "handles the 3-tier preference interview (5–19 questions)".
 - `README.md` file tree — moved `SETUP.md` to correct root-level position (was shown inside `.github/`); removed phantom `.copilot/tools/` directory that doesn't exist in the template repo.
 - `README.md` "What this gives you" table — clarified that paths are scaffolded into consumer projects during setup (was showing raw `template/` paths).
 - `README.md` manual setup instructions — fixed reversed copy paths (step 1 = `copilot-instructions.md` → `.github/`, step 2 = `SETUP.md` → project root).
-
-### Changed
-
-- `.github/copilot-instructions.md` Model Quick Reference — added ⚠️ Codex models warning: `GPT-5.x-Codex` models run autonomously and cannot present interactive prompts; the setup interview will be silently skipped when a Codex model is active.
-- `AGENTS.md` "What this repo is" section — added same Codex model warning directing users to the Setup agent (pinned to Claude Sonnet 4.6).
-- `README.md` Quickstart — added ⚠️ callout warning that Codex models skip the interactive interview; directs users to the `@setup` agent or an interactive model.
-- `README.md` agents table — updated Setup agent role note to include "batched with verification gate".
-- `.github/copilot-instructions.md` §10 User Preferences — expanded blank stub to a 19-row table template showing all preference dimensions (S1–E19) with empty Setting / Instruction columns ready for population.
-- `.github/workflows/ci.yml` — added `LICENSE` and `CONTRIBUTING.md` to required-files check.
-- `SETUP.md §0d` — preference interview expanded to 3-tier system (Simple 5 / Advanced +9 / Expert +5 = 19 total questions). All tiers produce an equally-capable agent — higher tiers unlock deeper customisation rather than adding features:
-  - Simple (S1–S5): response style, experience level, primary mode, testing, autonomy — unchanged
-  - Advanced (A6–A14): code style refined to cover linter/formatter configs; **new**: file size discipline (§3 LOC thresholds), dependency management, instruction self-editing (§8 controls), refactoring appetite; old "change reporting" demoted to A14
-  - Expert (E15–E19): **new** — tool/dependency availability behaviour, agent persona (Professional/Mentor/Pair-programmer/Ship-it captain/Zen master/Rubber duck/Custom), VS Code settings management, global autonomy override (1–5 failsafe), mood lightener
-  - Mode selection now offers S / A / E (was S / A)
-  - Defaults tables expanded to cover all 19 dimensions for each tier
+- Markdownlint: 149 pre-existing errors across 17 files (MD022, MD028, MD031, MD032, MD040, MD024, MD012) — all resolved. CI markdown lint job now passes clean.
+- `SETUP.md` §0d — root-cause fix: `ask_questions` tool hard-limits 4 questions/call and 6 options/question; the previous instruction to "present all questions in a single interaction" was physically impossible and caused agent models to improvise or skip the interview entirely. Restructured into mandatory batched calls.
+- `SETUP.md` E16 (Persona) — reduced from 7 options (A–G) to 6 options (A–F) to fit the tool's 6-option hard limit; the tool's built-in "Other" option now covers custom persona input (option G was redundant).
 
 ### Added
 
 - `LICENSE` — MIT license (README referenced MIT but no file existed).
 - `CONTRIBUTING.md` — contributor guide covering issue reporting, PR process, style conventions, and code of conduct.
-- CI infrastructure (not a template version bump — repo maintenance):
+- `.gitignore` — excludes `node_modules/`, `package.json`, `package-lock.json`.
+- CI infrastructure:
   - `.github/workflows/ci.yml` — validates VERSION semver, CHANGELOG entries, all required files, §1–§11 sections, README docs-table links, merge-conflict markers, and placeholder token count on every push and PR
   - `.github/workflows/release.yml` — auto-creates a tagged GitHub release when `VERSION` is bumped on `main`; extracts notes from the matching CHANGELOG section
   - `.github/workflows/stale.yml` — marks issues/PRs stale after 30 days, closes after 37
@@ -55,24 +40,37 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
   - `.github/PULL_REQUEST_TEMPLATE.md` — PR checklist auto-shown on new PRs
   - `.github/ISSUE_TEMPLATE/bug_report.yml` — structured bug report form
   - `.github/ISSUE_TEMPLATE/feature_request.yml` — structured feature request form
-- `§2 Test Coverage Review` subsection in `.github/copilot-instructions.md` — structured protocol for auditing test coverage, identifying gaps, recommending local tests, and generating ready-to-use CI workflow YAML:
-  - Step 0: detects test stack from config files (Jest/Vitest/Mocha/pytest/go/cargo/dotnet/Maven/Gradle/RSpec)
-  - Step 1: asks user to run and paste coverage output (Copilot can't run commands directly)
-  - Steps 2–3: static scan for untested files; classifies modules into zero/low/partial coverage
-  - Step 4: recommends local tests with type (unit/integration/property-based) and priority (critical/high/medium/low)
-  - Step 5: recommends CI workflows with copy-paste YAML — coverage gate, coverage diff comments, nightly runs, test matrix, mutation testing (Stryker/mutmut/cargo-mutants), contract/API tests
-  - Step 6: structured report format (📊 snapshot, ✅/⚠️/❌ coverage bands, 🧪 test table, ⚙️ CI YAML snippets)
-  - Step 7: waits for user action — does not write files unless explicitly instructed
-- `AGENTS.md` — "Test coverage review" trigger section; *"Review my tests"* / *"Repo health review"* / *"Recommend CI tests"* added to canonical triggers table
-- `docs/TEST-REVIEW-GUIDE.md` — plain-English guide to the test coverage review feature
+- `§2 Test Coverage Review` subsection in `.github/copilot-instructions.md`.
+- `AGENTS.md` — test coverage review and extension review trigger phrase sections.
+- `docs/TEST-REVIEW-GUIDE.md` — plain-English guide to the test coverage review feature.
+- `SETUP.md` — ⛔ **Mandatory Interactive Protocol** stop-sign block in preamble: explains that Codex/autonomous models cannot present interactive prompts and instructs the agent to stop and warn the user if it cannot ask questions interactively.
+- `SETUP.md` — dedicated **Tooling and Batch Plan** sub-section with a full 7-batch table (Batches 1–2: Simple, 3–5: Advanced, 6–7: Expert), tool constraint notes, suggested `ask_questions` headers, and per-tier question manifests.
+- `SETUP.md` — ⛔ **Interactive checkpoint** inside the §0d section header, instructing the agent to ask every batch and wait for the user's typed response.
+- `SETUP.md` — **Interview Verification Gate** between the interview and §0e: tier/count check table with explicit STOP instruction if the answer count doesn't match the selected tier.
+- `SETUP.md` — **Rigid template directives** above §0e and the Step 6 summary: "Output the template below exactly — fill every `<label>` field."
+- `SETUP.md` inline `setup.agent.md` stub + `.github/agents/setup.agent.md` — four new guidelines: interactive interview rule, batch plan usage, answer count verification, template-copy requirement.
+- `.github/copilot-instructions.md` — ⚠️ Codex model warning in **Model Quick Reference** table: Codex models are autonomous and cannot present interactive prompts; never use for setup.
+- `AGENTS.md` — ⚠️ Codex model warning in "What this repo is" section.
+- `README.md` — ⚠️ Codex model warning in Quickstart section.
+
+### Changed
+
+- `.github/copilot-instructions.md` §10 User Preferences — expanded blank stub to a 19-row table template showing all preference dimensions (S1–E19) with empty Setting / Instruction columns ready for population.
+- `.github/workflows/ci.yml` — added `LICENSE` and `CONTRIBUTING.md` to required-files check.
+- `SETUP.md` §0d — preference interview expanded from 2-tier (Simple 5 / Advanced 10) to **3-tier** (Simple 5 / Advanced +9 / Expert +5 = 19 total). All tiers produce an equally-capable agent; higher tiers unlock deeper customisation:
+  - Simple (S1–S5): response style, experience level, primary mode, testing, autonomy
+  - Advanced (A6–A14): code style, file size discipline, dependency management, instruction self-editing, refactoring appetite, change reporting
+  - Expert (E15–E19): tool/dependency availability, agent persona, VS Code settings, global autonomy failsafe, mood lightener
+- `README.md` — full overhaul: centred header, CI/version/license/VS Code badges, Key Features section (eleven-section architecture, four model-pinned agents, living update protocol, workspace identity system, Kaizen baseline, extension and test-coverage review), scaffolding table, human-readable guides table, repository layout tree, philosophy section, reference implementation section.
+- `README.md` — Setup agent role updated in agents table to reflect "batched interview with verification gate".
+- Template version stamp updated from `1.0.0` → `1.0.3`.
 
 ### Performance
 
-- Lossless token-reduction pass across both LLM-read files (23 targeted substitutions, zero semantic change):
+- Lossless token-reduction pass across `copilot-instructions.md` and `AGENTS.md` (23 targeted substitutions, zero semantic change):
   - `copilot-instructions.md`: −163 words / −1 048 chars
   - `AGENTS.md`: −254 words / −1 614 chars
   - Combined: −417 words / −2 662 chars (**7.6% reduction**)
-  - Compressions applied: redundant prose collapsed to inline; repeated "do not write to template repo" guards consolidated to a single blockquote; numbered sub-lists compressed to prose sentences; verbose step headers trimmed; duplicate bullet removed from §11.
 
 ---
 

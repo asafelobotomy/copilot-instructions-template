@@ -1,6 +1,6 @@
 # Copilot Instructions — {{PROJECT_NAME}}
 
-> **Template version**: 1.0.2 | **Applied**: {{SETUP_DATE}}
+> **Template version**: 1.0.3 | **Applied**: {{SETUP_DATE}}
 > Living document — self-edit rules in §8.
 >
 > **Model Quick Reference** — select model in Copilot picker before starting each task, or use `.github/agents/` (VS Code 1.106+). [Why these models?](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)
