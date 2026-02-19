@@ -18,15 +18,15 @@ Copilot fetches the template and setup guide directly from GitHub, runs the full
 
 | File / directory | Purpose |
 |-----------------|----------|
-| `.github/copilot-instructions.md` | The primary AI guidance file. Methodology-complete on arrival; project-specific section filled in during setup. |
-| `.github/agents/` | Four model-pinned agents for VS Code 1.106+: Setup (Claude Sonnet 4.6), Code (GPT-5.3-Codex), Review (Claude Opus 4.6), Fast (Claude Haiku 4.5). |
-| `.copilot/workspace/` | Six workspace identity files Copilot maintains across sessions. |
-| `AGENTS.md` | AI agent entry point — trigger phrases + remote bootstrap / update / restore sequences. |
-| `UPDATE.md` | Update protocol — fetch, diff, backup, and apply template improvements on demand. |
-| `CHANGELOG.md` | Keep-a-Changelog stub. |
-| `JOURNAL.md` | Architectural decision record (ADR-style) journal. |
-| `BIBLIOGRAPHY.md` | File catalogue (every file, its purpose, its LOC). |
-| `METRICS.md` | Kaizen baseline snapshot table — one row per measurement event. |
+|  | The primary AI guidance file. Methodology-complete on arrival; project-specific section filled in during setup. |
+|  | Four model-pinned agents for VS Code 1.106+: Setup (Claude Sonnet 4.6), Code (GPT-5.3-Codex), Review (Claude Opus 4.6), Fast (Claude Haiku 4.5). |
+|  | Six workspace identity files Copilot maintains across sessions. |
+|  | AI agent entry point — trigger phrases + remote bootstrap / update / restore sequences. |
+|  | Update protocol — fetch, diff, backup, and apply template improvements on demand. |
+|  | Keep-a-Changelog stub. |
+|  | Architectural decision record (ADR-style) journal. |
+|  | File catalogue (every file, its purpose, its LOC). |
+|  | Kaizen baseline snapshot table — one row per measurement event. |
 
 ---
 
@@ -34,10 +34,10 @@ Copilot fetches the template and setup guide directly from GitHub, runs the full
 
 ### Existing project
 
-1. Copy `SETUP.md` into the root of your project.
-2. Copy `.github/copilot-instructions.md` into your project's `.github/` directory.
+1. Copy  into the root of your project.
+2. Copy  into your project's  directory.
 3. Open a Copilot chat and say: *"Please run the setup process described in SETUP.md."*
-4. Copilot will discover your stack, fill every `{{PLACEHOLDER}}`, scaffold the workspace identity files, capture an initial METRICS baseline, create the doc stubs, and delete `SETUP.md`.
+4. Copilot will discover your stack, fill every , scaffold the workspace identity files, capture an initial METRICS baseline, create the doc stubs, and delete .
 
 ### New project
 
@@ -47,13 +47,13 @@ Click **"Use this template"** on GitHub to create a new repo from this template.
 
 ## How the living instructions work
 
-The instructions contain an explicit **Living Update Protocol** section. Copilot is authorised to edit `.github/copilot-instructions.md` when *any* of the following is true:
+The instructions contain an explicit **Living Update Protocol** section. Copilot is authorised to edit  when *any* of the following is true:
 
 - A convention has appeared identically in **≥ 3 separate sessions** → codify it.
 - An existing guideline **demonstrably caused wasted work** → revise or retire it.
 - A **retrospective session** explicitly reviews the instructions.
 
-Every self-edit must be accompanied by a one-line entry in `JOURNAL.md` recording what changed and why.
+Every self-edit must be accompanied by a one-line entry in  recording what changed and why.
 
 ---
 
@@ -63,39 +63,22 @@ Every self-edit must be accompanied by a one-line entry in `JOURNAL.md` recordin
 
 ---
 
+## Human-readable guides
+
+The  directory contains plain-English explanations of the AI-facing files, for transparency:
+
+| Guide | Explains |
+|-------|---------|
+| [](docs/INSTRUCTIONS-GUIDE.md) | What each section of  does and how to customise it |
+| [](docs/SETUP-GUIDE.md) | What happens during setup, step by step |
+| [](docs/UPDATE-GUIDE.md) | How the update and restore process works |
+| [](docs/AGENTS-GUIDE.md) | Trigger phrases and the model-pinned agent system |
+
+---
+
 ## Files in this repo
 
-```
-copilot-instructions-template/
-├── AGENTS.md                          # AI agent entry point — trigger phrases + remote bootstrap
-├── CHANGELOG.md                       # Template version history
-├── README.md                          # This file
-├── SETUP.md                           # Agentic bootstrap (remote-executable or copy to project)
-├── UPDATE.md                          # Update protocol (fetch, diff, backup, apply)
-├── VERSION                            # Semver string — read during update pre-flight
-├── .github/
-│   ├── copilot-instructions.md        # Generic template (populated during setup)
-│   └── agents/
-│       ├── setup.agent.md             # Model-pinned Setup agent (Claude Sonnet 4.6)
-│       ├── coding.agent.md            # Model-pinned Coding agent (GPT-5.3-Codex)
-│       ├── review.agent.md            # Model-pinned Review agent (Claude Opus 4.6)
-│       └── fast.agent.md              # Model-pinned Fast agent (Claude Haiku 4.5)
-├── template/
-│   ├── CHANGELOG.md                   # Keep-a-Changelog stub
-│   ├── JOURNAL.md                     # ADR journal stub
-│   ├── BIBLIOGRAPHY.md                # File catalogue stub
-│   ├── METRICS.md                     # Kaizen baseline table stub
-│   └── workspace/
-│       ├── IDENTITY.md                # Agent self-description
-│       ├── SOUL.md                    # Values & reasoning patterns
-│       ├── USER.md                    # What the agent learns about the owner
-│       ├── TOOLS.md                   # Tool usage patterns
-│       ├── MEMORY.md                  # Memory strategy
-│       └── BOOTSTRAP.md               # First-meeting record (persists)
-└── examples/
-    └── valis/
-        └── README.md                  # Reference implementation notes
-```
+
 
 ---
 
