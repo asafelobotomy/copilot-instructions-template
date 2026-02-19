@@ -1,0 +1,36 @@
+name: Close stale issues and PRs
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'  # every Monday 08:00 UTC
+  workflow_dispatch:
+
+jobs:
+  stale:
+    name: Stale triage
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          stale-issue-message: >
+            This issue has had no activity for 30 days and will be closed in 7 days
+            unless someone comments or removes the `stale` label. If it's still
+            relevant, please leave a comment — happy to reopen.
+          close-issue-message: >
+            Closed after 37 days of inactivity. Please reopen if still relevant.
+          stale-issue-label: stale
+          exempt-issue-labels: 'pinned,security,roadmap,help wanted'
+
+          stale-pr-message: >
+            This PR has had no activity for 30 days and will be closed in 7 days
+            unless there is new activity or the `stale` label is removed.
+          close-pr-message: >
+            Closed after 37 days of inactivity. Please reopen to continue.
+          stale-pr-label: stale
+          exempt-pr-labels: 'pinned,security,do-not-merge'
+
+          days-before-stale: 30
+          days-before-close: 7

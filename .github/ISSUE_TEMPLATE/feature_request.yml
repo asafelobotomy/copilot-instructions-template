@@ -1,0 +1,44 @@
+name: Feature request
+description: Suggest an improvement or new feature for the template
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: Before opening, check whether there is already a similar request open.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Clear description of the gap or pain point
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which area?
+      options:
+        - Setup process (SETUP.md)
+        - Update protocol (UPDATE.md)
+        - copilot-instructions.md content
+        - Model-pinned agents (.github/agents/)
+        - Extension Review feature
+        - Tool Protocol (§11)
+        - Documentation (docs/)
+        - CI / Automation
+        - New feature area
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

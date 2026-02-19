@@ -1,0 +1,107 @@
+name: CI — Validate template
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    name: Structural validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: VERSION is valid semver
+        run: |
+          V=$(tr -d '[:space:]' < VERSION)
+          echo "VERSION: $V"
+          echo "$V" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$' \
+            || { echo "❌ Not a valid semver (expected x.y.z)"; exit 1; }
+          echo "✅ OK"
+
+      - name: CHANGELOG has [Unreleased] section
+        run: |
+          grep -q '## \[Unreleased\]' CHANGELOG.md \
+            || { echo "❌ Missing ## [Unreleased] in CHANGELOG.md"; exit 1; }
+          echo "✅ OK"
+
+      - name: CHANGELOG has entry for current VERSION
+        run: |
+          V=$(tr -d '[:space:]' < VERSION)
+          grep -q "## \[$V\]" CHANGELOG.md \
+            || { echo "❌ CHANGELOG.md missing entry for [$V] — add one before bumping VERSION"; exit 1; }
+          echo "✅ OK"
+
+      - name: All required template files present
+        run: |
+          missing=0
+          for f in \
+            ".github/copilot-instructions.md" \
+            ".github/agents/setup.agent.md" \
+            ".github/agents/coding.agent.md" \
+            ".github/agents/review.agent.md" \
+            ".github/agents/fast.agent.md" \
+            "SETUP.md" "UPDATE.md" "AGENTS.md" "VERSION" "CHANGELOG.md" \
+            "docs/INSTRUCTIONS-GUIDE.md" "docs/SETUP-GUIDE.md" \
+            "docs/UPDATE-GUIDE.md" "docs/AGENTS-GUIDE.md" \
+            "docs/EXTENSION-REVIEW-GUIDE.md" \
+            "template/CHANGELOG.md" "template/JOURNAL.md" \
+            "template/BIBLIOGRAPHY.md" "template/METRICS.md" \
+            "template/workspace/IDENTITY.md" "template/workspace/SOUL.md" \
+            "template/workspace/USER.md" "template/workspace/TOOLS.md" \
+            "template/workspace/MEMORY.md" "template/workspace/BOOTSTRAP.md"; do
+            if [[ ! -f "$f" ]]; then
+              echo "❌ Missing: $f"; missing=1
+            fi
+          done
+          [[ $missing -eq 0 ]] || exit 1
+          echo "✅ All required files present"
+
+      - name: copilot-instructions.md has all sections §1–§11
+        run: |
+          missing=0
+          for s in "§1" "§2" "§3" "§4" "§5" "§6" "§7" "§8" "§9" "§10" "§11"; do
+            grep -q "$s" .github/copilot-instructions.md \
+              || { echo "❌ Missing $s"; missing=1; }
+          done
+          [[ $missing -eq 0 ]] || exit 1
+          echo "✅ All sections §1–§11 present"
+
+      - name: README docs-table links resolve to real files
+        run: |
+          failed=0
+          while IFS= read -r link; do
+            [[ -f "$link" ]] || { echo "❌ README links to missing file: $link"; failed=1; }
+          done < <(grep -oP '\(docs/[^)]+\)' README.md | tr -d '()')
+          [[ $failed -eq 0 ]] || exit 1
+          echo "✅ All README docs links resolve"
+
+      - name: No merge-conflict markers
+        run: |
+          if grep -rn '^<<<<<<< \|^>>>>>>> \|^=======$' --include='*.md' .; then
+            echo "❌ Merge conflict markers found"; exit 1
+          fi
+          echo "✅ Clean"
+
+      - name: Template placeholders present in copilot-instructions.md
+        run: |
+          count=$(grep -c '{{' .github/copilot-instructions.md 2>/dev/null || echo 0)
+          if [[ "$count" -lt 3 ]]; then
+            echo "❌ Only $count {{PLACEHOLDER}} tokens found — template may have been resolved upstream"
+            exit 1
+          fi
+          echo "✅ $count placeholder tokens present"
+
+  markdownlint:
+    name: Markdown lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: |
+            **/*.md
+            !template/**
+            !examples/**
+            !node_modules/**

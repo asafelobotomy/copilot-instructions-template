@@ -1,0 +1,61 @@
+name: Bug report
+description: Report a problem with the template, setup process, or instructions
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting. Please fill in as much as you can.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What went wrong?
+      description: Clear description of the problem
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Say "Setup from asafelobotomy/copilot-instructions-template" in Copilot chat
+        2. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which area is affected?
+      options:
+        - Setup process (SETUP.md)
+        - Update protocol (UPDATE.md)
+        - copilot-instructions.md content
+        - Model-pinned agents (.github/agents/)
+        - Extension Review feature
+        - Tool Protocol (§11)
+        - Documentation (docs/)
+        - CI / Automation
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: vscode-version
+    attributes:
+      label: VS Code version
+      placeholder: e.g. 1.106.0
+
+  - type: input
+    id: template-version
+    attributes:
+      label: Template version (content of VERSION file)
+      placeholder: e.g. 1.0.2

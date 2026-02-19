@@ -1,0 +1,57 @@
+name: Auto-release on VERSION bump
+
+# Fires when VERSION changes on main — creates a tag + release automatically.
+# Changelog notes are extracted from the matching ## [x.y.z] section.
+# If the tag already exists (re-push / hotfix), the job is a harmless no-op.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - VERSION
+
+jobs:
+  release:
+    name: Create GitHub release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history needed to list existing tags
+
+      - name: Read version
+        id: ver
+        run: echo "version=$(tr -d '[:space:]' < VERSION)" >> "$GITHUB_OUTPUT"
+
+      - name: Check tag does not already exist
+        id: tag_check
+        run: |
+          TAG="v${{ steps.ver.outputs.version }}"
+          if git tag --list "$TAG" | grep -q .; then
+            echo "already_exists=true" >> "$GITHUB_OUTPUT"
+            echo "ℹ️  Tag $TAG already exists — skipping"
+          else
+            echo "already_exists=false" >> "$GITHUB_OUTPUT"
+            echo "🚀 Creating release $TAG"
+          fi
+
+      - name: Extract changelog notes
+        if: steps.tag_check.outputs.already_exists == 'false'
+        run: |
+          V="${{ steps.ver.outputs.version }}"
+          awk "/^## \[$V\]/{found=1; next} found && /^## \[/{exit} found{print}" \
+            CHANGELOG.md > /tmp/release-notes.md
+          echo "--- notes preview ---"
+          cat /tmp/release-notes.md
+
+      - name: Create GitHub release
+        if: steps.tag_check.outputs.already_exists == 'false'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v${{ steps.ver.outputs.version }}" \
+            --title "v${{ steps.ver.outputs.version }}" \
+            --notes-file /tmp/release-notes.md \
+            --target "${{ github.sha }}"
