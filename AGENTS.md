@@ -80,6 +80,18 @@ When a user says any of the following:
 
 ...switch to **Review Mode** and perform an extension audit following the **§2 Extension Review** protocol in `.github/copilot-instructions.md`. Present findings in three categories (Missing, Redundant, Unknown) with actionable recommendations. Do not auto-install.
 
+### Skill operations
+
+When a user says any of the following:
+
+- *"Create a skill"* / *"Write a skill"* / *"Add a new skill"*
+- *"Show my skills"* / *"List available skills"*
+- *"Search for a skill that ..."*
+- *"Find a skill for ..."*
+- *"What skills do I have?"*
+
+...follow the Skill Protocol in **§12** of `.github/copilot-instructions.md`. For creation tasks, activate the `skill-creator` skill if present. For search tasks, respect the `{{SKILL_SEARCH_PREFERENCE}}` setting (default: local-only).
+
 ---
 
 ## What this repo is
@@ -92,6 +104,7 @@ A generic, **living** GitHub Copilot instructions template grounded in **Lean/Ka
 - A one-time setup process (`SETUP.md`) that Copilot runs to tailor everything to the target project's stack.
 - An update process (`UPDATE.md`) that Copilot runs to fetch and apply improvements from this repo to an already-installed project.
 - Four model-pinned agent files (`.github/agents/`) for VS Code 1.106+ — one each for Setup, Coding, Review, and Fast workflows.
+- A reusable skill library (`.github/skills/`) following the [Agent Skills](https://agentskills.io) open standard — four starter skills included.
 - Automatic pre-write backups so every update is reversible — stored in `.github/archive/`.
 - Six workspace identity files that Copilot maintains across sessions.
 - Documentation stubs (CHANGELOG, JOURNAL, BIBLIOGRAPHY, METRICS).
@@ -135,6 +148,7 @@ Setup outputs written to the **user's project**:
 | `.github/agents/coding.agent.md` | Model-pinned Coding agent (GPT-5.3-Codex) |
 | `.github/agents/review.agent.md` | Model-pinned Review agent (Claude Opus 4.6) |
 | `.github/agents/fast.agent.md` | Model-pinned Fast agent (Claude Haiku 4.5) |
+| `.github/skills/*/SKILL.md` | Reusable skill library (4 starter skills from template) |
 | `.copilot/workspace/IDENTITY.md` | Agent self-description |
 | `.copilot/workspace/SOUL.md` | Agent values & reasoning patterns |
 | `.copilot/workspace/USER.md` | Observed user profile |
@@ -195,6 +209,10 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `.github/agents/coding.agent.md` | Model-pinned Coding agent stub (GPT-5.3-Codex) |
 | `.github/agents/review.agent.md` | Model-pinned Review agent stub (Claude Opus 4.6) |
 | `.github/agents/fast.agent.md` | Model-pinned Fast agent stub (Claude Haiku 4.5) |
+| `template/skills/skill-creator/SKILL.md` | Starter skill — meta-skill for authoring new skills |
+| `template/skills/fix-ci-failure/SKILL.md` | Starter skill — CI failure diagnosis and resolution |
+| `template/skills/lean-pr-review/SKILL.md` | Starter skill — Lean PR review with waste categories |
+| `template/skills/conventional-commit/SKILL.md` | Starter skill — Conventional Commits message authoring |
 | `template/workspace/IDENTITY.md` | Agent self-description stub |
 | `template/workspace/SOUL.md` | Agent values & reasoning patterns stub |
 | `template/workspace/USER.md` | User profile stub |
@@ -206,6 +224,7 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `template/BIBLIOGRAPHY.md` | File catalogue stub |
 | `template/METRICS.md` | Metrics baseline table stub |
 | `examples/valis/README.md` | Reference implementation |
+| `.github/skills/<name>/SKILL.md` | Scaffolded skill library (skills copied from template during setup) |
 | `.copilot/tools/INDEX.md` | Toolbox catalogue — created in consumer project on first tool save |
 
 ---
@@ -224,3 +243,6 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | Save to toolbox | *"Save this to the toolbox"* |
 | Review extensions | *"Review extensions"* / *"Check my extensions"* |
 | Review test coverage | *"Review my tests"* / *"Check test coverage"* / *"Repo health review"* |
+| Create a skill | *"Create a skill"* / *"Write a skill"* |
+| List skills | *"Show my skills"* / *"List available skills"* |
+| Search for a skill | *"Search for a skill that ..."* / *"Find a skill for ..."* |

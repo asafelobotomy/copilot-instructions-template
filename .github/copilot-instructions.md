@@ -1,6 +1,6 @@
 # Copilot Instructions — {{PROJECT_NAME}}
 
-> **Template version**: 1.0.3 | **Applied**: {{SETUP_DATE}}
+> **Template version**: 1.1.0 | **Applied**: {{SETUP_DATE}}
 > Living document — self-edit rules in §8.
 >
 > **Model Quick Reference** — select model in Copilot picker before starting each task, or use `.github/agents/` (VS Code 1.106+). [Why these models?](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)
@@ -333,7 +333,7 @@ When spawning subagents:
 - Pass the full contents of this file as system context.
 - Set `max_depth = {{SUBAGENT_MAX_DEPTH}}`. Stop and surface to user if reached.
 - Each subagent must run the three-check ritual before reporting done.
-- Each subagent inherits the full Tool Protocol (§11) — check the toolbox before building, search before coding, and flag any proposed toolbox saves to the parent.
+- Each subagent inherits the full Tool Protocol (§11) and Skill Protocol (§12) — check the toolbox before building, search before coding, and flag any proposed toolbox saves to the parent.
 - Subagent output must include: files changed, LOC delta, test result, any baseline breaches.
 
 ---
@@ -365,6 +365,7 @@ Resolved values and project-specific overrides. Populated during setup; updated 
 | `{{FLOW_DESCRIPTION}}` | *(fill during setup)* |
 | `{{PROJECT_CORE_VALUE}}` | *(fill during setup)* |
 | `{{SETUP_DATE}}` | *(fill during setup)* |
+| `{{SKILL_SEARCH_PREFERENCE}}` | local-only |
 | `{{EXTRA_METRIC_NAME}}` | *(delete row if not applicable)* |
 
 ### User Preferences
@@ -387,11 +388,12 @@ Resolved values and project-specific overrides. Populated during setup; updated 
 | Instruction self-editing | *(A12)* | |
 | Refactoring appetite | *(A13)* | |
 | Reporting format | *(A14)* | |
-| Tool availability | *(E15)* | |
-| Agent persona | *(E16)* | |
-| VS Code settings | *(E17)* | |
-| Global autonomy | *(E18)* | |
-| Mood lightener | *(E19)* | |
+| Skill search | *(A15)* | |
+| Tool availability | *(E16)* | |
+| Agent persona | *(E17)* | |
+| VS Code settings | *(E18)* | |
+| Global autonomy | *(E19)* | |
+| Mood lightener | *(E20)* | |
 
 ---
 
@@ -489,4 +491,120 @@ Subagents inherit this protocol fully. A subagent may build or adapt a tool inde
 
 ---
 
-*See also: `.github/agents/` (model-pinned VS Code agents) · `.copilot/workspace/` (session identity) · `.copilot/tools/` (reusable tool library) · `UPDATE.md` (update protocol) · `AGENTS.md` (AI agent entry point)*
+## §12 — Skill Protocol
+
+Skills are reusable markdown-based **behavioural instructions** that teach the agent *how* to perform a specific workflow. Unlike tools (§11) which are executable scripts, skills are declarative — they shape the agent's approach rather than running code.
+
+Skills follow the [Agent Skills](https://agentskills.io) open standard. Each skill is a `SKILL.md` file with YAML frontmatter and a markdown body containing step-by-step workflow instructions.
+
+### Skill anatomy
+
+```yaml
+---
+name: <short name>
+description: <one-sentence summary — used for discovery matching>
+version: "1.0"
+license: MIT
+tags: [<keyword>, <keyword>]
+---
+
+<markdown body with step-by-step workflow instructions>
+```
+
+Required fields: `name`, `description`. All others are optional.
+
+### Discovery and activation
+
+Skills are loaded **on demand** — the agent reads a skill's `SKILL.md` only when the `description` field matches the current task context. Do not pre-load all skills.
+
+```text
+Task requires a workflow
+ │
+ ├─ 1. SCAN — check .github/skills/*/SKILL.md descriptions
+ │     ├─ Match found  → READ the full SKILL.md, follow its instructions
+ │     └─ No match     → ↓
+ │
+ ├─ 2. SEARCH (if enabled by {{SKILL_SEARCH_PREFERENCE}})
+ │     ├─ "official-only"   → search official skill repositories:
+ │     │     a. github.com/anthropics/skills
+ │     │     b. github.com/openai/skills
+ │     │     c. github.com/github/awesome-copilot
+ │     │     d. agentskills.io/registry (when available)
+ │     │     ├─ Found → evaluate fit, adapt, save locally
+ │     │     └─ Not found → ↓
+ │     │
+ │     ├─ "official-and-community" → search official repos (above) THEN:
+ │     │     e. github.com/search?type=repositories&q=agent+skill+<topic>
+ │     │     f. Community lists: awesome-agent-skills, huggingface/skills
+ │     │     ├─ Found → evaluate fit, quality-check (see below), adapt, save locally
+ │     │     └─ Not found → ↓
+ │     │
+ │     └─ "local-only" (default) → skip online search entirely → ↓
+ │
+ └─ 3. CREATE — author a new skill from scratch
+       - Follow the authoring rules below
+       - Save to .github/skills/<kebab-name>/SKILL.md
+       - Append to JOURNAL.md: `[skill] <name> created — <one-line reason>`
+```
+
+### Scope hierarchy
+
+Skills are resolved in priority order:
+
+| Priority | Location | Scope |
+|----------|----------|-------|
+| 1 (highest) | `.github/skills/<name>/SKILL.md` | Project — checked into version control |
+| 2 | `~/.copilot/skills/<name>/SKILL.md` | Personal — shared across all projects for one user |
+
+Project skills always override personal skills with the same name.
+
+### Community skill quality gate
+
+Before adopting a community-sourced skill (search tier "official-and-community"), verify:
+
+- [ ] Repository has ≥ 50 stars or is from a recognised organisation
+- [ ] `SKILL.md` has both `name` and `description` in frontmatter
+- [ ] Instructions are clear, specific, and non-destructive
+- [ ] No embedded credentials, tokens, or suspicious URLs
+- [ ] License is permissive (MIT, Apache 2.0, CC-BY)
+
+Reject any skill that fails two or more checks. For borderline cases, present the skill to the user for review before adopting.
+
+### Authoring rules
+
+When creating or adapting a skill:
+
+1. **One skill, one workflow** — a skill does one thing well. If you need "and", split it.
+2. **Description is the index** — write a precise one-sentence description; this is how the agent discovers the skill.
+3. **Steps, not prose** — use numbered steps with clear action verbs. The agent follows these literally.
+4. **No hardcoded paths** — use relative references and contextual lookups, not project-specific paths.
+5. **Idempotent** — running the skill twice should produce the same result.
+6. **Test instructions** — include a "Verify" step at the end that confirms the skill completed correctly.
+7. **Tag for discovery** — use 2–5 tags that match common task descriptions.
+
+### Lifecycle
+
+| Event | Action |
+|-------|--------|
+| Skill created | Save to `.github/skills/`, log in JOURNAL.md |
+| Skill used 3+ times | Promote: consider contributing upstream |
+| Skill unused for 3 months | Flag for review; mark `[DEPRECATED]` if no longer relevant |
+| Skill from online source | Adapt to project conventions before saving locally |
+
+### Skill vs. Tool
+
+| Aspect | Skill (§12) | Tool (§11) |
+|--------|------------|------------|
+| Format | Markdown (`SKILL.md`) | Executable script (`.sh`, `.py`, `.js`) |
+| Purpose | Teach *how* to approach a workflow | Automate a specific *action* |
+| Invocation | Agent reads and follows instructions | Agent executes the script |
+| Location | `.github/skills/` | `.copilot/tools/` |
+| Composable | Skills can reference tools | Tools don't reference skills |
+
+### Subagent skill use
+
+Subagents inherit this protocol fully. A subagent may read and follow any project or personal skill. To **create** a new skill, the subagent must flag the proposal to the parent agent, which confirms before any write to `.github/skills/`.
+
+---
+
+*See also: `.github/agents/` (model-pinned VS Code agents) · `.copilot/workspace/` (session identity) · `.copilot/tools/` (reusable tool library) · `.github/skills/` (reusable skill library) · `UPDATE.md` (update protocol) · `AGENTS.md` (AI agent entry point)*

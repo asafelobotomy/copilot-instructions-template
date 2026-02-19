@@ -46,8 +46,8 @@ This is the most interactive part. Copilot first asks which setup level you want
 | Setup level | Questions | Time |
 |-------------|-----------|------|
 | **S — Simple** | S1–S5 (5 questions) | ~1 min |
-| **A — Advanced** | S1–S5 + A6–A14 (14 questions) | ~2 min |
-| **E — Expert** | S1–S5 + A6–A14 + E15–E19 (19 questions) | ~3 min |
+| **A — Advanced** | S1–S5 + A6–A15 (15 questions) | ~2 min |
+| **E — Expert** | S1–S5 + A6–A15 + E16–E20 (20 questions) | ~3 min |
 
 You can also type "skip" to use all defaults and proceed immediately.
 
@@ -67,13 +67,14 @@ You can also type "skip" to use all defaults and proceed immediately.
 | A12 — Instruction editing | How §8 Living Update Protocol behaves (free / ask / suggest / locked) |
 | A13 — Refactoring appetite | Proactively fix smells, flag them, or ignore |
 | A14 — Reporting format | How Copilot reports completed work |
-| E15 — Tool availability | What to do when a required tool isn't installed |
-| E16 — Agent persona | Personality / tone (Professional, Mentor, Pair-programmer, etc.) |
-| E17 — VS Code settings | Whether Copilot may modify `.vscode/settings.json` |
-| E18 — Global autonomy | Master 1–5 failsafe that caps all autonomy settings |
-| E19 — Mood lightener | Whether Copilot drops occasional humour |
+| A15 — Skill search | Whether Copilot searches online skill repositories |
+| E16 — Tool availability | What to do when a required tool isn't installed |
+| E17 — Agent persona | Personality / tone (Professional, Mentor, Pair-programmer, etc.) |
+| E18 — VS Code settings | Whether Copilot may modify `.vscode/settings.json` |
+| E19 — Global autonomy | Master 1–5 failsafe that caps all autonomy settings |
+| E20 — Mood lightener | Whether Copilot drops occasional humour |
 
-All answers are written into §10 of your instructions file as a 19-row User Preferences table. Questions you didn't answer (because you chose a lower tier) use sensible defaults. You can change preferences any time by editing that section or triggering an update interview.
+All answers are written into §10 of your instructions file as a 20-row User Preferences table. Questions you didn't answer (because you chose a lower tier) use sensible defaults. You can change preferences any time by editing that section or triggering an update interview.
 
 **0e — Pre-flight summary**
 
@@ -98,6 +99,12 @@ Every `{{PLACEHOLDER}}` in `.github/copilot-instructions.md` is replaced with th
 ### Step 2.5 — Write model-pinned agent files
 
 Four agent files are created in `.github/agents/` for VS Code 1.106+ users. These pre-configure the Copilot agent dropdown with the recommended model for each task type. See [AGENTS-GUIDE.md](AGENTS-GUIDE.md) for details.
+
+---
+
+### Step 2.8 — Scaffold skill library
+
+Four starter skills are scaffolded into `.github/skills/`, following the [Agent Skills](https://agentskills.io) open standard. These teach the agent reusable workflows: authoring new skills, fixing CI failures, Lean PR reviews, and Conventional Commits. See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for details.
 
 ---
 
