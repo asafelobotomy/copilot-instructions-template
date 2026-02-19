@@ -126,7 +126,7 @@ If **"append entries"**: for each existing file, append the appropriate setup en
 
 ### 0d — User Preference Interview
 
-> **Purpose**: Before building the instructions, learn how you want Copilot to behave in this project. Answers are written into §10 of the instructions file and used throughout to calibrate Copilot's tone, depth, and autonomy. This interview takes roughly 2 minutes.
+> **Purpose**: Before building the instructions, learn how you want Copilot to behave in this project. Answers are written into §10 of the instructions file and used throughout to calibrate Copilot's tone, depth, and autonomy. This interview takes 1–3 minutes depending on the setup level you choose.
 
 Present the following to the user:
 
@@ -134,8 +134,9 @@ Present the following to the user:
 
 > **Setup mode**: Which level of configuration would you like?
 >
-> - **S — Simple Setup** (5 questions, ~1 min) — Essential preferences only.
-> - **A — Advanced Setup** (10 questions, ~2 min) — Full control over Copilot's behaviour.
+> - **S — Simple Setup** (5 questions, ~1 min) — Essential preferences only. Advanced and Expert options use sensible defaults.
+> - **A — Advanced Setup** (14 questions, ~2 min) — Full control over Copilot's coding behaviour.
+> - **E — Expert Setup** (19 questions, ~3 min) — Everything in Advanced, plus persona, autonomy failsafe, tool availability, VS Code settings, and more.
 >
 > *(You can also type "skip" to use all defaults and proceed immediately.)*
 
@@ -235,26 +236,26 @@ Present **all 5 questions together in a single interaction** — do not ask them
 
 ---
 
-#### Advanced Setup — 5 additional questions
+#### Advanced Setup — 9 additional questions
 
-If the user chose **A — Advanced Setup**, present **all 5 additional questions together in a single interaction** immediately after receiving Simple Setup answers — do not ask them one at a time. If the user chose **S — Simple Setup**, skip these and proceed to 0e.
+If the user chose **A — Advanced Setup** or **E — Expert Setup**, present **all 9 additional questions together in a single interaction** immediately after receiving Simple Setup answers — do not ask them one at a time. If the user chose **S — Simple Setup**, skip these and proceed to 0e.
 
 ---
 
-**A6 — Naming and formatting conventions**
+**A6 — Code style and formatting**
 
-> How should Copilot determine naming and formatting style?
+> How should Copilot determine coding style and formatting?
 >
-> **A — Infer from existing code** *(default)*: Read the codebase and match what's there.
-> **B — camelCase, 2-space indent**: JS/TS-style.
-> **C — snake_case, 4-space indent**: Python/Rust-style.
+> **A — Infer from existing code** *(default)*: Read the codebase, linter configs, and formatter configs, then match what's there.
+> **B — Follow project linter/formatter**: Defer entirely to the project's configured tools (ESLint, Prettier, Biome, Ruff, rustfmt, etc.). If none configured, ask.
+> **C — Follow community style guide**: Use the official style guide for the primary language (Airbnb JS, PEP 8, Rust style guide, gofmt, etc.).
 > **D — I'll provide a style guide**: Type the path or URL to your style guide now.
 
 | Answer | Instruction written to §10 |
 |--------|---------------------------|
-| A | "Infer naming and formatting conventions from existing code. Match the patterns already present in the codebase before applying any external standard." |
-| B | "Use camelCase for identifiers, 2-space indentation, and JS/TS ecosystem conventions." |
-| C | "Use snake_case for identifiers, 4-space indentation, and ecosystem conventions of the project's primary language." |
+| A | "Infer coding style from existing code, linter configs (`.eslintrc.*`, `biome.json`, `ruff.toml`, etc.), and formatter configs (`.prettierrc.*`, `rustfmt.toml`, etc.). Match the patterns already present before applying any external standard." |
+| B | "Defer entirely to the project's configured linter and formatter for all style decisions. If no linter or formatter is configured, flag this and ask the user which to set up." |
+| C | "Follow the official community style guide for the project's primary language. For JS/TS: Airbnb or Standard. For Python: PEP 8. For Rust: the Rust style guide. For Go: gofmt. Adapt to the ecosystem." |
 | D | *(User types the guide URL/path)* "Follow the style guide at `<user_input>`. When in conflict with auto-detected patterns, the style guide takes precedence." |
 
 ---
@@ -313,7 +314,75 @@ If the user chose **A — Advanced Setup**, present **all 5 additional questions
 
 ---
 
-**A10 — Change reporting format**
+**A10 — File size discipline**
+
+> How strictly should Copilot enforce file length limits? (These set the §3 LOC baselines.)
+>
+> **A — Strict** (150 / 300): Flag at 150 lines, refuse to extend past 300. Forces aggressive decomposition.
+> **B — Standard** *(default)* (250 / 400): Flag at 250 lines, refuse to extend past 400. Good balance for most projects.
+> **C — Relaxed** (400 / 600): Flag at 400 lines, refuse to extend past 600. For projects with inherently larger files (generated code, config-heavy).
+> **D — No limits**: Do not enforce file length limits. Focus on logical coherence instead of line counts.
+
+| Answer | Instruction written to §10 | §3 values set |
+|--------|---------------------------|---------------|
+| A | "Strictly enforce file size limits. Flag any file exceeding 150 lines; refuse to extend past 300 without decomposing first." | `LOC_WARN=150`, `LOC_HIGH=300` |
+| B | "Enforce standard file size limits. Flag files exceeding 250 lines; refuse to extend past 400 without decomposing first." | `LOC_WARN=250`, `LOC_HIGH=400` |
+| C | "Apply relaxed file size limits. Flag files exceeding 400 lines; refuse to extend past 600 without decomposing first." | `LOC_WARN=400`, `LOC_HIGH=600` |
+| D | "Do not enforce file length limits. Focus on logical coherence and readability. Remove LOC baselines from §3." | LOC baselines disabled |
+
+---
+
+**A11 — Dependency management**
+
+> How should Copilot handle adding new dependencies?
+>
+> **A — Minimal**: Avoid new dependencies whenever possible. Prefer stdlib or hand-written code.
+> **B — Pragmatic** *(default)*: Add dependencies when they provide clear value. Justify additions and propose removal of unused ones first.
+> **C — Ecosystem-first**: Freely use well-maintained packages. Don't reinvent the wheel.
+
+| Answer | Instruction written to §10 |
+|--------|---------------------------|
+| A | "Minimise dependencies. Prefer standard library or hand-written solutions over adding packages. Every new dependency needs explicit justification and a matching removal proposal for an existing one." |
+| B | "Add dependencies when they provide clear value and are well-maintained. Always check if existing dependencies cover the need. Propose removing unused dependencies before adding new ones." |
+| C | "Freely use well-maintained ecosystem packages. Don't reinvent the wheel. Trust popular, actively maintained packages. Flag only unmaintained or duplicate dependencies." |
+
+---
+
+**A12 — Instruction self-editing**
+
+> The template includes a Living Update Protocol (§8) that allows Copilot to evolve its own instructions as patterns emerge. How should this work?
+>
+> **A — Free to update**: Copilot can add rules and patterns to the instructions file as it discovers them. Report changes after the fact.
+> **B — Ask first** *(default)*: Copilot proposes instruction changes and waits for approval before editing.
+> **C — Suggest only**: Copilot suggests instruction improvements in chat but never edits the file directly.
+> **D — Locked**: Instructions are static after setup. Do not propose or make changes.
+
+| Answer | Instruction written to §10 |
+|--------|---------------------------|
+| A | "You may update `.github/copilot-instructions.md` freely when patterns stabilise. Append to §10 or add rules to §4. Report what was changed at the end of the session." |
+| B | "Before editing `.github/copilot-instructions.md`, describe the proposed change and wait for approval. Never edit §1–§7 without explicit user instruction." |
+| C | "Do not edit `.github/copilot-instructions.md`. When you identify a pattern that could become a rule, suggest it in chat. The user will apply it manually if desired." |
+| D | "The instructions file is frozen after setup. Do not propose, suggest, or make changes to `.github/copilot-instructions.md` under any circumstances." |
+
+---
+
+**A13 — Refactoring appetite**
+
+> When Copilot encounters code smells, tech debt, or waste (§6) while working on a task, should it proactively address them?
+>
+> **A — Fix proactively**: Clean up smells and waste whenever encountered. Include refactoring in the PDCA scope.
+> **B — Flag and suggest** *(default)*: Note smells and waste in the response but don't fix unless asked.
+> **C — Ignore unless asked**: Focus only on the requested task. Don't mention smells or tech debt.
+
+| Answer | Instruction written to §10 |
+|--------|---------------------------|
+| A | "Proactively refactor code smells and waste when encountered during any task. Include cleanup in the PDCA scope. Tag each refactoring with its waste category (§6)." |
+| B | "Flag code smells, tech debt, and waste (§6) when encountered, but do not fix them unless asked. Log improvement suggestions in the session summary." |
+| C | "Focus exclusively on the requested task. Do not flag code smells, tech debt, or refactoring opportunities unless explicitly asked to review." |
+
+---
+
+**A14 — Change reporting format**
 
 > When Copilot completes a task, how should it report what it did?
 >
@@ -328,6 +397,104 @@ If the user chose **A — Advanced Setup**, present **all 5 additional questions
 | B | "After completing a task, provide a CHANGELOG entry formatted for Keep-a-Changelog (`### Added / Changed / Fixed`), ready to paste into CHANGELOG.md." |
 | C | "After completing a task, provide a PR description with a Summary, Changes Made, and Testing Notes section." |
 | D | "After completing a task, write a short narrative paragraph explaining what changed, the key decisions made, and any follow-up items." |
+
+---
+
+#### Expert Setup — 5 additional questions
+
+If the user chose **E — Expert Setup**, present **all 5 expert questions together in a single interaction** immediately after receiving Advanced Setup answers. If the user chose **S — Simple Setup** or **A — Advanced Setup**, skip these and proceed to 0e.
+
+---
+
+**E15 — Tool and dependency availability**
+
+> When Copilot needs a tool, dependency, or runtime that isn't currently available (e.g., trying to use `bun` but it's not installed), what should it do?
+>
+> **A — Stop and request** *(default)*: Stop, explain what's needed and why, and ask permission to install or configure it before proceeding.
+> **B — Attempt workaround first**: Try an alternative approach. If no viable workaround exists, stop and explain the requirement.
+> **C — Always work around**: Never request new tools or installations. Use only what's available, even if the result is less optimal or incomplete.
+
+| Answer | Instruction written to §10 |
+|--------|---------------------------|
+| A | "When a required tool, dependency, or runtime is unavailable, stop immediately. Explain what is needed, why it's needed, and how to install/configure it. Do not attempt workarounds that compromise solution quality. Wait for the user to make it available." |
+| B | "When a required tool or dependency is unavailable, first attempt a viable alternative approach. If no workaround maintains solution quality, stop and explain the requirement. Never silently degrade the solution." |
+| C | "Never request new tools, dependencies, or installations. Work exclusively with what is currently available. If a task cannot be completed well with available tools, state the limitation but proceed with the best available approach." |
+
+---
+
+**E16 — Agent persona**
+
+> Give your Copilot agent a personality. This affects tone, vocabulary, and conversational style — not technical capability.
+>
+> **A — Professional** *(default)*: Neutral, efficient, direct. No personality beyond clarity.
+> **B — Mentor**: Patient, educational. Explains like a senior dev guiding a junior. Encouraging language.
+> **C — Pair programmer**: Collaborative, thinks out loud. Uses "we" language. Brainstorms alternatives.
+> **D — Ship-it captain**: High-energy, goal-focused. Celebrates wins. Keeps momentum high. 🚀
+> **E — Zen master**: Calm, philosophical. Values simplicity. Occasionally quotes programming wisdom.
+> **F — Rubber duck**: Minimal. Repeats your problem back in clearer terms. Asks clarifying questions. Lets you find the answer.
+> **G — Custom**: Describe your ideal persona. *(Type it now.)*
+
+| Answer | Instruction written to §10 |
+|--------|---------------------------|
+| A | "Maintain a professional, neutral tone. Be direct, efficient, and clear. No personality embellishments." |
+| B | "Adopt a mentor persona. Be patient and educational. Explain reasoning as if guiding a junior developer. Use encouraging language: 'Great question', 'Good instinct', 'Here's why that matters'." |
+| C | "Adopt a pair-programmer persona. Think out loud. Use 'we' language ('Let's try...', 'We could...'). Brainstorm alternatives before committing to an approach. Be conversational." |
+| D | "Adopt a ship-it captain persona. Be high-energy and goal-focused. Celebrate wins ('Ship it! 🚀', 'Nice catch!'). Keep momentum high. Break down blockers aggressively." |
+| E | "Adopt a zen master persona. Be calm and composed. Value simplicity above all. Occasionally share relevant programming wisdom ('Premature optimisation is the root of all evil'). Prefer the simplest solution." |
+| F | "Adopt a rubber-duck persona. Be minimal. Repeat the user's problem back in clearer terms. Ask clarifying questions before offering solutions. Help the user reason through the problem themselves." |
+| G | *(User types their persona description)* — Record verbatim as the persona instruction. |
+
+---
+
+**E17 — VS Code settings management**
+
+> Should Copilot modify VS Code workspace settings (`.vscode/settings.json`) when it believes a change would improve the development experience?
+>
+> **A — Never** *(default)*: Do not touch VS Code settings files. Suggest changes for me to apply manually.
+> **B — Ask first**: Propose settings changes with an explanation and expected impact. Apply only after explicit approval.
+> **C — Auto-apply workspace settings**: Freely modify `.vscode/settings.json` for this project. Never touch user-level settings.
+
+| Answer | Instruction written to §10 |
+|--------|---------------------------|
+| A | "Do not create or modify `.vscode/settings.json` or any VS Code configuration files. If a settings change would help, describe it in chat and let the user apply it." |
+| B | "When a VS Code workspace settings change would improve the development experience, propose it with a clear explanation of what it does and why. Apply only after the user explicitly approves. Never modify user-level settings." |
+| C | "Freely create or modify `.vscode/settings.json` when it improves the development experience (e.g., enabling formatOnSave, configuring linter paths, setting file associations). Summarise changes after applying. Never touch user-level settings." |
+
+---
+
+**E18 — Global autonomy override (failsafe)**
+
+> Set a master autonomy ceiling on a 1–5 scale. This acts as a **hard override** that caps all other autonomy-related settings (S5, §8, etc.), regardless of what they allow.
+>
+> **1 — Full lockdown**: Every file create/modify/delete requires explicit approval. No exceptions. Overrides all other autonomy settings.
+> **2 — Cautious**: All write operations require approval. Read-only analysis proceeds automatically.
+> **3 — Balanced** *(default)*: No override — autonomy follows the S5 setting and §8 protocol normally.
+> **4 — High autonomy**: Act independently on most tasks. Pause only for destructive operations or major architectural changes.
+> **5 — Full autonomy**: Execute any action Copilot believes is correct, including destructive operations. Requires robust version control.
+
+| Answer | Instruction written to §10 |
+|--------|---------------------------|
+| 1 | "FAILSAFE ACTIVE — Global autonomy: 1 (Full lockdown). Every action that creates, modifies, or deletes a file requires explicit user approval. This overrides S5 and §8. No exceptions." |
+| 2 | "Global autonomy: 2 (Cautious). All write operations require explicit approval. Read-only analysis, searches, and queries may proceed automatically. Overrides more permissive S5 settings." |
+| 3 | "Global autonomy: 3 (Balanced). No autonomy override applied. Follow the S5 setting and §8 Living Update Protocol as configured." |
+| 4 | "Global autonomy: 4 (High autonomy). Act independently on all routine tasks including file creation and modification. Pause only before: deleting files, overwriting large sections, changing config files, or making architectural decisions." |
+| 5 | "Global autonomy: 5 (Full autonomy). Execute any action you believe is correct, including destructive operations. Use best judgment. Log all actions for post-session review. Requires robust version control." |
+
+---
+
+**E19 — Mood lightener**
+
+> Long coding sessions can be stressful. Should Copilot occasionally lighten the mood?
+>
+> **A — Never** *(default)*: Keep all interactions strictly professional and task-focused.
+> **B — Occasionally**: Drop a programming joke or encouraging comment after resolving a frustrating bug, finishing a long task, or during extended sessions.
+> **C — Frequently**: Sprinkle humour throughout — dev jokes, light comments, relevant references between tasks. Life's too short for boring terminals.
+
+| Answer | Instruction written to §10 |
+|--------|---------------------------|
+| A | "Keep all interactions strictly professional and task-focused. No jokes, humour, or casual commentary." |
+| B | "Occasionally lighten the mood. After resolving a frustrating bug, completing a long task, or during extended sessions, drop a brief programming joke or encouraging comment. Keep it natural — never forced." |
+| C | "Actively lighten the mood. Include programming jokes, light comments, or dev culture references between tasks. Match tone to the moment — celebratory after wins, sympathetic after tough bugs, encouraging during long sessions." |
 
 ---
 
@@ -347,22 +514,50 @@ Once all questions are answered, construct the following block and write it into
 | Primary mode | <S3 answer label> | <S3 instruction text> |
 | Testing | <S4 answer label> | <S4 instruction text> |
 | Autonomy | <S5 answer label> | <S5 instruction text> |
-| Naming/formatting | <A6 answer label or "Simple default: infer from code"> | <instruction> |
-| Documentation | <A7 answer label or "Simple default: brief comments"> | <instruction> |
-| Error handling | <A8 answer label or "Simple default: defensive"> | <instruction> |
-| Security | <A9 answer label or "Simple default: when relevant"> | <instruction> |
-| Reporting format | <A10 answer label or "Simple default: bullet list"> | <instruction> |
+| Code style | <A6 answer label or default> | <instruction> |
+| Documentation | <A7 answer label or default> | <instruction> |
+| Error handling | <A8 answer label or default> | <instruction> |
+| Security | <A9 answer label or default> | <instruction> |
+| File size discipline | <A10 answer label or default> | <instruction> |
+| Dependency management | <A11 answer label or default> | <instruction> |
+| Instruction self-editing | <A12 answer label or default> | <instruction> |
+| Refactoring appetite | <A13 answer label or default> | <instruction> |
+| Reporting format | <A14 answer label or default> | <instruction> |
+| Tool availability | <E15 answer label or default> | <instruction> |
+| Agent persona | <E16 answer label or default> | <instruction> |
+| VS Code settings | <E17 answer label or default> | <instruction> |
+| Global autonomy | <E18 answer label or default> | <instruction> |
+| Mood lightener | <E19 answer label or default> | <instruction> |
 ```
 
-**Simple Setup defaults** (used for A6–A10 when not asked):
+**Simple Setup defaults** (used for A6–A14 and E15–E19 when Simple is chosen):
 
 | Question | Default answer | Default instruction |
 |----------|---------------|---------------------|
-| A6 — Naming | A | Infer from existing code |
+| A6 — Code style | A | Infer from existing code and linter/formatter configs |
 | A7 — Docs | A | Type signatures + brief comments on non-obvious code |
 | A8 — Errors | B | Defensive — prefer return values over throwing |
 | A9 — Security | B | Flag when directly relevant |
-| A10 — Reporting | A | Bullet list of files changed |
+| A10 — File size | B | Standard (250 warn / 400 hard) |
+| A11 — Dependencies | B | Pragmatic — add when clear value, justify additions |
+| A12 — Self-editing | B | Ask first — propose changes, wait for approval |
+| A13 — Refactoring | B | Flag and suggest — note smells but don't auto-fix |
+| A14 — Reporting | A | Bullet list of files changed |
+| E15 — Tool availability | A | Stop and request — explain the need, wait for approval |
+| E16 — Persona | A | Professional — neutral, efficient, direct |
+| E17 — VS Code settings | A | Never — suggest only, don't modify |
+| E18 — Global autonomy | 3 | Balanced — no override, follow S5 setting |
+| E19 — Mood lightener | A | Never — strictly professional |
+
+**Advanced Setup defaults** (used for E15–E19 when Advanced is chosen):
+
+| Question | Default answer | Default instruction |
+|----------|---------------|---------------------|
+| E15 — Tool availability | A | Stop and request — explain the need, wait for approval |
+| E16 — Persona | A | Professional — neutral, efficient, direct |
+| E17 — VS Code settings | A | Never — suggest only, don't modify |
+| E18 — Global autonomy | 3 | Balanced — no override, follow S5 setting |
+| E19 — Mood lightener | A | Never — strictly professional |
 
 ---
 
@@ -379,16 +574,25 @@ Pre-flight complete. Here is what I will do:
     Doc stubs:           [skip existing / append entries / create missing only]
 
   USER PREFERENCES (from interview)
-    Response style:      <label>
-    Experience level:    <label>
-    Primary mode:        <label>
-    Testing:             <label>
-    Autonomy:            <label>
-    Naming/format:       <label>
-    Documentation:       <label>
-    Error handling:      <label>
-    Security:            <label>
-    Reporting format:    <label>
+    Response style:        <label>
+    Experience level:      <label>
+    Primary mode:          <label>
+    Testing:               <label>
+    Autonomy:              <label>
+    Code style:            <label>
+    Documentation:         <label>
+    Error handling:        <label>
+    Security:              <label>
+    File size discipline:  <label>
+    Dependency management: <label>
+    Instruction editing:   <label>
+    Refactoring appetite:  <label>
+    Reporting format:      <label>
+    Tool availability:     <label>
+    Agent persona:         <label>
+    VS Code settings:      <label>
+    Global autonomy:       <label>
+    Mood lightener:        <label>
 
   NEXT STEPS
     1.   Discover project stack (Step 1)
@@ -853,7 +1057,7 @@ See Step 4 for the stub — do not duplicate it here.
      Initial baseline row appended: [yes / skipped]
 
    USER PREFERENCES
-     <table of all 10 dimensions with labels>
+     <table of all 19 dimensions with labels>
 
    ANOMALIES
      <any decisions made that the user should verify, or "none">

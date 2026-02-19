@@ -19,7 +19,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
   - Compressions applied: redundant prose collapsed to inline; repeated "do not write to template repo" guards consolidated to a single blockquote; numbered sub-lists compressed to prose sentences; verbose step headers trimmed; duplicate bullet removed from §11.
 
 ### Changed
-- `SETUP.md §0d` — preference interview questions now presented as a single batched interaction instead of one-at-a-time sequential exchanges. Both Simple Setup (S1–S5) and Advanced Setup (A6–A10) instruct the agent to collect all answers at once; in VS Code Copilot Chat this renders the built-in form UI with selectable options and a single Submit button.
+- `SETUP.md §0d` — preference interview expanded to 3-tier system (Simple 5 / Advanced +9 / Expert +5 = 19 total questions). All tiers produce an equally-capable agent — higher tiers unlock deeper customisation rather than adding features:
+  - Simple (S1–S5): response style, experience level, primary mode, testing, autonomy — unchanged
+  - Advanced (A6–A14): code style refined to cover linter/formatter configs; **new**: file size discipline (§3 LOC thresholds), dependency management, instruction self-editing (§8 controls), refactoring appetite; old "change reporting" demoted to A14
+  - Expert (E15–E19): **new** — tool/dependency availability behaviour, agent persona (Professional/Mentor/Pair-programmer/Ship-it captain/Zen master/Rubber duck/Custom), VS Code settings management, global autonomy override (1–5 failsafe), mood lightener
+  - Mode selection now offers S / A / E (was S / A)
+  - All answers still collected per-tier in a single batched interaction
+  - Defaults tables expanded to cover all 19 dimensions for each tier
 
 ### Added
 - CI infrastructure (not a template version bump — repo maintenance):
