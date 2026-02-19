@@ -156,6 +156,7 @@ When spawning subagents:
 - Pass the full contents of this file as system context.
 - Set `max_depth = {{SUBAGENT_MAX_DEPTH}}`. Stop and surface to user if reached.
 - Each subagent must run the three-check ritual before reporting done.
+- Each subagent inherits the full Tool Protocol (§11) — check the toolbox before building, search before coding, and flag any proposed toolbox saves to the parent.
 - Subagent output must include: files changed, LOC delta, test result, any baseline breaches.
 
 ---
@@ -195,4 +196,75 @@ Resolved values and project-specific overrides. Populated during setup; updated 
 
 ---
 
-*See also: `.github/agents/` (model-pinned VS Code agents) · `.copilot/workspace/` (session identity) · `UPDATE.md` (update protocol) · `AGENTS.md` (AI agent entry point)*
+
+## §11 — Tool Protocol
+
+When a task requires automation, a scripted command sequence, or a repeatable utility, follow this decision tree before writing anything ad-hoc.
+
+### Decision tree
+
+```
+Need a tool for task X
+ │
+ ├─ 1. FIND — check .copilot/tools/INDEX.md
+ │     ├─ Exact match  → USE IT directly
+ │     ├─ Close match  → ADAPT (fork, rename, note source in comment at top of file)
+ │     └─ No match     → ↓
+ │
+ ├─ 2. SEARCH online (try in order)
+ │     a. MCP server registry  github.com/modelcontextprotocol/servers
+ │     b. GitHub search        github.com/search?type=repositories&q=<task>
+ │     c. Awesome lists        awesome-cli-apps · awesome-shell · awesome-python · awesome-rust · awesome-go
+ │     d. Stack registry       npmjs.com / pypi.org / crates.io / pkg.go.dev
+ │     e. Official CLI docs    git · docker · gh · jq · ripgrep · sed · awk (built-ins first)
+ │     ├─ Found something usable → evaluate fit, adapt as needed, note source
+ │     └─ Nothing applicable → ↓
+ │
+ └─ 3. BUILD — write the tool from scratch
+          - Follow §4 coding conventions and §3 LOC baselines
+          - Single-purpose: one tool, one job; compose via pipes or imports
+          - Accept arguments instead of hardcoding project-specific paths
+          - Document inputs, outputs, and usage in an inline comment block at the top
+          │
+          └─ 4. EVALUATE reusability
+                ├─ ≥ 2 distinct tasks in this project would benefit → SAVE to toolbox
+                │   a. Place file in .copilot/tools/<kebab-name>.<ext>
+                │   b. Add a row to .copilot/tools/INDEX.md (see format below)
+                │   c. Append to JOURNAL.md: `[tool] <name> added to toolbox — <one-line reason>`
+                └─ Single-use / too project-specific → use inline only; do not save
+```
+
+### Toolbox
+
+`.copilot/tools/` is created on first tool save (no setup step required). Contents:
+
+| File | Purpose |
+|------|---------|
+| `INDEX.md` | Tool catalogue — always kept current |
+| `*.sh` | Shell / bash tools |
+| `*.py` | Python tools |
+| `*.js` / `*.ts` | Node / Deno tools |
+| `*.mcp.json` | MCP server configurations |
+
+**INDEX.md row format**:
+
+| Tool | Lang | What it does | When to use |
+|------|------|-------------|------------|
+| `count-exports.sh` | bash | Count exported symbols per file | API surface audits |
+| `summarise-metrics.py` | python | Parse METRICS.md and print trends | Kaizen review sessions |
+
+### Tool quality rules
+
+- Adapted tools: preserve lineage with a comment — `# source: <url-or-original-tool-name>`
+- Tools must be idempotent where possible
+- Tools must not hardcode project-specific paths, names, or secrets — accept arguments
+- Retire tools no longer in use: mark as `[DEPRECATED]` in INDEX.md (W1 — Overproduction)
+- Tools follow the same LOC baseline as source code (§3 hard limit: {{LOC_HIGH_THRESHOLD}} lines)
+
+### Subagent tool use
+
+Subagents inherit this protocol fully. A subagent may build or adapt a tool independently. To **save** a tool to the toolbox, the subagent must first flag the proposal to the parent agent, which confirms before any write to `.copilot/tools/`.
+
+---
+
+*See also: `.github/agents/` (model-pinned VS Code agents) · `.copilot/workspace/` (session identity) · `.copilot/tools/` (reusable tool library) · `UPDATE.md` (update protocol) · `AGENTS.md` (AI agent entry point)*
