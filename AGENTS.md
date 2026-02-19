@@ -50,6 +50,7 @@ A generic, **living** GitHub Copilot instructions template grounded in **Lean/Ka
 - A structured `.github/copilot-instructions.md` template with `{{PLACEHOLDER}}` tokens for project-specific values.
 - A one-time setup process (`SETUP.md`) that Copilot runs to tailor everything to the target project's stack.
 - An update process (`UPDATE.md`) that Copilot runs to fetch and apply improvements from this repo to an already-installed project.
+- Four model-pinned agent files (`.github/agents/`) for VS Code 1.106+ — one each for Setup, Coding, Review, and Fast workflows.
 - Automatic pre-write backups so every update is reversible — stored in `.github/archive/`.
 - Six workspace identity files that Copilot maintains across sessions.
 - Documentation stubs (CHANGELOG, JOURNAL, BIBLIOGRAPHY, METRICS).
@@ -89,6 +90,10 @@ Setup outputs written to the **user's project**:
 | File | Description |
 |------|-------------|
 | `.github/copilot-instructions.md` | Populated instructions (from the template fetched above) |
+| `.github/agents/setup.agent.md` | Model-pinned Setup agent (Claude Sonnet 4.6) |
+| `.github/agents/coding.agent.md` | Model-pinned Coding agent (GPT-5.3-Codex) |
+| `.github/agents/review.agent.md` | Model-pinned Review agent (Claude Opus 4.6) |
+| `.github/agents/fast.agent.md` | Model-pinned Fast agent (Claude Haiku 4.5) |
 | `.copilot/workspace/IDENTITY.md` | Agent self-description |
 | `.copilot/workspace/SOUL.md` | Agent values & reasoning patterns |
 | `.copilot/workspace/USER.md` | Observed user profile |
@@ -181,6 +186,10 @@ All writes go to the **user's current project**. Do not create, modify, or delet
 | `VERSION` | Current template version number (semver) |
 | `CHANGELOG.md` | Template version history |
 | `.github/copilot-instructions.md` | Generic instructions template with `{{PLACEHOLDER}}` tokens |
+| `.github/agents/setup.agent.md` | Model-pinned Setup agent stub (Claude Sonnet 4.6) |
+| `.github/agents/coding.agent.md` | Model-pinned Coding agent stub (GPT-5.3-Codex) |
+| `.github/agents/review.agent.md` | Model-pinned Review agent stub (Claude Opus 4.6) |
+| `.github/agents/fast.agent.md` | Model-pinned Fast agent stub (Claude Haiku 4.5) |
 | `template/workspace/IDENTITY.md` | Agent self-description stub |
 | `template/workspace/SOUL.md` | Agent values & reasoning patterns stub |
 | `template/workspace/USER.md` | User profile stub |
