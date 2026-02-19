@@ -360,6 +360,28 @@ Resolved values and project-specific overrides. Populated during setup; updated 
 
 *(Populated during setup from interview responses — see SETUP.md §0d.)*
 
+| Dimension | Setting | Instruction |
+|-----------|---------|-------------|
+| Response style | *(S1)* | |
+| Experience level | *(S2)* | |
+| Primary mode | *(S3)* | |
+| Testing | *(S4)* | |
+| Autonomy | *(S5)* | |
+| Code style | *(A6)* | |
+| Documentation | *(A7)* | |
+| Error handling | *(A8)* | |
+| Security | *(A9)* | |
+| File size discipline | *(A10)* | |
+| Dependency management | *(A11)* | |
+| Instruction self-editing | *(A12)* | |
+| Refactoring appetite | *(A13)* | |
+| Reporting format | *(A14)* | |
+| Tool availability | *(E15)* | |
+| Agent persona | *(E16)* | |
+| VS Code settings | *(E17)* | |
+| Global autonomy | *(E18)* | |
+| Mood lightener | *(E19)* | |
+
 ---
 
 ## §11 — Tool Protocol

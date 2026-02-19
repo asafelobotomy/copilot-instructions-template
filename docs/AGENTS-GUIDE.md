@@ -45,7 +45,7 @@ Each agent has a fallback chain so it degrades gracefully if a model is unavaila
 
 | Model | Reason chosen |
 |-------|--------------|
-| **Claude Sonnet 4.6** (Setup) | Strong instruction-following; handles the 10-question interview and complex conditional logic in setup well |
+| **Claude Sonnet 4.6** (Setup) | Strong instruction-following; handles the 3-tier preference interview (5–19 questions) and complex conditional logic in setup well |
 | **GPT-5.3-Codex** (Code) | GitHub's latest agentic coding model (GA Feb 9 2026); ~25% faster than its predecessor; supports real-time mid-task steering. Stays in the Codex lineage for clean fallbacks |
 | **Claude Opus 4.6** (Review) | Agent Teams capability — delegates sub-tasks to specialised virtual agents in parallel, making it ideal for systematic Lean/Kaizen architectural review. 3× multiplier cost; reserve for genuine deep reviews |
 | **Claude Haiku 4.5** (Fast) | 0.33× cost multiplier; fastest response time. Right-sized for questions that don't warrant a premium model |

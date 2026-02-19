@@ -22,13 +22,13 @@ Copilot fetches the template and setup guide directly from GitHub, runs the full
 |-----------------|----------|
 | `.github/copilot-instructions.md` | The primary AI guidance file. Methodology-complete on arrival; project-specific section filled in during setup. |
 | `.github/agents/` | Four model-pinned agents for VS Code 1.106+: Setup (Claude Sonnet 4.6), Code (GPT-5.3-Codex), Review (Claude Opus 4.6), Fast (Claude Haiku 4.5). |
-| `.copilot/workspace/` | Six workspace identity files Copilot maintains across sessions. |
+| `.copilot/workspace/` | Six workspace identity files Copilot maintains across sessions (scaffolded into your project during setup). |
 | `AGENTS.md` | AI agent entry point — trigger phrases + remote bootstrap / update / restore sequences. |
 | `UPDATE.md` | Update protocol — fetch, diff, backup, and apply template improvements on demand. |
-| `template/CHANGELOG.md` | Keep-a-Changelog stub. |
-| `template/JOURNAL.md` | Architectural decision record (ADR-style) journal. |
-| `template/BIBLIOGRAPHY.md` | File catalogue (every file, its purpose, its LOC). |
-| `template/METRICS.md` | Kaizen baseline snapshot table — one row per measurement event. |
+| `CHANGELOG.md` | Keep-a-Changelog stub (scaffolded into your project during setup from `template/`). |
+| `JOURNAL.md` | Architectural decision record — ADR-style journal (scaffolded during setup). |
+| `BIBLIOGRAPHY.md` | File catalogue — every file, its purpose, its LOC (scaffolded during setup). |
+| `METRICS.md` | Kaizen baseline snapshot table — one row per measurement event (scaffolded during setup). |
 
 ---
 
@@ -36,8 +36,8 @@ Copilot fetches the template and setup guide directly from GitHub, runs the full
 
 ### Existing project
 
-1. Copy `.github/copilot-instructions.md` into the root of your project.
-2. Copy `SETUP.md` into your project's `.github/` directory.
+1. Copy `.github/copilot-instructions.md` into your project's `.github/` directory.
+2. Copy `SETUP.md` into the root of your project.
 3. Open a Copilot chat and say: *"Please run the setup process described in SETUP.md."*
 4. Copilot will discover your stack, fill every `{{PLACEHOLDER}}`, scaffold the workspace identity files, capture an initial METRICS baseline, create the doc stubs, and delete `SETUP.md`.
 
@@ -98,11 +98,7 @@ copilot-instructions-template/
 │   ├── ISSUE_TEMPLATE/
 │   │   ├── bug_report.yml              # Structured bug report form
 │   │   └── feature_request.yml        # Structured feature request form
-│   ├── PULL_REQUEST_TEMPLATE.md        # PR checklist (auto-shown on new PRs)
-│   └── SETUP.md                        # One-time agentic setup (self-destructs after use)
-├── .copilot/
-│   └── tools/                          # Toolbox: reusable scripts/tools saved by agents
-│       └── INDEX.md                    # Toolbox catalogue (auto-maintained)
+│   └── PULL_REQUEST_TEMPLATE.md        # PR checklist (auto-shown on new PRs)
 ├── docs/
 │   ├── INSTRUCTIONS-GUIDE.md           # Human guide to copilot-instructions.md
 │   ├── SETUP-GUIDE.md                  # Human guide to the setup process
@@ -126,9 +122,12 @@ copilot-instructions-template/
 │   └── valis/
 │       └── README.md                   # Reference implementation (asafelobotomy/Valis)
 ├── AGENTS.md                           # AI entry point — triggers + remote sequences
+├── SETUP.md                            # One-time agentic setup (self-destructs after use)
 ├── UPDATE.md                           # Update protocol (run on demand)
 ├── VERSION                             # Semver — read by update pre-flight
 ├── .markdownlint.json                  # Markdown lint rules (used by CI)
+├── LICENSE                             # MIT license
+├── CONTRIBUTING.md                     # Contribution guidelines
 └── CHANGELOG.md                        # This template's own version history
 ```
 

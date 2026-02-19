@@ -9,7 +9,7 @@
 
 This is the primary AI guidance file — the "instruction firmware" for Copilot in your project. GitHub Copilot loads it automatically at the start of every chat session, so everything written here shapes how Copilot behaves in your project.
 
-The file is structured in ten numbered sections (§1–§10). The first nine sections encode the Lean/Kaizen methodology and are maintained by the template. The tenth section (§10) is yours — it holds your project's specific values and preferences.
+The file is structured in eleven numbered sections (§1–§11). The first nine sections encode the Lean/Kaizen methodology and are maintained by the template. §10 is yours — it holds your project's specific values and preferences. §11 defines the Tool Protocol for reusable automation.
 
 ---
 
@@ -132,6 +132,24 @@ The key guardrail: `max_depth = 3` (default). Copilot will not spawn more than 3
 3. Any additional project-specific conventions Copilot has learned.
 
 **How to use it**: You can edit this section freely. Add conventions here that are unique to your project. Use "Add this to your instructions: ..." to have Copilot populate it for you.
+
+---
+
+### §11 — Tool Protocol
+
+**What it does**: Provides a structured decision tree for when Copilot needs to use automation, scripts, or reusable utilities.
+
+The protocol has four stages:
+1. **Find** — check the project toolbox (`.copilot/tools/INDEX.md`) for an existing tool.
+2. **Search** — look online (MCP registries, GitHub, package registries, official CLI docs).
+3. **Compose** — assemble from 2+ existing tools via pipes or imports.
+4. **Build** — write from scratch as a last resort.
+
+Every tool (built or saved) requires an inline header with six fields: `purpose`, `when`, `inputs`, `outputs`, `risk`, and `source`. Tools rated `destructive` always pause for user confirmation before execution.
+
+The toolbox lives at `.copilot/tools/` and is created lazily on first tool save — no setup step required.
+
+**How to customise**: If you build a tool you want Copilot to reuse, say "Save this to the toolbox". Copilot evaluates reusability (≥ 2 distinct use cases) before saving.
 
 ---
 

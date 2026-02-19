@@ -40,7 +40,15 @@ Copilot checks for `CHANGELOG.md`, `JOURNAL.md`, `BIBLIOGRAPHY.md`, `METRICS.md`
 
 **0d — User Preference Interview**
 
-This is the most interactive part. Copilot asks you 5 questions (Simple Setup) or 10 questions (Advanced Setup) to calibrate how it will behave in your project.
+This is the most interactive part. Copilot first asks which setup level you want, then presents the corresponding questions. All tiers produce an equally-capable agent — higher tiers unlock deeper customisation rather than adding features.
+
+| Setup level | Questions | Time |
+|-------------|-----------|------|
+| **S — Simple** | S1–S5 (5 questions) | ~1 min |
+| **A — Advanced** | S1–S5 + A6–A14 (14 questions) | ~2 min |
+| **E — Expert** | S1–S5 + A6–A14 + E15–E19 (19 questions) | ~3 min |
+
+You can also type "skip" to use all defaults and proceed immediately.
 
 | Question | What it controls |
 |----------|-----------------|
@@ -49,9 +57,22 @@ This is the most interactive part. Copilot asks you 5 questions (Simple Setup) o
 | S3 — Primary mode | Speed vs quality vs learning vs production hardening |
 | S4 — Testing | Whether tests are written automatically, suggested, or skipped |
 | S5 — Autonomy | Whether Copilot acts then tells you, or asks first |
-| A6–A10 | Naming conventions, docs standard, error handling, security level, reporting format |
+| A6 — Code style | How formatting and style decisions are made (infer / linter / guide) |
+| A7 — Documentation | Level of inline docs expected |
+| A8 — Error handling | Fail fast vs defensive vs graceful degradation |
+| A9 — Security | How aggressively to flag security concerns |
+| A10 — File size discipline | LOC thresholds for §3 baselines (150/300 to no limits) |
+| A11 — Dependencies | Minimal vs pragmatic vs ecosystem-first |
+| A12 — Instruction editing | How §8 Living Update Protocol behaves (free / ask / suggest / locked) |
+| A13 — Refactoring appetite | Proactively fix smells, flag them, or ignore |
+| A14 — Reporting format | How Copilot reports completed work |
+| E15 — Tool availability | What to do when a required tool isn't installed |
+| E16 — Agent persona | Personality / tone (Professional, Mentor, Pair-programmer, etc.) |
+| E17 — VS Code settings | Whether Copilot may modify `.vscode/settings.json` |
+| E18 — Global autonomy | Master 1–5 failsafe that caps all autonomy settings |
+| E19 — Mood lightener | Whether Copilot drops occasional humour |
 
-All answers are written into §10 of your instructions file. You can change them any time by editing that section or triggering an update interview.
+All answers are written into §10 of your instructions file as a 19-row User Preferences table. Questions you didn't answer (because you chose a lower tier) use sensible defaults. You can change preferences any time by editing that section or triggering an update interview.
 
 **0e — Pre-flight summary**
 

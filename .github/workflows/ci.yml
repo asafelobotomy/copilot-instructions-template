@@ -43,6 +43,7 @@ jobs:
             ".github/agents/review.agent.md" \
             ".github/agents/fast.agent.md" \
             "SETUP.md" "UPDATE.md" "AGENTS.md" "VERSION" "CHANGELOG.md" \
+            "LICENSE" "CONTRIBUTING.md" \
             "docs/INSTRUCTIONS-GUIDE.md" "docs/SETUP-GUIDE.md" \
             "docs/UPDATE-GUIDE.md" "docs/AGENTS-GUIDE.md" \
             "docs/EXTENSION-REVIEW-GUIDE.md" \

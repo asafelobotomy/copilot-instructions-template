@@ -11,6 +11,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ## [Unreleased]
 
+### Fixed
+- `docs/SETUP-GUIDE.md` §0d — rewrote preference interview section for 3-tier system (was still describing old 2-tier with "5 or 10 questions" and missing A11–A14 / E15–E19).
+- `docs/INSTRUCTIONS-GUIDE.md` — corrected "ten numbered sections (§1–§10)" → "eleven numbered sections (§1–§11)"; added full §11 Tool Protocol section writeup.
+- `docs/AGENTS-GUIDE.md` — corrected stale "handles the 10-question interview" → "handles the 3-tier preference interview (5–19 questions)".
+- `README.md` file tree — moved `SETUP.md` to correct root-level position (was shown inside `.github/`); removed phantom `.copilot/tools/` directory that doesn't exist in the template repo.
+- `README.md` "What this gives you" table — clarified that paths are scaffolded into consumer projects during setup (was showing raw `template/` paths).
+- `README.md` manual setup instructions — fixed reversed copy paths (step 1 = `copilot-instructions.md` → `.github/`, step 2 = `SETUP.md` → project root).
+
+### Changed
+- `.github/copilot-instructions.md` §10 User Preferences — expanded blank stub to a 19-row table template showing all preference dimensions (S1–E19) with empty Setting / Instruction columns ready for population.
+- `.github/workflows/ci.yml` — added `LICENSE` and `CONTRIBUTING.md` to required-files check.
+
+### Added
+- `LICENSE` — MIT license (README referenced MIT but no file existed).
+- `CONTRIBUTING.md` — contributor guide covering issue reporting, PR process, style conventions, and code of conduct.
+
 ### Performance
 - Lossless token-reduction pass across both LLM-read files (23 targeted substitutions, zero semantic change):
   - `copilot-instructions.md`: −163 words / −1 048 chars
