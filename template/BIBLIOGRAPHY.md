@@ -16,6 +16,15 @@ Maintenance rule: run `{{LOC_COMMAND}}` and compare outputs to this table. Any f
 | `BIBLIOGRAPHY.md` | This file — complete project file map | — |
 | `METRICS.md` | Kaizen baseline snapshot table | — |
 
+## Model-pinned agents
+
+| File | Purpose | LOC |
+|------|---------|-----|
+| `.github/agents/setup.agent.md` | Setup agent — Claude Sonnet 4.6 (onboarding & template operations) | — |
+| `.github/agents/coding.agent.md` | Coding agent — GPT-5.3-Codex (implementation & refactoring) | — |
+| `.github/agents/review.agent.md` | Review agent — Claude Opus 4.6 (code review & architectural analysis) | — |
+| `.github/agents/fast.agent.md` | Fast agent — Claude Haiku 4.5 (quick questions & lightweight edits) | — |
+
 ## Workspace identity
 
 | File | Purpose | LOC |
