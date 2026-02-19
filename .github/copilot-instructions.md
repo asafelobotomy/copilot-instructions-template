@@ -1,6 +1,6 @@
 # Copilot Instructions — {{PROJECT_NAME}}
 
-> **Template version**: 1.0.0 | **Applied**: {{SETUP_DATE}}
+> **Template version**: 1.0.2 | **Applied**: {{SETUP_DATE}}
 > This file is a *living document*. See §8 for self-edit rules and template update instructions.
 
 > **Model Quick Reference** — select model in Copilot picker before starting each task, or use `.github/agents/` (VS Code 1.106+). [Why these models?](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)
@@ -52,47 +52,74 @@ Switch modes explicitly. Default is **Implement**.
 #### Extension Review
 When asked to review or recommend VS Code extensions:
 
-1. **Audit current state**:
-   - Read `.vscode/extensions.json` (workspace recommendations).
-   - Check `.vscode/settings.json` for extension-specific config.
-   - Scan for format/lint commands in `package.json` scripts, `{{TEST_COMMAND}}`, and tooling config files (`.eslintrc.*`, `.prettierrc.*`, `oxlint.json`, etc.).
+0. **Get installed extensions** — Copilot chat cannot enumerate installed extensions directly. Ask the user to run and paste the output:
+   ```
+   code --list-extensions | sort
+   ```
+   Also read `.vscode/extensions.json` (workspace recommendations) and `.vscode/settings.json` (extension-specific config) if they exist. Both sources together give the complete picture.
 
-2. **Match to stack**:
-   - Language/runtime: `{{LANGUAGE}}` / `{{RUNTIME}}`
-   - Identified linters/formatters from step 1
-   - Test framework: `{{TEST_FRAMEWORK}}`
-   - Package manager: `{{PACKAGE_MANAGER}}`
+1. **Audit current state**:
+   - Cross-reference the installed list from step 0 against workspace recommendations.
+   - Scan for linter/formatter config files: `.eslintrc.*`, `.prettierrc.*`, `oxlint.json`, `biome.json`, `.stylelintrc.*`, `ruff.toml`, `pyproject.toml`, `rustfmt.toml`, etc.
+   - Check `package.json` scripts and `{{TEST_COMMAND}}` for tooling references.
+
+2. **Match to stack** — use the detection table below; also check `{{LANGUAGE}}` / `{{RUNTIME}}` / `{{TEST_FRAMEWORK}}` / `{{PACKAGE_MANAGER}}` placeholders:
+
+   | Stack signals | Recommended extensions |
+   |--------------|------------------------|
+   | `*.sh`, `*.bash`, `#!/bin/bash` shebang | `timonwong.shellcheck` · `foxundermoon.shell-format` |
+   | `*.js`, `*.ts`, `package.json` + ESLint config | `dbaeumer.vscode-eslint` · `esbenp.prettier-vscode` |
+   | `*.js`, `*.ts`, `oxlint.json` or `oxlint` in scripts | `oxc.oxc-vscode` *(covers oxlint + oxfmt — one extension)* |
+   | `*.js`, `*.ts`, `biome.json` | `biomejs.biome` |
+   | `*.py`, `requirements.txt`, `pyproject.toml` | `ms-python.python` · `charliermarsh.ruff` |
+   | `*.rs`, `Cargo.toml` | `rust-lang.rust-analyzer` · `tamasfe.even-better-toml` |
+   | `*.go`, `go.mod` | `golang.go` |
+   | `*.cs`, `*.csproj`, `*.sln` | `ms-dotnettools.csharp` |
+   | `*.java`, `pom.xml`, `build.gradle` | `vscjava.vscode-java-pack` |
+   | `Dockerfile`, `docker-compose.yml` | `ms-azuretools.vscode-docker` |
+   | `*.vue`, `vue.config.*` | `Vue.volar` |
+   | `*.svelte`, `svelte.config.*` | `svelte.svelte-vscode` |
+   | `*.md`, `*.mdx` (doc-heavy project) | `yzhang.markdown-all-in-one` |
+   | `*.css`, `*.scss`, `*.less` + stylelint config | `stylelint.vscode-stylelint` |
+   | `*.yaml`, `*.yml` (Kubernetes, Actions, schemas) | `redhat.vscode-yaml` |
+   | `*.toml` (non-Rust project) | `tamasfe.even-better-toml` |
 
 3. **Recommend additions** — suggest extensions only if:
-   - A linter, formatter, or language server is configured but its extension is missing
-   - A core language feature (e.g., shellcheck for bash, oxc for JS/TS) is unrepresented
+   - A linter, formatter, or language server is configured but its extension is absent
+   - A core language feature is unrepresented
    - Priority order: language server → linter → formatter → test runner → debugger
 
 4. **Flag for removal** — mark extensions that:
-   - Provide functionality duplicated by another installed extension
+   - Duplicate functionality provided by another installed extension
    - Target a language/framework not used in this project
    - Are deprecated, unmaintained (>2 years no update), or superseded
 
-5. **Present in chat** (do not write `.vscode/extensions.json` unless explicitly instructed):
+5. **Unknown stacks** — if you detect a language, framework, or tool not in the table above:
+   a. Search the VS Code Marketplace for relevant extensions
+   b. Qualify by: install count > 100 k · rating ≥ 4.0 · updated within 12 months
+   c. Add qualifying finds to the report under **➕ Recommended additions**
+   d. Append the new mapping to `.copilot/workspace/TOOLS.md` under an **"Extension registry"** heading — this persists the discovery for future audits in this project
 
-```markdown
-## Extension Review — {{PROJECT_NAME}}
+6. **Present in chat** (do not write `.vscode/extensions.json` unless explicitly instructed):
 
-### ✅ Keep (N extensions)
-- `publisher.extension-id` — reason to keep
+   ```markdown
+   ## Extension Review — {{PROJECT_NAME}}
 
-### ➕ Recommended additions (N extensions)
-- `publisher.extension-id` — what it provides | why needed
-  Install: Ctrl+P → `ext install publisher.extension-id`
+   ### ✅ Keep (N extensions)
+   - `publisher.extension-id` — reason to keep
 
-### ❌ Consider removing (N extensions)
-- `publisher.extension-id` — why flagged (duplicate / unused lang / deprecated)
+   ### ➕ Recommended additions (N extensions)
+   - `publisher.extension-id` — what it provides | why needed
+     Install: Ctrl+P → `ext install publisher.extension-id`
 
-### ℹ️ Notes
-- (any stack-specific context, e.g., "oxlint configured but not oxc extension installed")
-```
+   ### ❌ Consider removing (N extensions)
+   - `publisher.extension-id` — why flagged (duplicate / unused lang / deprecated)
 
-6. **Wait for user action** — present recommendations, then wait. Do not modify `.vscode/extensions.json` or install/uninstall extensions unless the user explicitly says *"Apply these changes"* or *"Write the updated extensions.json"*.
+   ### ℹ️ Notes
+   - (stack-specific context, unknown stacks discovered, extension registry updates made)
+   ```
+
+7. **Wait for user action** — present recommendations, then wait. Do not modify `.vscode/extensions.json` or install/uninstall extensions unless the user explicitly says *"Apply these changes"* or *"Write the updated extensions.json"*.
 
 ### Refactor Mode
 - No behaviour changes. Tests must pass before and after.
