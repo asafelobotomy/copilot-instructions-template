@@ -49,6 +49,51 @@ Switch modes explicitly. Default is **Implement**.
 - Use format: `[severity] | [file:line] | [waste category] | [description]`
 - Severity: `critical` | `major` | `minor` | `advisory`
 
+#### Extension Review
+When asked to review or recommend VS Code extensions:
+
+1. **Audit current state**:
+   - Read `.vscode/extensions.json` (workspace recommendations).
+   - Check `.vscode/settings.json` for extension-specific config.
+   - Scan for format/lint commands in `package.json` scripts, `{{TEST_COMMAND}}`, and tooling config files (`.eslintrc.*`, `.prettierrc.*`, `oxlint.json`, etc.).
+
+2. **Match to stack**:
+   - Language/runtime: `{{LANGUAGE}}` / `{{RUNTIME}}`
+   - Identified linters/formatters from step 1
+   - Test framework: `{{TEST_FRAMEWORK}}`
+   - Package manager: `{{PACKAGE_MANAGER}}`
+
+3. **Recommend additions** — suggest extensions only if:
+   - A linter, formatter, or language server is configured but its extension is missing
+   - A core language feature (e.g., shellcheck for bash, oxc for JS/TS) is unrepresented
+   - Priority order: language server → linter → formatter → test runner → debugger
+
+4. **Flag for removal** — mark extensions that:
+   - Provide functionality duplicated by another installed extension
+   - Target a language/framework not used in this project
+   - Are deprecated, unmaintained (>2 years no update), or superseded
+
+5. **Present in chat** (do not write `.vscode/extensions.json` unless explicitly instructed):
+
+```markdown
+## Extension Review — {{PROJECT_NAME}}
+
+### ✅ Keep (N extensions)
+- `publisher.extension-id` — reason to keep
+
+### ➕ Recommended additions (N extensions)
+- `publisher.extension-id` — what it provides | why needed
+  Install: Ctrl+P → `ext install publisher.extension-id`
+
+### ❌ Consider removing (N extensions)
+- `publisher.extension-id` — why flagged (duplicate / unused lang / deprecated)
+
+### ℹ️ Notes
+- (any stack-specific context, e.g., "oxlint configured but not oxc extension installed")
+```
+
+6. **Wait for user action** — present recommendations, then wait. Do not modify `.vscode/extensions.json` or install/uninstall extensions unless the user explicitly says *"Apply these changes"* or *"Write the updated extensions.json"*.
+
 ### Refactor Mode
 - No behaviour changes. Tests must pass before and after.
 - Measure LOC delta. Flag if a refactor increases LOC without justification.
