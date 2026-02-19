@@ -54,6 +54,20 @@ When a user says any of the following:
 
 ...follow the Tool Protocol in **§11** of `.github/copilot-instructions.md`. For search/build/save tasks, apply the full decision tree: Find → Search online → Build → Evaluate reusability → Save.
 
+
+### Test coverage review
+
+When a user says any of the following:
+
+- *"Review my tests"* / *"Audit my test suite"*
+- *"What tests should I add?"* / *"What tests am I missing?"*
+- *"Check test coverage"* / *"Review test coverage"*
+- *"Repo health review"* / *"Review repo health"*
+- *"What's my coverage?"* / *"Coverage report"*
+- *"Recommend CI tests"* / *"What CI workflows should I add?"*
+
+...switch to **Review Mode** and perform a test coverage audit following the **§2 Test Coverage Review** protocol in `.github/copilot-instructions.md`. Produce a structured report covering: current coverage snapshot, well-covered/partial/untested modules, recommended local tests with priority, and ready-to-use CI workflow YAML snippets. Do not write test files or workflow files until explicitly instructed.
+
 ### Extension review
 
 When a user says any of the following:
@@ -245,3 +259,4 @@ All writes go to the **user's current project**. Do not create, modify, or delet
 | Build a tool | *"Build a tool for ..."* |
 | Save to toolbox | *"Save this to the toolbox"* |
 | Review extensions | *"Review extensions"* / *"Check my extensions"* |
+| Review test coverage | *"Review my tests"* / *"Check test coverage"* / *"Repo health review"* |

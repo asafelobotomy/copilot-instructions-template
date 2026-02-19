@@ -121,6 +121,102 @@ When asked to review or recommend VS Code extensions:
 
 7. **Wait for user action** — present recommendations, then wait. Do not modify `.vscode/extensions.json` or install/uninstall extensions unless the user explicitly says *"Apply these changes"* or *"Write the updated extensions.json"*.
 
+
+#### Test Coverage Review
+
+When asked to review test coverage, recommend tests, or audit the test suite:
+
+0. **Discover test stack** — scan for test config files and runner signals:
+
+   | Stack signals | Test runner | Coverage command |
+   |--------------|-------------|-----------------|
+   | `jest.config.*`, `"jest"` in `package.json` | Jest | `npx jest --coverage` |
+   | `vitest.config.*`, `"vitest"` in `package.json` | Vitest | `npx vitest run --coverage` |
+   | `mocha`, `.mocharc.*` in project | Mocha + nyc | `npx nyc mocha` |
+   | `pytest.ini`, `pyproject.toml` [pytest], `conftest.py` | pytest | `pytest --cov=. --cov-report=term-missing` |
+   | `go.mod` | go test | `go test ./... -coverprofile=coverage.out && go tool cover -func=coverage.out` |
+   | `Cargo.toml` | cargo test | `cargo tarpaulin --out Lcov` · `cargo llvm-cov` |
+   | `*.csproj`, `*.sln` | dotnet test | `dotnet test --collect:"XPlat Code Coverage"` |
+   | `pom.xml` (Maven) | JUnit + JaCoCo | `mvn test jacoco:report` |
+   | `build.gradle` (Gradle) | JUnit + JaCoCo | `./gradlew test jacocoTestReport` |
+   | `*.spec.rb`, `Gemfile` + rspec | RSpec + SimpleCov | `bundle exec rspec --format progress` |
+
+   Also read `{{TEST_COMMAND}}`, `{{TEST_FRAMEWORK}}`, and any CI workflow files (`.github/workflows/`) for already-configured test steps.
+
+1. **Get coverage data** — Copilot chat cannot run commands directly. Ask the user to run the coverage command from step 0 and paste the output. If the project has no coverage tooling configured, note that and move to step 2 using static analysis only.
+
+2. **Scan test files statically**:
+   - Count test files (`*.test.*`, `*.spec.*`, `*_test.*`, `test_*.py`, `*Test.java`, `*_test.go`, etc.)
+   - List source files that have no corresponding test file
+   - Note which modules are imported the most — high-import modules with no tests are highest priority
+
+3. **Identify gaps** from coverage data (or static scan if no coverage data):
+   - **Zero coverage** — files/modules with 0% (or no test file at all)
+   - **Low coverage** — files with < 50% line coverage
+   - **Missing test types** — no integration tests, no edge-case tests, untested error paths
+   - **Unchecked invariants** — functions that take user input, do I/O, or mutate state without assertions
+
+4. **Recommend local tests** — for each gap, recommend:
+   - **What to test**: specific function, class, or behaviour
+   - **Test type**: unit · integration · end-to-end · property-based · snapshot
+   - **Priority**: `critical` (security/data path) · `high` (core logic) · `medium` (utilities) · `low` (pure formatting)
+   - **Suggested approach**: brief description of the test case incl. edge inputs
+
+5. **Recommend CI workflows** — propose GitHub Actions to add or improve:
+
+   | Workflow | What it does | Action / Tool |
+   |----------|-------------|--------------|
+   | Coverage gate | Fail PR if overall coverage drops below threshold | `codecov/codecov-action@v4` with `fail_ci_if_error: true` |
+   | Coverage diff comment | Post per-PR coverage change as a PR comment | `davelosert/vitest-coverage-report-action` (Vitest) · `MishaKav/jest-coverage-comment` (Jest) · `py-cov-action/python-coverage-comment-action` (Python) |
+   | Nightly coverage report | Full run on schedule for slower suites | `schedule: cron` trigger |
+   | Test matrix | Run against multiple runtime versions | `strategy.matrix` with version array |
+   | Mutation testing | Verify test quality, not just line coverage | Stryker (`stryker-mutator/action`) (JS/TS) · mutmut (Python) · `cargo-mutants` (Rust) |
+   | Contract / API tests | Validate API contracts don't break consumers | `pactflow/pact-stub-server` · Schemathesis |
+
+   For each recommendation: include a ready-to-use YAML snippet the user can copy directly into `.github/workflows/`.
+
+6. **Present in chat** (do not write any files unless explicitly asked):
+
+   ````markdown
+   ## Test Coverage Review — {{PROJECT_NAME}}
+
+   ### 📊 Current coverage snapshot
+   - Framework: <framework> | Runner: `<command>`
+   - Overall coverage: X% (or "not yet measured — run `<cmd>` and paste output")
+   - Test files found: N | Source files without tests: M
+
+   ### ✅ Well-covered (≥ 80%)
+   - `src/foo.ts` — 92%
+
+   ### ⚠️ Partially covered (20–79%)
+   - `src/bar.ts` — 54% — missing: error branch at line 42, null-input guard
+
+   ### ❌ Untested or near-zero (< 20%)
+   - `src/baz.ts` — 0% — **critical**: handles user auth input
+
+   ### 🧪 Recommended local tests
+   | File | Test type | Priority | What to cover |
+   |------|-----------|----------|--------------|
+   | `src/baz.ts` | Unit | critical | Happy path, null input, token expiry |
+   | `src/bar.ts` | Unit | high | Error branch at line 42 |
+
+   ### ⚙️ Recommended CI workflows
+   **Coverage gate** — fail PR if coverage < 80%:
+   ```yaml
+   # .github/workflows/coverage.yml  (paste this file)
+   <ready-to-use YAML snippet>
+   ```
+
+   **Coverage comments on PRs**:
+   ```yaml
+   <ready-to-use YAML snippet>
+   ```
+
+   ### ℹ️ Notes
+   - <framework-specific context, tooling gaps, coverage tooling not yet installed>
+   ````
+
+7. **Wait for user action** — present the report, then wait. Do not write test files, workflow files, or config changes unless the user explicitly asks to implement a specific recommendation.
 ### Refactor Mode
 - No behaviour changes. Tests must pass before and after.
 - Measure LOC delta. Flag if a refactor increases LOC without justification.

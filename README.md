@@ -76,6 +76,7 @@ The `docs/` directory contains plain-English explanations of the AI-facing files
 | [`docs/UPDATE-GUIDE.md`](docs/UPDATE-GUIDE.md) | How the update and restore process works |
 | [`docs/AGENTS-GUIDE.md`](docs/AGENTS-GUIDE.md) | Trigger phrases and the model-pinned agent system |
 | [`docs/EXTENSION-REVIEW-GUIDE.md`](docs/EXTENSION-REVIEW-GUIDE.md) | How the VS Code extension audit feature works |
+| [`docs/TEST-REVIEW-GUIDE.md`](docs/TEST-REVIEW-GUIDE.md) | How the test coverage review and CI recommendation feature works |
 
 ---
 
@@ -107,7 +108,8 @@ copilot-instructions-template/
 │   ├── SETUP-GUIDE.md                  # Human guide to the setup process
 │   ├── UPDATE-GUIDE.md                 # Human guide to the update/restore protocol
 │   ├── AGENTS-GUIDE.md                 # Human guide to trigger phrases + model agents
-│   └── EXTENSION-REVIEW-GUIDE.md      # Human guide to the extension audit feature
+│   ├── EXTENSION-REVIEW-GUIDE.md      # Human guide to the extension audit feature
+│   └── TEST-REVIEW-GUIDE.md            # Human guide to the test coverage review feature
 ├── template/
 │   ├── CHANGELOG.md                    # Keep-a-Changelog stub (for consumer projects)
 │   ├── JOURNAL.md                      # ADR-style journal stub

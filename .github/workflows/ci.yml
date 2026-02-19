@@ -46,6 +46,7 @@ jobs:
             "docs/INSTRUCTIONS-GUIDE.md" "docs/SETUP-GUIDE.md" \
             "docs/UPDATE-GUIDE.md" "docs/AGENTS-GUIDE.md" \
             "docs/EXTENSION-REVIEW-GUIDE.md" \
+            "docs/TEST-REVIEW-GUIDE.md" \
             "template/CHANGELOG.md" "template/JOURNAL.md" \
             "template/BIBLIOGRAPHY.md" "template/METRICS.md" \
             "template/workspace/IDENTITY.md" "template/workspace/SOUL.md" \

@@ -20,6 +20,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
   - `.github/PULL_REQUEST_TEMPLATE.md` — PR checklist auto-shown on new PRs
   - `.github/ISSUE_TEMPLATE/bug_report.yml` — structured bug report form
   - `.github/ISSUE_TEMPLATE/feature_request.yml` — structured feature request form
+- `§2 Test Coverage Review` subsection in `.github/copilot-instructions.md` — structured protocol for auditing test coverage, identifying gaps, recommending local tests, and generating ready-to-use CI workflow YAML:
+  - Step 0: detects test stack from config files (Jest/Vitest/Mocha/pytest/go/cargo/dotnet/Maven/Gradle/RSpec)
+  - Step 1: asks user to run and paste coverage output (Copilot can't run commands directly)
+  - Steps 2–3: static scan for untested files; classifies modules into zero/low/partial coverage
+  - Step 4: recommends local tests with type (unit/integration/property-based) and priority (critical/high/medium/low)
+  - Step 5: recommends CI workflows with copy-paste YAML — coverage gate, coverage diff comments, nightly runs, test matrix, mutation testing (Stryker/mutmut/cargo-mutants), contract/API tests
+  - Step 6: structured report format (📊 snapshot, ✅/⚠️/❌ coverage bands, 🧪 test table, ⚙️ CI YAML snippets)
+  - Step 7: waits for user action — does not write files unless explicitly instructed
+- `AGENTS.md` — "Test coverage review" trigger section; *"Review my tests"* / *"Repo health review"* / *"Recommend CI tests"* added to canonical triggers table
+- `docs/TEST-REVIEW-GUIDE.md` — plain-English guide to the test coverage review feature
 
 ---
 
