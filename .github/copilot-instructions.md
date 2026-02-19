@@ -3,6 +3,19 @@
 > **Template version**: 1.0.0 | **Applied**: {{SETUP_DATE}}
 > This file is a *living document*. See §8 for self-edit rules and template update instructions.
 
+> **Model Quick Reference** *(for the human — not the AI)* — select a model in the Copilot picker before starting a task, or use the pre-configured agents in `.github/agents/` (VS Code 1.106+ only). [Why these models?](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)
+>
+> | Task | Best model (Pro+) | Budget / Free fallback |
+> |------|------------------|----------------------|
+> | Setup / onboarding | Claude Sonnet 4.6 | GPT-5 mini |
+> | General coding | GPT-5.1-Codex | GPT-4.1 |
+> | Agentic / multi-step tasks | GPT-5.1-Codex-Max | GPT-5 mini |
+> | Deep reasoning & debugging | Claude Opus 4.6 *(3×)* → Claude Sonnet 4.6 *(1×)* | GPT-5 mini |
+> | Code review | Claude Opus 4.6 *(3×)* → Claude Sonnet 4.6 *(1×)* | GPT-4.1 |
+> | Quick questions / lightweight | Claude Haiku 4.5 *(0.33×)* | GPT-5 mini |
+>
+> **Note**: Model availability and names change frequently. If a model is missing from your picker, check [Supported AI models](https://docs.github.com/en/copilot/reference/ai-models/supported-models) and update the agent files accordingly.
+
 ---
 
 ## 1. Development Philosophy — Lean / Kaizen
@@ -242,3 +255,4 @@ Copilot will:
 - `BIBLIOGRAPHY.md` — complete file map
 - `METRICS.md` — baseline snapshots
 - `.copilot/workspace/` — agent workspace identity files
+- `.github/agents/` — model-pinned task agents (VS Code 1.106+)
