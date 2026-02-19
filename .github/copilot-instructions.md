@@ -196,7 +196,6 @@ Resolved values and project-specific overrides. Populated during setup; updated 
 
 ---
 
-
 ## §11 — Tool Protocol
 
 When a task requires automation, a scripted command sequence, or a repeatable utility, follow this decision tree before writing anything ad-hoc.
@@ -220,11 +219,21 @@ Need a tool for task X
  │     ├─ Found something usable → evaluate fit, adapt as needed, note source
  │     └─ Nothing applicable → ↓
  │
+ ├─ 2.5 COMPOSE — can this be assembled from 2+ existing toolbox tools via pipe or import?
+ │     ├─ Yes → compose; document the pipeline; save to toolbox if reusable
+ │     └─ No  → ↓
+ │
  └─ 3. BUILD — write the tool from scratch
           - Follow §4 coding conventions and §3 LOC baselines
           - Single-purpose: one tool, one job; compose via pipes or imports
           - Accept arguments instead of hardcoding project-specific paths
-          - Document inputs, outputs, and usage in an inline comment block at the top
+          - Required inline header at the top of every built or saved tool:
+            # purpose:  <what this tool does — one precise sentence>
+            # when:     <when to invoke it | when NOT to invoke it>
+            # inputs:   <argument list with types and valid values>
+            # outputs:  <what it returns — type and structure>
+            # risk:     safe | destructive
+            # source:   <url or "original" if built from scratch>
           │
           └─ 4. EVALUATE reusability
                 ├─ ≥ 2 distinct tasks in this project would benefit → SAVE to toolbox
@@ -248,18 +257,37 @@ Need a tool for task X
 
 **INDEX.md row format**:
 
-| Tool | Lang | What it does | When to use |
-|------|------|-------------|------------|
-| `count-exports.sh` | bash | Count exported symbols per file | API surface audits |
-| `summarise-metrics.py` | python | Parse METRICS.md and print trends | Kaizen review sessions |
+| Tool | Lang | What it does | When to use | Output | Risk |
+|------|------|-------------|------------|--------|------|
+| `count-exports.sh` | bash | Count exported symbols per file | API surface audits | symbol counts to stdout | safe |
+| `summarise-metrics.py` | python | Parse METRICS.md and print trends | Kaizen review sessions | trend table to stdout | safe |
 
 ### Tool quality rules
 
-- Adapted tools: preserve lineage with a comment — `# source: <url-or-original-tool-name>`
+**Naming** — Tool names must be a verb-noun kebab phrase describing the action (`count-exports`, `sync-schema`), not a noun or generic label (`exports`, `utils`).
+
+**Description anti-smells** — poor descriptions are the leading cause of incorrect tool selection and argument errors (empirically confirmed across 856 real-world MCP tools). Every tool header must avoid these six smells:
+
+| Smell | Anti-pattern | Fix |
+|-------|-------------|-----|
+| Unclear purpose | "handles export stuff" | One sentence stating exactly what it does and what it returns |
+| Missing usage guidelines | no when/when-not-to | Explicit activation criteria AND contraindications |
+| Unstated limitations | silent failure modes | Note scope bounds, volume limits, known edge cases |
+| Opaque parameters | `--mode <value>` | Type + valid values + behavioural effect for every argument |
+| Missing output declaration | result undocumented | Declare type and structure in `# outputs:` header field |
+| Underspecified length | one-line stub | ≥ 3 substantive sentences for any non-trivial tool |
+
+**Risk tier**:
+- `safe` — read-only or fully idempotent; invoke without confirmation
+- `destructive` — deletes files, overwrites data, or writes to remote systems; **must pause and confirm with the user before execution**, regardless of session autonomy level
+
+**Other rules**:
+- Adapted tools: preserve lineage — `# source: <url-or-original-tool-name>`
 - Tools must be idempotent where possible
 - Tools must not hardcode project-specific paths, names, or secrets — accept arguments
-- Retire tools no longer in use: mark as `[DEPRECATED]` in INDEX.md (W1 — Overproduction)
+- Retire unused tools: mark `[DEPRECATED]` in INDEX.md; counts as W1 (Overproduction)
 - Tools follow the same LOC baseline as source code (§3 hard limit: {{LOC_HIGH_THRESHOLD}} lines)
+- Observability: after using a toolbox tool, note it in the session summary; ≥ 3 uses → document the workflow in `TOOLS.md` "Discovered workflow patterns"
 
 ### Subagent tool use
 
