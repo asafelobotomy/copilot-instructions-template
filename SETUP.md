@@ -147,7 +147,7 @@ Wait for the user's response, then proceed with the corresponding question set b
 
 #### Simple Setup — 5 questions
 
-Ask the questions **one at a time**, wait for each answer before asking the next.
+Present **all 5 questions together in a single interaction** — do not ask them one at a time. List each question with its lettered options. Collect all answers before proceeding.
 
 ---
 
@@ -237,7 +237,7 @@ Ask the questions **one at a time**, wait for each answer before asking the next
 
 #### Advanced Setup — 5 additional questions
 
-Ask these immediately after Simple Setup if the user chose **A — Advanced Setup**. If the user chose **S — Simple Setup**, skip these and proceed to 0e.
+If the user chose **A — Advanced Setup**, present **all 5 additional questions together in a single interaction** immediately after receiving Simple Setup answers — do not ask them one at a time. If the user chose **S — Simple Setup**, skip these and proceed to 0e.
 
 ---
 

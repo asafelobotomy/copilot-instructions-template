@@ -18,6 +18,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
   - Combined: −417 words / −2 662 chars (**7.6% reduction**)
   - Compressions applied: redundant prose collapsed to inline; repeated "do not write to template repo" guards consolidated to a single blockquote; numbered sub-lists compressed to prose sentences; verbose step headers trimmed; duplicate bullet removed from §11.
 
+### Changed
+- `SETUP.md §0d` — preference interview questions now presented as a single batched interaction instead of one-at-a-time sequential exchanges. Both Simple Setup (S1–S5) and Advanced Setup (A6–A10) instruct the agent to collect all answers at once; in VS Code Copilot Chat this renders the built-in form UI with selectable options and a single Submit button.
+
 ### Added
 - CI infrastructure (not a template version bump — repo maintenance):
   - `.github/workflows/ci.yml` — validates VERSION semver, CHANGELOG entries, all required files, §1–§11 sections, README docs-table links, merge-conflict markers, and placeholder token count on every push and PR
