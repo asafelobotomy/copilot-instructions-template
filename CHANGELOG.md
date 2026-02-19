@@ -11,6 +11,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ## [Unreleased]
 
+### Added
+- CI infrastructure (not a template version bump — repo maintenance):
+  - `.github/workflows/ci.yml` — validates VERSION semver, CHANGELOG entries, all required files, §1–§11 sections, README docs-table links, merge-conflict markers, and placeholder token count on every push and PR
+  - `.github/workflows/release.yml` — auto-creates a tagged GitHub release when `VERSION` is bumped on `main`; extracts notes from the matching CHANGELOG section
+  - `.github/workflows/stale.yml` — marks issues/PRs stale after 30 days, closes after 37
+  - `.markdownlint.json` — markdown lint rules (MD013/MD033/MD036/MD041 disabled; MD024 siblings-only)
+  - `.github/PULL_REQUEST_TEMPLATE.md` — PR checklist auto-shown on new PRs
+  - `.github/ISSUE_TEMPLATE/bug_report.yml` — structured bug report form
+  - `.github/ISSUE_TEMPLATE/feature_request.yml` — structured feature request form
+
 ---
 
 ## [1.0.2] — 2026-02-19
