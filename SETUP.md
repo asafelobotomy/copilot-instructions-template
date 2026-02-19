@@ -467,7 +467,16 @@ If a value cannot be determined, leave the `{{PLACEHOLDER}}` as-is and add a com
 
 > **VS Code users (1.106+)**: These files add model-pinned agents to the Copilot agent dropdown. When a user selects an agent, VS Code automatically switches to the pinned model for that session. **Skip this step** if the user is not using VS Code — the Model Quick Reference table at the top of the instructions file provides advisory guidance for other IDEs.
 
-Create `.github/agents/` if it does not exist. Write the four agent files below, substituting `{{PROJECT_NAME}}` where it appears.
+Create `.github/agents/` if it does not exist. Then write the four agent files using one of the following approaches:
+
+- **Fetch from template** *(recommended)*: Fetch each file directly from the template repo and substitute `{{PROJECT_NAME}}` in the content. This ensures you always get the latest model identifiers without relying on the inline stubs below.
+  ```
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/setup.agent.md
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/coding.agent.md
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/review.agent.md
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/fast.agent.md
+  ```
+- **Write from stubs**: Use the inline content below. Model identifiers may lag behind the live template repo; prefer the fetch option when network access is available.
 
 > **Model identifier note**: The `model` arrays use display names exactly as shown in the VS Code Copilot model picker. Each entry is tried in order — VS Code uses the first model that is available on the user's plan. If a model fails to load at runtime, verify the exact display name in the picker and update the `model` field to match. Model names change as GitHub releases and retires models; review and update these files during template update runs.
 
