@@ -16,10 +16,13 @@ Copilot fetches the template and setup guide directly from GitHub, runs the full
 
 ## What this gives you
 
-| File | Purpose |
-|------|----------|
+| File / directory | Purpose |
+|-----------------|----------|
 | `.github/copilot-instructions.md` | The primary AI guidance file. Methodology-complete on arrival; project-specific section filled in during setup. |
+| `.github/agents/` | Four model-pinned agents for VS Code 1.106+: Setup (Claude Sonnet 4.6), Code (GPT-5.3-Codex), Review (Claude Opus 4.6), Fast (Claude Haiku 4.5). |
 | `.copilot/workspace/` | Six workspace identity files Copilot maintains across sessions. |
+| `AGENTS.md` | AI agent entry point — trigger phrases + remote bootstrap / update / restore sequences. |
+| `UPDATE.md` | Update protocol — fetch, diff, backup, and apply template improvements on demand. |
 | `CHANGELOG.md` | Keep-a-Changelog stub. |
 | `JOURNAL.md` | Architectural decision record (ADR-style) journal. |
 | `BIBLIOGRAPHY.md` | File catalogue (every file, its purpose, its LOC). |
@@ -65,10 +68,18 @@ Every self-edit must be accompanied by a one-line entry in `JOURNAL.md` recordin
 ```
 copilot-instructions-template/
 ├── AGENTS.md                          # AI agent entry point — trigger phrases + remote bootstrap
+├── CHANGELOG.md                       # Template version history
 ├── README.md                          # This file
 ├── SETUP.md                           # Agentic bootstrap (remote-executable or copy to project)
+├── UPDATE.md                          # Update protocol (fetch, diff, backup, apply)
+├── VERSION                            # Semver string — read during update pre-flight
 ├── .github/
-│   └── copilot-instructions.md        # Generic template (populated during setup)
+│   ├── copilot-instructions.md        # Generic template (populated during setup)
+│   └── agents/
+│       ├── setup.agent.md             # Model-pinned Setup agent (Claude Sonnet 4.6)
+│       ├── coding.agent.md            # Model-pinned Coding agent (GPT-5.3-Codex)
+│       ├── review.agent.md            # Model-pinned Review agent (Claude Opus 4.6)
+│       └── fast.agent.md              # Model-pinned Fast agent (Claude Haiku 4.5)
 ├── template/
 │   ├── CHANGELOG.md                   # Keep-a-Changelog stub
 │   ├── JOURNAL.md                     # ADR journal stub
