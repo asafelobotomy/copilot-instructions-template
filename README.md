@@ -1,5 +1,7 @@
 # copilot-instructions-template
 
+[![CI](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml/badge.svg)](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml)
+
 A **generic, customizable, living** GitHub Copilot instructions template grounded in **Lean / Kaizen** methodology. Drop it into any project — new or existing — and Copilot will run a one-time setup to tailor everything to that project's stack, then continue to improve the instructions as patterns emerge.
 
 ---
@@ -88,6 +90,14 @@ copilot-instructions-template/
 │   │   ├── coding.agent.md             # GPT-5.3-Codex — implementation & refactoring
 │   │   ├── review.agent.md             # Claude Opus 4.6 — architectural review
 │   │   └── fast.agent.md               # Claude Haiku 4.5 — quick questions
+│   ├── workflows/
+│   │   ├── ci.yml                      # Validates structure, links, sections on every push/PR
+│   │   ├── release.yml                 # Auto-creates GitHub release when VERSION is bumped
+│   │   └── stale.yml                   # Closes stale issues and PRs weekly
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.yml              # Structured bug report form
+│   │   └── feature_request.yml        # Structured feature request form
+│   ├── PULL_REQUEST_TEMPLATE.md        # PR checklist (auto-shown on new PRs)
 │   └── SETUP.md                        # One-time agentic setup (self-destructs after use)
 ├── .copilot/
 │   └── tools/                          # Toolbox: reusable scripts/tools saved by agents
@@ -116,6 +126,7 @@ copilot-instructions-template/
 ├── AGENTS.md                           # AI entry point — triggers + remote sequences
 ├── UPDATE.md                           # Update protocol (run on demand)
 ├── VERSION                             # Semver — read by update pre-flight
+├── .markdownlint.json                  # Markdown lint rules (used by CI)
 └── CHANGELOG.md                        # This template's own version history
 ```
 
