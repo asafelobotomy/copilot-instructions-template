@@ -11,6 +11,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ## [Unreleased]
 
+---
+
+## [1.0.2] — 2026-02-19
+
 ### Added
 - `§11 — Tool Protocol` in `.github/copilot-instructions.md` — structured decision tree for tool use, adaptation, online search (MCP registry → GitHub → Awesome lists → stack registries → official docs), building from scratch, evaluating reusability, and saving to the toolbox.
 - `.copilot/tools/` toolbox convention — lazy-created directory with `INDEX.md` catalogue where agents save reusable tools.
@@ -18,17 +22,27 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `template/workspace/TOOLS.md` — toolbox section explaining how to use `.copilot/tools/` and when to save.
 - `template/BIBLIOGRAPHY.md` — Toolbox section stub.
 - `template/workspace/BOOTSTRAP.md` — toolbox lazy-creation note.
-- `§2 — Review Mode` Extension Review subsection in `.github/copilot-instructions.md` — agents scan workspace extensions (`.vscode/extensions.json` + installed), detect project stack from language/runtime/tooling config, recommend additions (missing language servers, linters, formatters), flag removals (redundant/unused extensions), present three-category report (Missing | Redundant | Unknown) in chat. Does not auto-install; waits for explicit user action.
-- `AGENTS.md` — "Extension review" trigger phrase section with canonical phrases: *"Review extensions"*, *"Check my extensions"*, *"Audit VS Code extensions"*, *"What extensions should I install?"*, *"Do I have the right extensions?"*, *"Check for missing extensions"*, *"Recommend extensions for this project"*. Added *"Review extensions"* to canonical triggers table.
-- `template/workspace/TOOLS.md` — "Extension audit workflow" in "Discovered workflow patterns" section (9-step procedure from user request to manual install/uninstall).
+- `§2 — Review Mode` Extension Review subsection — agents audit VS Code extensions, detect project stack, and recommend additions/removals. Full protocol:
+  - Step 0: asks user to run `code --list-extensions | sort` (Copilot chat cannot enumerate installed extensions directly)
+  - Built-in stack detection table with 14 stack mappings: Bash, JS/ESLint, JS/Oxc, JS/Biome, Python, Rust, Go, C#, Java, Docker, Vue, Svelte, Markdown, CSS, YAML, TOML
+  - `oxc.oxc-vscode` confirmed to cover both oxlint **and** oxfmt — single extension for both tools
+  - Unknown-stack research step: searches VS Code Marketplace, filters by quality (>100k installs, ≥4.0 rating, updated <2yr ago), adds qualifying finds to the report
+  - Persists new stack → extension mappings to `.copilot/workspace/TOOLS.md` "Extension registry" for future audits in this project
+  - Three-category report: Missing · Redundant · Unknown (resolved via Marketplace research)
+  - Does not auto-install; waits for explicit user action
+- `AGENTS.md` — "Extension review" trigger phrase section; *"Review extensions"* added to canonical triggers table.
+- `docs/EXTENSION-REVIEW-GUIDE.md` — plain-English guide to the Extension Review feature (consistent with existing `docs/` guides).
+- `template/workspace/TOOLS.md` — "Extension registry" stub table for persisting unknown-stack discoveries across sessions.
 
 ### Changed
-- `§9 — Subagent Protocol` — added sentence: subagents inherit the full Tool Protocol (§11) and must flag proposed toolbox saves to the parent before writing.
+- `§9 — Subagent Protocol` — subagents inherit the full Tool Protocol (§11) and must flag proposed toolbox saves to the parent before writing.
 - Footer of `.github/copilot-instructions.md` — added `.copilot/tools/` link.
-- `§11 — Tool Protocol` decision tree — added **step 2.5 COMPOSE**: before building, agents check whether 2+ existing toolbox tools can be assembled via pipe or import; compose if yes, skip BUILD.
+- `§11 — Tool Protocol` decision tree — added **step 2.5 COMPOSE**: before building, check whether 2+ existing toolbox tools can be assembled via pipe or import.
 - `§11 — Tool Protocol` BUILD step — added **required inline header template** with six mandatory fields: `# purpose`, `# when`, `# inputs`, `# outputs`, `# risk`, `# source`.
-- `§11 — Tool Protocol` INDEX.md format — added **`Output` and `Risk` columns** to the catalogue row format; updated example rows accordingly.
-- `§11 — Tool Protocol` quality rules — **expanded** with: verb-noun naming requirement; six-smell anti-pattern table (Unclear purpose · Missing usage guidelines · Unstated limitations · Opaque parameters · Missing output declaration · Underspecified length — grounded in empirical analysis of 856 real-world MCP tools, arxiv 2602.14878); risk tier system (`safe` vs `destructive` with mandatory user-confirmation gate for destructive tools regardless of autonomy preference); observability rule (≥ 3 toolbox invocations → document workflow in TOOLS.md "Discovered workflow patterns").
+- `§11 — Tool Protocol` INDEX.md format — added **`Output` and `Risk` columns**; updated example rows.
+- `§11 — Tool Protocol` quality rules — verb-noun naming requirement; six-smell anti-pattern table (grounded in empirical analysis of 856 real-world MCP tools, arxiv 2602.14878); risk tier system (`safe` vs `destructive`); observability rule (≥3 uses → document workflow in TOOLS.md).
+- `README.md` — added `docs/EXTENSION-REVIEW-GUIDE.md` to the human-readable guides table and file tree; fixed file content (backtick formatting restored).
+- Template version stamp updated from `1.0.0` → `1.0.2`.
 
 ---
 
