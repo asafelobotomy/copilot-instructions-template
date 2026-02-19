@@ -45,29 +45,37 @@ If you haven't set up coverage tooling yet, Copilot will do a static analysis
 ## What Copilot does (seven steps)
 
 ### Step 0 — Discover test stack
+
 Reads test config files (`jest.config.*`, `pytest.ini`, `Cargo.toml`, etc.) and
 your existing CI workflows to identify the framework and coverage command.
 
 ### Step 1 — Get coverage data
+
 Asks you to run and paste the coverage command output. If no tooling is
 configured, moves to static scan only and flags the gap.
 
 ### Step 2 — Scan test files statically
+
 Counts test files, lists source files with no corresponding test file, and
 notes which modules are most imported (highest-value candidates for testing).
 
 ### Step 3 — Identify gaps
+
 Classifies every module into:
+
 - **Zero coverage** — no tests at all
 - **Low coverage** — < 50% line coverage
 - **Missing test types** — no integration / edge-case / error-path tests
 
 ### Step 4 — Recommend local tests
+
 For each gap, recommends what to test, what type of test (unit, integration,
 property-based, snapshot), and the priority (critical / high / medium / low).
 
 ### Step 5 — Recommend CI workflows
+
 Proposes specific GitHub Actions with ready-to-copy YAML snippets:
+
 - **Coverage gate** — fail PR if overall coverage drops
 - **Coverage diff comments** — post coverage change as a PR comment
 - **Nightly full run** — slower suites on a schedule
@@ -76,11 +84,13 @@ Proposes specific GitHub Actions with ready-to-copy YAML snippets:
 - **Contract / API tests** — validate API contracts don't break consumers
 
 ### Step 6 — Present report
+
 Delivers a structured markdown report in chat covering all of the above,
 grouped into: ✅ Well-covered · ⚠️ Partial · ❌ Untested, plus tables of
 recommended tests and copy-paste workflow YAML.
 
 ### Step 7 — Wait
+
 Copilot presents the report and waits. It does **not** write any test files
 or workflow files until you explicitly say so.
 
@@ -97,7 +107,7 @@ or workflow files until you explicitly say so.
 
 ## Understanding the report
 
-```
+```markdown
 ## Test Coverage Review — MyProject
 
 ### 📊 Current coverage snapshot

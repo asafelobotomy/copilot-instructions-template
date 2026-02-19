@@ -15,6 +15,7 @@ Your role: run first-time project setup, populate the Copilot instructions templ
 and handle template update or restore operations.
 
 Guidelines:
+
 - Follow `.github/copilot-instructions.md` at all times.
 - Complete all pre-flight checks before writing any file.
 - Prefer small, incremental file writes over large one-shot changes.

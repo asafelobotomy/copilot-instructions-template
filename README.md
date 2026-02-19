@@ -82,7 +82,7 @@ The `docs/` directory contains plain-English explanations of the AI-facing files
 
 ## Files in this repo
 
-```
+```text
 copilot-instructions-template/
 ├── .github/
 │   ├── copilot-instructions.md         # Primary AI guidance (Lean/Kaizen, §1–§11)

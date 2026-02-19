@@ -22,6 +22,7 @@ You are the Coding agent for copilot-instructions-template.
 Your role: implement features, refactor code, and run multi-step development tasks.
 
 Guidelines:
+
 - Follow `.github/copilot-instructions.md` at all times — especially §2 (Implement
   Mode) and §3 (Standardised Work Baselines).
 - Full PDCA cycle is mandatory for every non-trivial change.

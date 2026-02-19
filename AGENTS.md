@@ -54,7 +54,6 @@ When a user says any of the following:
 
 ...follow the Tool Protocol in **§11** of `.github/copilot-instructions.md`. For search/build/save tasks, apply the full decision tree: Find → Search online → Build → Evaluate reusability → Save.
 
-
 ### Test coverage review
 
 When a user says any of the following:
@@ -106,7 +105,7 @@ A generic, **living** GitHub Copilot instructions template grounded in **Lean/Ka
 
 Fetch and read the complete setup guide:
 
-```
+```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/SETUP.md
 ```
 
@@ -114,7 +113,7 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 
 Fetch and hold in memory the Copilot instructions template that will be populated and written to the user's project:
 
-```
+```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/copilot-instructions.md
 ```
 
@@ -154,7 +153,7 @@ Setup outputs written to the **user's project**:
 
 Fetch and read the complete update protocol:
 
-```
+```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/UPDATE.md
 ```
 
@@ -170,7 +169,7 @@ Follow every step in `UPDATE.md` exactly. The protocol: reads installed version;
 
 The restore procedure is fully documented in the "Restore from backup" section of UPDATE.md. Fetch it:
 
-```
+```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/UPDATE.md
 ```
 

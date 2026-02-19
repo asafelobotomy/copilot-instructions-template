@@ -26,6 +26,7 @@ Copilot checks four things before creating a single file:
 **0a — Existing Copilot instructions**
 
 If `.github/copilot-instructions.md` already exists, Copilot asks what to do:
+
 - **Archive** — save the old file to `.github/archive/`, then use the template. Your existing conventions are preserved in the archive.
 - **Delete** — remove the old file and start fresh.
 - **Merge** — read both files and produce a unified version. Unique conventions from your old file land in §10 (Project-Specific Overrides), clearly labelled.

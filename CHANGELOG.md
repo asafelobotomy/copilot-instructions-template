@@ -12,6 +12,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 ## [Unreleased]
 
 ### Fixed
+
 - `docs/SETUP-GUIDE.md` §0d — rewrote preference interview section for 3-tier system (was still describing old 2-tier with "5 or 10 questions" and missing A11–A14 / E15–E19).
 - `docs/INSTRUCTIONS-GUIDE.md` — corrected "ten numbered sections (§1–§10)" → "eleven numbered sections (§1–§11)"; added full §11 Tool Protocol section writeup.
 - `docs/AGENTS-GUIDE.md` — corrected stale "handles the 10-question interview" → "handles the 3-tier preference interview (5–19 questions)".
@@ -20,21 +21,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `README.md` manual setup instructions — fixed reversed copy paths (step 1 = `copilot-instructions.md` → `.github/`, step 2 = `SETUP.md` → project root).
 
 ### Changed
+
 - `.github/copilot-instructions.md` §10 User Preferences — expanded blank stub to a 19-row table template showing all preference dimensions (S1–E19) with empty Setting / Instruction columns ready for population.
 - `.github/workflows/ci.yml` — added `LICENSE` and `CONTRIBUTING.md` to required-files check.
-
-### Added
-- `LICENSE` — MIT license (README referenced MIT but no file existed).
-- `CONTRIBUTING.md` — contributor guide covering issue reporting, PR process, style conventions, and code of conduct.
-
-### Performance
-- Lossless token-reduction pass across both LLM-read files (23 targeted substitutions, zero semantic change):
-  - `copilot-instructions.md`: −163 words / −1 048 chars
-  - `AGENTS.md`: −254 words / −1 614 chars
-  - Combined: −417 words / −2 662 chars (**7.6% reduction**)
-  - Compressions applied: redundant prose collapsed to inline; repeated "do not write to template repo" guards consolidated to a single blockquote; numbered sub-lists compressed to prose sentences; verbose step headers trimmed; duplicate bullet removed from §11.
-
-### Changed
 - `SETUP.md §0d` — preference interview expanded to 3-tier system (Simple 5 / Advanced +9 / Expert +5 = 19 total questions). All tiers produce an equally-capable agent — higher tiers unlock deeper customisation rather than adding features:
   - Simple (S1–S5): response style, experience level, primary mode, testing, autonomy — unchanged
   - Advanced (A6–A14): code style refined to cover linter/formatter configs; **new**: file size discipline (§3 LOC thresholds), dependency management, instruction self-editing (§8 controls), refactoring appetite; old "change reporting" demoted to A14
@@ -44,6 +33,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
   - Defaults tables expanded to cover all 19 dimensions for each tier
 
 ### Added
+
+- `LICENSE` — MIT license (README referenced MIT but no file existed).
+- `CONTRIBUTING.md` — contributor guide covering issue reporting, PR process, style conventions, and code of conduct.
 - CI infrastructure (not a template version bump — repo maintenance):
   - `.github/workflows/ci.yml` — validates VERSION semver, CHANGELOG entries, all required files, §1–§11 sections, README docs-table links, merge-conflict markers, and placeholder token count on every push and PR
   - `.github/workflows/release.yml` — auto-creates a tagged GitHub release when `VERSION` is bumped on `main`; extracts notes from the matching CHANGELOG section
@@ -63,11 +55,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `AGENTS.md` — "Test coverage review" trigger section; *"Review my tests"* / *"Repo health review"* / *"Recommend CI tests"* added to canonical triggers table
 - `docs/TEST-REVIEW-GUIDE.md` — plain-English guide to the test coverage review feature
 
+### Performance
+
+- Lossless token-reduction pass across both LLM-read files (23 targeted substitutions, zero semantic change):
+  - `copilot-instructions.md`: −163 words / −1 048 chars
+  - `AGENTS.md`: −254 words / −1 614 chars
+  - Combined: −417 words / −2 662 chars (**7.6% reduction**)
+  - Compressions applied: redundant prose collapsed to inline; repeated "do not write to template repo" guards consolidated to a single blockquote; numbered sub-lists compressed to prose sentences; verbose step headers trimmed; duplicate bullet removed from §11.
+
 ---
 
 ## [1.0.2] — 2026-02-19
 
 ### Added
+
 - `§11 — Tool Protocol` in `.github/copilot-instructions.md` — structured decision tree for tool use, adaptation, online search (MCP registry → GitHub → Awesome lists → stack registries → official docs), building from scratch, evaluating reusability, and saving to the toolbox.
 - `.copilot/tools/` toolbox convention — lazy-created directory with `INDEX.md` catalogue where agents save reusable tools.
 - `AGENTS.md` — "Tool operations" trigger phrase section; `.copilot/tools/INDEX.md` added to setup outputs table and file map; toolbox canonical triggers added.
@@ -87,6 +88,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `template/workspace/TOOLS.md` — "Extension registry" stub table for persisting unknown-stack discoveries across sessions.
 
 ### Changed
+
 - `§9 — Subagent Protocol` — subagents inherit the full Tool Protocol (§11) and must flag proposed toolbox saves to the parent before writing.
 - Footer of `.github/copilot-instructions.md` — added `.copilot/tools/` link.
 - `§11 — Tool Protocol` decision tree — added **step 2.5 COMPOSE**: before building, check whether 2+ existing toolbox tools can be assembled via pipe or import.
@@ -101,6 +103,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 ## [1.0.1] — 2026-02-19
 
 ### Added
+
 - `.github/agents/setup.agent.md` — model-pinned Setup agent (Claude Sonnet 4.6). File existed in documentation but had never been committed to the repo; now present.
 - `.github/agents/coding.agent.md` — model-pinned Coding agent (GPT-5.3-Codex). Same.
 - `.github/agents/review.agent.md` — model-pinned Review agent (Claude Opus 4.6). Same.
@@ -111,6 +114,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `docs/AGENTS-GUIDE.md` — human-readable guide to trigger phrases and model-pinned agents.
 
 ### Changed
+
 - `README.md` — added `.github/agents/`, `AGENTS.md`, `UPDATE.md` to "What this gives you" table; added `docs/` section with links to human guides; updated file tree to match actual repo structure.
 - `AGENTS.md` — added four `.github/agents/*.agent.md` entries to file map and bootstrap outputs table.
 - `UPDATE.md` — corrected all `## 10. Project-Specific Overrides` references to `## §10 — Project-Specific Overrides`; replaced ASCII-art pre-flight report block with clean markdown table (~1 400 chars saved); updated stale section names in diff example.
@@ -119,11 +123,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `SETUP.md` — Step 2.5 now offers fetching agent files directly from the template repo as the preferred option, with inline stubs as fallback.
 
 ### Fixed
+
 - `CHANGELOG.md` (this file) — corrected six stale section names that no longer matched the live copilot-instructions.md headings (§1, §2, §5, §6, §7, §9).
 - `UPDATE.md` — same six stale section names corrected in the diff table example.
 - `AGENTS.md` — same stale section names corrected.
 
 ### Refactored
+
 - `.github/copilot-instructions.md` — seven lossless token-saving compressions applied (~63 tokens saved); no semantic change.
 
 ---
@@ -135,6 +141,7 @@ Initial public release. All features below ship in this version.
 ### Added
 
 #### Core template
+
 - `.github/copilot-instructions.md` — generic Lean/Kaizen instructions template with `{{PLACEHOLDER}}` tokens throughout.
   - §1 Lean Principles (five Lean principles)
   - §2 Operating Modes (Implement / Review / Refactor / Planning)
@@ -149,6 +156,7 @@ Initial public release. All features below ship in this version.
 - Template version stamp: `> **Template version**: 1.0.0 | **Applied**: {{SETUP_DATE}}`
 
 #### Setup system
+
 - `SETUP.md` — one-time agentic bootstrap, remote-executable (no manual file copying required).
   - Step 0a: existing instructions detection → Archive / Delete / Merge choice with full merge protocol.
   - Step 0b: existing workspace identity files detection → Keep all / Overwrite all / Selective.
@@ -169,20 +177,24 @@ Initial public release. All features below ship in this version.
   - Steps 1–6: stack discovery, placeholder resolution, agent file creation, identity file scaffolding, METRICS baseline, documentation stubs, SETUP.md self-destruct.
 
 #### Model-pinned agents (VS Code 1.106+)
+
 - `.github/agents/setup.agent.md` — Setup agent pinned to Claude Sonnet 4.6 (onboarding & template operations). Fallback: Claude Sonnet 4.5 → GPT-5.1 → GPT-5 mini.
 - `.github/agents/coding.agent.md` — Coding agent pinned to GPT-5.3-Codex (implementation & refactoring, GA Feb 9 2026, 25% faster than 5.2-Codex, real-time steering). Fallback: GPT-5.2-Codex → GPT-5.1-Codex → GPT-5.1 → GPT-5 mini.
 - `.github/agents/review.agent.md` — Review agent pinned to Claude Opus 4.6 (architectural review, Agent Teams capability, 3× multiplier). Fallback: Claude Opus 4.5 → Claude Sonnet 4.6 → GPT-5.1.
 - `.github/agents/fast.agent.md` — Fast agent pinned to Claude Haiku 4.5 (quick questions, 0.33× cost). Fallback: Grok Code Fast 1 → GPT-5 mini → GPT-4.1.
 
 #### Update system
+
 - `UPDATE.md` — update protocol Copilot follows when triggered by "Update your instructions".
 - `VERSION` — semver file; read by update pre-flight to detect whether an update is available.
 - `CHANGELOG.md` — this file; read by update pre-flight to show changes between versions.
 
 #### Remote operation
+
 - `AGENTS.md` — AI agent entry point. Defines trigger phrases for setup and update. Provides Remote Bootstrap Sequence and Remote Update Sequence.
 
 #### Workspace identity files
+
 - `template/workspace/IDENTITY.md` — agent self-description stub.
 - `template/workspace/SOUL.md` — values & reasoning patterns stub.
 - `template/workspace/USER.md` — user profile stub.
@@ -191,10 +203,12 @@ Initial public release. All features below ship in this version.
 - `template/workspace/BOOTSTRAP.md` — permanent setup origin record stub.
 
 #### Documentation stubs
+
 - `template/CHANGELOG.md` — Keep-a-Changelog format stub (for consumer projects).
 - `template/JOURNAL.md` — ADR-style journal stub.
 - `template/BIBLIOGRAPHY.md` — file catalogue stub (includes model-pinned agent file entries).
 - `template/METRICS.md` — Kaizen baseline snapshot table stub.
 
 #### Examples
+
 - `examples/valis/README.md` — reference implementation (asafelobotomy/Valis, the first consumer of this template).

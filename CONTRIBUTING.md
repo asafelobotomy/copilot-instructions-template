@@ -33,11 +33,13 @@ Use the [GitHub issue templates](https://github.com/asafelobotomy/copilot-instru
 ## What to contribute
 
 **Good first contributions**:
+
 - Fix typos or stale references in docs
 - Add a new stack mapping to the Extension Review table (§2)
 - Improve a human-readable guide in `docs/`
 
 **Larger contributions** (open an issue first to discuss):
+
 - New sections in `copilot-instructions.md`
 - Changes to the setup interview questions
 - New agent files or workflow additions

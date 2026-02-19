@@ -20,6 +20,7 @@ In any Copilot chat, say one of the canonical trigger phrases. Copilot reads the
 | List available backups | *"List instruction backups"* |
 
 There are also variations:
+
 - *"Bootstrap this project from copilot-instructions-template"*
 - *"Use the Lean/Kaizen Copilot template to set up this project"*
 - *"Sync instructions with the template"*
@@ -78,6 +79,7 @@ Model names and availability change over time. If a model disappears from your C
 ## Agent handoffs
 
 The Code and Review agents have pre-configured handoffs:
+
 - **Code → Review**: After implementing changes, Copilot offers "Review changes" — one click hands off to the Review agent.
 - **Review → Code**: After a review, Copilot offers "Implement fixes" — hands off back to the Code agent.
 

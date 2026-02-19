@@ -36,6 +36,7 @@ Complete all five steps before presenting anything to the user. Do not write any
 Read `.github/copilot-instructions.md` in the **user's current project**.
 
 Extract:
+
 - **Installed version**: from the line `> **Template version**: X.Y.Z | **Applied**: DATE`.
   - If this line is absent, treat installed version as `unknown` and proceed with a full comparison.
 - **Applied date**: the `Applied` value from that line.
@@ -45,13 +46,13 @@ Extract:
 
 ### U2 — Fetch the current template version
 
-```
+```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/VERSION
 ```
 
 If the fetched version **equals** the installed version → report:
 
-```
+```text
 Already up to date (version X.Y.Z, applied YYYY-MM-DD). No changes available.
 To run a full comparison anyway, say "Force check instruction updates".
 ```
@@ -62,7 +63,7 @@ If the installed version is `unknown`, proceed with a full comparison regardless
 
 ### U3 — Fetch the template changelog
 
-```
+```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/CHANGELOG.md
 ```
 
@@ -70,7 +71,7 @@ Extract all changelog entries for versions **newer than the installed version**.
 
 ### U4 — Fetch the new template
 
-```
+```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/copilot-instructions.md
 ```
 
@@ -105,7 +106,7 @@ If the total count of `UPDATED`, `NEW_SECTION`, and `USER_MODIFIED` items is zer
 
 After completing U1–U5, present this report. Do not write anything yet.
 
-```
+```text
 INSTRUCTION UPDATE REPORT
 
 Installed version: X.Y.Z (applied: YYYY-MM-DD)
@@ -169,11 +170,12 @@ That's the only file that the update modifies. No other files need to be backed 
 
 Create the directory:
 
-```
+```text
 .github/archive/pre-update-<TODAY>-v<INSTALLED_VERSION>/
 ```
 
 Where:
+
 - `<TODAY>` is today's date in `YYYY-MM-DD` format.
 - `<INSTALLED_VERSION>` is the version extracted in U1 (or `unknown` if the stamp was absent).
 
@@ -217,7 +219,7 @@ a JOURNAL entry noting the rollback.
 
 After the backup directory and files are created, print a single line before proceeding with writes:
 
-```
+```text
 Backup created at .github/archive/pre-update-<TODAY>-v<INSTALLED_VERSION>/
 ```
 
@@ -245,7 +247,8 @@ Apply all `UPDATED` and `NEW_SECTION` items in one pass.
 3. For each `USER_MODIFIED` section:
    - Do **not** modify the installed content.
    - Append a comment immediately after the section heading:
-     ```
+
+     ```html
      <!-- update-note: template updated this section to vX.Y.Z but your
           version was user-modified and is preserved. Review UPDATE.md
           if you want to apply the upstream change manually. -->
@@ -257,7 +260,7 @@ Apply all `UPDATED` and `NEW_SECTION` items in one pass.
 
 No writes. No backup.
 
-```
+```text
 No changes made. Your instructions remain at version X.Y.Z.
 To apply updates later, say "Update your instructions".
 ```
@@ -266,7 +269,7 @@ To apply updates later, say "Update your instructions".
 
 Walk through each `UPDATED`, `NEW_SECTION`, and `USER_MODIFIED` item one at a time. For each item, present:
 
-```
+```text
 Change <N> of <total>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Section:  §<N> <Section name>
@@ -300,7 +303,7 @@ Wait for the user's response (A, B, or C) before moving to the next item.
 
 **After all items are reviewed**, present a final confirmation:
 
-```
+```text
 Review complete.
 
   Apply:      <list of sections, or "none">
@@ -338,7 +341,8 @@ After all changes are confirmed and written:
 Find the line: `> **Template version**: OLD | **Applied**: DATE`
 
 Update it to:
-```
+
+```text
 > **Template version**: NEW | **Applied**: ORIGINAL_DATE | **Updated**: TODAY
 ```
 
@@ -369,7 +373,7 @@ Add under `## [Unreleased]` (or create that section if absent):
 
 ### 4 — Print the confirmation
 
-```
+```text
 Updated! ✓
 
   Template version:  vOLD → vNEW
@@ -409,7 +413,7 @@ Scan the `.github/archive/` directory for subdirectories matching the pattern `p
 
 If none exist, report:
 
-```
+```text
 No instruction backups found in .github/archive/.
 Backups are created automatically when you run "Update your instructions".
 ```
@@ -418,7 +422,7 @@ And stop.
 
 If backups exist, list them:
 
-```
+```text
 Available instruction backups:
 
   1.  pre-update-2026-02-19-v1.0.0/   (installed: 2026-02-19)
@@ -432,7 +436,7 @@ Which backup would you like to restore? Enter a number, or say "cancel".
 
 After the user selects a backup, read `BACKUP-MANIFEST.md` from that directory and show it:
 
-```
+```text
 Selected: pre-update-<DATE>-v<VERSION>/
 
   Backed up:  <DATE>
@@ -452,7 +456,7 @@ Wait for confirmation.
 
 Before overwriting anything, create a new backup of the *current* instructions — the ones that are about to be replaced — using the same backup format:
 
-```
+```text
 .github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/
   copilot-instructions.md    ← copy of the file being replaced
   BACKUP-MANIFEST.md         ← records this as a pre-restore snapshot
@@ -486,7 +490,7 @@ Append to `CHANGELOG.md` under `## [Unreleased]`:
 
 #### R6 — Confirmation
 
-```
+```text
 Restored! ✓
 
   Restored from: .github/archive/pre-update-<DATE>-v<VERSION>/

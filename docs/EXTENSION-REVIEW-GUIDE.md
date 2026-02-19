@@ -32,9 +32,11 @@ Say any of the following in a Copilot chat:
 Copilot chat **cannot read your installed extensions directly**. Before it can audit, it asks you to:
 
 1. Run this in a terminal:
-   ```
+
+   ```shell
    code --list-extensions | sort
    ```
+
 2. Paste the output into the chat.
 
 Copilot will also automatically read `.vscode/extensions.json` and `.vscode/settings.json` if they exist.

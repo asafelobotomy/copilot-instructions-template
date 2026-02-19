@@ -20,7 +20,8 @@ Copilot fetches `UPDATE.md` from the template repo and follows the protocol exac
 ### 1 — Version check
 
 Copilot reads your installed version stamp from `.github/copilot-instructions.md`:
-```
+
+```text
 > **Template version**: 1.0.0 | **Applied**: 2026-02-19
 ```
 
@@ -46,6 +47,7 @@ Copilot compares your installed file section-by-section against the new template
 ### 3 — Pre-flight Report
 
 Copilot presents a report showing:
+
 - The version comparison
 - What changed in the new version (from CHANGELOG)
 - The section-by-section diff table
@@ -64,6 +66,7 @@ You respond with one of three options:
 **S — Skip**: Do nothing. Your instructions stay exactly as they are.
 
 **C — Customise**: Copilot walks through each changed section one at a time and asks:
+
 - **Apply** — use the new template version.
 - **Skip** — keep your current version.
 - **Customise** — see both versions side-by-side and write a merged version.
@@ -73,7 +76,8 @@ You respond with one of three options:
 ### 5 — Automatic backup (before any writes)
 
 Immediately after you confirm an update (U or C → yes), before anything is written, Copilot creates:
-```
+
+```text
 .github/archive/pre-update-YYYY-MM-DD-vX.Y.Z/
   copilot-instructions.md    ← exact copy of your current file
   BACKUP-MANIFEST.md         ← records what version this is and when it was backed up
@@ -86,6 +90,7 @@ This backup is created unconditionally. You can restore from it at any time.
 ### 6 — Apply changes
 
 Copilot writes only the confirmed sections. It never touches:
+
 - §10 (Project-Specific Overrides) — entire section
 - Your User Preferences block
 - Any `<!-- migrated -->` or `<!-- user-added -->` blocks
@@ -96,6 +101,7 @@ Copilot writes only the confirmed sections. It never touches:
 ### 7 — Post-update records
 
 After writing, Copilot:
+
 1. Updates the version stamp: `> **Template version**: 1.1.0 | **Applied**: 2026-02-19 | **Updated**: 2026-03-15`
 2. Appends to `JOURNAL.md` — records which sections were updated, skipped, and customised.
 3. Appends to `CHANGELOG.md` — records the update under `[Unreleased]`.

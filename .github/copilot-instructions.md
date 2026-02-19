@@ -2,7 +2,7 @@
 
 > **Template version**: 1.0.2 | **Applied**: {{SETUP_DATE}}
 > Living document — self-edit rules in §8.
-
+>
 > **Model Quick Reference** — select model in Copilot picker before starting each task, or use `.github/agents/` (VS Code 1.106+). [Why these models?](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)
 >
 > | Task | Best model (Pro+) | Budget / Free fallback |
@@ -29,6 +29,7 @@
 | 5 | Seek perfection | Small, continuous improvements (Kaizen) over big rewrites |
 
 **Waste taxonomy** (§6):
+
 - Overproduction · Waiting · Transport · Over-processing · Inventory · Motion · Defects · Unused talent
 
 ---
@@ -38,24 +39,29 @@
 Switch modes explicitly. Default is **Implement**.
 
 ### Implement Mode (default)
+
 - Plan → implement → test → document in one uninterrupted flow.
 - Full PDCA for every non-trivial change.
 - Three-check ritual before marking a task complete.
 - Update `BIBLIOGRAPHY.md` on every file create/rename/delete.
 
 ### Review Mode
+
 - Read-only by default. State findings before proposing fixes.
 - Tag every finding with a waste category (§6).
 - Use format: `[severity] | [file:line] | [waste category] | [description]`
 - Severity: `critical` | `major` | `minor` | `advisory`
 
 #### Extension Review
+
 When asked to review or recommend VS Code extensions:
 
 0. **Get installed extensions** — ask user to run and paste (Copilot cannot enumerate installed extensions directly):
-   ```
+
+   ```shell
    code --list-extensions | sort
    ```
+
    Also read `.vscode/extensions.json` and `.vscode/settings.json` if they exist.
 
 1. **Audit current state**:
@@ -120,7 +126,6 @@ When asked to review or recommend VS Code extensions:
    ```
 
 7. **Wait** — do not modify `.vscode/extensions.json` or install/uninstall extensions until user says *"Apply these changes"* or *"Write the updated extensions.json"*.
-
 
 #### Test Coverage Review
 
@@ -217,11 +222,14 @@ When asked to review test coverage, recommend tests, or audit the test suite:
    ````
 
 7. **Wait** — do not write test files, workflow files, or config until user explicitly asks.
+
 ### Refactor Mode
+
 - No behaviour changes. Tests must pass before and after.
 - Measure LOC delta. Flag if a refactor increases LOC without justification.
 
 ### Planning Mode
+
 - Produce a task breakdown before writing code.
 - Estimate complexity (S/M/L/XL). Flag anything XL for decomposition.
 
@@ -253,6 +261,7 @@ When asked to review test coverage, recommend tests, or audit the test suite:
 {{CODING_PATTERNS}}
 
 **Universal rules**:
+
 - No `any` / untyped unless explicitly commented with `// deliberately untyped: <reason>`.
 - No silent error swallowing — log or re-throw.
 - No commented-out code — git history is the undo stack.
@@ -390,7 +399,7 @@ When a task requires automation, a scripted command sequence, or a repeatable ut
 
 ### Decision tree
 
-```
+```text
 Need a tool for task X
  │
  ├─ 1. FIND — check .copilot/tools/INDEX.md
@@ -460,10 +469,12 @@ Files: `INDEX.md` (catalogue) · `*.sh` · `*.py` · `*.js`/`*.ts` · `*.mcp.jso
 | Underspecified length | one-line stub | ≥ 3 substantive sentences for any non-trivial tool |
 
 **Risk tier**:
+
 - `safe` — read-only or fully idempotent; invoke without confirmation
 - `destructive` — deletes files, overwrites data, or writes to remote systems; **must pause and confirm with the user before execution**, regardless of session autonomy level
 
 **Other rules**:
+
 - Tools must be idempotent where possible
 - Tools must not hardcode project-specific paths, names, or secrets — accept arguments
 - Retire unused tools: mark `[DEPRECATED]` in INDEX.md; counts as W1 (Overproduction)

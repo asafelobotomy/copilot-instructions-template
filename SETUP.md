@@ -3,13 +3,14 @@
 > **Running in remote mode?** If you arrived here because a user said something like *"Setup from asafelobotomy/copilot-instructions-template"*, you are in **remote mode** — no local file copying is needed.
 >
 > **Remote fetch sequence (complete before starting Step 0)**:
+>
 > 1. You have already read this file (`SETUP.md`) from GitHub. ✓
 > 2. Fetch the instructions template and hold it in memory:
 >    `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/copilot-instructions.md`
 > 3. Proceed with Steps 0–6 below, operating in the **user's current project** — not the template repo. Do not write anything to `asafelobotomy/copilot-instructions-template`. All file stubs are embedded inline in this document; no further fetching is required.
-
+>
 > **Running in local mode?** If the user manually placed this file in their project, proceed directly to Step 0 below.
-
+>
 > **Instructions for Copilot (both modes)**: Read **every step** before starting anything. Complete Steps 0a–0e fully before writing a single file. Tell the user exactly what you found, what you plan to do, and wait for confirmation at each decision point before proceeding.
 
 ---
@@ -39,6 +40,7 @@ Check whether `.github/copilot-instructions.md` already exists.
 > **2 — Delete** Remove the current instructions entirely and replace with the freshly populated template. Use this if the existing file is outdated or irrelevant.
 >
 > **3 — Merge** Read both the existing instructions and the new template, then produce a single unified file that:
+>
 > - Uses the template's structure (sections §1–§9 unchanged).
 > - Preserves every unique convention, rule, pattern, or anti-pattern from the existing file that is not already covered by the template.
 > - Places all preserved unique content into §10 (Project-Specific Overrides), clearly labelled as migrated from the previous instructions.
@@ -53,12 +55,15 @@ Wait for the user to reply with **1**, **2**, or **3** (or equivalent phrasing) 
 1. Create the directory `.github/archive/` if it does not exist.
 2. Copy the current `.github/copilot-instructions.md` to `.github/archive/copilot-instructions-<TODAY>.md`.
 3. Add a comment at the top of the archived file:
+
    ```markdown
    <!-- Archived on <TODAY> during copilot-instructions-template setup. -->
    <!-- See .github/copilot-instructions.md for the live instructions.  -->
    ```
+
 4. Continue to 0b; the new template file will be written in Step 2.
 5. After the new file is written, add a note to its §10 section:
+
    ```markdown
    > Previous instructions archived at `.github/archive/copilot-instructions-<TODAY>.md`.
    > Review that file for any conventions that were not automatically migrated.
@@ -102,6 +107,7 @@ Check whether `.copilot/workspace/` exists and contains any of the six identity 
 > **Existing workspace identity files detected**: `<list of files found>`
 >
 > These files may contain session history and learned preferences.
+>
 > - **Keep all** (default) — skip creating any file that already exists. *(Recommended if Copilot has been working in this project.)*
 > - **Overwrite all** — replace all existing identity files with fresh stubs.
 > - **Selective** — tell me which files to keep and which to overwrite.
@@ -565,7 +571,7 @@ Once all questions are answered, construct the following block and write it into
 
 After completing 0a–0d, present a single summary before writing anything:
 
-```
+```text
 Pre-flight complete. Here is what I will do:
 
   EXISTING FILE HANDLING
@@ -674,12 +680,14 @@ If a value cannot be determined, leave the `{{PLACEHOLDER}}` as-is and add a com
 Create `.github/agents/` if it does not exist. Then write the four agent files using one of the following approaches:
 
 - **Fetch from template** *(recommended)*: Fetch each file directly from the template repo and substitute `{{PROJECT_NAME}}` in the content. This ensures you always get the latest model identifiers without relying on the inline stubs below.
-  ```
+
+  ```text
   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/setup.agent.md
   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/coding.agent.md
   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/review.agent.md
   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/fast.agent.md
   ```
+
 - **Write from stubs**: Use the inline content below. Model identifiers may lag behind the live template repo; prefer the fetch option when network access is available.
 
 > **Model identifier note**: The `model` arrays use display names exactly as shown in the VS Code Copilot model picker. Each entry is tried in order — VS Code uses the first model that is available on the user's plan. If a model fails to load at runtime, verify the exact display name in the picker and update the `model` field to match. Model names change as GitHub releases and retires models; review and update these files during template update runs.
@@ -932,12 +940,13 @@ This workspace was scaffolded on **{{SETUP_DATE}}** using the [copilot-instructi
 Create `METRICS.md` in the repo root if it does not exist, using the stub below.
 
 Then:
+
 1. Count source files and total LOC (`find`/`wc` or `{{LOC_COMMAND}}`).
 2. Count tests from the last test run output, or estimate as "N/A".
 3. Count runtime dependencies from the manifest.
 4. Append a row:
 
-```
+```text
 | {{SETUP_DATE}} | Setup baseline | <total_loc> | <file_count> | <test_count> | <assertion_count_or_NA> | 0 | <dep_count> |
 ```
 
@@ -962,6 +971,7 @@ Kaizen baseline snapshots. Append a row after any session that materially change
 For each file, act according to the Step 0c decision. The content to create or append is shown below.
 
 ### `CHANGELOG.md`
+
 ```markdown
 # Changelog
 
@@ -975,6 +985,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/).
 ```
 
 ### `JOURNAL.md`
+
 ```markdown
 # Development Journal — {{PROJECT_NAME}}
 
@@ -990,6 +1001,7 @@ Architectural decisions and context are recorded here in ADR style.
 ```
 
 ### `BIBLIOGRAPHY.md`
+
 ```markdown
 # Bibliography — {{PROJECT_NAME}}
 
@@ -1017,6 +1029,7 @@ Every file in the project is catalogued here. Update this file whenever a file i
 ```
 
 ### `METRICS.md`
+
 See Step 4 for the stub — do not duplicate it here.
 
 ---
@@ -1025,7 +1038,7 @@ See Step 4 for the stub — do not duplicate it here.
 
 1. **Review** everything created or modified and print a structured summary to the user:
 
-   ```
+   ```text
    Setup complete. Here is what was done:
 
    INSTRUCTIONS
@@ -1066,7 +1079,8 @@ See Step 4 for the stub — do not duplicate it here.
 2. Ask the user: *"Setup is complete. Shall I delete SETUP.md now?"*
 3. On confirmation, delete `SETUP.md`.
 4. Append to `JOURNAL.md`:
-   ```
+
+   ```text
    [instructions] Setup complete — SETUP.md removed. See BOOTSTRAP.md for origin record.
    ```
 

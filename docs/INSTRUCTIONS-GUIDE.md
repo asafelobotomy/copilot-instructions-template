@@ -106,6 +106,7 @@ After any session that meaningfully changes your codebase, Copilot appends a row
 **What it does**: Authorises Copilot to improve this file over time, within guardrails.
 
 Copilot is allowed to edit `.github/copilot-instructions.md` when you use any of these phrases:
+
 - "Add this to your instructions" → Copilot adds the convention to the appropriate section.
 - "Update your instructions" → Copilot fetches the latest template and proposes a merge.
 - "Remember this for next time" → Copilot adds the pattern to the file.
@@ -127,6 +128,7 @@ The key guardrail: `max_depth = 3` (default). Copilot will not spawn more than 3
 ### §10 — Project-Specific Overrides
 
 **What it does**: This is your section. It holds:
+
 1. The resolved values of all `{{PLACEHOLDER}}` tokens (filled during setup).
 2. Your User Preferences (filled during the setup interview — response style, autonomy level, etc.).
 3. Any additional project-specific conventions Copilot has learned.
@@ -140,6 +142,7 @@ The key guardrail: `max_depth = 3` (default). Copilot will not spawn more than 3
 **What it does**: Provides a structured decision tree for when Copilot needs to use automation, scripts, or reusable utilities.
 
 The protocol has four stages:
+
 1. **Find** — check the project toolbox (`.copilot/tools/INDEX.md`) for an existing tool.
 2. **Search** — look online (MCP registries, GitHub, package registries, official CLI docs).
 3. **Compose** — assemble from 2+ existing tools via pipes or imports.
