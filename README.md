@@ -31,6 +31,10 @@ Setup from asafelobotomy/copilot-instructions-template
 
 Copilot fetches the template and setup guide directly from GitHub, interviews you with 5–19 questions (your choice of depth), fills every placeholder, scaffolds your workspace files, captures a Kaizen baseline, and self-destructs the setup script. **No cloning, no copying, no manual steps.**
 
+> **⚠️ Use the Setup agent or an interactive model.** Codex models (`GPT-5.x-Codex`) run autonomously and cannot present interactive prompts — the preference interview will be silently skipped. Select **Claude Sonnet 4.6** (or any interactive model) in the Copilot picker, or use the `@setup` agent which pins the correct model automatically.
+
+<!-- -->
+
 > **Prefer to do it manually?** Copy `.github/copilot-instructions.md` and `SETUP.md` into your project, then tell Copilot: *"Please run the setup process described in SETUP.md."*
 >
 > **Starting fresh?** Click **Use this template** on GitHub, then run the quickstart above in your new repo.
@@ -49,7 +53,7 @@ Copilot fetches the template and setup guide directly from GitHub, interviews yo
 
 | Agent | Model | Role |
 |-------|-------|------|
-| `setup.agent.md` | Claude Sonnet 4.6 | Onboarding, template ops, preference interview |
+| `setup.agent.md` | Claude Sonnet 4.6 | Onboarding, template ops, preference interview (batched with verification gate) |
 | `coding.agent.md` | GPT-5.3-Codex | Implementation, refactoring, test writing |
 | `review.agent.md` | Claude Opus 4.6 | Architectural review, Lean waste audit |
 | `fast.agent.md` | Claude Haiku 4.5 | Quick lookups, explanations, small edits |
