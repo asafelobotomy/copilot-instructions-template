@@ -13,6 +13,33 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [1.1.0] — 2026-02-19
+
+### Added
+
+- `§12 — Skill Protocol` in `.github/copilot-instructions.md` — structured discovery decision tree (SCAN local → SEARCH registries → CREATE), scope hierarchy (project → personal → community), community quality gate checklist, seven authoring rules, lifecycle table, Skill vs Tool comparison table, subagent skill-save rules.
+- `A15 — Skill search preference` — new Advanced-tier interview question with three options: `local-only` (default), `official-only`, `official-and-community`. Written to `{{SKILL_SEARCH_PREFERENCE}}` placeholder in §10 User Preferences.
+- `template/skills/skill-creator/SKILL.md` — meta-skill that teaches the agent how to author new skills following §12.
+- `template/skills/fix-ci-failure/SKILL.md` — systematic CI / GitHub Actions failure diagnosis and resolution skill.
+- `template/skills/lean-pr-review/SKILL.md` — Lean waste-categorised PR review skill with severity ratings and structured report template.
+- `template/skills/conventional-commit/SKILL.md` — Conventional Commits message authoring skill with type table and scope rules.
+- `SETUP.md` Step 2.8 — skills scaffolding step: fetches four starter skills from the template repo (with inline-stub fallback), writes to `.github/skills/`, populates `SKILL_SEARCH_PREFERENCE` in §10.
+- `docs/SKILLS-GUIDE.md` — human-readable guide to Agent Skills: what they are, where they live, discovery, anatomy, search preference, creating skills, Skills vs Tools comparison, community ecosystem, quality gate, trigger phrases.
+- `AGENTS.md` — "Skill operations" trigger phrase section (5 phrases); four template skill files and `.github/skills/<name>/SKILL.md` added to file map; skills row in bootstrap output table; three skill-related canonical triggers.
+- `.github/workflows/ci.yml` — new "Template skills have valid SKILL.md" validation step (checks `name` + `description` frontmatter in every `template/skills/*/SKILL.md`).
+
+### Changed
+
+- `.github/copilot-instructions.md` — §9 Subagent Protocol updated to reference §12 skill inheritance; §10 User Preferences table expanded from 19 to 20 rows (`SKILL_SEARCH_PREFERENCE` added as A15); Expert questions renumbered E16–E20 (were E15–E19). Template version stamp updated from `1.0.3` to `1.1.0`.
+- `SETUP.md` — batch plan updated (batch 5 now covers A14 + A15); question counts updated (Advanced: 14 → 15, Expert: 19 → 20); Expert headings renumbered E16–E20; all defaults tables updated; verification gate counts changed to 5/15/20; §0e pre-flight template expanded (20 prefs, Skill search label, Step 2.8 in NEXT STEPS); Step 6 summary template updated (SKILLS section, skills in BIBLIOGRAPHY stub); BOOTSTRAP stub updated.
+- `README.md` — version badge `1.1.0`; "Twelve-section" heading; "📚 Agent Skills library" feature block; skills scaffolding entry in "What gets scaffolded" table; `SKILLS-GUIDE.md` in docs table; layout tree expanded with `skills/` directories and `SKILLS-GUIDE.md`; §1–§12 references updated throughout.
+- `.github/workflows/ci.yml` — §1–§11 section check updated to §1–§12; `docs/SKILLS-GUIDE.md` added to required files.
+- `docs/INSTRUCTIONS-GUIDE.md` — "eleven numbered sections" → "twelve numbered sections (§1–§12)"; added full §12 writeup with Scan/Search/Create stages and customisation guidance.
+- `docs/SETUP-GUIDE.md` — question counts updated (14 → 15, 19 → 20); A15 row added to question table; Expert rows renumbered E16–E20; "19-row" → "20-row" User Preferences; Step 2.8 skills scaffolding section added.
+- `template/workspace/BOOTSTRAP.md` — skills row added to files table; new "Skills" section explaining `.github/skills/`.
+
+---
+
 ## [1.0.3] — 2026-02-19
 
 ### Fixed

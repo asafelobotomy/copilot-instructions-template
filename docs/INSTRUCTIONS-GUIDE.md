@@ -9,7 +9,7 @@
 
 This is the primary AI guidance file — the "instruction firmware" for Copilot in your project. GitHub Copilot loads it automatically at the start of every chat session, so everything written here shapes how Copilot behaves in your project.
 
-The file is structured in eleven numbered sections (§1–§11). The first nine sections encode the Lean/Kaizen methodology and are maintained by the template. §10 is yours — it holds your project's specific values and preferences. §11 defines the Tool Protocol for reusable automation.
+The file is structured in twelve numbered sections (§1–§12). The first nine sections encode the Lean/Kaizen methodology and are maintained by the template. §10 is yours — it holds your project's specific values and preferences. §11 defines the Tool Protocol for reusable automation. §12 defines the Skill Protocol for reusable behavioural workflows.
 
 ---
 
@@ -161,6 +161,24 @@ The toolbox lives at `.copilot/tools/` and is created lazily on first tool save 
 At the top of the file is a table showing which AI model to use for which task. This is for you (the human) — Copilot doesn't select its own model. You select it in the Copilot model picker before starting a task.
 
 The model selection is also pre-configured in `.github/agents/` — see [AGENTS-GUIDE.md](AGENTS-GUIDE.md) for how to use those.
+
+---
+
+### §12 — Skill Protocol
+
+**What it does**: Provides a framework for reusable, markdown-based workflow instructions that teach the agent *how* to approach specific tasks.
+
+Skills follow the [Agent Skills](https://agentskills.io) open standard. Each skill is a `SKILL.md` file with YAML frontmatter (`name`, `description`) and a markdown body containing step-by-step instructions.
+
+The protocol has three stages:
+
+1. **Scan** — check `.github/skills/*/SKILL.md` descriptions for a match.
+2. **Search** — look online (if enabled via `{{SKILL_SEARCH_PREFERENCE}}`) in official or community repositories.
+3. **Create** — author a new skill from scratch following the authoring rules.
+
+Four starter skills are scaffolded during setup: `skill-creator` (meta-skill for authoring), `fix-ci-failure` (CI diagnosis), `lean-pr-review` (Lean PR review), and `conventional-commit` (commit messages).
+
+**How to customise**: Create new skills in `.github/skills/<name>/SKILL.md`. Say "Create a skill for ..." to have Copilot author one for you. Change the search preference in §10 (`{{SKILL_SEARCH_PREFERENCE}}`). See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for the full guide.
 
 ---
 

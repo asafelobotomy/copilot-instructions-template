@@ -164,8 +164,8 @@ Present the following to the user:
 > **Setup mode**: Which level of configuration would you like?
 >
 > - **S — Simple Setup** (5 questions, ~1 min) — Essential preferences only. Advanced and Expert options use sensible defaults.
-> - **A — Advanced Setup** (14 questions, ~2 min) — Full control over Copilot's coding behaviour.
-> - **E — Expert Setup** (19 questions, ~3 min) — Everything in Advanced, plus persona, autonomy failsafe, tool availability, VS Code settings, and more.
+> - **A — Advanced Setup** (15 questions, ~2 min) — Full control over Copilot's coding behaviour.
+> - **E — Expert Setup** (20 questions, ~3 min) — Everything in Advanced, plus persona, autonomy failsafe, tool availability, VS Code settings, and more.
 >
 > *(You can also type "skip" to use all defaults and proceed immediately.)*
 
@@ -187,9 +187,9 @@ Use the batch plan below. Do not combine questions across tiers in a single call
 | 2 | Simple | S5 | Autonomy |
 | 3 | Advanced | A6, A7, A8, A9 | Code style, Docs, Errors, Security |
 | 4 | Advanced | A10, A11, A12, A13 | File size, Deps, Self-edit, Refactor |
-| 5 | Advanced | A14 | Reporting |
-| 6 | Expert | E15, E16, E17, E18 | Tools, Persona, VS Code, Failsafe |
-| 7 | Expert | E19 | Mood |
+| 5 | Advanced | A14, A15 | Reporting, Skills |
+| 6 | Expert | E16, E17, E18, E19 | Tools, Persona, VS Code, Failsafe |
+| 7 | Expert | E20 | Mood |
 
 **Simple** = batches 1–2. **Advanced** = batches 1–5. **Expert** = batches 1–7.
 
@@ -285,14 +285,14 @@ Present questions in **2 batches** following the batch plan above. Collect answe
 
 ---
 
-#### Advanced Setup — 9 additional questions A6–A14 (batches 3–5)
+#### Advanced Setup — 10 additional questions A6–A15 (batches 3–5)
 
-If the user chose **A — Advanced Setup** or **E — Expert Setup**, present these 9 questions in **3 batches** following the batch plan above. Collect answers from each batch before issuing the next. If the user chose **S — Simple Setup**, skip these and proceed to 0e.
+If the user chose **A — Advanced Setup** or **E — Expert Setup**, present these 10 questions in **3 batches** following the batch plan above. Collect answers from each batch before issuing the next. If the user chose **S — Simple Setup**, skip these and proceed to 0e.
 
-**Questions in this section** (verify all 9 are asked):
+**Questions in this section** (verify all 10 are asked):
 A6 (Code style) · A7 (Documentation) · A8 (Error handling) · A9 (Security) ·
 A10 (File size) · A11 (Dependencies) · A12 (Instruction editing) ·
-A13 (Refactoring) · A14 (Reporting format)
+A13 (Refactoring) · A14 (Reporting format) · A15 (Skill search)
 
 ---
 
@@ -454,17 +454,39 @@ A13 (Refactoring) · A14 (Reporting format)
 
 ---
 
-#### Expert Setup — 5 additional questions E15–E19 (batches 6–7)
+**A15 — Skill search preference**
+
+> The template includes an Agent Skills system (§12) that provides reusable workflow instructions. When a task would benefit from a skill that doesn't exist locally, should Copilot search online skill repositories?
+>
+> **A — Local only** *(default)*: Only use skills already in `.github/skills/`. Create new skills in-house when needed. No online searching.
+> **B — Official repositories only**: Search official skill repositories (Anthropic, OpenAI, GitHub) for proven workflows. Adapt and save locally before use.
+> **C — Official + community**: Search official repositories first, then community sources. Community skills are quality-checked before adoption.
+
+| Answer | Instruction written to §10 |
+|--------|---------------------------|
+| A | "Skill search: local only. Use only skills present in `.github/skills/` or `~/.copilot/skills/`. When no matching skill exists, create one from scratch following the §12 authoring rules. Do not search online repositories." |
+| B | "Skill search: official repositories only. When no local skill matches, search official sources (anthropics/skills, openai/skills, github/awesome-copilot). Evaluate fit, adapt to project conventions, and save locally before use." |
+| C | "Skill search: official + community. Search official repositories first, then community sources (GitHub search, awesome-agent-skills). Community skills must pass the §12 quality gate before adoption." |
+
+| Answer | `{{SKILL_SEARCH_PREFERENCE}}` value |
+|--------|--------------------------------------|
+| A | `local-only` |
+| B | `official-only` |
+| C | `official-and-community` |
+
+---
+
+#### Expert Setup — 5 additional questions E16–E20 (batches 6–7)
 
 If the user chose **E — Expert Setup**, present these 5 questions in **2 batches** following the batch plan above. Collect answers from each batch before issuing the next. If the user chose **S — Simple Setup** or **A — Advanced Setup**, skip these and proceed to 0e.
 
 **Questions in this section** (verify all 5 are asked):
-E15 (Tool availability) · E16 (Agent persona) · E17 (VS Code settings) ·
-E18 (Global autonomy) · E19 (Mood lightener)
+E16 (Tool availability) · E17 (Agent persona) · E18 (VS Code settings) ·
+E19 (Global autonomy) · E20 (Mood lightener)
 
 ---
 
-**E15 — Tool and dependency availability**
+**E16 — Tool and dependency availability**
 
 > When Copilot needs a tool, dependency, or runtime that isn't currently available (e.g., trying to use `bun` but it's not installed), what should it do?
 >
@@ -480,7 +502,7 @@ E18 (Global autonomy) · E19 (Mood lightener)
 
 ---
 
-**E16 — Agent persona**
+**E17 — Agent persona**
 
 > Give your Copilot agent a personality. This affects tone, vocabulary, and conversational style — not technical capability.
 >
@@ -505,7 +527,7 @@ E18 (Global autonomy) · E19 (Mood lightener)
 
 ---
 
-**E17 — VS Code settings management**
+**E18 — VS Code settings management**
 
 > Should Copilot modify VS Code workspace settings (`.vscode/settings.json`) when it believes a change would improve the development experience?
 >
@@ -521,7 +543,7 @@ E18 (Global autonomy) · E19 (Mood lightener)
 
 ---
 
-**E18 — Global autonomy override (failsafe)**
+**E19 — Global autonomy override (failsafe)**
 
 > Set a master autonomy ceiling on a 1–5 scale. This acts as a **hard override** that caps all other autonomy-related settings (S5, §8, etc.), regardless of what they allow.
 >
@@ -541,7 +563,7 @@ E18 (Global autonomy) · E19 (Mood lightener)
 
 ---
 
-**E19 — Mood lightener**
+**E20 — Mood lightener**
 
 > Long coding sessions can be stressful. Should Copilot occasionally lighten the mood?
 >
@@ -582,14 +604,15 @@ Once all questions are answered, construct the following block and write it into
 | Instruction self-editing | <A12 answer label or default> | <instruction> |
 | Refactoring appetite | <A13 answer label or default> | <instruction> |
 | Reporting format | <A14 answer label or default> | <instruction> |
-| Tool availability | <E15 answer label or default> | <instruction> |
-| Agent persona | <E16 answer label or default> | <instruction> |
-| VS Code settings | <E17 answer label or default> | <instruction> |
-| Global autonomy | <E18 answer label or default> | <instruction> |
-| Mood lightener | <E19 answer label or default> | <instruction> |
+| Skill search | <A15 answer label or default> | <instruction> |
+| Tool availability | <E16 answer label or default> | <instruction> |
+| Agent persona | <E17 answer label or default> | <instruction> |
+| VS Code settings | <E18 answer label or default> | <instruction> |
+| Global autonomy | <E19 answer label or default> | <instruction> |
+| Mood lightener | <E20 answer label or default> | <instruction> |
 ```
 
-**Simple Setup defaults** (used for A6–A14 and E15–E19 when Simple is chosen):
+**Simple Setup defaults** (used for A6–A15 and E16–E20 when Simple is chosen):
 
 | Question | Default answer | Default instruction |
 |----------|---------------|---------------------|
@@ -602,21 +625,22 @@ Once all questions are answered, construct the following block and write it into
 | A12 — Self-editing | B | Ask first — propose changes, wait for approval |
 | A13 — Refactoring | B | Flag and suggest — note smells but don't auto-fix |
 | A14 — Reporting | A | Bullet list of files changed |
-| E15 — Tool availability | A | Stop and request — explain the need, wait for approval |
-| E16 — Persona | A | Professional — neutral, efficient, direct |
-| E17 — VS Code settings | A | Never — suggest only, don't modify |
-| E18 — Global autonomy | 3 | Balanced — no override, follow S5 setting |
-| E19 — Mood lightener | A | Never — strictly professional |
+| A15 — Skill search | A | Local only — no online searching |
+| E16 — Tool availability | A | Stop and request — explain the need, wait for approval |
+| E17 — Persona | A | Professional — neutral, efficient, direct |
+| E18 — VS Code settings | A | Never — suggest only, don't modify |
+| E19 — Global autonomy | 3 | Balanced — no override, follow S5 setting |
+| E20 — Mood lightener | A | Never — strictly professional |
 
-**Advanced Setup defaults** (used for E15–E19 when Advanced is chosen):
+**Advanced Setup defaults** (used for E16–E20 when Advanced is chosen):
 
 | Question | Default answer | Default instruction |
 |----------|---------------|---------------------|
-| E15 — Tool availability | A | Stop and request — explain the need, wait for approval |
-| E16 — Persona | A | Professional — neutral, efficient, direct |
-| E17 — VS Code settings | A | Never — suggest only, don't modify |
-| E18 — Global autonomy | 3 | Balanced — no override, follow S5 setting |
-| E19 — Mood lightener | A | Never — strictly professional |
+| E16 — Tool availability | A | Stop and request — explain the need, wait for approval |
+| E17 — Persona | A | Professional — neutral, efficient, direct |
+| E18 — VS Code settings | A | Never — suggest only, don't modify |
+| E19 — Global autonomy | 3 | Balanced — no override, follow S5 setting |
+| E20 — Mood lightener | A | Never — strictly professional |
 
 ---
 
@@ -626,9 +650,9 @@ Before proceeding to 0e, count your collected answers and verify against this ta
 
 | Tier | User answers | Defaults applied | Total rows in §10 |
 |------|-------------|-----------------|-------------------|
-| Simple | 5 (S1–S5) | 14 (A6–A14 + E15–E19) | 19 |
-| Advanced | 14 (S1–S5 + A6–A14) | 5 (E15–E19) | 19 |
-| Expert | 19 (S1–S5 + A6–A14 + E15–E19) | 0 | 19 |
+| Simple | 5 (S1–S5) | 15 (A6–A15 + E16–E20) | 20 |
+| Advanced | 15 (S1–S5 + A6–A15) | 5 (E16–E20) | 20 |
+| Expert | 20 (S1–S5 + A6–A15 + E16–E20) | 0 | 20 |
 
 **If your count does not match**: STOP. Re-read §0d and identify which questions were missed. Ask them now before continuing.
 
@@ -640,9 +664,9 @@ List the missing questions by ID (e.g., "A11, A12, A13, A14 were not yet asked")
 
 After completing 0a–0d, present a single summary before writing anything.
 
-> **Output the template below exactly.** Fill every `<label>` field. Show all 19
+> **Output the template below exactly.** Fill every `<label>` field. Show all 20
 > USER PREFERENCES dimensions — for defaulted values, append "(default)" to the
-> label. Do not omit Step 2.5 from NEXT STEPS. Do not rearrange or improvise.
+> label. Do not omit Step 2.5 or Step 2.8 from NEXT STEPS. Do not rearrange or improvise.
 
 ```text
 Pre-flight complete. Here is what I will do:
@@ -667,6 +691,7 @@ Pre-flight complete. Here is what I will do:
     Instruction editing:   <label>
     Refactoring appetite:  <label>
     Reporting format:      <label>
+    Skill search:          <label>
     Tool availability:     <label>
     Agent persona:         <label>
     VS Code settings:      <label>
@@ -677,6 +702,7 @@ Pre-flight complete. Here is what I will do:
     1.   Discover project stack (Step 1)
     2.   Populate instructions file with placeholders + user preferences (Step 2)
     2.5. Write agent files for model-pinned workflows (.github/agents/) (Step 2.5)
+    2.8. Scaffold skill library (.github/skills/) (Step 2.8)
     3.   Create workspace identity files (Step 3)
     4.   Capture METRICS baseline (Step 4)
     5.   Create documentation stubs (Step 5)
@@ -906,6 +932,36 @@ Guidelines:
 
 ---
 
+## Step 2.8 — Scaffold skill library
+
+Create `.github/skills/` if it does not exist. Then copy the four starter skills from the template:
+
+- **Fetch from template** *(recommended)*: Fetch each skill directly from the template repo:
+
+  ```text
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/skills/skill-creator/SKILL.md
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/skills/fix-ci-failure/SKILL.md
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/skills/lean-pr-review/SKILL.md
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/skills/conventional-commit/SKILL.md
+  ```
+
+- **Write from stubs**: Use the inline content below if network access is unavailable.
+
+For each skill, create `.github/skills/<name>/SKILL.md` in the user's project with the fetched or inline content. Substitute `{{PROJECT_NAME}}` if it appears.
+
+### Starter skills
+
+| Skill | What it does |
+|-------|-------------|
+| `skill-creator` | Meta-skill — teaches the agent how to author new skills following §12 |
+| `fix-ci-failure` | Systematic CI/GitHub Actions failure diagnosis and resolution |
+| `lean-pr-review` | Structured PR review using Lean waste categories (§6) and severity ratings |
+| `conventional-commit` | Write commit messages following the Conventional Commits specification |
+
+Set the `{{SKILL_SEARCH_PREFERENCE}}` placeholder value based on the A15 interview answer (default: `local-only`).
+
+---
+
 ## Step 3 — Scaffold workspace identity files
 
 > Apply the decisions made in Step 0b (keep / overwrite / selective).
@@ -1001,6 +1057,7 @@ This workspace was scaffolded on **{{SETUP_DATE}}** using the [copilot-instructi
 - `.github/agents/coding.agent.md` — model-pinned Coding agent (GPT-5.3-Codex)
 - `.github/agents/review.agent.md` — model-pinned Review agent (Claude Opus 4.6)
 - `.github/agents/fast.agent.md` — model-pinned Fast agent (Claude Haiku 4.5)
+- `.github/skills/` — reusable agent skill library (§12)
 - `.copilot/workspace/` — all six identity files
 - `CHANGELOG.md` — Keep-a-Changelog stub
 - `JOURNAL.md` — ADR journal with setup entry
@@ -1099,6 +1156,7 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `.copilot/workspace/TOOLS.md` | Effective tool usage patterns | — |
 | `.copilot/workspace/MEMORY.md` | Memory system strategy | — |
 | `.copilot/workspace/BOOTSTRAP.md` | Permanent setup origin record | — |
+| `.github/skills/*/SKILL.md` | Reusable agent skill library (§12) | — |
 | `CHANGELOG.md` | Keep-a-Changelog | — |
 | `JOURNAL.md` | ADR-style development journal | — |
 | `BIBLIOGRAPHY.md` | This file — complete file map | — |
@@ -1117,8 +1175,8 @@ See Step 4 for the stub — do not duplicate it here.
 
 1. **Review** everything created or modified and print a structured summary to the user.
 
-   > **Output the template below exactly.** Include the AGENT FILES section.
-   > List all 19 preference dimensions under USER PREFERENCES. Do not omit sections or improvise the layout.
+   > **Output the template below exactly.** Include the AGENT FILES and SKILLS sections.
+   > List all 20 preference dimensions under USER PREFERENCES. Do not omit sections or improvise the layout.
 
    ```text
    Setup complete. Here is what was done:
@@ -1139,6 +1197,11 @@ See Step 4 for the stub — do not duplicate it here.
      Note:     Model identifiers may need updating if models are retired.
                Run "Update your instructions" periodically to refresh recommendations.
 
+   SKILLS
+     Directory: .github/skills/
+     Scaffolded: <list of skills created, or "none">
+     Search preference: <local-only / official-only / official-and-community>
+
    WORKSPACE IDENTITY FILES
      Created: <list>
      Skipped (kept existing): <list>
@@ -1152,7 +1215,7 @@ See Step 4 for the stub — do not duplicate it here.
      Initial baseline row appended: [yes / skipped]
 
    USER PREFERENCES
-     <table of all 19 dimensions with labels>
+     <table of all 20 dimensions with labels>
 
    ANOMALIES
      <any decisions made that the user should verify, or "none">
