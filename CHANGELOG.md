@@ -21,15 +21,15 @@ Initial public release. All features below ship in this version.
 
 #### Core template
 - `.github/copilot-instructions.md` — generic Lean/Kaizen instructions template with `{{PLACEHOLDER}}` tokens throughout.
-  - §1 Development Philosophy (five Lean principles + PDCA cycle)
-  - §2 Agent Modes (Plan / Implement / Review / Refactor)
+  - §1 Lean Principles (five Lean principles)
+  - §2 Operating Modes (Implement / Review / Refactor / Planning)
   - §3 Standardised Work Baselines (LOC, dep budget, test count, type errors)
   - §4 Coding Conventions (language/runtime/patterns/anti-patterns)
-  - §5 Testing (framework, commands, rules)
-  - §6 Waste Categories / Muda (seven categories with code examples)
-  - §7 Documentation Update Ritual (Act-phase checklist)
+  - §5 PDCA Cycle (Plan–Do–Check–Act applied to every change)
+  - §6 Waste Catalogue / Muda (seven categories with code examples)
+  - §7 Metrics (Kaizen baseline snapshot table + improvement targets)
   - §8 Living Update Protocol (self-edit triggers, procedure, prohibited edits, template update trigger)
-  - §9 Subagent Delegation (modes, depth, compact protocol)
+  - §9 Subagent Protocol (modes, depth, compact delegation protocol)
   - §10 Project-Specific Overrides (placeholder resolution table + User Preferences slot)
 - Template version stamp: `> **Template version**: 1.0.0 | **Applied**: {{SETUP_DATE}}`
 
@@ -50,7 +50,14 @@ Initial public release. All features below ship in this version.
     - A9 Security sensitivity
     - A10 Change reporting format
   - Step 0e: pre-flight summary with 10-second countdown before any writes.
-  - Steps 1–6: stack discovery, placeholder resolution, identity file scaffolding, METRICS baseline, documentation stubs, SETUP.md self-destruct.
+  - Step 2.5: write model-pinned agent files (`.github/agents/`) for VS Code 1.106+.
+  - Steps 1–6: stack discovery, placeholder resolution, agent file creation, identity file scaffolding, METRICS baseline, documentation stubs, SETUP.md self-destruct.
+
+#### Model-pinned agents (VS Code 1.106+)
+- `.github/agents/setup.agent.md` — Setup agent pinned to Claude Sonnet 4.6 (onboarding & template operations). Fallback: Claude Sonnet 4.5 → GPT-5.1 → GPT-5 mini.
+- `.github/agents/coding.agent.md` — Coding agent pinned to GPT-5.3-Codex (implementation & refactoring, GA Feb 9 2026, 25% faster than 5.2-Codex, real-time steering). Fallback: GPT-5.2-Codex → GPT-5.1-Codex → GPT-5.1 → GPT-5 mini.
+- `.github/agents/review.agent.md` — Review agent pinned to Claude Opus 4.6 (architectural review, Agent Teams capability, 3× multiplier). Fallback: Claude Opus 4.5 → Claude Sonnet 4.6 → GPT-5.1.
+- `.github/agents/fast.agent.md` — Fast agent pinned to Claude Haiku 4.5 (quick questions, 0.33× cost). Fallback: Grok Code Fast 1 → GPT-5 mini → GPT-4.1.
 
 #### Update system
 - `UPDATE.md` — update protocol Copilot follows when triggered by "Update your instructions".
@@ -71,7 +78,7 @@ Initial public release. All features below ship in this version.
 #### Documentation stubs
 - `template/CHANGELOG.md` — Keep-a-Changelog format stub (for consumer projects).
 - `template/JOURNAL.md` — ADR-style journal stub.
-- `template/BIBLIOGRAPHY.md` — file catalogue stub.
+- `template/BIBLIOGRAPHY.md` — file catalogue stub (includes model-pinned agent file entries).
 - `template/METRICS.md` — Kaizen baseline snapshot table stub.
 
 #### Examples
