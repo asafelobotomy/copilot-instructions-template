@@ -98,9 +98,9 @@ A generic, **living** GitHub Copilot instructions template grounded in **Lean/Ka
 
 ---
 
-## Remote Bootstrap Sequence
+> **All sequences**: you are operating in the **user's current project**. All writes go there. Do not create, modify, or delete any files in `asafelobotomy/copilot-instructions-template`.
 
-Perform these steps in order. You are operating in the **user's current project** — not this template repo.
+## Remote Bootstrap Sequence
 
 ### 1 — Fetch SETUP.md
 
@@ -146,15 +146,9 @@ Setup outputs written to the **user's project**:
 | `METRICS.md` | Kaizen baseline snapshot table |
 | `.copilot/tools/INDEX.md` | Toolbox catalogue (created lazily on first tool save — §11) |
 
-### 4 — Do not write to this template repo
-
-You are a guest reading this repo. All writes go to the **user's current project**. Do not create, modify, or delete any files in `asafelobotomy/copilot-instructions-template`.
-
 ---
 
 ## Remote Update Sequence
-
-Perform these steps in order. You are operating in the **user's current project** — not this template repo.
 
 ### 1 — Fetch UPDATE.md
 
@@ -166,30 +160,11 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 
 ### 2 — Follow the update protocol
 
-Follow every step in `UPDATE.md` exactly, operating on the **user's current project**. The protocol guides you through:
-
-1. Reading the installed version from the user's `.github/copilot-instructions.md`.
-2. Fetching the current `VERSION`, `CHANGELOG.md`, and instructions template from this repo.
-3. Building a section-by-section change manifest (§1–§9 only; §10 is always protected).
-4. Presenting a Pre-flight Report to the user (version comparison, diff table, guardrail summary).
-5. Following the user's chosen decision path:
-   - **U — Update all**: apply all available changes at once.
-   - **S — Skip**: do nothing.
-   - **C — Customise**: review each change individually with Apply / Skip / Customise options.
-6. Creating an automatic backup in `.github/archive/pre-update-YYYY-MM-DD-vX.Y.Z/` before any writes.
-7. Writing confirmed changes and updating the version stamp.
-8. Appending to `JOURNAL.md` and `CHANGELOG.md`.
-9. Printing the "Updated! ✓" confirmation with the backup location.
-
-### 3 — Do not write to this template repo
-
-You are a guest reading this repo. All writes go to the **user's current project**. Do not create, modify, or delete any files in `asafelobotomy/copilot-instructions-template`.
+Follow every step in `UPDATE.md` exactly. The protocol: reads installed version; fetches current `VERSION`/`CHANGELOG.md`/template; builds §1–§9 change manifest (§10 always protected); presents Pre-flight Report; user chooses **U** (update all) / **S** (skip) / **C** (customise per-section); backs up to `.github/archive/pre-update-YYYY-MM-DD-vX.Y.Z/`; writes confirmed changes; appends to `JOURNAL.md` and `CHANGELOG.md`.
 
 ---
 
 ## Remote Restore Sequence
-
-Perform these steps in order. You are operating in the **user's current project** — not this template repo.
 
 ### 1 — Fetch UPDATE.md
 
@@ -201,19 +176,7 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 
 ### 2 — Follow the Restore sequence
 
-Locate the **"## Restore from backup"** section in UPDATE.md and follow it exactly. The sequence:
-
-1. Scans `.github/archive/` for `pre-update-*` directories.
-2. Lists backups with version info from each `BACKUP-MANIFEST.md`.
-3. Asks the user which backup to restore.
-4. Creates a **pre-restore snapshot** of the current instructions before overwriting anything (restoration is always reversible).
-5. Copies the selected backup's `copilot-instructions.md` to `.github/copilot-instructions.md`.
-6. Appends to `JOURNAL.md` and `CHANGELOG.md`.
-7. Prints the "Restored! ✓" confirmation.
-
-### 3 — Do not write to this template repo
-
-All writes go to the **user's current project**. Do not create, modify, or delete any files in `asafelobotomy/copilot-instructions-template`.
+Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/archive/` for `pre-update-*` dirs; lists backups from `BACKUP-MANIFEST.md`; asks user to select; creates a pre-restore snapshot; copies selected backup to `.github/copilot-instructions.md`; appends to `JOURNAL.md` and `CHANGELOG.md`.
 
 ---
 

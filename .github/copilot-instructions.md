@@ -1,7 +1,7 @@
 # Copilot Instructions — {{PROJECT_NAME}}
 
 > **Template version**: 1.0.2 | **Applied**: {{SETUP_DATE}}
-> This file is a *living document*. See §8 for self-edit rules and template update instructions.
+> Living document — self-edit rules in §8.
 
 > **Model Quick Reference** — select model in Copilot picker before starting each task, or use `.github/agents/` (VS Code 1.106+). [Why these models?](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)
 >
@@ -14,7 +14,7 @@
 > | Complex debugging & reasoning | Claude Opus 4.6 *(3×)* → Claude Sonnet 4.6 *(1×)* | GPT-5 mini |
 > | Quick questions / lightweight | Claude Haiku 4.5 *(0.33×)* | GPT-5 mini |
 >
-> Model names change frequently. If a model is missing from your picker, check [Supported AI models](https://docs.github.com/en/copilot/reference/ai-models/supported-models) and update the agent files.
+> If a model is missing from your picker, check [Supported AI models](https://docs.github.com/en/copilot/reference/ai-models/supported-models) and update agent files.
 
 ---
 
@@ -28,7 +28,7 @@
 | 4 | Establish pull | Build only what is needed, when it is needed |
 | 5 | Seek perfection | Small, continuous improvements (Kaizen) over big rewrites |
 
-**Waste taxonomy** (§6 provides full detail):
+**Waste taxonomy** (§6):
 - Overproduction · Waiting · Transport · Over-processing · Inventory · Motion · Defects · Unused talent
 
 ---
@@ -39,7 +39,7 @@ Switch modes explicitly. Default is **Implement**.
 
 ### Implement Mode (default)
 - Plan → implement → test → document in one uninterrupted flow.
-- Full PDCA cycle for every non-trivial change.
+- Full PDCA for every non-trivial change.
 - Three-check ritual before marking a task complete.
 - Update `BIBLIOGRAPHY.md` on every file create/rename/delete.
 
@@ -52,11 +52,11 @@ Switch modes explicitly. Default is **Implement**.
 #### Extension Review
 When asked to review or recommend VS Code extensions:
 
-0. **Get installed extensions** — Copilot chat cannot enumerate installed extensions directly. Ask the user to run and paste the output:
+0. **Get installed extensions** — ask user to run and paste (Copilot cannot enumerate installed extensions directly):
    ```
    code --list-extensions | sort
    ```
-   Also read `.vscode/extensions.json` (workspace recommendations) and `.vscode/settings.json` (extension-specific config) if they exist. Both sources together give the complete picture.
+   Also read `.vscode/extensions.json` and `.vscode/settings.json` if they exist.
 
 1. **Audit current state**:
    - Cross-reference the installed list from step 0 against workspace recommendations.
@@ -98,9 +98,9 @@ When asked to review or recommend VS Code extensions:
    a. Search the VS Code Marketplace for relevant extensions
    b. Qualify by: install count > 100 k · rating ≥ 4.0 · updated within 12 months
    c. Add qualifying finds to the report under **➕ Recommended additions**
-   d. Append the new mapping to `.copilot/workspace/TOOLS.md` under an **"Extension registry"** heading — this persists the discovery for future audits in this project
+   d. Append the new mapping to `.copilot/workspace/TOOLS.md` under **"Extension registry"**
 
-6. **Present in chat** (do not write `.vscode/extensions.json` unless explicitly instructed):
+6. **Present in chat**:
 
    ```markdown
    ## Extension Review — {{PROJECT_NAME}}
@@ -119,7 +119,7 @@ When asked to review or recommend VS Code extensions:
    - (stack-specific context, unknown stacks discovered, extension registry updates made)
    ```
 
-7. **Wait for user action** — present recommendations, then wait. Do not modify `.vscode/extensions.json` or install/uninstall extensions unless the user explicitly says *"Apply these changes"* or *"Write the updated extensions.json"*.
+7. **Wait** — do not modify `.vscode/extensions.json` or install/uninstall extensions until user says *"Apply these changes"* or *"Write the updated extensions.json"*.
 
 
 #### Test Coverage Review
@@ -141,9 +141,9 @@ When asked to review test coverage, recommend tests, or audit the test suite:
    | `build.gradle` (Gradle) | JUnit + JaCoCo | `./gradlew test jacocoTestReport` |
    | `*.spec.rb`, `Gemfile` + rspec | RSpec + SimpleCov | `bundle exec rspec --format progress` |
 
-   Also read `{{TEST_COMMAND}}`, `{{TEST_FRAMEWORK}}`, and any CI workflow files (`.github/workflows/`) for already-configured test steps.
+   Also read `{{TEST_COMMAND}}`, `{{TEST_FRAMEWORK}}`, and `.github/workflows/` for configured test steps.
 
-1. **Get coverage data** — Copilot chat cannot run commands directly. Ask the user to run the coverage command from step 0 and paste the output. If the project has no coverage tooling configured, note that and move to step 2 using static analysis only.
+1. **Get coverage data** — cannot run commands directly. Ask user to run the step-0 command and paste output. If no tooling exists, note it and proceed with step 2 (static analysis).
 
 2. **Scan test files statically**:
    - Count test files (`*.test.*`, `*.spec.*`, `*_test.*`, `test_*.py`, `*Test.java`, `*_test.go`, etc.)
@@ -175,7 +175,7 @@ When asked to review test coverage, recommend tests, or audit the test suite:
 
    For each recommendation: include a ready-to-use YAML snippet the user can copy directly into `.github/workflows/`.
 
-6. **Present in chat** (do not write any files unless explicitly asked):
+6. **Present in chat**:
 
    ````markdown
    ## Test Coverage Review — {{PROJECT_NAME}}
@@ -216,7 +216,7 @@ When asked to review test coverage, recommend tests, or audit the test suite:
    - <framework-specific context, tooling gaps, coverage tooling not yet installed>
    ````
 
-7. **Wait for user action** — present the report, then wait. Do not write test files, workflow files, or config changes unless the user explicitly asks to implement a specific recommendation.
+7. **Wait** — do not write test files, workflow files, or config until user explicitly asks.
 ### Refactor Mode
 - No behaviour changes. Tests must pass before and after.
 - Measure LOC delta. Flag if a refactor increases LOC without justification.
@@ -228,8 +228,6 @@ When asked to review test coverage, recommend tests, or audit the test suite:
 ---
 
 ## §3 — Standardised Work Baselines
-
-These baselines apply to all modes unless overridden in §10.
 
 | Baseline | Value | Action if exceeded |
 |----------|-------|--------------------|
@@ -256,8 +254,8 @@ These baselines apply to all modes unless overridden in §10.
 
 **Universal rules**:
 - No `any` / untyped unless explicitly commented with `// deliberately untyped: <reason>`.
-- No silent error swallowing. Every caught error must be logged or re-thrown.
-- No commented-out code in commits. Delete it; git history is the undo stack.
+- No silent error swallowing — log or re-throw.
+- No commented-out code — git history is the undo stack.
 - Imports are grouped: stdlib → third-party → internal. One blank line between groups.
 - Functions do one thing. If you need "and" in the name, split it.
 
@@ -415,13 +413,7 @@ Need a tool for task X
 
 `.copilot/tools/` is created on first tool save (no setup step required). Contents:
 
-| File | Purpose |
-|------|---------|
-| `INDEX.md` | Tool catalogue — always kept current |
-| `*.sh` | Shell / bash tools |
-| `*.py` | Python tools |
-| `*.js` / `*.ts` | Node / Deno tools |
-| `*.mcp.json` | MCP server configurations |
+Files: `INDEX.md` (catalogue) · `*.sh` · `*.py` · `*.js`/`*.ts` · `*.mcp.json`
 
 **INDEX.md row format**:
 
@@ -450,7 +442,6 @@ Need a tool for task X
 - `destructive` — deletes files, overwrites data, or writes to remote systems; **must pause and confirm with the user before execution**, regardless of session autonomy level
 
 **Other rules**:
-- Adapted tools: preserve lineage — `# source: <url-or-original-tool-name>`
 - Tools must be idempotent where possible
 - Tools must not hardcode project-specific paths, names, or secrets — accept arguments
 - Retire unused tools: mark `[DEPRECATED]` in INDEX.md; counts as W1 (Overproduction)
