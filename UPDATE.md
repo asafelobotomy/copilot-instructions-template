@@ -1,6 +1,6 @@
 # Update Protocol — copilot-instructions-template
 
-> **For Copilot**: This document defines the update process. Follow every step precisely. Do **not** write anything to the user's project until the user has confirmed the update plan after the Pre-flight Report.
+> **For Copilot**: This document defines the update process. Follow every step precisely. Do **not** write anything to the user's project until the user has confirmed the update plan after the Pre-flight Report — except for the automatic backup, which is always created silently before the first write.
 >
 > **For the human**: Open a Copilot chat and say one of the trigger phrases below. Copilot will fetch this document, check for updates, and walk you through the process.
 
@@ -17,7 +17,13 @@ When a user says any of the following in a project that already has Copilot inst
 - *"Check the template for updates"*
 - *"Force check instruction updates"* *(bypasses version equality check — see end of document)*
 
-...perform the **Pre-flight Sequence** below.
+To restore a previous version after an update:
+
+- *"Restore instructions from backup"*
+- *"Roll back the instructions update"*
+- *"List instruction backups"*
+
+...perform the corresponding sequence below.
 
 ---
 
@@ -148,6 +154,14 @@ After completing U1–U5, present this report. Do not write anything yet.
   Resolved placeholder values:     PROTECTED (never reverted)
 
   ────────────────────────────────────────────────────────────────
+  BACKUP
+  ────────────────────────────────────────────────────────────────
+  A backup of your current instructions will be created automatically
+  in .github/archive/pre-update-YYYY-MM-DD-vX.Y.Z/ before any changes
+  are written. You can restore from it at any time by saying
+  "Restore instructions from backup".
+
+  ────────────────────────────────────────────────────────────────
   HOW DO YOU WANT TO PROCEED?
   ────────────────────────────────────────────────────────────────
   U — Update all    Apply all available changes at once.
@@ -161,9 +175,81 @@ Wait for the user's response before proceeding.
 
 ---
 
+## Pre-write Backup
+
+**This step is automatic and mandatory. It runs immediately after the user's first confirmatory response (U, C + final "yes", or any write-triggering input) and before the first file write. It does not run for path S.**
+
+### What to back up
+
+1. **`.github/copilot-instructions.md`** — the full installed instructions file, exactly as it exists right now.
+
+That's the only file that the update modifies. No other files need to be backed up by this process.
+
+### Where to store it
+
+Create the directory:
+
+```
+.github/archive/pre-update-<TODAY>-v<INSTALLED_VERSION>/
+```
+
+Where:
+- `<TODAY>` is today's date in `YYYY-MM-DD` format.
+- `<INSTALLED_VERSION>` is the version extracted in U1 (or `unknown` if the stamp was absent).
+
+If that directory already exists (e.g., the user ran an update twice on the same day from the same version), append a counter: `-2`, `-3`, etc.
+
+Inside that directory, create two files:
+
+#### `copilot-instructions.md`
+
+An exact byte-for-byte copy of the current `.github/copilot-instructions.md`.
+
+#### `BACKUP-MANIFEST.md`
+
+```markdown
+# Backup Manifest
+
+| Field | Value |
+|-------|-------|
+| Backup created | <TODAY> |
+| Installed version at backup | <INSTALLED_VERSION> |
+| Update target version | <NEW_VERSION> |
+| Trigger | User ran "Update your instructions" |
+| Files backed up | `.github/copilot-instructions.md` |
+
+## Sections that were changed in this update
+
+<list of sections with UPDATED / NEW_SECTION / USER_MODIFIED status
+ from the change manifest — or "none (update was skipped)">
+
+## How to restore
+
+Say to Copilot: *"Restore instructions from backup"*
+
+Copilot will list all available backups in `.github/archive/` and let you
+choose which one to restore. Restoration replaces the current
+`.github/copilot-instructions.md` with the backed-up copy, then writes
+a JOURNAL entry noting the rollback.
+```
+
+### Confirming the backup
+
+After the backup directory and files are created, print a single line before proceeding with writes:
+
+```
+Backup created at .github/archive/pre-update-<TODAY>-v<INSTALLED_VERSION>/
+```
+
+Then immediately continue with the write phase — no user interaction required.
+
+---
+
 ## Decision paths
 
 ### U — Update all
+
+> **Pre-write Backup runs before this path begins.**
 
 Apply all `UPDATED` and `NEW_SECTION` items in one pass.
 
@@ -189,7 +275,7 @@ Apply all `UPDATED` and `NEW_SECTION` items in one pass.
 
 ### S — Skip
 
-Do nothing. State:
+No writes. No backup.
 
 ```
 No changes made. Your instructions remain at version X.Y.Z.
@@ -244,7 +330,7 @@ Review complete.
 Shall I write these changes now? (yes / no)
 ```
 
-Wait for confirmation before writing anything.
+> **Pre-write Backup runs here — immediately after "yes", before the first write.**
 
 ---
 
@@ -287,6 +373,7 @@ Update it to:
 **Applied**: <comma-separated list of updated/added sections, or "none">
 **Skipped**: <comma-separated list, or "none">
 **Customised**: <comma-separated list with one-line note per item, or "none">
+**Backup**: `.github/archive/pre-update-TODAY-vOLD/`
 ```
 
 ### 3 — Append to CHANGELOG.md
@@ -297,6 +384,7 @@ Add under `## [Unreleased]` (or create that section if absent):
 ### Changed
 - Copilot instructions updated from template v<OLD> to v<NEW>.
   Sections updated: <list>. Skipped: <list>.
+  Backup at: `.github/archive/pre-update-TODAY-v<OLD>/`
 ```
 
 ### 4 — Print the confirmation
@@ -315,9 +403,119 @@ Updated! ✓
     Migrated / user-added content blocks
     Resolved placeholder values
 
+  Backup:  .github/archive/pre-update-TODAY-v<OLD>/
+           (restore anytime: say "Restore instructions from backup")
+
   <anomaly list, if any — or omit this block>
 
   JOURNAL.md and CHANGELOG.md updated.
+```
+
+---
+
+## Restore from backup
+
+### Trigger phrases
+
+- *"Restore instructions from backup"*
+- *"Roll back the instructions update"*
+- *"List instruction backups"*
+
+### Restore sequence
+
+#### R1 — List available backups
+
+Scan the `.github/archive/` directory for subdirectories matching the pattern `pre-update-*`.
+
+If none exist, report:
+
+```
+No instruction backups found in .github/archive/.
+Backups are created automatically when you run "Update your instructions".
+```
+
+And stop.
+
+If backups exist, list them:
+
+```
+Available instruction backups:
+
+  1.  pre-update-2026-02-19-v1.0.0/   (installed: 2026-02-19)
+  2.  pre-update-2026-03-10-v1.1.0/   (installed: 2026-03-10)
+  ...
+
+Which backup would you like to restore? Enter a number, or say "cancel".
+```
+
+#### R2 — Show the backup manifest
+
+After the user selects a backup, read `BACKUP-MANIFEST.md` from that directory and show it:
+
+```
+Selected: pre-update-<DATE>-v<VERSION>/
+
+  Backed up:  <DATE>
+  Version:    <VERSION>
+  Changed sections: <list>
+
+Restoring this backup will replace your current .github/copilot-instructions.md.
+Your current file will be backed up first at:
+  .github/archive/pre-restore-<TODAY>-<CURRENT_VERSION>/
+
+Proceed? (yes / no)
+```
+
+Wait for confirmation.
+
+#### R3 — Back up the current file before restoring
+
+Before overwriting anything, create a new backup of the *current* instructions — the ones that are about to be replaced — using the same backup format:
+
+```
+.github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/
+  copilot-instructions.md    ← copy of the file being replaced
+  BACKUP-MANIFEST.md         ← records this as a pre-restore snapshot
+```
+
+This means restoration is always reversible.
+
+#### R4 — Restore
+
+Copy `copilot-instructions.md` from the selected backup directory to `.github/copilot-instructions.md`, replacing the current file exactly.
+
+#### R5 — Record the restoration
+
+Append to `JOURNAL.md`:
+
+```markdown
+## TODAY — Instructions restored from backup
+
+**Restored from**: `.github/archive/pre-update-<DATE>-v<VERSION>/`
+**Pre-restore snapshot**: `.github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/`
+**Reason**: User-initiated rollback.
+```
+
+Append to `CHANGELOG.md` under `## [Unreleased]`:
+
+```markdown
+### Reverted
+- Copilot instructions restored from backup `pre-update-<DATE>-v<VERSION>`.
+  Pre-restore snapshot saved at `.github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/`.
+```
+
+#### R6 — Confirmation
+
+```
+Restored! ✓
+
+  Restored from: .github/archive/pre-update-<DATE>-v<VERSION>/
+  Pre-restore snapshot saved at:
+    .github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/
+
+  JOURNAL.md and CHANGELOG.md updated.
+  (To undo this restore, say "Restore instructions from backup" and
+   select the pre-restore snapshot.)
 ```
 
 ---
