@@ -13,6 +13,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ### Fixed
 
+- `SETUP.md §0d` — root-cause fix for agents silently skipping the preference interview:
+  - **RC1 (tool limit)**: `ask_questions` accepts max 4 questions per call; `§0d` previously instructed agents to present all questions in one interaction (physically impossible). Added a dedicated **Tooling and Batch Plan** sub-section with a 7-batch table, per-tier manifests, and explicit "collect answers before issuing the next batch" directives.
+  - **RC2 (option overflow)**: E16 (agent persona) had 7 options (A–G) but the tool enforces a 6-option maximum (auto-appends "Other"). Removed option G ("Custom — type it now"); the tool's built-in "Other" now covers custom input.
+  - **RC3 (no guardrails)**: Added ⛔ **MANDATORY INTERACTIVE PROTOCOL** stop-sign block before §0a; added ⛔ **INTERACTIVE CHECKPOINT** inside §0d. Both blocks instruct the agent to halt if it cannot ask questions interactively.
+  - **RC4 (no verification)**: Added **Interview Verification Gate** between the last question set and §0e — a tier/count check table with an explicit STOP instruction if answers fall short.
+  - **RC5 (improvised output)**: Added rigid template directives above the §0e pre-flight summary and above the Step 6 final summary, preventing agents from paraphrasing or omitting sections.
+- `SETUP.md` inline `setup.agent.md` stub and `.github/agents/setup.agent.md` — added four enforcement guidelines: interactive interview only, batch plan usage, answer-count verification, strict template copying.
+- `SETUP.md` inline `setup.agent.md` stub — closing code-fence and `### .github/agents/coding.agent.md` heading were accidentally dropped by a prior edit; restored.
 - `docs/SETUP-GUIDE.md` §0d — rewrote preference interview section for 3-tier system (was still describing old 2-tier with "5 or 10 questions" and missing A11–A14 / E15–E19).
 - `docs/INSTRUCTIONS-GUIDE.md` — corrected "ten numbered sections (§1–§10)" → "eleven numbered sections (§1–§11)"; added full §11 Tool Protocol section writeup.
 - `docs/AGENTS-GUIDE.md` — corrected stale "handles the 10-question interview" → "handles the 3-tier preference interview (5–19 questions)".
@@ -22,6 +30,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ### Changed
 
+- `.github/copilot-instructions.md` Model Quick Reference — added ⚠️ Codex models warning: `GPT-5.x-Codex` models run autonomously and cannot present interactive prompts; the setup interview will be silently skipped when a Codex model is active.
+- `AGENTS.md` "What this repo is" section — added same Codex model warning directing users to the Setup agent (pinned to Claude Sonnet 4.6).
+- `README.md` Quickstart — added ⚠️ callout warning that Codex models skip the interactive interview; directs users to the `@setup` agent or an interactive model.
+- `README.md` agents table — updated Setup agent role note to include "batched with verification gate".
 - `.github/copilot-instructions.md` §10 User Preferences — expanded blank stub to a 19-row table template showing all preference dimensions (S1–E19) with empty Setting / Instruction columns ready for population.
 - `.github/workflows/ci.yml` — added `LICENSE` and `CONTRIBUTING.md` to required-files check.
 - `SETUP.md §0d` — preference interview expanded to 3-tier system (Simple 5 / Advanced +9 / Expert +5 = 19 total questions). All tiers produce an equally-capable agent — higher tiers unlock deeper customisation rather than adding features:
@@ -29,7 +41,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
   - Advanced (A6–A14): code style refined to cover linter/formatter configs; **new**: file size discipline (§3 LOC thresholds), dependency management, instruction self-editing (§8 controls), refactoring appetite; old "change reporting" demoted to A14
   - Expert (E15–E19): **new** — tool/dependency availability behaviour, agent persona (Professional/Mentor/Pair-programmer/Ship-it captain/Zen master/Rubber duck/Custom), VS Code settings management, global autonomy override (1–5 failsafe), mood lightener
   - Mode selection now offers S / A / E (was S / A)
-  - All answers still collected per-tier in a single batched interaction
   - Defaults tables expanded to cover all 19 dimensions for each tier
 
 ### Added
