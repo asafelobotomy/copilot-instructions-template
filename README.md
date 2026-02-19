@@ -1,6 +1,6 @@
 # copilot-instructions-template
 
-A **generic, living** GitHub Copilot instructions template grounded in **Lean / Kaizen** methodology. Drop it into any project — new or existing — and Copilot will run a one-time setup to tailor everything to that project's stack, then continue to improve the instructions as patterns emerge.
+A **generic, customizable, living** GitHub Copilot instructions template grounded in **Lean / Kaizen** methodology. Drop it into any project — new or existing — and Copilot will run a one-time setup to tailor everything to that project's stack, then continue to improve the instructions as patterns emerge.
 
 ---
 
