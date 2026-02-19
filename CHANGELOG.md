@@ -13,6 +13,36 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [1.0.1] — 2026-02-19
+
+### Added
+- `.github/agents/setup.agent.md` — model-pinned Setup agent (Claude Sonnet 4.6). File existed in documentation but had never been committed to the repo; now present.
+- `.github/agents/coding.agent.md` — model-pinned Coding agent (GPT-5.3-Codex). Same.
+- `.github/agents/review.agent.md` — model-pinned Review agent (Claude Opus 4.6). Same.
+- `.github/agents/fast.agent.md` — model-pinned Fast agent (Claude Haiku 4.5). Same.
+- `docs/INSTRUCTIONS-GUIDE.md` — human-readable guide to `.github/copilot-instructions.md`.
+- `docs/SETUP-GUIDE.md` — human-readable walkthrough of the setup process.
+- `docs/UPDATE-GUIDE.md` — human-readable explanation of the update/restore protocol.
+- `docs/AGENTS-GUIDE.md` — human-readable guide to trigger phrases and model-pinned agents.
+
+### Changed
+- `README.md` — added `.github/agents/`, `AGENTS.md`, `UPDATE.md` to "What this gives you" table; added `docs/` section with links to human guides; updated file tree to match actual repo structure.
+- `AGENTS.md` — added four `.github/agents/*.agent.md` entries to file map and bootstrap outputs table.
+- `UPDATE.md` — corrected all `## 10. Project-Specific Overrides` references to `## §10 — Project-Specific Overrides`; replaced ASCII-art pre-flight report block with clean markdown table (~1 400 chars saved); updated stale section names in diff example.
+- `template/BIBLIOGRAPHY.md` — added "Model-pinned agents" section with all four agent file entries.
+- `template/workspace/BOOTSTRAP.md` — added four agent file rows to setup outputs table.
+- `SETUP.md` — Step 2.5 now offers fetching agent files directly from the template repo as the preferred option, with inline stubs as fallback.
+
+### Fixed
+- `CHANGELOG.md` (this file) — corrected six stale section names that no longer matched the live copilot-instructions.md headings (§1, §2, §5, §6, §7, §9).
+- `UPDATE.md` — same six stale section names corrected in the diff table example.
+- `AGENTS.md` — same stale section names corrected.
+
+### Refactored
+- `.github/copilot-instructions.md` — seven lossless token-saving compressions applied (~63 tokens saved); no semantic change.
+
+---
+
 ## [1.0.0] — 2026-02-19
 
 Initial public release. All features below ship in this version.
