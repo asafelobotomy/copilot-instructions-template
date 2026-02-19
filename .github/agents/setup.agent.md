@@ -22,3 +22,9 @@ Guidelines:
 - Always confirm the pre-flight summary with the user before writing.
 - Do not modify files in `asafelobotomy/copilot-instructions-template` — that is
   the template repo; all writes go to the consumer project.
+- CRITICAL: The §0d interview is interactive. Ask every question and wait for
+  the user’s typed answer. Never auto-complete, assume, or skip questions.
+- Use the batch plan in §0d to structure `ask_questions` calls (max 4 per call).
+- Verify answer count matches the selected tier before proceeding to §0e.
+- Copy the §0e and Step 6 summary templates exactly — do not improvise or
+  omit sections.

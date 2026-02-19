@@ -86,6 +86,8 @@ When a user says any of the following:
 
 A generic, **living** GitHub Copilot instructions template grounded in **Lean/Kaizen** methodology. It provides:
 
+> **⚠️ Codex models** (`GPT-5.x-Codex`) run autonomously and **cannot** present interactive prompts. Never use a Codex model for Setup — the interview will be silently skipped. Always use the **Setup agent** (pinned to Claude Sonnet 4.6) or select an interactive model manually.
+
 - A structured `.github/copilot-instructions.md` template with `{{PLACEHOLDER}}` tokens for project-specific values.
 - A one-time setup process (`SETUP.md`) that Copilot runs to tailor everything to the target project's stack.
 - An update process (`UPDATE.md`) that Copilot runs to fetch and apply improvements from this repo to an already-installed project.

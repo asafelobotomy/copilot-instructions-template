@@ -14,6 +14,8 @@
 > | Complex debugging & reasoning | Claude Opus 4.6 *(3×)* → Claude Sonnet 4.6 *(1×)* | GPT-5 mini |
 > | Quick questions / lightweight | Claude Haiku 4.5 *(0.33×)* | GPT-5 mini |
 >
+> **⚠️ Codex models** (`GPT-5.x-Codex`) are designed for **autonomous, headless execution** and **cannot** present interactive prompts. Never use a Codex model for Setup/onboarding — the interview will be silently skipped. The Setup agent pins Claude Sonnet 4.6 for this reason.
+>
 > If a model is missing from your picker, check [Supported AI models](https://docs.github.com/en/copilot/reference/ai-models/supported-models) and update agent files.
 
 ---

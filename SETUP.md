@@ -15,6 +15,24 @@
 
 ---
 
+> ⛔ **MANDATORY: THIS IS AN INTERACTIVE INTERVIEW — NOT A TASK LIST**
+>
+> This document contains an interview that MUST be conducted interactively with the user.
+> Each question requires the user's typed response before proceeding.
+>
+> - Do NOT assume, infer, or auto-fill any answer.
+> - Do NOT skip the interview or use defaults without the user explicitly typing "skip."
+> - Do NOT proceed past any "Wait for..." instruction without a user response in chat.
+> - If you are unable to ask questions interactively (e.g., running as a background
+>   coding agent, in a CI pipeline, or in batch/autonomous mode), **STOP** and tell the user:
+>   *"This setup requires an interactive chat session. Please use the Setup agent
+>   (@setup) or run this in an interactive Copilot chat window."*
+> - **Codex models** (GPT-5.3-Codex, GPT-5.2-Codex, etc.) are designed for autonomous
+>   execution and are **not suitable for this setup**. Use the Setup agent (@setup),
+>   which pins Claude Sonnet 4.6 for interactive instruction-following.
+
+---
+
 ## Step 0 — Pre-flight
 
 Before writing anything, run steps 0a through 0e in order. No files should be created or modified until Step 0e is complete and confirmed.
@@ -133,6 +151,11 @@ If **"append entries"**: for each existing file, append the appropriate setup en
 ### 0d — User Preference Interview
 
 > **Purpose**: Before building the instructions, learn how you want Copilot to behave in this project. Answers are written into §10 of the instructions file and used throughout to calibrate Copilot's tone, depth, and autonomy. This interview takes 1–3 minutes depending on the setup level you choose.
+>
+> ⛔ **INTERACTIVE CHECKPOINT**: You are about to conduct a user interview.
+> Each batch of questions below MUST be asked via `ask_questions` (or as text
+> if the tool is unavailable) and you MUST wait for the user's response before
+> proceeding to the next batch. Do not auto-fill or skip.
 
 Present the following to the user:
 
@@ -152,9 +175,29 @@ Wait for the user's response, then proceed with the corresponding question set b
 
 ---
 
-#### Simple Setup — 5 questions
+#### Tooling and Batch Plan
 
-Present **all 5 questions together in a single interaction** — do not ask them one at a time. List each question with its lettered options. Collect all answers before proceeding.
+> **`ask_questions` tool constraints**: max **4 questions per call**, max **6 options per question**, `header` max **12 characters**. If `ask_questions` is not available (e.g., non-VS-Code IDE, GitHub.com chat), present questions as numbered text in chat and wait for the user's typed response to each batch before continuing.
+
+Use the batch plan below. Do not combine questions across tiers in a single call. Wait for the user's response to each batch before issuing the next.
+
+| Batch | Tier | Questions | Suggested headers |
+|-------|------|-----------|-------------------|
+| 1 | Simple | S1, S2, S3, S4 | Style, Level, Mode, Testing |
+| 2 | Simple | S5 | Autonomy |
+| 3 | Advanced | A6, A7, A8, A9 | Code style, Docs, Errors, Security |
+| 4 | Advanced | A10, A11, A12, A13 | File size, Deps, Self-edit, Refactor |
+| 5 | Advanced | A14 | Reporting |
+| 6 | Expert | E15, E16, E17, E18 | Tools, Persona, VS Code, Failsafe |
+| 7 | Expert | E19 | Mood |
+
+**Simple** = batches 1–2. **Advanced** = batches 1–5. **Expert** = batches 1–7.
+
+---
+
+#### Simple Setup — 5 questions (batches 1–2)
+
+Present questions in **2 batches** following the batch plan above. Collect answers from each batch before issuing the next.
 
 ---
 
@@ -242,9 +285,14 @@ Present **all 5 questions together in a single interaction** — do not ask them
 
 ---
 
-#### Advanced Setup — 9 additional questions
+#### Advanced Setup — 9 additional questions A6–A14 (batches 3–5)
 
-If the user chose **A — Advanced Setup** or **E — Expert Setup**, present **all 9 additional questions together in a single interaction** immediately after receiving Simple Setup answers — do not ask them one at a time. If the user chose **S — Simple Setup**, skip these and proceed to 0e.
+If the user chose **A — Advanced Setup** or **E — Expert Setup**, present these 9 questions in **3 batches** following the batch plan above. Collect answers from each batch before issuing the next. If the user chose **S — Simple Setup**, skip these and proceed to 0e.
+
+**Questions in this section** (verify all 9 are asked):
+A6 (Code style) · A7 (Documentation) · A8 (Error handling) · A9 (Security) ·
+A10 (File size) · A11 (Dependencies) · A12 (Instruction editing) ·
+A13 (Refactoring) · A14 (Reporting format)
 
 ---
 
@@ -406,9 +454,13 @@ If the user chose **A — Advanced Setup** or **E — Expert Setup**, present **
 
 ---
 
-#### Expert Setup — 5 additional questions
+#### Expert Setup — 5 additional questions E15–E19 (batches 6–7)
 
-If the user chose **E — Expert Setup**, present **all 5 expert questions together in a single interaction** immediately after receiving Advanced Setup answers. If the user chose **S — Simple Setup** or **A — Advanced Setup**, skip these and proceed to 0e.
+If the user chose **E — Expert Setup**, present these 5 questions in **2 batches** following the batch plan above. Collect answers from each batch before issuing the next. If the user chose **S — Simple Setup** or **A — Advanced Setup**, skip these and proceed to 0e.
+
+**Questions in this section** (verify all 5 are asked):
+E15 (Tool availability) · E16 (Agent persona) · E17 (VS Code settings) ·
+E18 (Global autonomy) · E19 (Mood lightener)
 
 ---
 
@@ -438,7 +490,8 @@ If the user chose **E — Expert Setup**, present **all 5 expert questions toget
 > **D — Ship-it captain**: High-energy, goal-focused. Celebrates wins. Keeps momentum high. 🚀
 > **E — Zen master**: Calm, philosophical. Values simplicity. Occasionally quotes programming wisdom.
 > **F — Rubber duck**: Minimal. Repeats your problem back in clearer terms. Asks clarifying questions. Lets you find the answer.
-> **G — Custom**: Describe your ideal persona. *(Type it now.)*
+>
+> *(The tool's built-in "Other" option allows you to describe a custom persona if none of the above fit.)*
 
 | Answer | Instruction written to §10 |
 |--------|---------------------------|
@@ -448,7 +501,7 @@ If the user chose **E — Expert Setup**, present **all 5 expert questions toget
 | D | "Adopt a ship-it captain persona. Be high-energy and goal-focused. Celebrate wins ('Ship it! 🚀', 'Nice catch!'). Keep momentum high. Break down blockers aggressively." |
 | E | "Adopt a zen master persona. Be calm and composed. Value simplicity above all. Occasionally share relevant programming wisdom ('Premature optimisation is the root of all evil'). Prefer the simplest solution." |
 | F | "Adopt a rubber-duck persona. Be minimal. Repeat the user's problem back in clearer terms. Ask clarifying questions before offering solutions. Help the user reason through the problem themselves." |
-| G | *(User types their persona description)* — Record verbatim as the persona instruction. |
+| Other | *(User types their persona description)* — Record verbatim as the persona instruction. |
 
 ---
 
@@ -567,9 +620,29 @@ Once all questions are answered, construct the following block and write it into
 
 ---
 
+#### Interview Verification Gate — STOP and verify
+
+Before proceeding to 0e, count your collected answers and verify against this table:
+
+| Tier | User answers | Defaults applied | Total rows in §10 |
+|------|-------------|-----------------|-------------------|
+| Simple | 5 (S1–S5) | 14 (A6–A14 + E15–E19) | 19 |
+| Advanced | 14 (S1–S5 + A6–A14) | 5 (E15–E19) | 19 |
+| Expert | 19 (S1–S5 + A6–A14 + E15–E19) | 0 | 19 |
+
+**If your count does not match**: STOP. Re-read §0d and identify which questions were missed. Ask them now before continuing.
+
+List the missing questions by ID (e.g., "A11, A12, A13, A14 were not yet asked") and present them in the next `ask_questions` call.
+
+---
+
 ### 0e — Pre-flight summary
 
-After completing 0a–0d, present a single summary before writing anything:
+After completing 0a–0d, present a single summary before writing anything.
+
+> **Output the template below exactly.** Fill every `<label>` field. Show all 19
+> USER PREFERENCES dimensions — for defaulted values, append "(default)" to the
+> label. Do not omit Step 2.5 from NEXT STEPS. Do not rearrange or improvise.
 
 ```text
 Pre-flight complete. Here is what I will do:
@@ -720,9 +793,15 @@ Guidelines:
 - Always confirm the pre-flight summary with the user before writing.
 - Do not modify files in `asafelobotomy/copilot-instructions-template` — that is
   the template repo; all writes go to this project.
+- CRITICAL: The §0d interview is interactive. Ask every question and wait for
+  the user’s typed answer. Never auto-complete, assume, or skip questions.
+- Use the batch plan in §0d to structure `ask_questions` calls (max 4 per call).
+- Verify answer count matches the selected tier before proceeding to §0e.
+- Copy the §0e and Step 6 summary templates exactly — do not improvise or
+  omit sections.
 ```
 
-### `.github/agents/coding.agent.md`
+### .github/agents/coding.agent.md
 
 Implementation, refactoring, and multi-step coding workflows. GPT-5.3-Codex is GitHub's latest agentic coding model (GA Feb 9 2026 — 25% faster than GPT-5.2-Codex, real-time mid-task steering, 1× multiplier, Pro+). Falls back cleanly through the Codex lineage. Includes a handoff to the Review agent.
 
@@ -1036,7 +1115,10 @@ See Step 4 for the stub — do not duplicate it here.
 
 ## Step 6 — Finalise and self-destruct
 
-1. **Review** everything created or modified and print a structured summary to the user:
+1. **Review** everything created or modified and print a structured summary to the user.
+
+   > **Output the template below exactly.** Include the AGENT FILES section.
+   > List all 19 preference dimensions under USER PREFERENCES. Do not omit sections or improvise the layout.
 
    ```text
    Setup complete. Here is what was done:
