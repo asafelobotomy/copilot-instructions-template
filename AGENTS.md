@@ -41,6 +41,19 @@ When a user says any of the following:
 
 ...perform the **Remote Restore Sequence** below.
 
+### Tool operations
+
+When a user says any of the following:
+
+- *"Show me the toolbox"* / *"List available tools"*
+- *"Search for a tool that ..."*
+- *"Build a tool for ..."* / *"Create a tool to ..."*
+- *"Save this to the toolbox"* / *"Add this to the toolbox"*
+- *"Update the tool index"* / *"Rebuild INDEX.md"*
+- *"Deprecate tool <name>"*
+
+...follow the Tool Protocol in **§11** of `.github/copilot-instructions.md`. For search/build/save tasks, apply the full decision tree: Find → Search online → Build → Evaluate reusability → Save.
+
 ---
 
 ## What this repo is
@@ -104,6 +117,7 @@ Setup outputs written to the **user's project**:
 | `JOURNAL.md` | ADR-style development journal |
 | `BIBLIOGRAPHY.md` | File catalogue |
 | `METRICS.md` | Kaizen baseline snapshot table |
+| `.copilot/tools/INDEX.md` | Toolbox catalogue (created lazily on first tool save — §11) |
 
 ### 4 — Do not write to this template repo
 
@@ -201,6 +215,7 @@ All writes go to the **user's current project**. Do not create, modify, or delet
 | `template/BIBLIOGRAPHY.md` | File catalogue stub |
 | `template/METRICS.md` | Metrics baseline table stub |
 | `examples/valis/README.md` | Reference implementation |
+| `.copilot/tools/INDEX.md` | Toolbox catalogue — created in consumer project on first tool save |
 
 ---
 
@@ -213,3 +228,6 @@ All writes go to the **user's current project**. Do not create, modify, or delet
 | Force full comparison | *"Force check instruction updates"* |
 | Restore a backup | *"Restore instructions from backup"* |
 | List available backups | *"List instruction backups"* |
+| Show toolbox | *"Show me the toolbox"* |
+| Build a tool | *"Build a tool for ..."* |
+| Save to toolbox | *"Save this to the toolbox"* |
