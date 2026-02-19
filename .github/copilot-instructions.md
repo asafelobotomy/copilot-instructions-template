@@ -3,7 +3,7 @@
 > **Template version**: 1.0.0 | **Applied**: {{SETUP_DATE}}
 > This file is a *living document*. See §8 for self-edit rules and template update instructions.
 
-> **Model Quick Reference** *(for the human — not the AI)* — select a model in the Copilot picker before starting a task, or use the pre-configured agents in `.github/agents/` (VS Code 1.106+ only). [Why these models?](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)
+> **Model Quick Reference** — select model in Copilot picker before starting each task, or use `.github/agents/` (VS Code 1.106+). [Why these models?](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)
 >
 > | Task | Best model (Pro+) | Budget / Free fallback |
 > |------|------------------|----------------------|
@@ -14,13 +14,11 @@
 > | Complex debugging & reasoning | Claude Opus 4.6 *(3×)* → Claude Sonnet 4.6 *(1×)* | GPT-5 mini |
 > | Quick questions / lightweight | Claude Haiku 4.5 *(0.33×)* | GPT-5 mini |
 >
-> **Note**: Model availability and names change frequently. If a model is missing from your picker, check [Supported AI models](https://docs.github.com/en/copilot/reference/ai-models/supported-models) and update the agent files accordingly.
+> Model names change frequently. If a model is missing from your picker, check [Supported AI models](https://docs.github.com/en/copilot/reference/ai-models/supported-models) and update the agent files.
 
 ---
 
 ## §1 — Lean Principles
-
-Apply these principles to every decision in this project.
 
 | # | Principle | This project |
 |---|-----------|-------------|
@@ -110,7 +108,7 @@ Apply to every non-trivial change.
 
 ## §6 — Waste Catalogue (Muda)
 
-Tag findings with these categories in Review Mode.
+Use in Review Mode to tag findings.
 
 | Code | Name | Examples |
 |------|------|---------|
@@ -127,7 +125,7 @@ Tag findings with these categories in Review Mode.
 
 ## §7 — Metrics
 
-Track these at the session level. Append a row to `METRICS.md` after any session that materially changes these numbers.
+Append a row to `METRICS.md` after any session that changes these values materially.
 
 | Metric | Command | Target |
 |--------|---------|--------|
@@ -141,7 +139,7 @@ Track these at the session level. Append a row to `METRICS.md` after any session
 
 ## §8 — Living Update Protocol
 
-This file may be updated by Copilot when patterns stabilise. Rules:
+Copilot may edit this file when patterns stabilise. Rules:
 
 1. **Never delete** existing rules without explicit user instruction.
 2. **Additive by default** — append to sections; don't restructure them.
@@ -164,7 +162,7 @@ When spawning subagents:
 
 ## §10 — Project-Specific Overrides
 
-Resolved values and project-specific conventions. Populated during setup and updated via the Living Update Protocol.
+Resolved values and project-specific overrides. Populated during setup; updated via §8.
 
 | Placeholder | Resolved value |
 |-------------|---------------|
