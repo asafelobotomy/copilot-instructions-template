@@ -11,6 +11,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ## [Unreleased]
 
+### Added
+- `§11 — Tool Protocol` in `.github/copilot-instructions.md` — structured decision tree for tool use, adaptation, online search (MCP registry → GitHub → Awesome lists → stack registries → official docs), building from scratch, evaluating reusability, and saving to the toolbox.
+- `.copilot/tools/` toolbox convention — lazy-created directory with `INDEX.md` catalogue where agents save reusable tools.
+- `AGENTS.md` — "Tool operations" trigger phrase section; `.copilot/tools/INDEX.md` added to setup outputs table and file map; toolbox canonical triggers added.
+- `template/workspace/TOOLS.md` — toolbox section explaining how to use `.copilot/tools/` and when to save.
+- `template/BIBLIOGRAPHY.md` — Toolbox section stub.
+- `template/workspace/BOOTSTRAP.md` — toolbox lazy-creation note.
+
+### Changed
+- `§9 — Subagent Protocol` — added sentence: subagents inherit the full Tool Protocol (§11) and must flag proposed toolbox saves to the parent before writing.
+- Footer of `.github/copilot-instructions.md` — added `.copilot/tools/` link.
+
 ---
 
 ## [1.0.1] — 2026-02-19
