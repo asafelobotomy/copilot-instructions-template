@@ -31,4 +31,8 @@ This workspace was scaffolded on **{{SETUP_DATE}}** using the [copilot-instructi
 | `BIBLIOGRAPHY.md` | Created / already existed |
 | `METRICS.md` | Created / already existed |
 
+## Toolbox
+
+`.copilot/tools/` is created lazily — it does not exist until the first tool is saved by the agent. When it is created, `.copilot/tools/INDEX.md` will act as the catalogue.
+
 *(This file is not updated after setup. It is a permanent record of origin.)*
