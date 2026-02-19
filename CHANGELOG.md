@@ -18,6 +18,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `template/workspace/TOOLS.md` — toolbox section explaining how to use `.copilot/tools/` and when to save.
 - `template/BIBLIOGRAPHY.md` — Toolbox section stub.
 - `template/workspace/BOOTSTRAP.md` — toolbox lazy-creation note.
+- `§2 — Review Mode` Extension Review subsection in `.github/copilot-instructions.md` — agents scan workspace extensions (`.vscode/extensions.json` + installed), detect project stack from language/runtime/tooling config, recommend additions (missing language servers, linters, formatters), flag removals (redundant/unused extensions), present three-category report (Missing | Redundant | Unknown) in chat. Does not auto-install; waits for explicit user action.
+- `AGENTS.md` — "Extension review" trigger phrase section with canonical phrases: *"Review extensions"*, *"Check my extensions"*, *"Audit VS Code extensions"*, *"What extensions should I install?"*, *"Do I have the right extensions?"*, *"Check for missing extensions"*, *"Recommend extensions for this project"*. Added *"Review extensions"* to canonical triggers table.
+- `template/workspace/TOOLS.md` — "Extension audit workflow" in "Discovered workflow patterns" section (9-step procedure from user request to manual install/uninstall).
 
 ### Changed
 - `§9 — Subagent Protocol` — added sentence: subagents inherit the full Tool Protocol (§11) and must flag proposed toolbox saves to the parent before writing.
