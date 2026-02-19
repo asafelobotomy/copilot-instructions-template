@@ -1,7 +1,7 @@
 # Copilot Instructions — {{PROJECT_NAME}}
 
 > **Template version**: 1.0.0 | **Applied**: {{SETUP_DATE}}
-> This file is a *living document*. See the [Living Update Protocol](#living-update-protocol) section for the rules governing self-edits.
+> This file is a *living document*. See §8 for self-edit rules and template update instructions.
 
 ---
 
@@ -118,7 +118,7 @@ Rules:
 When diagnosing problems or reviewing code, tag findings with the relevant waste category:
 
 | # | Category | Example in code |
-|---|----------|-----------------|
+|---|----------|-----------------| 
 | 1 | Overproduction | Building abstractions for requirements that don't exist yet |
 | 2 | Waiting | Sync I/O blocking an async pipeline; slow tests blocking feedback |
 | 3 | Transport | Unnecessary data transformation steps between layers |
@@ -145,7 +145,7 @@ After *every* meaningful change, apply this checklist:
 
 This instructions file is **self-referential** — Copilot is authorised to edit it when *any* trigger condition below is met:
 
-### Trigger conditions
+### Self-edit trigger conditions
 
 | Trigger | Condition |
 |---------|----------|
@@ -161,13 +161,33 @@ This instructions file is **self-referential** — Copilot is authorised to edit
    [instructions] <what changed> — reason: <why>
    ```
 3. Add a `[Unreleased]` entry in `CHANGELOG.md` tagged `[instructions]`.
-4. Do **not** change the template version number — that is for the upstream template repo.
+4. Do **not** change the template version number — that belongs to the upstream template repo.
 
 ### Prohibited self-edits
 
 - Do not change the five Lean principles (§1) — they are methodology, not convention.
 - Do not change the PDCA cycle definition.
-- Do not change the Living Update Protocol itself without an explicit user request.
+- Do not change this Living Update Protocol without an explicit user request.
+
+### Template updates (from upstream)
+
+To fetch and apply improvements from the upstream template repository, say:
+
+> *"Update your instructions"*
+
+Copilot will:
+1. Read the installed version stamp from the top of this file.
+2. Fetch the update protocol from:
+   ```
+   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/UPDATE.md
+   ```
+3. Follow that protocol — comparing this file section-by-section against the latest template, presenting a Pre-flight Report, and asking for confirmation before writing anything.
+
+**Guaranteed protections during any template update:**
+- `## 10. Project-Specific Overrides` — never touched.
+- `### User Preferences` — never touched.
+- Any block containing `<!-- migrated -->` or `<!-- user-added -->` — never touched.
+- All resolved placeholder values — never reverted to `{{PLACEHOLDER}}` tokens.
 
 ---
 
