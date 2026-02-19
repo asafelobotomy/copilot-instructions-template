@@ -22,6 +22,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 ### Changed
 - `§9 — Subagent Protocol` — added sentence: subagents inherit the full Tool Protocol (§11) and must flag proposed toolbox saves to the parent before writing.
 - Footer of `.github/copilot-instructions.md` — added `.copilot/tools/` link.
+- `§11 — Tool Protocol` decision tree — added **step 2.5 COMPOSE**: before building, agents check whether 2+ existing toolbox tools can be assembled via pipe or import; compose if yes, skip BUILD.
+- `§11 — Tool Protocol` BUILD step — added **required inline header template** with six mandatory fields: `# purpose`, `# when`, `# inputs`, `# outputs`, `# risk`, `# source`.
+- `§11 — Tool Protocol` INDEX.md format — added **`Output` and `Risk` columns** to the catalogue row format; updated example rows accordingly.
+- `§11 — Tool Protocol` quality rules — **expanded** with: verb-noun naming requirement; six-smell anti-pattern table (Unclear purpose · Missing usage guidelines · Unstated limitations · Opaque parameters · Missing output declaration · Underspecified length — grounded in empirical analysis of 856 real-world MCP tools, arxiv 2602.14878); risk tier system (`safe` vs `destructive` with mandatory user-confirmation gate for destructive tools regardless of autonomy preference); observability rule (≥ 3 toolbox invocations → document workflow in TOOLS.md "Discovered workflow patterns").
 
 ---
 
