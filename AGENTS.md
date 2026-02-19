@@ -54,6 +54,19 @@ When a user says any of the following:
 
 ...follow the Tool Protocol in **§11** of `.github/copilot-instructions.md`. For search/build/save tasks, apply the full decision tree: Find → Search online → Build → Evaluate reusability → Save.
 
+### Extension review
+
+When a user says any of the following:
+
+- *"Review extensions"* / *"Check my extensions"*
+- *"Audit VS Code extensions"*
+- *"What extensions should I install?"*
+- *"Do I have the right extensions?"*
+- *"Check for missing extensions"*
+- *"Recommend extensions for this project"*
+
+...switch to **Review Mode** and perform an extension audit following the **§2 Extension Review** protocol in `.github/copilot-instructions.md`. Present findings in three categories (Missing, Redundant, Unknown) with actionable recommendations. Do not auto-install.
+
 ---
 
 ## What this repo is
@@ -231,3 +244,4 @@ All writes go to the **user's current project**. Do not create, modify, or delet
 | Show toolbox | *"Show me the toolbox"* |
 | Build a tool | *"Build a tool for ..."* |
 | Save to toolbox | *"Save this to the toolbox"* |
+| Review extensions | *"Review extensions"* / *"Check my extensions"* |
