@@ -40,7 +40,7 @@ Extract:
   - If this line is absent, treat installed version as `unknown` and proceed with a full comparison.
 - **Applied date**: the `Applied` value from that line.
 - **Updated date**: the `Updated` value if present (set by a previous update run).
-- **§10 content**: the entire `## 10. Project-Specific Overrides` section — this is preserved unconditionally and never included in the diff.
+- **§10 content**: the entire `## §10 — Project-Specific Overrides` section — this is preserved unconditionally and never included in the diff.
 - **User-modified sections**: any section in §1–§9 whose content has diverged from a standard template section in a way that goes beyond placeholder resolution (Copilot's judgement). Flag these explicitly in the change manifest.
 
 ### U2 — Fetch the current template version
@@ -90,7 +90,7 @@ For each section, assign a status:
 
 **Sections permanently excluded from the change manifest** (guardrail — never diff, never modify):
 
-- `## 10. Project-Specific Overrides` — entire section and all subsections
+- `## §10 — Project-Specific Overrides` — entire section and all subsections
 - `### User Preferences` — entire subsection
 - `### Additional project notes` — entire subsection
 - Any block containing `<!-- migrated -->`
@@ -106,69 +106,49 @@ If the total count of `UPDATED`, `NEW_SECTION`, and `USER_MODIFIED` items is zer
 After completing U1–U5, present this report. Do not write anything yet.
 
 ```
-╔══════════════════════════════════════════════════════════════════╗
-║  INSTRUCTION UPDATE REPORT                                       ║
-╚══════════════════════════════════════════════════════════════════╝
+INSTRUCTION UPDATE REPORT
 
-  Installed version:   X.Y.Z  (applied: YYYY-MM-DD)
-  Latest version:      X.Y.Z
-  Status:              <N> change(s) available
+Installed version: X.Y.Z (applied: YYYY-MM-DD)
+Latest version:    X.Y.Z
+Status:            <N> change(s) available
 
-  ────────────────────────────────────────────────────────────────
-  WHAT'S NEW  (from CHANGELOG)
-  ────────────────────────────────────────────────────────────────
-  <list each changelog entry for versions newer than installed,
-   formatted as bullet points — one line each>
+WHAT'S NEW (from CHANGELOG)
+<one bullet per changelog entry for versions newer than installed>
 
-  ────────────────────────────────────────────────────────────────
-  SECTION-BY-SECTION DIFF
-  ────────────────────────────────────────────────────────────────
-  ┌──────┬───────────────────────────────────┬──────────────────┐
-  │      │ Section                           │ Status           │
-  ├──────┼───────────────────────────────────┼──────────────────┤
-  │      │ §1 Development Philosophy         │ UNCHANGED        │
-  │  ✓   │ §2 Agent Modes                    │ UPDATED          │
-  │      │ §3 Standardised Work Baselines    │ UNCHANGED        │
-  │  !   │ §4 Coding Conventions             │ USER_MODIFIED    │
-  │      │ §5 Testing                        │ UNCHANGED        │
-  │      │ §6 Waste Categories               │ UNCHANGED        │
-  │      │ §7 Documentation Ritual           │ UNCHANGED        │
-  │      │ §8 Living Update Protocol         │ UNCHANGED        │
-  │      │ §9 Subagent Delegation            │ UNCHANGED        │
-  │ [§10]│ Project-Specific Overrides        │ PROTECTED        │
-  └──────┴───────────────────────────────────┴──────────────────┘
-  (✓ = update available | ! = user-modified | [§10] = always protected)
+SECTION-BY-SECTION DIFF
+| Status | Section                        | Result        |
+|--------|--------------------------------|---------------|
+|        | §1 Lean Principles             | UNCHANGED     |
+|   ✓    | §2 Operating Modes             | UPDATED       |
+|        | §3 Standardised Work Baselines | UNCHANGED     |
+|   !    | §4 Coding Conventions          | USER_MODIFIED |
+|        | §5 PDCA Cycle                  | UNCHANGED     |
+|        | §6 Waste Catalogue             | UNCHANGED     |
+|        | §7 Metrics                     | UNCHANGED     |
+|        | §8 Living Update Protocol      | UNCHANGED     |
+|        | §9 Subagent Protocol           | UNCHANGED     |
+|  [§10] | Project-Specific Overrides     | PROTECTED     |
+(✓ = update available | ! = user-modified | [§10] = always protected)
 
-  ────────────────────────────────────────────────────────────────
-  USER-MODIFIED SECTIONS  (require your explicit decision)
-  ────────────────────────────────────────────────────────────────
-  <list any USER_MODIFIED sections with a one-line description of
-   what differs from the template baseline — or "None detected.">
+USER-MODIFIED SECTIONS (require your explicit decision)
+<list USER_MODIFIED sections with one-line description — or "None detected.">
 
-  ────────────────────────────────────────────────────────────────
-  GUARDRAIL CHECK
-  ────────────────────────────────────────────────────────────────
-  §10 Project-Specific Overrides:  PROTECTED (never modified)
-  User Preferences block:          PROTECTED (never modified)
-  Migrated / user-added content:   PROTECTED (never modified)
-  Resolved placeholder values:     PROTECTED (never reverted)
+GUARDRAIL CHECK
+§10 Project-Specific Overrides: PROTECTED (never modified)
+User Preferences block:         PROTECTED (never modified)
+Migrated / user-added content:  PROTECTED (never modified)
+Resolved placeholder values:    PROTECTED (never reverted)
 
-  ────────────────────────────────────────────────────────────────
-  BACKUP
-  ────────────────────────────────────────────────────────────────
-  A backup of your current instructions will be created automatically
-  in .github/archive/pre-update-YYYY-MM-DD-vX.Y.Z/ before any changes
-  are written. You can restore from it at any time by saying
-  "Restore instructions from backup".
+BACKUP
+Backup created automatically in .github/archive/pre-update-YYYY-MM-DD-vX.Y.Z/
+before any writes. Restore anytime: "Restore instructions from backup".
 
-  ────────────────────────────────────────────────────────────────
-  HOW DO YOU WANT TO PROCEED?
-  ────────────────────────────────────────────────────────────────
-  U — Update all    Apply all available changes at once.
-  S — Skip          Do nothing. Keep current instructions unchanged.
-  C — Customise     Review and decide on each change individually.
+HOW DO YOU WANT TO PROCEED?
+U — Update all    Apply all available changes at once.
+S — Skip          Do nothing. Keep current instructions unchanged.
+C — Customise     Review and decide on each change individually.
 
-  Type U, S, or C:
+Type U, S, or C:
 ```
 
 Wait for the user's response before proceeding.
@@ -341,7 +321,7 @@ Apply these checks **before writing any section**, regardless of the decision pa
 | Guardrail | What to check | If triggered |
 |-----------|---------------|--------------|
 | **Placeholder leakage** | New section contains `{{PLACEHOLDER}}` tokens | Re-resolve using the installed §10 placeholder table. If a value is missing from the table, leave the token as-is and add it to the anomaly list. |
-| **§10 collision** | A change would overwrite any content in `## 10.` | Skip the change automatically. Log in the anomaly list. |
+| **§10 collision** | A change would overwrite any content in `## §10 —` | Skip the change automatically. Log in the anomaly list. |
 | **Migrated content** | Section contains `<!-- migrated -->` blocks | Preserve those blocks verbatim; write the update around them. |
 | **User-added content** | Section contains `<!-- user-added -->` blocks | Preserve those blocks verbatim; write the update around them. |
 | **User preference conflict** | New section changes behaviour already configured in `### User Preferences` | Flag to user before applying: show both the new template instruction and the user's current preference. Ask which takes precedence. |
@@ -526,7 +506,7 @@ Restored! ✓
 
 | Item | Reason |
 |------|--------|
-| `## 10. Project-Specific Overrides` (entire section) | Contains project identity — not generic template content |
+| `## §10 — Project-Specific Overrides` (entire section) | Contains project identity — not generic template content |
 | `### User Preferences` (entire subsection) | Set by the user during setup interview; only the user changes these |
 | `### Additional project notes` (entire subsection) | Copilot-discovered conventions for this project specifically |
 | Any block containing `<!-- migrated -->` | Pre-existing conventions migrated from before the template was adopted |
