@@ -4,6 +4,8 @@ description: Write a commit message following the Conventional Commits specifica
 version: "1.0"
 license: MIT
 tags: [git, commit, conventional-commits, changelog, versioning]
+compatibility: ">=1.4"
+allowed-tools: [codebase, terminal]
 ---
 
 # Conventional Commit

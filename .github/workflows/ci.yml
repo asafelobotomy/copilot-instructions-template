@@ -10,7 +10,12 @@ jobs:
     name: Structural validation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Harden runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: VERSION is valid semver
         run: |
@@ -51,6 +56,7 @@ jobs:
             "docs/SKILLS-GUIDE.md" \
             "docs/PATH-INSTRUCTIONS-GUIDE.md" \
             "docs/PROMPTS-GUIDE.md" \
+            "docs/SECURITY-GUIDE.md" \
             "template/copilot-setup-steps.yml" \
             "template/CHANGELOG.md" "template/JOURNAL.md" \
             "template/BIBLIOGRAPHY.md" "template/METRICS.md" \
@@ -90,6 +96,22 @@ jobs:
           [[ $failed -eq 0 ]] || exit 1
           echo "✅ All template skills valid"
 
+      - name: Template skills have recommended fields (advisory)
+        run: |
+          warned=0
+          for skill_dir in template/skills/*/; do
+            skill="$skill_dir/SKILL.md"
+            [[ -f "$skill" ]] || continue
+            grep -q '^compatibility:' "$skill" \
+              || { echo "⚠️  $skill missing optional 'compatibility' field"; warned=1; }
+            grep -q '^allowed-tools:' "$skill" \
+              || { echo "⚠️  $skill missing optional 'allowed-tools' field"; warned=1; }
+          done
+          if [[ $warned -eq 1 ]]; then
+            echo "ℹ️  Some skills are missing optional fields — consider adding them"
+          fi
+          echo "✅ Advisory check complete (non-blocking)"
+
       - name: README docs-table links resolve to real files
         run: |
           failed=0
@@ -119,8 +141,13 @@ jobs:
     name: Markdown lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: DavidAnson/markdownlint-cli2-action@v22
+      - name: Harden runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: DavidAnson/markdownlint-cli2-action@07035fd053f7be764496c0f8d8f9f41f98305101 # v22
         with:
           globs: |
             **/*.md
@@ -132,5 +159,10 @@ jobs:
     name: Workflow lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: raven-actions/actionlint@v2
+      - name: Harden runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: raven-actions/actionlint@e01d1ea33dd6a5ed517d95b4c0c357560ac6f518 # v2

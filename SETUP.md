@@ -189,7 +189,7 @@ Use the batch plan below. Do not combine questions across tiers in a single call
 | 4 | Advanced | A10, A11, A12, A13 | File size, Deps, Self-edit, Refactor |
 | 5 | Advanced | A14, A15 | Reporting, Skills |
 | 6 | Expert | E16, E17, E18, E19 | Tools, Persona, VS Code, Failsafe |
-| 7 | Expert | E20 | Mood |
+| 7 | Expert | E20, E21 | Mood, Trust |
 
 **Simple** = batches 1–2. **Advanced** = batches 1–5. **Expert** = batches 1–7.
 
@@ -476,13 +476,13 @@ A13 (Refactoring) · A14 (Reporting format) · A15 (Skill search)
 
 ---
 
-#### Expert Setup — 5 additional questions E16–E20 (batches 6–7)
+#### Expert Setup — 6 additional questions E16–E21 (batches 6–7)
 
-If the user chose **E — Expert Setup**, present these 5 questions in **2 batches** following the batch plan above. Collect answers from each batch before issuing the next. If the user chose **S — Simple Setup** or **A — Advanced Setup**, skip these and proceed to 0e.
+If the user chose **E — Expert Setup**, present these 6 questions in **2 batches** following the batch plan above. Collect answers from each batch before issuing the next. If the user chose **S — Simple Setup** or **A — Advanced Setup**, skip these and proceed to 0e.
 
-**Questions in this section** (verify all 5 are asked):
+**Questions in this section** (verify all 6 are asked):
 E16 (Tool availability) · E17 (Agent persona) · E18 (VS Code settings) ·
-E19 (Global autonomy) · E20 (Mood lightener)
+E19 (Global autonomy) · E20 (Mood lightener) · E21 (Verification trust)
 
 ---
 
@@ -579,6 +579,31 @@ E19 (Global autonomy) · E20 (Mood lightener)
 
 ---
 
+**E21 — Verification trust**
+
+> The template includes a Graduated Trust Model (§10) that controls how much verification Copilot applies based on which files are being changed. Which directories should get automatic approval, standard review, or extra caution?
+>
+> **A — Use defaults** *(default)*: Tests and docs get auto-approval; source code requires review; config and CI files require pause-and-confirm.
+> **B — Trust everything**: Auto-approve all paths. I use version control and will review diffs myself.
+> **C — Review everything**: All paths require review. No auto-approval for any file.
+> **D — Custom tiers**: I'll describe which paths get which trust level. *(Type it now.)*
+
+| Answer | Instruction written to §10 |
+|--------|---------------------------|
+| A | "Use the default Graduated Trust Model tiers: High trust for tests and docs (auto-approve), Standard for source code (review before writing), Guarded for config and CI files (pause and explain). No custom overrides." |
+| B | "Override the Graduated Trust Model: set all paths to High trust. Auto-approve all changes. The user relies on version control for review." |
+| C | "Override the Graduated Trust Model: set all paths to Standard trust. Describe every planned change and wait for approval before writing, regardless of file type." |
+| D | *(User types their custom tier assignments)* — Record verbatim as `{{TRUST_OVERRIDES}}` in §10. |
+
+| Answer | `{{TRUST_OVERRIDES}}` value |
+|--------|----------------------------|
+| A | *(empty — use defaults)* |
+| B | `> **Trust override**: All paths set to High trust. Auto-approve all changes.` |
+| C | `> **Trust override**: All paths set to Standard trust. Review before every write.` |
+| D | *(user-provided custom tiers)* |
+
+---
+
 #### Building the User Preferences block
 
 Once all questions are answered, construct the following block and write it into §10 of the instructions file under a `### User Preferences` heading:
@@ -610,9 +635,10 @@ Once all questions are answered, construct the following block and write it into
 | VS Code settings | <E18 answer label or default> | <instruction> |
 | Global autonomy | <E19 answer label or default> | <instruction> |
 | Mood lightener | <E20 answer label or default> | <instruction> |
+| Verification trust | <E21 answer label or default> | <instruction> |
 ```
 
-**Simple Setup defaults** (used for A6–A15 and E16–E20 when Simple is chosen):
+**Simple Setup defaults** (used for A6–A15 and E16–E21 when Simple is chosen):
 
 | Question | Default answer | Default instruction |
 |----------|---------------|---------------------|
@@ -631,8 +657,9 @@ Once all questions are answered, construct the following block and write it into
 | E18 — VS Code settings | A | Never — suggest only, don't modify |
 | E19 — Global autonomy | 3 | Balanced — no override, follow S5 setting |
 | E20 — Mood lightener | A | Never — strictly professional |
+| E21 — Verification trust | A | Use defaults — tests/docs auto-approve, source review, config pause |
 
-**Advanced Setup defaults** (used for E16–E20 when Advanced is chosen):
+**Advanced Setup defaults** (used for E16–E21 when Advanced is chosen):
 
 | Question | Default answer | Default instruction |
 |----------|---------------|---------------------|
@@ -641,6 +668,7 @@ Once all questions are answered, construct the following block and write it into
 | E18 — VS Code settings | A | Never — suggest only, don't modify |
 | E19 — Global autonomy | 3 | Balanced — no override, follow S5 setting |
 | E20 — Mood lightener | A | Never — strictly professional |
+| E21 — Verification trust | A | Use defaults — tests/docs auto-approve, source review, config pause |
 
 ---
 
@@ -650,9 +678,9 @@ Before proceeding to 0e, count your collected answers and verify against this ta
 
 | Tier | User answers | Defaults applied | Total rows in §10 |
 |------|-------------|-----------------|-------------------|
-| Simple | 5 (S1–S5) | 15 (A6–A15 + E16–E20) | 20 |
-| Advanced | 15 (S1–S5 + A6–A15) | 5 (E16–E20) | 20 |
-| Expert | 20 (S1–S5 + A6–A15 + E16–E20) | 0 | 20 |
+| Simple | 5 (S1–S5) | 16 (A6–A15 + E16–E21) | 21 |
+| Advanced | 15 (S1–S5 + A6–A15) | 6 (E16–E21) | 21 |
+| Expert | 21 (S1–S5 + A6–A15 + E16–E21) | 0 | 21 |
 
 **If your count does not match**: STOP. Re-read §0d and identify which questions were missed. Ask them now before continuing.
 
@@ -664,7 +692,7 @@ List the missing questions by ID (e.g., "A11, A12, A13, A14 were not yet asked")
 
 After completing 0a–0d, present a single summary before writing anything.
 
-> **Output the template below exactly.** Fill every `<label>` field. Show all 20
+> **Output the template below exactly.** Fill every `<label>` field. Show all 21
 > USER PREFERENCES dimensions — for defaulted values, append "(default)" to the
 > label. Do not omit Step 2.5 or Step 2.8 from NEXT STEPS. Do not rearrange or improvise.
 
@@ -697,6 +725,7 @@ Pre-flight complete. Here is what I will do:
     VS Code settings:      <label>
     Global autonomy:       <label>
     Mood lightener:        <label>
+    Verification trust:    <label>
 
   NEXT STEPS
     1.   Discover project stack (Step 1)
@@ -1247,7 +1276,7 @@ See Step 4 for the stub — do not duplicate it here.
 1. **Review** everything created or modified and print a structured summary to the user.
 
    > **Output the template below exactly.** Include the AGENT FILES and SKILLS sections.
-   > List all 20 preference dimensions under USER PREFERENCES. Do not omit sections or improvise the layout.
+   > List all 21 preference dimensions under USER PREFERENCES. Do not omit sections or improvise the layout.
 
    ```text
    Setup complete. Here is what was done:
@@ -1286,7 +1315,7 @@ See Step 4 for the stub — do not duplicate it here.
      Initial baseline row appended: [yes / skipped]
 
    USER PREFERENCES
-     <table of all 20 dimensions with labels>
+     <table of all 21 dimensions with labels>
 
    ANOMALIES
      <any decisions made that the user should verify, or "none">

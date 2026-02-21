@@ -13,6 +13,32 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [1.4.0] — 2026-02-21
+
+### Added
+
+- **SHA-pinned all GitHub Actions** — every `uses:` reference across all 6 workflow files now points to an immutable commit SHA (e.g., `actions/checkout@34e114876b…`). Dependabot auto-updates pinned SHAs via `.github/dependabot.yml`.
+- **`step-security/harden-runner`** added as the first step in every CI job across all workflows — monitors network egress in `audit` mode to detect supply-chain compromise.
+- **`.github/workflows/scorecard.yml`** — OpenSSF Scorecard analysis runs weekly and on push to `main`. Uploads SARIF results to GitHub code scanning for continuous security posture monitoring.
+- **Graduated Trust Model** in `§10 — Project-Specific Overrides` — new `### Verification Levels` subsection with a three-tier table (High / Standard / Guarded) that maps file path patterns to verification behaviour (auto-approve / review / pause). New `{{TRUST_OVERRIDES}}` placeholder for project-specific trust customisation.
+- **`compatibility` and `allowed-tools`** optional frontmatter fields added to the §12 Skill Protocol anatomy. `compatibility` declares the minimum template version a skill requires; `allowed-tools` declares which tool categories a skill may use.
+- **E21 — Verification trust** interview question added to `SETUP.md` Expert tier (batch 7). Four options: Use defaults / Trust everything / Review everything / Custom tiers. Maps to `{{TRUST_OVERRIDES}}` placeholder.
+- **`docs/SECURITY-GUIDE.md`** — human-readable guide covering SHA-pinning rationale, harden-runner usage (audit → block upgrade path), OpenSSF Scorecard interpretation, Graduated Trust Model, skill security fields, Dependabot configuration, and a security checklist.
+
+### Changed
+
+- `.github/workflows/ci.yml` — SHA-pinned all actions; added harden-runner to all 3 jobs; new advisory (non-blocking) check for `compatibility` and `allowed-tools` fields in template skills; added `docs/SECURITY-GUIDE.md` to required files.
+- `.github/workflows/release.yml` — SHA-pinned all actions; added harden-runner.
+- `.github/workflows/stale.yml` — SHA-pinned all actions; added harden-runner.
+- `.github/workflows/links.yml` — SHA-pinned all actions; added harden-runner.
+- `.github/workflows/vale.yml` — SHA-pinned all actions; added harden-runner.
+- `.github/copilot-instructions.md` — §10 expanded with Graduated Trust Model and `Verification trust` row in User Preferences table; §12 skill anatomy expanded with `compatibility` and `allowed-tools` fields and explanatory text.
+- All 4 starter skills (`skill-creator`, `fix-ci-failure`, `lean-pr-review`, `conventional-commit`) — added `compatibility: ">=1.4"` and role-appropriate `allowed-tools` frontmatter.
+- `SETUP.md` — Expert tier expanded from 5 to 6 questions (E16–E21); batch 7 updated (E20, E21); all defaults tables, verification gate counts, pre-flight summary, and Step 6 summary updated from 20 → 21 dimensions.
+- `README.md` — version badge `1.4.0`; OpenSSF Scorecard badge; "Security hardening" feature section; `scorecard.yml` in file tree; `SECURITY-GUIDE.md` in docs table and file tree.
+
+---
+
 ## [1.3.0] — 2026-02-21
 
 ### Added

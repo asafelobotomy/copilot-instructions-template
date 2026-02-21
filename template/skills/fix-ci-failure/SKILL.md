@@ -4,6 +4,8 @@ description: Diagnose and fix a failing CI pipeline or GitHub Actions workflow
 version: "1.0"
 license: MIT
 tags: [ci, github-actions, debugging, pipeline, workflow]
+compatibility: ">=1.4"
+allowed-tools: [codebase, editFiles, terminal, runCommands]
 ---
 
 # Fix CI Failure

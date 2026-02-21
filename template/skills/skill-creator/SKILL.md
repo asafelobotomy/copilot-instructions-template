@@ -4,6 +4,8 @@ description: Author a new agent skill from scratch following the Agent Skills op
 version: "1.0"
 license: MIT
 tags: [meta, authoring, skill, scaffold]
+compatibility: ">=1.4"
+allowed-tools: [codebase, editFiles]
 ---
 
 # Skill Creator

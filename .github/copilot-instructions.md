@@ -375,6 +375,21 @@ Resolved values and project-specific overrides. Populated during setup; updated 
 | `{{SETUP_DATE}}` | *(fill during setup)* |
 | `{{SKILL_SEARCH_PREFERENCE}}` | local-only |
 | `{{EXTRA_METRIC_NAME}}` | *(delete row if not applicable)* |
+| `{{TRUST_OVERRIDES}}` | *(fill during setup — see E21)* |
+
+### Verification Levels
+
+The Graduated Trust Model assigns verification behaviour based on path patterns. Higher-trust paths allow Copilot to act with less friction; lower-trust paths require explicit approval.
+
+| Trust tier | Default paths | Verification behaviour |
+|-----------|--------------|----------------------|
+| High | `tests/`, `__tests__/`, `*.test.*`, `*.spec.*`, `docs/`, `*.md` | Auto-approve: Copilot acts freely. Changes are summarised after the fact. |
+| Standard | `src/`, `lib/`, `app/`, `packages/` | Review: Copilot describes the planned change and waits for approval before writing. |
+| Guarded | `*.config.*`, `.*rc`, `.github/`, `.env*`, `Dockerfile`, `docker-compose*` | Pause: Copilot stops, explains the change in detail, and waits for explicit "go ahead" before any modification. |
+
+{{TRUST_OVERRIDES}}
+
+> **Override rules**: Project-specific trust overrides from E21 are inserted above. They take precedence over the default tiers. Paths not covered by any tier default to **Standard**.
 
 ### User Preferences
 
@@ -402,6 +417,7 @@ Resolved values and project-specific overrides. Populated during setup; updated 
 | VS Code settings | *(E18)* | |
 | Global autonomy | *(E19)* | |
 | Mood lightener | *(E20)* | |
+| Verification trust | *(E21)* | |
 
 ---
 
@@ -514,12 +530,17 @@ description: <one-sentence summary — used for discovery matching>
 version: "1.0"
 license: MIT
 tags: [<keyword>, <keyword>]
+compatibility: ">=1.0"
+allowed-tools: [codebase, editFiles, terminal]
 ---
 
 <markdown body with step-by-step workflow instructions>
 ```
 
-Required fields: `name`, `description`. All others are optional.
+Required fields: `name`, `description`. Recommended fields: `compatibility`, `allowed-tools`. All others are optional.
+
+- **`compatibility`** — semver range indicating which template versions this skill is designed for (e.g., `">=1.4"`, `"1.x"`). Agents should warn if the current template version falls outside the range.
+- **`allowed-tools`** — array of tool identifiers the skill is permitted to use. Agents should restrict tool access to this list when executing the skill. Omit to allow all tools.
 
 ### Discovery and activation
 

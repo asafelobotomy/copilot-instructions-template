@@ -5,7 +5,8 @@
 **Instruction firmware for AI-assisted development — grounded in Lean / Kaizen**
 
 [![CI](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml/badge.svg)](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-1.3.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue)](CHANGELOG.md)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/asafelobotomy/copilot-instructions-template/badge)](https://scorecard.dev/viewer/?uri=github.com/asafelobotomy/copilot-instructions-template)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![VS Code](https://img.shields.io/badge/VS_Code-1.106+-007ACC?logo=visualstudiocode)](https://code.visualstudio.com/)
 
@@ -70,6 +71,10 @@ Four starter skills are scaffolded into `.github/skills/` during setup, followin
 
 `.github/prompts/` contains five starter prompt files that become VS Code slash commands (`/explain`, `/refactor`, `/test-gen`, `/review-file`, `/commit-msg`). Each encapsulates a workflow grounded in the template's Lean methodology — waste-aware explanation, PDCA-driven refactoring, convention-following test generation, structured file review, and Conventional Commits.
 
+### 🔒 Security hardening
+
+All GitHub Actions are SHA-pinned to immutable commit hashes and protected with `step-security/harden-runner` for network egress monitoring. An OpenSSF Scorecard workflow runs weekly, uploading SARIF results to GitHub code scanning. A Graduated Trust Model in §10 assigns verification tiers (High / Standard / Guarded) to file paths, controlling how aggressively the agent seeks confirmation before making changes.
+
 ### 🔄 Living update protocol
 
 The template ships versioned. When a new version is released, say *"Update your instructions"* and Copilot will fetch the diff, present a section-by-section change manifest, let you apply / skip / customise each change, back up the current file, write the updates, and record everything in `JOURNAL.md` and `CHANGELOG.md`. The update is always reversible.
@@ -132,6 +137,7 @@ Every AI-facing file has a plain-English companion in `docs/`:
 | [`docs/SKILLS-GUIDE.md`](docs/SKILLS-GUIDE.md) | How the Agent Skills library and §12 Skill Protocol work |
 | [`docs/PATH-INSTRUCTIONS-GUIDE.md`](docs/PATH-INSTRUCTIONS-GUIDE.md) | How path-specific instruction files work and when to use them |
 | [`docs/PROMPTS-GUIDE.md`](docs/PROMPTS-GUIDE.md) | How prompt files become VS Code slash commands |
+| [`docs/SECURITY-GUIDE.md`](docs/SECURITY-GUIDE.md) | SHA-pinning, harden-runner, Scorecard, and Graduated Trust Model |
 | [`docs/EXTENSION-REVIEW-GUIDE.md`](docs/EXTENSION-REVIEW-GUIDE.md) | How the VS Code extension audit feature works |
 | [`docs/TEST-REVIEW-GUIDE.md`](docs/TEST-REVIEW-GUIDE.md) | How the test coverage review and CI recommendation feature works |
 
@@ -169,7 +175,8 @@ copilot-instructions-template/
 │   │   ├── release.yml                 # Auto-creates GitHub release when VERSION is bumped
 │   │   ├── stale.yml                   # Closes stale issues and PRs weekly
 │   │   ├── links.yml                   # Lychee link checker (weekly + PR)
-│   │   └── vale.yml                    # Vale prose linter (PR)
+│   │   ├── vale.yml                    # Vale prose linter (PR)
+│   │   └── scorecard.yml               # OpenSSF Scorecard (weekly + push)
 │   ├── ISSUE_TEMPLATE/
 │   │   ├── bug_report.yml              # Structured bug report form
 │   │   └── feature_request.yml         # Structured feature request form
@@ -183,7 +190,8 @@ copilot-instructions-template/
 │   ├── EXTENSION-REVIEW-GUIDE.md       # Human guide to the extension audit feature
 │   ├── TEST-REVIEW-GUIDE.md            # Human guide to the test coverage review feature
 │   ├── PATH-INSTRUCTIONS-GUIDE.md      # Human guide to path-specific instructions
-│   └── PROMPTS-GUIDE.md                # Human guide to reusable prompt files
+│   ├── PROMPTS-GUIDE.md                # Human guide to reusable prompt files
+│   └── SECURITY-GUIDE.md              # Human guide to security hardening
 ├── template/
 │   ├── CHANGELOG.md                    # Keep-a-Changelog stub (scaffolded into consumer projects)
 │   ├── JOURNAL.md                      # ADR-style journal stub

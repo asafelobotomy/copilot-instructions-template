@@ -4,6 +4,8 @@ description: Review a pull request using Lean waste categories and structured se
 version: "1.0"
 license: MIT
 tags: [review, pull-request, lean, kaizen, code-review]
+compatibility: ">=1.4"
+allowed-tools: [codebase, githubRepo]
 ---
 
 # Lean PR Review
