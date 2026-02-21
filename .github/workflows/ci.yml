@@ -49,6 +49,9 @@ jobs:
             "docs/EXTENSION-REVIEW-GUIDE.md" \
             "docs/TEST-REVIEW-GUIDE.md" \
             "docs/SKILLS-GUIDE.md" \
+            "docs/PATH-INSTRUCTIONS-GUIDE.md" \
+            "docs/PROMPTS-GUIDE.md" \
+            "template/copilot-setup-steps.yml" \
             "template/CHANGELOG.md" "template/JOURNAL.md" \
             "template/BIBLIOGRAPHY.md" "template/METRICS.md" \
             "template/workspace/IDENTITY.md" "template/workspace/SOUL.md" \

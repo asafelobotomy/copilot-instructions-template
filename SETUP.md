@@ -962,6 +962,77 @@ Set the `{{SKILL_SEARCH_PREFERENCE}}` placeholder value based on the A15 intervi
 
 ---
 
+## Step 2.9 — Scaffold path-specific instruction files
+
+Path-specific instruction files let Copilot apply different rules to different parts of the codebase. Each file uses `applyTo:` frontmatter with glob patterns.
+
+1. Detect which instruction stubs are relevant based on the project structure discovered in Step 1:
+   - **tests** — scaffold if any `*.test.*`, `*.spec.*`, `tests/`, or `__tests__/` directories exist.
+   - **api-routes** — scaffold if any `api/`, `routes/`, `controllers/`, or `handlers/` directories exist.
+   - **config** — scaffold if any `*.config.*` or `.*rc` files exist.
+   - **docs** — scaffold if any `*.md` files or `docs/` directory exists (almost always true).
+2. For each relevant stub, fetch from the template repo:
+
+   ```text
+   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/instructions/tests.instructions.md
+   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/instructions/api-routes.instructions.md
+   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/instructions/config.instructions.md
+   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/instructions/docs.instructions.md
+   ```
+
+3. Create `.github/instructions/` in the user's project. Write each relevant file, substituting any `{{PLACEHOLDER}}` tokens with resolved values from Step 1.
+4. Skip any stub whose `applyTo:` glob matches no files in the project.
+5. Log each created file to JOURNAL.md.
+
+---
+
+## Step 2.10 — Scaffold prompt files
+
+Prompt files become reusable slash commands in VS Code Copilot chat (e.g. `/explain`, `/refactor`).
+
+1. Fetch all starter prompt files from the template repo:
+
+   ```text
+   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/prompts/explain.prompt.md
+   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/prompts/refactor.prompt.md
+   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/prompts/test-gen.prompt.md
+   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/prompts/review-file.prompt.md
+   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/prompts/commit-msg.prompt.md
+   ```
+
+2. Create `.github/prompts/` in the user's project. Write all five files, substituting any `{{PLACEHOLDER}}` tokens with resolved values from Step 1.
+3. Log each created file to JOURNAL.md.
+
+| Prompt | Slash command | What it does |
+|--------|--------------|-------------|
+| `explain.prompt.md` | `/explain` | Waste-aware code explanation |
+| `refactor.prompt.md` | `/refactor` | Lean-principled refactoring with PDCA |
+| `test-gen.prompt.md` | `/test-gen` | Generate tests following project conventions |
+| `review-file.prompt.md` | `/review-file` | Single-file review using §2 Review Mode |
+| `commit-msg.prompt.md` | `/commit-msg` | Conventional Commits message authoring |
+
+---
+
+## Step 2.11 — Scaffold Copilot setup steps workflow
+
+The `copilot-setup-steps.yml` workflow runs before the GitHub Copilot coding agent starts a task, setting up the project environment.
+
+1. Detect the project runtime from Step 1 (Node.js, Python, Go, Rust, Java, .NET, etc.).
+2. Fetch the template:
+
+   ```text
+   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/copilot-setup-steps.yml
+   ```
+
+3. Create `.github/workflows/copilot-setup-steps.yml` in the user's project.
+4. Uncomment and populate the section matching the detected runtime:
+   - Set `{{RUNTIME_VERSION}}` from Step 1 discovery.
+   - Set `{{INSTALL_COMMAND}}`, `{{BUILD_COMMAND}}`, `{{TEST_COMMAND}}` from resolved placeholders.
+5. Remove commented-out sections for other runtimes.
+6. Log the created file to JOURNAL.md.
+
+---
+
 ## Step 3 — Scaffold workspace identity files
 
 > Apply the decisions made in Step 0b (keep / overwrite / selective).

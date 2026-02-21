@@ -13,6 +13,40 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [1.3.0] — 2026-02-21
+
+### Added
+
+- **Path-specific instruction files** (`.github/instructions/`) — 4 starter stubs with `applyTo:` glob frontmatter for context-aware Copilot guidance:
+  - `tests.instructions.md` — rules for test files (`**/*.test.*`, `**/*.spec.*`, `**/tests/**`, `**/__tests__/**`)
+  - `api-routes.instructions.md` — rules for API route handlers (`**/api/**`, `**/routes/**`, `**/controllers/**`, `**/handlers/**`)
+  - `config.instructions.md` — rules for configuration files (`**/*.config.*`, `**/.*rc`, `**/.*rc.json`)
+  - `docs.instructions.md` — rules for documentation (`**/*.md`, `**/docs/**`)
+- **Reusable prompt files** (`.github/prompts/`) — 5 starter prompt files that become VS Code slash commands:
+  - `explain.prompt.md` → `/explain` — waste-aware code explanation using §6 categories
+  - `refactor.prompt.md` → `/refactor` — Lean-principled refactoring with full PDCA cycle
+  - `test-gen.prompt.md` → `/test-gen` — generate tests following project conventions and framework
+  - `review-file.prompt.md` → `/review-file` — single-file review using §2 Review Mode protocol
+  - `commit-msg.prompt.md` → `/commit-msg` — Conventional Commits message from staged changes
+- **`template/copilot-setup-steps.yml`** — GitHub Actions workflow template for Copilot coding agent environment setup. Contains commented-out sections for Node.js/Bun, Python, Go, and Rust runtimes; populated during setup based on detected stack.
+- **`SETUP.md` Steps 2.9, 2.10, 2.11** — three new setup steps between the skills scaffold (2.8) and workspace identity (3):
+  - Step 2.9: path-specific instruction scaffolding — detects relevant file patterns, copies matching stubs, populates placeholders
+  - Step 2.10: prompt file scaffolding — copies all five starter prompts, substitutes placeholders
+  - Step 2.11: copilot-setup-steps scaffolding — detects runtime, generates `.github/workflows/copilot-setup-steps.yml` for the Copilot coding agent
+- **`.github/workflows/links.yml`** — Lychee link checker: weekly cron schedule + PR-triggered on `*.md` changes. Validates all Markdown links with configurable exclusions.
+- **`.github/workflows/vale.yml`** — Vale prose linter: PR-triggered on `*.md` changes. Posts review comments via `errata-ai/vale-action@v2.1.1`.
+- **`.vale.ini`** — Vale configuration file using built-in Vale style as baseline. Custom styles go in `.github/vale/styles/`.
+- **`docs/PATH-INSTRUCTIONS-GUIDE.md`** — human-readable guide: `applyTo:` glob syntax, precedence rules, how path instructions augment the main file, starter stubs, creating custom instruction files.
+- **`docs/PROMPTS-GUIDE.md`** — human-readable guide: how prompt files become slash commands, naming conventions, variable substitution (`${file}`, `${selection}`, `${input:varName}`), the 5 starters, creating custom prompts.
+
+### Changed
+
+- `.github/workflows/ci.yml` — added `docs/PATH-INSTRUCTIONS-GUIDE.md`, `docs/PROMPTS-GUIDE.md`, and `template/copilot-setup-steps.yml` to required files check.
+- `.github/PULL_REQUEST_TEMPLATE.md` — added 3 checklist items: path-specific instructions updated, prompt files reviewed, copilot-setup-steps.yml updated.
+- `README.md` — version badge `1.3.0`; added "Path-specific instructions" and "Reusable prompt files" feature sections; scaffolding table expanded with instruction stubs, prompt files, and copilot-setup-steps; docs table expanded with PATH-INSTRUCTIONS-GUIDE and PROMPTS-GUIDE; file tree updated with `instructions/`, `prompts/`, `links.yml`, `vale.yml`, `copilot-setup-steps.yml`, `.vale.ini`, `dependabot.yml`, and 2 new doc guides.
+
+---
+
 ## [1.2.0] — 2026-02-20
 
 ### Added

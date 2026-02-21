@@ -1,0 +1,42 @@
+name: "Copilot Setup Steps"
+
+on:
+  workflow_dispatch:
+
+jobs:
+  copilot-setup-steps:
+    name: "Copilot Setup Steps"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      # --- Runtime setup (uncomment and fill the section matching your stack) ---
+
+      # Node.js / Bun
+      # - uses: actions/setup-node@v4
+      #   with:
+      #     node-version: "{{RUNTIME_VERSION}}"
+      # - run: {{INSTALL_COMMAND}}
+
+      # Python
+      # - uses: actions/setup-python@v5
+      #   with:
+      #     python-version: "{{RUNTIME_VERSION}}"
+      # - run: pip install -r requirements.txt
+
+      # Go
+      # - uses: actions/setup-go@v5
+      #   with:
+      #     go-version: "{{RUNTIME_VERSION}}"
+
+      # Rust
+      # - uses: dtolnay/rust-toolchain@stable
+
+      # --- Verification ---
+      # - name: Build
+      #   run: {{BUILD_COMMAND}}
+      # - name: Test
+      #   run: {{TEST_COMMAND}}

@@ -5,7 +5,7 @@
 **Instruction firmware for AI-assisted development — grounded in Lean / Kaizen**
 
 [![CI](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml/badge.svg)](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-1.1.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![VS Code](https://img.shields.io/badge/VS_Code-1.106+-007ACC?logo=visualstudiocode)](https://code.visualstudio.com/)
 
@@ -29,7 +29,7 @@ Open a Copilot chat in **any project** and say:
 Setup from asafelobotomy/copilot-instructions-template
 ```
 
-Copilot fetches the template and setup guide directly from GitHub, interviews you with 5–19 questions (your choice of depth), fills every placeholder, scaffolds your workspace files, captures a Kaizen baseline, and self-destructs the setup script. **No cloning, no copying, no manual steps.**
+Copilot fetches the template and setup guide directly from GitHub, interviews you with 5–20 questions (your choice of depth), fills every placeholder, scaffolds your workspace files, captures a Kaizen baseline, and self-destructs the setup script. **No cloning, no copying, no manual steps.**
 
 > **⚠️ Use the Setup agent or an interactive model.** Codex models (`GPT-5.x-Codex`) run autonomously and cannot present interactive prompts — the preference interview will be silently skipped. Select **Claude Sonnet 4.6** (or any interactive model) in the Copilot picker, or use the `@setup` agent which pins the correct model automatically.
 
@@ -62,7 +62,15 @@ Copilot fetches the template and setup guide directly from GitHub, interviews yo
 
 Four starter skills are scaffolded into `.github/skills/` during setup, following the [Agent Skills](https://agentskills.io) open standard. Skills are markdown-based behavioural instructions that teach the agent *how* to perform specific workflows — from authoring new skills to reviewing PRs with Lean waste categories. Optionally search official and community skill repositories for proven workflows.
 
-### �🔄 Living update protocol
+### 📂 Path-specific instructions
+
+`.github/instructions/` contains context-aware instruction files with `applyTo:` glob patterns. When Copilot edits a file matching a pattern (e.g., test files, API routes, config files, documentation), the corresponding instructions are loaded alongside the main file. Four starter stubs are scaffolded during setup.
+
+### 💬 Reusable prompt files (slash commands)
+
+`.github/prompts/` contains five starter prompt files that become VS Code slash commands (`/explain`, `/refactor`, `/test-gen`, `/review-file`, `/commit-msg`). Each encapsulates a workflow grounded in the template's Lean methodology — waste-aware explanation, PDCA-driven refactoring, convention-following test generation, structured file review, and Conventional Commits.
+
+### 🔄 Living update protocol
 
 The template ships versioned. When a new version is released, say *"Update your instructions"* and Copilot will fetch the diff, present a section-by-section change manifest, let you apply / skip / customise each change, back up the current file, write the updates, and record everything in `JOURNAL.md` and `CHANGELOG.md`. The update is always reversible.
 
@@ -99,6 +107,9 @@ Two built-in review modes surface at the end of any session:
 | `.github/copilot-instructions.md` | Filled from template | Primary AI guidance — methodology-complete and project-specific |
 | `.github/agents/*.agent.md` | Copied from template | Four model-pinned agents |
 | `.github/skills/*/SKILL.md` | Copied from template | Four starter skills (Agent Skills standard) |
+| `.github/instructions/*.instructions.md` | Copied from template | Path-specific instruction stubs (tests, API, config, docs) |
+| `.github/prompts/*.prompt.md` | Copied from template | Five reusable slash commands (/explain, /refactor, /test-gen, /review-file, /commit-msg) |
+| `.github/workflows/copilot-setup-steps.yml` | Generated from template | Environment setup for GitHub Copilot coding agent |
 | `AGENTS.md` | Copied from template | AI entry point — trigger phrases and remote sequences |
 | `CHANGELOG.md` | `template/CHANGELOG.md` | Keep-a-Changelog stub for your project's history |
 | `JOURNAL.md` | `template/JOURNAL.md` | ADR-style architectural decision record |
@@ -119,6 +130,8 @@ Every AI-facing file has a plain-English companion in `docs/`:
 | [`docs/UPDATE-GUIDE.md`](docs/UPDATE-GUIDE.md) | How the update and restore process works |
 | [`docs/AGENTS-GUIDE.md`](docs/AGENTS-GUIDE.md) | Trigger phrases and the model-pinned agent system |
 | [`docs/SKILLS-GUIDE.md`](docs/SKILLS-GUIDE.md) | How the Agent Skills library and §12 Skill Protocol work |
+| [`docs/PATH-INSTRUCTIONS-GUIDE.md`](docs/PATH-INSTRUCTIONS-GUIDE.md) | How path-specific instruction files work and when to use them |
+| [`docs/PROMPTS-GUIDE.md`](docs/PROMPTS-GUIDE.md) | How prompt files become VS Code slash commands |
 | [`docs/EXTENSION-REVIEW-GUIDE.md`](docs/EXTENSION-REVIEW-GUIDE.md) | How the VS Code extension audit feature works |
 | [`docs/TEST-REVIEW-GUIDE.md`](docs/TEST-REVIEW-GUIDE.md) | How the test coverage review and CI recommendation feature works |
 
@@ -140,10 +153,23 @@ copilot-instructions-template/
 │   │   ├── fix-ci-failure/SKILL.md     # Diagnose and fix CI failures
 │   │   ├── lean-pr-review/SKILL.md     # Lean waste-categorised PR review
 │   │   └── conventional-commit/SKILL.md # Conventional Commits messages
+│   ├── instructions/
+│   │   ├── tests.instructions.md       # Path rules for test files
+│   │   ├── api-routes.instructions.md  # Path rules for API routes
+│   │   ├── config.instructions.md      # Path rules for config files
+│   │   └── docs.instructions.md        # Path rules for documentation
+│   ├── prompts/
+│   │   ├── explain.prompt.md           # /explain — waste-aware code explanation
+│   │   ├── refactor.prompt.md          # /refactor — Lean-principled refactoring
+│   │   ├── test-gen.prompt.md          # /test-gen — convention-following test gen
+│   │   ├── review-file.prompt.md       # /review-file — §2 Review Mode
+│   │   └── commit-msg.prompt.md        # /commit-msg — Conventional Commits
 │   ├── workflows/
 │   │   ├── ci.yml                      # Validates structure, links, and sections on push/PR
 │   │   ├── release.yml                 # Auto-creates GitHub release when VERSION is bumped
-│   │   └── stale.yml                   # Closes stale issues and PRs weekly
+│   │   ├── stale.yml                   # Closes stale issues and PRs weekly
+│   │   ├── links.yml                   # Lychee link checker (weekly + PR)
+│   │   └── vale.yml                    # Vale prose linter (PR)
 │   ├── ISSUE_TEMPLATE/
 │   │   ├── bug_report.yml              # Structured bug report form
 │   │   └── feature_request.yml         # Structured feature request form
@@ -155,12 +181,15 @@ copilot-instructions-template/
 │   ├── UPDATE-GUIDE.md                 # Human guide to the update/restore protocol
 │   ├── AGENTS-GUIDE.md                 # Human guide to trigger phrases + model agents
 │   ├── EXTENSION-REVIEW-GUIDE.md       # Human guide to the extension audit feature
-│   └── TEST-REVIEW-GUIDE.md            # Human guide to the test coverage review feature
+│   ├── TEST-REVIEW-GUIDE.md            # Human guide to the test coverage review feature
+│   ├── PATH-INSTRUCTIONS-GUIDE.md      # Human guide to path-specific instructions
+│   └── PROMPTS-GUIDE.md                # Human guide to reusable prompt files
 ├── template/
 │   ├── CHANGELOG.md                    # Keep-a-Changelog stub (scaffolded into consumer projects)
 │   ├── JOURNAL.md                      # ADR-style journal stub
 │   ├── BIBLIOGRAPHY.md                 # File catalogue stub
 │   ├── METRICS.md                      # Kaizen baseline snapshot stub
+│   ├── copilot-setup-steps.yml         # GitHub Actions workflow for Copilot coding agent
 │   ├── skills/
 │   │   ├── skill-creator/SKILL.md      # Starter skill: meta-skill for authoring
 │   │   ├── fix-ci-failure/SKILL.md     # Starter skill: CI failure diagnosis
@@ -183,7 +212,9 @@ copilot-instructions-template/
 ├── CHANGELOG.md                        # This template's own version history
 ├── CONTRIBUTING.md                     # Contribution guidelines
 ├── LICENSE                             # MIT
-└── .markdownlint.json                  # Lint rules enforced by CI
+├── .markdownlint.json                  # Lint rules enforced by CI
+├── .vale.ini                           # Vale prose linting configuration
+└── .github/dependabot.yml             # Automated dependency updates
 ```
 
 ---
