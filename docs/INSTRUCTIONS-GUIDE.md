@@ -115,6 +115,14 @@ Every self-edit is recorded in `JOURNAL.md` so you always know what changed and 
 
 **What Copilot cannot do**: Delete existing rules without your explicit instruction, restructure sections unilaterally, or apply template updates without showing you a diff first.
 
+#### Heartbeat Protocol
+
+§8 also includes the **Heartbeat Protocol** — an event-driven health check system adapted from [OpenClaw](https://docs.openclaw.ai/gateway/heartbeat). Unlike OpenClaw's timed 30-minute intervals, the template uses event triggers: session start, large refactors (>5 files), dependency updates, CI failure resolution, and explicit user requests.
+
+When a heartbeat fires, Copilot reads `.copilot/workspace/HEARTBEAT.md` and runs a checklist of health checks — dependency audits, test coverage deltas, waste scans, memory consolidation, metrics freshness, and settings drift. Results are logged to the file's History table. Copilot reports to you only when alerts exist — healthy heartbeats are silent.
+
+The heartbeat file is agent-writable: Copilot can add custom triggers and checks as it learns your project's needs. See [HEARTBEAT-GUIDE.md](HEARTBEAT-GUIDE.md) for the full reference.
+
 ---
 
 ### §9 — Subagent Protocol

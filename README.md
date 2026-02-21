@@ -83,9 +83,13 @@ All GitHub Actions are SHA-pinned to immutable commit hashes and protected with 
 
 The template ships versioned. When a new version is released, say *"Update your instructions"* and Copilot will fetch the diff, present a section-by-section change manifest, let you apply / skip / customise each change, back up the current file, write the updates, and record everything in `JOURNAL.md` and `CHANGELOG.md`. The update is always reversible.
 
+### 💓 Event-driven heartbeat
+
+Copilot automatically runs health checks at natural breakpoints — session start, large refactors, dependency updates, and CI resolutions. The heartbeat reads `.copilot/workspace/HEARTBEAT.md`, checks dependency freshness, test coverage deltas, accumulated waste, memory consolidation, and settings drift. Alerts are reported only when something needs attention; healthy heartbeats are silent. The checklist is agent-writable — Copilot adds custom checks as it learns your project.
+
 ### 🏗️ Workspace identity system
 
-Six workspace files are scaffolded into your project during setup and maintained across sessions:
+Seven workspace files are scaffolded into your project during setup and maintained across sessions:
 
 | File | Purpose |
 |------|---------|
@@ -95,6 +99,7 @@ Six workspace files are scaffolded into your project during setup and maintained
 | `TOOLS.md` | Tool usage patterns and VS Code extension registry |
 | `MEMORY.md` | Session continuity and memory strategy |
 | `BOOTSTRAP.md` | Permanent setup origin record |
+| `HEARTBEAT.md` | Event-driven health check checklist |
 
 ### 📊 Kaizen baseline and metrics
 
@@ -147,6 +152,7 @@ Every AI-facing file has a plain-English companion in `docs/`:
 | [`docs/RELEASE-AUTOMATION-GUIDE.md`](docs/RELEASE-AUTOMATION-GUIDE.md) | Manual vs automated release workflows and how to switch |
 | [`docs/EXTENSION-REVIEW-GUIDE.md`](docs/EXTENSION-REVIEW-GUIDE.md) | How the VS Code extension audit feature works |
 | [`docs/TEST-REVIEW-GUIDE.md`](docs/TEST-REVIEW-GUIDE.md) | How the test coverage review and CI recommendation feature works |
+| [`docs/HEARTBEAT-GUIDE.md`](docs/HEARTBEAT-GUIDE.md) | Event-driven heartbeat — triggers, checks, cross-file wiring, and customisation |
 
 ---
 
@@ -225,7 +231,8 @@ copilot-instructions-template/
 │       ├── USER.md                     # User profile stub
 │       ├── TOOLS.md                    # Tool usage patterns + Extension registry
 │       ├── MEMORY.md                   # Memory strategy stub
-│       └── BOOTSTRAP.md                # Permanent setup origin record stub
+│       ├── BOOTSTRAP.md                # Permanent setup origin record stub
+│       └── HEARTBEAT.md                # Event-driven health check checklist stub
 ├── examples/
 │   └── valis/
 │       └── README.md                   # Reference implementation (asafelobotomy/Valis)

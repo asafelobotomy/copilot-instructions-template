@@ -16,12 +16,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `.github/workflows/ci.yml` — new `Release workflow mutual exclusion` step: CI now fails if both `release-manual.yml` and `release-please.yml` have active push triggers simultaneously, preventing duplicate release races.
 - `docs/SECURITY-GUIDE.md` — new `### Custom tier format` subsection under Graduated Trust Model: concrete Markdown table example showing `{{TRUST_OVERRIDES}}` format, glob pattern rules, and tier precedence logic.
 - `docs/UPDATE-GUIDE.md` — new `## Notable version migrations` section with manual-action tables for `v1.x → v2.0.0` and `v1.0.x → v1.4.0` upgrades covering companion files (MCP config, skills, release automation) that the update protocol does not touch automatically.
+- `template/workspace/HEARTBEAT.md` — event-driven health check checklist template. Agent-writable file with Pulse status, 6 event triggers (session start, large change, refactor/migration, dependency update, CI resolution, explicit), 6 health checks (dependency audit, test coverage delta, waste scan, memory consolidation, metrics freshness, settings drift), Agent Notes, and append-only History table. Adapted from [OpenClaw's heartbeat mechanism](https://docs.openclaw.ai/gateway/heartbeat) with event-triggered execution replacing timed intervals.
+- `docs/HEARTBEAT-GUIDE.md` — human-readable guide: event triggers vs OpenClaw's timed approach, cross-file wiring specification, adding custom triggers and checks, silent-when-healthy contract, interaction with §6/§8/§10/MEMORY.md/METRICS.md/TOOLS.md/SOUL.md.
+- `.github/copilot-instructions.md` — new `### Heartbeat Protocol` subsection in §8: event trigger list, 6-step procedure (read → check → update Pulse → log History → write Agent Notes → report alerts only), cross-file references.
+- `AGENTS.md` — "Heartbeat operations" trigger phrase section (6 phrases); heartbeat entries added to canonical triggers table; `template/workspace/HEARTBEAT.md` and `.copilot/workspace/HEARTBEAT.md` added to file map and bootstrap outputs.
 
 ### Changed
 
 - `template/skills/skill-creator/SKILL.md` — trimmed `description` field to a concise one-sentence form matching the §12 recommendation for reliable agent discovery.
 - `template/skills/conventional-commit/SKILL.md` — expanded opaque `§10` and `§4`/`§10` references in "When NOT to use" to include `of their project's Copilot instructions`, improving readability when the skill is used outside the template context.
-- `SETUP.md` — added release automation callout after Step 2.11 pointing to `docs/RELEASE-AUTOMATION-GUIDE.md` and noting the `release-please-config.json` / `.release-please-manifest.json` requirement for the release-please strategy.
+- `SETUP.md` — added release automation callout after Step 2.11 pointing to `docs/RELEASE-AUTOMATION-GUIDE.md` and noting the `release-please-config.json` / `.release-please-manifest.json` requirement for the release-please strategy; Step 0b updated from 6 to 7 identity files (HEARTBEAT.md added); Step 3 expanded with HEARTBEAT.md scaffold section; BOOTSTRAP.md stub updated from "all six" to "all seven" identity files.
+- `AGENTS.md` — "Six workspace identity files" → "Seven workspace identity files" in project description.
+- `README.md` — added "Event-driven heartbeat" feature section; workspace identity table expanded from 6 to 7 rows (HEARTBEAT.md added); `docs/HEARTBEAT-GUIDE.md` added to human-readable guides table; file tree updated with `HEARTBEAT.md`.
+- `template/workspace/BOOTSTRAP.md` — HEARTBEAT.md row added to "Files created during setup" table.
+- `template/BIBLIOGRAPHY.md` — HEARTBEAT.md row added to "Workspace identity" section.
+- `.github/workflows/ci.yml` — `docs/HEARTBEAT-GUIDE.md` and `template/workspace/HEARTBEAT.md` added to required files check.
+- `docs/INSTRUCTIONS-GUIDE.md` — §8 section expanded with "Heartbeat Protocol" subsection explaining event triggers, cross-file wiring, and silent-when-healthy contract.
+- `docs/SETUP-GUIDE.md` — "Six files" → "Seven files" in Step 3; HEARTBEAT.md row added to identity files table.
+- `docs/AGENTS-GUIDE.md` — heartbeat trigger phrases added to canonical triggers table.
 
 ---
 

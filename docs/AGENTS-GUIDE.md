@@ -18,6 +18,8 @@ In any Copilot chat, say one of the canonical trigger phrases. Copilot reads the
 | Force a full comparison | *"Force check instruction updates"* |
 | Restore a backup | *"Restore instructions from backup"* |
 | List available backups | *"List instruction backups"* |
+| Check heartbeat | *"Check your heartbeat"* / *"Run heartbeat checks"* |
+| Show heartbeat status | *"Show heartbeat status"* / *"Heartbeat history"* |
 
 There are also variations:
 

@@ -27,6 +27,7 @@ This workspace was scaffolded on **{{SETUP_DATE}}** using the [copilot-instructi
 | `.copilot/workspace/TOOLS.md` | Created |
 | `.copilot/workspace/MEMORY.md` | Created |
 | `.copilot/workspace/BOOTSTRAP.md` | This file — created |
+| `.copilot/workspace/HEARTBEAT.md` | Created — event-driven health check checklist |
 | `CHANGELOG.md` | Created / already existed |
 | `JOURNAL.md` | Created / already existed |
 | `BIBLIOGRAPHY.md` | Created / already existed |

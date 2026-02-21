@@ -332,6 +332,21 @@ Copilot may edit this file when patterns stabilise. Rules:
 4. **Self-update trigger phrases**: "Update your instructions", "Add this to your instructions", "Remember this for next time".
 5. **Template updates**: When the user says "Update from template", fetch the latest template and apply the update protocol in `UPDATE.md`.
 
+### Heartbeat Protocol
+
+Event-triggered health checks that keep the agent aligned with real project state. The heartbeat checklist lives in `.copilot/workspace/HEARTBEAT.md`.
+
+**When to fire**: session start; after modifying >5 files; after any refactor, migration, or restructure task; after dependency manifest changes; after CI failure resolution; on the trigger phrase "Check your heartbeat"; or on any custom trigger defined in `HEARTBEAT.md`.
+
+**Procedure**:
+
+1. Read `HEARTBEAT.md` — follow it strictly. Do not infer tasks from prior sessions.
+2. Run every check in the Checks section. Cross-reference: MEMORY.md (consolidation), METRICS.md (freshness), TOOLS.md (dependency audit), SOUL.md (reasoning alignment), §10 (settings drift).
+3. Update Pulse: `HEARTBEAT_OK` if all checks pass; prepend `[!]` with a one-line alert for each failure.
+4. Append a row to History (keep last 5).
+5. Write observations to Agent Notes for the next heartbeat.
+6. Report to user only if alerts exist — silent when healthy.
+
 ---
 
 ## §9 — Subagent Protocol

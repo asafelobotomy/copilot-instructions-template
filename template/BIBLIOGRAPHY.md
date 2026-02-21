@@ -35,6 +35,7 @@ Maintenance rule: run `{{LOC_COMMAND}}` and compare outputs to this table. Any f
 | `.copilot/workspace/TOOLS.md` | Effective tool usage patterns | — |
 | `.copilot/workspace/MEMORY.md` | Memory system strategy | — |
 | `.copilot/workspace/BOOTSTRAP.md` | Permanent setup origin record | — |
+| `.copilot/workspace/HEARTBEAT.md` | Event-driven health check checklist | — |
 
 ## Source files
 

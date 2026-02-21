@@ -103,6 +103,19 @@ When a user says any of the following:
 
 ...follow the MCP Protocol in **§13** of `.github/copilot-instructions.md`. Use the decision tree (built-in tool → MCP server → community package → custom tool) and apply the quality gate before adding any new server.
 
+### Heartbeat operations
+
+When a user says any of the following:
+
+- *"Check your heartbeat"*
+- *"Run heartbeat checks"*
+- *"Show heartbeat status"*
+- *"Update heartbeat checklist"*
+- *"Clear heartbeat alerts"*
+- *"Heartbeat history"*
+
+...follow the Heartbeat Protocol in **§8** of `.github/copilot-instructions.md`. Read `.copilot/workspace/HEARTBEAT.md`, run all checks, update Pulse status, and report any alerts.
+
 ---
 
 ## What this repo is
@@ -117,7 +130,7 @@ A generic, **living** GitHub Copilot instructions template grounded in **Lean/Ka
 - Four model-pinned agent files (`.github/agents/`) for VS Code 1.106+ — one each for Setup, Coding, Review, and Fast workflows.
 - A reusable skill library (`.github/skills/`) following the [Agent Skills](https://agentskills.io) open standard — four starter skills included.
 - Automatic pre-write backups so every update is reversible — stored in `.github/archive/`.
-- Six workspace identity files that Copilot maintains across sessions.
+- Seven workspace identity files that Copilot maintains across sessions (including an event-driven heartbeat checklist).
 - Documentation stubs (CHANGELOG, JOURNAL, BIBLIOGRAPHY, METRICS).
 - A Living Update Protocol that authorises Copilot to improve the instructions as patterns emerge.
 
@@ -167,6 +180,7 @@ Setup outputs written to the **user's project**:
 | `.copilot/workspace/TOOLS.md` | Tool usage patterns |
 | `.copilot/workspace/MEMORY.md` | Memory strategy |
 | `.copilot/workspace/BOOTSTRAP.md` | Permanent setup origin record |
+| `.copilot/workspace/HEARTBEAT.md` | Event-driven health check checklist |
 | `CHANGELOG.md` | Keep-a-Changelog stub |
 | `JOURNAL.md` | ADR-style development journal |
 | `BIBLIOGRAPHY.md` | File catalogue |
@@ -234,6 +248,7 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `template/workspace/TOOLS.md` | Tool usage patterns stub |
 | `template/workspace/MEMORY.md` | Memory strategy stub |
 | `template/workspace/BOOTSTRAP.md` | Bootstrap record stub |
+| `template/workspace/HEARTBEAT.md` | Heartbeat checklist stub |
 | `template/CHANGELOG.md` | Keep-a-Changelog stub (for consumer project) |
 | `template/JOURNAL.md` | ADR journal stub |
 | `template/BIBLIOGRAPHY.md` | File catalogue stub |
@@ -264,3 +279,6 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | Configure MCP | *"Configure MCP servers"* / *"Set up MCP"* |
 | Add MCP server | *"Add an MCP server"* / *"Add an MCP server for ..."* |
 | List MCP servers | *"Show MCP servers"* / *"List MCP servers"* |
+| Check heartbeat | *"Check your heartbeat"* / *"Run heartbeat checks"* |
+| Show heartbeat status | *"Show heartbeat status"* / *"Heartbeat history"* |
+| Update heartbeat | *"Update heartbeat checklist"* / *"Clear heartbeat alerts"* |

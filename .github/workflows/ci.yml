@@ -59,13 +59,15 @@ jobs:
             "docs/SECURITY-GUIDE.md" \
             "docs/MCP-GUIDE.md" \
             "docs/RELEASE-AUTOMATION-GUIDE.md" \
+            "docs/HEARTBEAT-GUIDE.md" \
             "template/copilot-setup-steps.yml" \
             "template/vscode/mcp.json" \
             "template/CHANGELOG.md" "template/JOURNAL.md" \
             "template/BIBLIOGRAPHY.md" "template/METRICS.md" \
             "template/workspace/IDENTITY.md" "template/workspace/SOUL.md" \
             "template/workspace/USER.md" "template/workspace/TOOLS.md" \
-            "template/workspace/MEMORY.md" "template/workspace/BOOTSTRAP.md"; do
+            "template/workspace/MEMORY.md" "template/workspace/BOOTSTRAP.md" \
+            "template/workspace/HEARTBEAT.md"; do
             if [[ ! -f "$f" ]]; then
               echo "❌ Missing: $f"; missing=1
             fi

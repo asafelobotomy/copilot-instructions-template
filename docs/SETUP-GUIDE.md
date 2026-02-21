@@ -120,7 +120,7 @@ If you chose **E22 = A** (none) or used Simple/Advanced setup, this step is skip
 
 ### Step 3 — Scaffold workspace identity files
 
-Six files are created in `.copilot/workspace/`:
+Seven files are created in `.copilot/workspace/`:
 
 | File | Purpose |
 |------|---------|
@@ -130,6 +130,7 @@ Six files are created in `.copilot/workspace/`:
 | `TOOLS.md` | Effective command patterns for this project |
 | `MEMORY.md` | Memory strategy (what to retain vs. always re-read) |
 | `BOOTSTRAP.md` | Permanent record of setup date, stack, and files created |
+| `HEARTBEAT.md` | Event-driven health check checklist — runs automatically on trigger events |
 
 These files help Copilot maintain context across sessions. They're regularly updated by Copilot as it learns more about your project and your working style.
 
