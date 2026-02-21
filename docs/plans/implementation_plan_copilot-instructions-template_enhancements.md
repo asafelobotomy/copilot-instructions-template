@@ -99,7 +99,7 @@ Introduces path-specific instructions, reusable prompt files, link checking, and
 
 ### SETUP.md step numbering after this release
 
-```
+```text
 0a-0e (preflight) -> 1 (stack discovery) -> 2 (populate instructions) ->
 2.5 (agents) -> 2.8 (skills) -> 2.9 (path instructions) -> 2.10 (prompts) ->
 2.11 (copilot-setup-steps) -> 3 (workspace) -> 4 (metrics) -> 5 (doc stubs) ->
@@ -216,7 +216,7 @@ Major version: adds section 13 (breaking change for CI section count check), new
 
 ### SETUP.md step numbering after this release
 
-```
+```text
 0a-0e (preflight) -> 1 (stack discovery) -> 2 (populate instructions) ->
 2.5 (agents) -> 2.8 (skills) -> 2.9 (path instructions) -> 2.10 (prompts) ->
 2.11 (copilot-setup-steps) -> 2.12 (MCP config) -> 3 (workspace) ->
