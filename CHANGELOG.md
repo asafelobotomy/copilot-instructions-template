@@ -11,6 +11,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ## [Unreleased]
 
+### Added
+
+- `.github/workflows/ci.yml` — new `Release workflow mutual exclusion` step: CI now fails if both `release-manual.yml` and `release-please.yml` have active push triggers simultaneously, preventing duplicate release races.
+- `docs/SECURITY-GUIDE.md` — new `### Custom tier format` subsection under Graduated Trust Model: concrete Markdown table example showing `{{TRUST_OVERRIDES}}` format, glob pattern rules, and tier precedence logic.
+- `docs/UPDATE-GUIDE.md` — new `## Notable version migrations` section with manual-action tables for `v1.x → v2.0.0` and `v1.0.x → v1.4.0` upgrades covering companion files (MCP config, skills, release automation) that the update protocol does not touch automatically.
+
+### Changed
+
+- `template/skills/skill-creator/SKILL.md` — trimmed `description` field to a concise one-sentence form matching the §12 recommendation for reliable agent discovery.
+- `template/skills/conventional-commit/SKILL.md` — expanded opaque `§10` and `§4`/`§10` references in "When NOT to use" to include `of their project's Copilot instructions`, improving readability when the skill is used outside the template context.
+- `SETUP.md` — added release automation callout after Step 2.11 pointing to `docs/RELEASE-AUTOMATION-GUIDE.md` and noting the `release-please-config.json` / `.release-please-manifest.json` requirement for the release-please strategy.
+
 ---
 
 ## [2.0.0] — 2026-02-21

@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: Author a new agent skill from scratch following the Agent Skills open standard and §12 conventions
+description: Create a new agent skill following the Agent Skills open standard
 version: "1.0"
 license: MIT
 tags: [meta, authoring, skill, scaffold]

@@ -87,6 +87,27 @@ During setup, interview question **E21** lets you choose:
 
 Custom overrides are written to the `{{TRUST_OVERRIDES}}` placeholder in §10 and take precedence over defaults.
 
+### Custom tier format
+
+When option **D — Custom tiers** is selected during setup (E21), the text you type is written verbatim to `{{TRUST_OVERRIDES}}` in §10. The expected format is a short Markdown table followed by any prose notes:
+
+```markdown
+| Path pattern | Trust tier | Behaviour |
+|---|---|---|
+| `.github/workflows/**` | Guarded | Pause and explain before any edit |
+| `src/auth/**` | Guarded | Pause and explain before any edit |
+| `src/**` | Standard | Describe plan and wait for approval |
+| `docs/**` | High | Auto-approve; summarise after |
+| `**/*.test.*` | High | Auto-approve test files |
+```
+
+Rules:
+
+- **Path patterns** use standard glob syntax (`**` matches any path segment, `*` matches within a segment).
+- **Trust tiers**: `High`, `Standard`, or `Guarded` only.
+- More specific patterns take precedence over broader ones.
+- Paths not matched by any pattern fall back to the default tier for their category (source → Standard, config → Guarded, docs/tests → High).
+
 ### How it interacts with other settings
 
 The trust model works alongside — not in place of — other autonomy controls:

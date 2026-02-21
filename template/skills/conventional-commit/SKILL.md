@@ -20,8 +20,8 @@ Write a well-structured commit message following the [Conventional Commits](http
 
 ## When NOT to use
 
-- The user has their own commit message format documented in §10
-- The project uses a different commit convention (check §4 and §10 first)
+- The user has their own commit message format documented in §10 of their project's Copilot instructions
+- The project uses a different commit convention (check §4 and §10 of the project's Copilot instructions first)
 
 ## Steps
 

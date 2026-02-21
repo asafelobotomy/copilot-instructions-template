@@ -197,6 +197,21 @@ jobs:
           fi
           echo "✅ $count placeholder tokens present"
 
+      - name: Release workflow mutual exclusion
+        run: |
+          # Both release-manual.yml and release-please.yml warn "use one or the other".
+          # This step enforces that — if both have an active push trigger, fail fast.
+          has_push() { grep -qE '^  push:' "$1" 2>/dev/null; }
+          manual_active=0; please_active=0
+          has_push .github/workflows/release-manual.yml && manual_active=1 || true
+          has_push .github/workflows/release-please.yml && please_active=1 || true
+          if [[ $manual_active -eq 1 && $please_active -eq 1 ]]; then
+            echo "❌ Both release-manual.yml and release-please.yml have active push triggers."
+            echo "   Enable only one release strategy — see docs/RELEASE-AUTOMATION-GUIDE.md."
+            exit 1
+          fi
+          echo "✅ Release workflow mutual exclusion OK"
+
   markdownlint:
     name: Markdown lint
     runs-on: ubuntu-latest

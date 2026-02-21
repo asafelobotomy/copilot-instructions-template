@@ -130,3 +130,38 @@ These items are **never** modified by an update, regardless of what you choose:
 | `<!-- migrated -->` blocks | Conventions from before you adopted the template |
 | `<!-- user-added -->` blocks | Explicitly human-authored content |
 | Resolved placeholder values | Commands like `bun test` must not revert to `{{TEST_COMMAND}}` |
+
+---
+
+## Notable version migrations
+
+These notes cover changes that require manual action beyond running "Update your instructions". The update protocol handles all §1–§9 section changes automatically — these notes cover companion files and setup steps that the protocol does not touch.
+
+### v1.x → v2.0.0 (Major)
+
+**New in this release**: §13 Model Context Protocol (MCP), MCP server template, two new starter skills, and an automated release workflow option.
+
+**What the update protocol does automatically**:
+
+- Proposes adding §13 as a `NEW_SECTION` — accept it to bring in the full MCP protocol.
+- Proposes any §1–§12 section changes as `UPDATED` items.
+
+**What requires manual action** (the update protocol does not touch these):
+
+| Item | Action |
+|------|--------|
+| MCP server config | Optionally create `.vscode/mcp.json` by fetching `template/vscode/mcp.json` from the template repo and configuring your preferred servers |
+| New starter skills | Optionally fetch `template/skills/mcp-builder/SKILL.md` and `template/skills/webapp-testing/SKILL.md` into `.github/skills/` |
+| Release automation | Optionally adopt `release-please.yml` — requires `release-please-config.json` and `.release-please-manifest.json` at repo root; see `docs/RELEASE-AUTOMATION-GUIDE.md` |
+| §10 User Preferences | Manually add an `MCP servers` row (E22) to your existing User Preferences table if you want to document your MCP choice |
+
+### v1.0.x / v1.1.0 → v1.4.0
+
+**New in this release**: SHA-pinned actions, harden-runner, OpenSSF Scorecard, Graduated Trust Model (§10), skill `compatibility` and `allowed-tools` fields.
+
+**What requires manual action**:
+
+| Item | Action |
+|------|--------|
+| Skill security fields | Optionally add `compatibility: ">=1.4"` and `allowed-tools: [...]` frontmatter to your existing `.github/skills/*/SKILL.md` files |
+| §10 Verification trust | Manually add a `Verification trust` row (E21) to your User Preferences table and fill in `{{TRUST_OVERRIDES}}` in §10 |

@@ -1087,6 +1087,8 @@ The `copilot-setup-steps.yml` workflow runs before the GitHub Copilot coding age
 5. Remove commented-out sections for other runtimes.
 6. Log the created file to JOURNAL.md.
 
+> **Release automation** (optional next step): If you want automated GitHub Releases for this project, the template provides two release strategies — a manual VERSION-bump approach and a Conventional Commits-based approach using release-please. See `docs/RELEASE-AUTOMATION-GUIDE.md` in the template repo for a trade-off comparison and full configuration instructions. If you adopt the release-please strategy, also scaffold `release-please-config.json` and `.release-please-manifest.json` at the project root (exact content is in the guide).
+
 ---
 
 ## Step 2.12 — Configure MCP servers
