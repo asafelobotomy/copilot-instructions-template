@@ -28,6 +28,6 @@ jobs:
             --no-progress
             --accept 200,204,301,302,429
             --exclude-mail
-            --exclude "^https://github.com/asafelobotomy/copilot-instructions-template/(edit|compare)/"
+            --exclude "^https://github.com/${{ github.repository }}/(edit|compare)/"
             "**/*.md"
           fail: true
