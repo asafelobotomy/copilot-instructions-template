@@ -13,6 +13,42 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [2.0.0] — 2026-02-21
+
+### Breaking changes
+
+- **New §13 — Model Context Protocol (MCP)** — section count changes from 12 to 13. CI, CONTRIBUTING.md, and UPDATE.md all reference section count and are updated accordingly. Existing consumer repos running the update protocol will encounter the new section.
+- **Step 2.12** generates `.vscode/mcp.json` — changes the scaffolding file output. Existing setups are unaffected (MCP defaults to "None").
+- **22 interview questions** (was 21) — E22 added to Expert tier. Simple and Advanced tiers get sensible defaults.
+
+### Added
+
+- **§13 — Model Context Protocol (MCP)** in `.github/copilot-instructions.md` — subsections: MCP server tiers (always-on / credentials-required / stack-specific), server configuration (references `.vscode/mcp.json`), MCP decision tree (built-in tool → MCP server → community package → custom tool), server quality gate (4 checks), available server reference table with `{{MCP_STACK_SERVERS}}` and `{{MCP_CUSTOM_SERVERS}}` placeholders.
+- **`template/vscode/mcp.json`** — preconfigured MCP server template with 5 official servers: filesystem, memory, git (always-on, enabled), github, fetch (credentials-required, disabled by default). Uses `${workspaceFolder}` and `${env:GITHUB_TOKEN}` variables.
+- **`template/skills/mcp-builder/SKILL.md`** — starter skill adapted from Anthropic's official library. 7-step workflow: clarify purpose, choose transport (stdio/SSE/streamable HTTP), scaffold project, implement handlers, test with MCP Inspector, register in `.vscode/mcp.json`, document.
+- **`template/skills/webapp-testing/SKILL.md`** — starter skill adapted from Anthropic's official library. 7-step Playwright-based e2e testing workflow: detect framework, install runner, scaffold test structure, write first test, verify passing, add to CI, document.
+- **E22 — MCP server configuration** interview question added to `SETUP.md` Expert tier (batch 7). Three options: None (default) / Always-on only / Full configuration. Maps to `{{MCP_STACK_SERVERS}}` and `{{MCP_CUSTOM_SERVERS}}` placeholders.
+- **SETUP.md Step 2.12** — MCP configuration scaffolding: fetch template, create `.vscode/mcp.json`, configure by E22 answer, stack-specific server discovery from Step 1 dependencies (PostgreSQL, SQLite, Redis, Docker, AWS, Puppeteer), populate §13 placeholders.
+- **`docs/MCP-GUIDE.md`** — human-readable guide: MCP overview, three-tier server classification, `.vscode/mcp.json` configuration, adding custom servers, stack-specific discovery, credential security, quality gate, troubleshooting, interaction with §11 Tool Protocol and §12 Skill Protocol.
+- **`.github/workflows/release-please.yml`** — automated release workflow using `googleapis/release-please-action@v4` (SHA-pinned). Generates PRs from Conventional Commits, auto-bumps VERSION, creates GitHub releases. Coexists with manual workflow — enable one, disable the other.
+- **`docs/RELEASE-AUTOMATION-GUIDE.md`** — human-readable guide comparing manual (`release-manual.yml`) and automated (`release-please.yml`) release strategies with trade-off table, switching instructions, configuration reference, and Conventional Commits quick reference.
+- MCP operations trigger phrases in `AGENTS.md`: "Configure MCP servers", "Add an MCP server", "Show MCP servers", "Check MCP configuration".
+
+### Changed
+
+- `.github/copilot-instructions.md` — added §13 MCP Protocol; §9 Subagent Protocol updated to reference §13; §10 User Preferences table expanded from 21 to 22 rows (E22 added); template version stamp updated to `2.0.0`.
+- `.github/workflows/ci.yml` — §1–§12 section check updated to §1–§13; `docs/MCP-GUIDE.md`, `docs/RELEASE-AUTOMATION-GUIDE.md`, and `template/vscode/mcp.json` added to required files check.
+- `.github/workflows/release.yml` → renamed to `.github/workflows/release-manual.yml` (content unchanged).
+- `SETUP.md` — Expert tier expanded from 6 to 7 questions (E16–E22); batch 7 updated (E20, E21, E22); all defaults tables, verification gate counts, pre-flight summary, and Step 6 summary updated from 21 → 22 dimensions; Step 2.12 added after Step 2.11; MCP CONFIGURATION section added to Step 6 summary.
+- `CONTRIBUTING.md` — CI checklist reference updated from §1–§12 to §1–§13.
+- `AGENTS.md` — MCP operations trigger phrase section added; file map expanded with `template/vscode/mcp.json`, `template/skills/mcp-builder/SKILL.md`, `template/skills/webapp-testing/SKILL.md`; bootstrap outputs expanded with `.vscode/mcp.json`; skills count 4 → 6; canonical triggers table expanded with MCP entries.
+- `docs/INSTRUCTIONS-GUIDE.md` — "twelve numbered sections" → "thirteen numbered sections (§1–§13)"; §13 MCP section guide added.
+- `docs/SETUP-GUIDE.md` — Expert question count E16–E20 → E16–E22; "20-row" → "22-row"; E21 and E22 added to question table; Step 2.12 section added.
+- `.github/ISSUE_TEMPLATE/bug_report.yml` — "MCP Protocol (§13)" added to area dropdown.
+- `README.md` — version badge `2.0.0`; "Thirteen-section" heading; "MCP integration" feature section; 6 starter skills (was 4); `.vscode/mcp.json` in scaffolding table; `docs/MCP-GUIDE.md` and `docs/RELEASE-AUTOMATION-GUIDE.md` in docs table; file tree updated with MCP files, release workflows, and new skills.
+
+---
+
 ## [1.4.0] — 2026-02-21
 
 ### Added

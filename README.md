@@ -5,7 +5,7 @@
 **Instruction firmware for AI-assisted development — grounded in Lean / Kaizen**
 
 [![CI](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml/badge.svg)](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-1.4.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.0.0-blue)](CHANGELOG.md)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/asafelobotomy/copilot-instructions-template/badge)](https://scorecard.dev/viewer/?uri=github.com/asafelobotomy/copilot-instructions-template)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![VS Code](https://img.shields.io/badge/VS_Code-1.106+-007ACC?logo=visualstudiocode)](https://code.visualstudio.com/)
@@ -30,7 +30,7 @@ Open a Copilot chat in **any project** and say:
 Setup from asafelobotomy/copilot-instructions-template
 ```
 
-Copilot fetches the template and setup guide directly from GitHub, interviews you with 5–20 questions (your choice of depth), fills every placeholder, scaffolds your workspace files, captures a Kaizen baseline, and self-destructs the setup script. **No cloning, no copying, no manual steps.**
+Copilot fetches the template and setup guide directly from GitHub, interviews you with 5–22 questions (your choice of depth), fills every placeholder, scaffolds your workspace files, captures a Kaizen baseline, and self-destructs the setup script. **No cloning, no copying, no manual steps.**
 
 > **⚠️ Use the Setup agent or an interactive model.** Codex models (`GPT-5.x-Codex`) run autonomously and cannot present interactive prompts — the preference interview will be silently skipped. Select **Claude Sonnet 4.6** (or any interactive model) in the Copilot picker, or use the `@setup` agent which pins the correct model automatically.
 
@@ -44,9 +44,9 @@ Copilot fetches the template and setup guide directly from GitHub, interviews yo
 
 ## Key features
 
-### ⚙️ Twelve-section instructions architecture
+### ⚙️ Thirteen-section instructions architecture
 
-`.github/copilot-instructions.md` ships with twelve named sections (§1–§12) covering identity, workflow mode, safety gates, coding conventions, the PDCA cycle, waste cataloguing, self-editing protocol, test/extension review, project-specific overrides, a reusable tool library, and a skill-based workflow system. Every section is placeholder-driven — nothing is hardcoded to a particular stack.
+`.github/copilot-instructions.md` ships with thirteen named sections (§1–§13) covering identity, workflow mode, safety gates, coding conventions, the PDCA cycle, waste cataloguing, self-editing protocol, test/extension review, project-specific overrides, a reusable tool library, a skill-based workflow system, and Model Context Protocol (MCP) integration. Every section is placeholder-driven — nothing is hardcoded to a particular stack.
 
 ### 🤖 Four model-pinned agents
 
@@ -59,9 +59,9 @@ Copilot fetches the template and setup guide directly from GitHub, interviews yo
 | `review.agent.md` | Claude Opus 4.6 | Architectural review, Lean waste audit |
 | `fast.agent.md` | Claude Haiku 4.5 | Quick lookups, explanations, small edits |
 
-### � Agent Skills library
+### 📚 Agent Skills library
 
-Four starter skills are scaffolded into `.github/skills/` during setup, following the [Agent Skills](https://agentskills.io) open standard. Skills are markdown-based behavioural instructions that teach the agent *how* to perform specific workflows — from authoring new skills to reviewing PRs with Lean waste categories. Optionally search official and community skill repositories for proven workflows.
+Six starter skills are scaffolded into `.github/skills/` during setup, following the [Agent Skills](https://agentskills.io) open standard. Skills are markdown-based behavioural instructions that teach the agent *how* to perform specific workflows — from authoring new skills to building MCP servers. Optionally search official and community skill repositories for proven workflows.
 
 ### 📂 Path-specific instructions
 
@@ -74,6 +74,10 @@ Four starter skills are scaffolded into `.github/skills/` during setup, followin
 ### 🔒 Security hardening
 
 All GitHub Actions are SHA-pinned to immutable commit hashes and protected with `step-security/harden-runner` for network egress monitoring. An OpenSSF Scorecard workflow runs weekly, uploading SARIF results to GitHub code scanning. A Graduated Trust Model in §10 assigns verification tiers (High / Standard / Guarded) to file paths, controlling how aggressively the agent seeks confirmation before making changes.
+
+### 🔌 Model Context Protocol (MCP) integration
+
+§13 governs how Copilot connects to external tools via MCP. During Expert setup, Copilot scaffolds `.vscode/mcp.json` with three tiers of servers: always-on (filesystem, memory, git), credentials-required (GitHub, fetch), and stack-specific (PostgreSQL, Redis, Docker, AWS — auto-suggested from your dependencies). A quality gate ensures only verified, maintained servers are added.
 
 ### 🔄 Living update protocol
 
@@ -111,10 +115,11 @@ Two built-in review modes surface at the end of any session:
 |----------|--------|---------|
 | `.github/copilot-instructions.md` | Filled from template | Primary AI guidance — methodology-complete and project-specific |
 | `.github/agents/*.agent.md` | Copied from template | Four model-pinned agents |
-| `.github/skills/*/SKILL.md` | Copied from template | Four starter skills (Agent Skills standard) |
+| `.github/skills/*/SKILL.md` | Copied from template | Six starter skills (Agent Skills standard) |
 | `.github/instructions/*.instructions.md` | Copied from template | Path-specific instruction stubs (tests, API, config, docs) |
 | `.github/prompts/*.prompt.md` | Copied from template | Five reusable slash commands (/explain, /refactor, /test-gen, /review-file, /commit-msg) |
 | `.github/workflows/copilot-setup-steps.yml` | Generated from template | Environment setup for GitHub Copilot coding agent |
+| `.vscode/mcp.json` | Generated from template | MCP server configuration (Expert setup, E22 ≠ None) |
 | `AGENTS.md` | Copied from template | AI entry point — trigger phrases and remote sequences |
 | `CHANGELOG.md` | `template/CHANGELOG.md` | Keep-a-Changelog stub for your project's history |
 | `JOURNAL.md` | `template/JOURNAL.md` | ADR-style architectural decision record |
@@ -130,7 +135,7 @@ Every AI-facing file has a plain-English companion in `docs/`:
 
 | Guide | Explains |
 |-------|---------|
-| [`docs/INSTRUCTIONS-GUIDE.md`](docs/INSTRUCTIONS-GUIDE.md) | What each §1–§12 section does and how to customise it |
+| [`docs/INSTRUCTIONS-GUIDE.md`](docs/INSTRUCTIONS-GUIDE.md) | What each §1–§13 section does and how to customise it |
 | [`docs/SETUP-GUIDE.md`](docs/SETUP-GUIDE.md) | What happens during setup, step by step |
 | [`docs/UPDATE-GUIDE.md`](docs/UPDATE-GUIDE.md) | How the update and restore process works |
 | [`docs/AGENTS-GUIDE.md`](docs/AGENTS-GUIDE.md) | Trigger phrases and the model-pinned agent system |
@@ -138,6 +143,8 @@ Every AI-facing file has a plain-English companion in `docs/`:
 | [`docs/PATH-INSTRUCTIONS-GUIDE.md`](docs/PATH-INSTRUCTIONS-GUIDE.md) | How path-specific instruction files work and when to use them |
 | [`docs/PROMPTS-GUIDE.md`](docs/PROMPTS-GUIDE.md) | How prompt files become VS Code slash commands |
 | [`docs/SECURITY-GUIDE.md`](docs/SECURITY-GUIDE.md) | SHA-pinning, harden-runner, Scorecard, and Graduated Trust Model |
+| [`docs/MCP-GUIDE.md`](docs/MCP-GUIDE.md) | How MCP integration works — server tiers, configuration, and quality gate |
+| [`docs/RELEASE-AUTOMATION-GUIDE.md`](docs/RELEASE-AUTOMATION-GUIDE.md) | Manual vs automated release workflows and how to switch |
 | [`docs/EXTENSION-REVIEW-GUIDE.md`](docs/EXTENSION-REVIEW-GUIDE.md) | How the VS Code extension audit feature works |
 | [`docs/TEST-REVIEW-GUIDE.md`](docs/TEST-REVIEW-GUIDE.md) | How the test coverage review and CI recommendation feature works |
 
@@ -148,7 +155,7 @@ Every AI-facing file has a plain-English companion in `docs/`:
 ```text
 copilot-instructions-template/
 ├── .github/
-│   ├── copilot-instructions.md         # Primary AI guidance (Lean/Kaizen, §1–§12)
+│   ├── copilot-instructions.md         # Primary AI guidance (Lean/Kaizen, §1–§13)
 │   ├── agents/
 │   │   ├── setup.agent.md              # Claude Sonnet 4.6 — onboarding & template ops
 │   │   ├── coding.agent.md             # GPT-5.3-Codex — implementation & refactoring
@@ -158,7 +165,9 @@ copilot-instructions-template/
 │   │   ├── skill-creator/SKILL.md      # Meta-skill — author new skills
 │   │   ├── fix-ci-failure/SKILL.md     # Diagnose and fix CI failures
 │   │   ├── lean-pr-review/SKILL.md     # Lean waste-categorised PR review
-│   │   └── conventional-commit/SKILL.md # Conventional Commits messages
+│   │   ├── conventional-commit/SKILL.md # Conventional Commits messages
+│   │   ├── mcp-builder/SKILL.md        # Build and register MCP servers
+│   │   └── webapp-testing/SKILL.md     # Playwright-based web app testing
 │   ├── instructions/
 │   │   ├── tests.instructions.md       # Path rules for test files
 │   │   ├── api-routes.instructions.md  # Path rules for API routes
@@ -172,7 +181,8 @@ copilot-instructions-template/
 │   │   └── commit-msg.prompt.md        # /commit-msg — Conventional Commits
 │   ├── workflows/
 │   │   ├── ci.yml                      # Validates structure, links, and sections on push/PR
-│   │   ├── release.yml                 # Auto-creates GitHub release when VERSION is bumped
+│   │   ├── release-manual.yml          # Manual GitHub release when VERSION is bumped
+│   │   ├── release-please.yml          # Automated Conventional Commits release
 │   │   ├── stale.yml                   # Closes stale issues and PRs weekly
 │   │   ├── links.yml                   # Lychee link checker (weekly + PR)
 │   │   ├── vale.yml                    # Vale prose linter (PR)
@@ -191,7 +201,9 @@ copilot-instructions-template/
 │   ├── TEST-REVIEW-GUIDE.md            # Human guide to the test coverage review feature
 │   ├── PATH-INSTRUCTIONS-GUIDE.md      # Human guide to path-specific instructions
 │   ├── PROMPTS-GUIDE.md                # Human guide to reusable prompt files
-│   └── SECURITY-GUIDE.md              # Human guide to security hardening
+│   ├── SECURITY-GUIDE.md              # Human guide to security hardening
+│   ├── MCP-GUIDE.md                    # Human guide to MCP integration
+│   └── RELEASE-AUTOMATION-GUIDE.md     # Human guide to release workflows
 ├── template/
 │   ├── CHANGELOG.md                    # Keep-a-Changelog stub (scaffolded into consumer projects)
 │   ├── JOURNAL.md                      # ADR-style journal stub
@@ -202,7 +214,11 @@ copilot-instructions-template/
 │   │   ├── skill-creator/SKILL.md      # Starter skill: meta-skill for authoring
 │   │   ├── fix-ci-failure/SKILL.md     # Starter skill: CI failure diagnosis
 │   │   ├── lean-pr-review/SKILL.md     # Starter skill: Lean PR review
-│   │   └── conventional-commit/SKILL.md # Starter skill: Conventional Commits
+│   │   ├── conventional-commit/SKILL.md # Starter skill: Conventional Commits
+│   │   ├── mcp-builder/SKILL.md        # Starter skill: MCP server creation
+│   │   └── webapp-testing/SKILL.md     # Starter skill: Playwright web app testing
+│   ├── vscode/
+│   │   └── mcp.json                    # MCP server configuration template
 │   └── workspace/
 │       ├── IDENTITY.md                 # Agent self-description stub
 │       ├── SOUL.md                     # Values & reasoning patterns stub

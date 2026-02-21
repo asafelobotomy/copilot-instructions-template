@@ -1,0 +1,32 @@
+name: Release Please
+
+# Automated changelog generation and release creation via release-please.
+# Creates a "release PR" that accumulates Conventional Commits, bumps version,
+# and updates CHANGELOG.md. Merging the PR triggers a GitHub release.
+#
+# Coexists with release-manual.yml — use one or the other, not both.
+# See docs/RELEASE-AUTOMATION-GUIDE.md for trade-offs.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@5ef0c079ce82195b2a36a210272d6b661572d83e # v2
+        with:
+          egress-policy: audit
+
+      - uses: googleapis/release-please-action@c3fc4de07084f75a2b61a5b933069bda6edf3d5c # v4
+        with:
+          release-type: simple
+          extra-files: |
+            VERSION

@@ -9,7 +9,7 @@
 
 This is the primary AI guidance file — the "instruction firmware" for Copilot in your project. GitHub Copilot loads it automatically at the start of every chat session, so everything written here shapes how Copilot behaves in your project.
 
-The file is structured in twelve numbered sections (§1–§12). The first nine sections encode the Lean/Kaizen methodology and are maintained by the template. §10 is yours — it holds your project's specific values and preferences. §11 defines the Tool Protocol for reusable automation. §12 defines the Skill Protocol for reusable behavioural workflows.
+The file is structured in thirteen numbered sections (§1–§13). The first nine sections encode the Lean/Kaizen methodology and are maintained by the template. §10 is yours — it holds your project's specific values and preferences. §11 defines the Tool Protocol for reusable automation. §12 defines the Skill Protocol for reusable behavioural workflows. §13 defines the Model Context Protocol (MCP) integration for connecting Copilot to external tools.
 
 ---
 
@@ -179,6 +179,29 @@ The protocol has three stages:
 Four starter skills are scaffolded during setup: `skill-creator` (meta-skill for authoring), `fix-ci-failure` (CI diagnosis), `lean-pr-review` (Lean PR review), and `conventional-commit` (commit messages).
 
 **How to customise**: Create new skills in `.github/skills/<name>/SKILL.md`. Say "Create a skill for ..." to have Copilot author one for you. Change the search preference in §10 (`{{SKILL_SEARCH_PREFERENCE}}`). See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for the full guide.
+
+---
+
+### §13 — Model Context Protocol (MCP)
+
+**What it does**: Governs how Copilot connects to external tools and services via the [Model Context Protocol](https://modelcontextprotocol.io) (MCP). MCP servers provide Copilot with capabilities beyond its built-in tools — database queries, API calls, file system operations, browser automation, and more.
+
+The section defines:
+
+1. **Server tiers** — three categories of MCP server:
+   - *Always-on* (filesystem, memory, git) — no credentials, safe to enable by default.
+   - *Credentials-required* (GitHub, fetch) — need API tokens, disabled by default.
+   - *Stack-specific* (PostgreSQL, Redis, Docker, AWS, etc.) — suggested based on your project's dependencies.
+
+2. **Decision tree** — when Copilot needs external capability: built-in tool → MCP server → community package → custom tool.
+
+3. **Quality gate** — four checks every MCP server must pass before being added: official/verified source, active maintenance, scoped permissions, configuration documented.
+
+4. **Server reference table** — lists configured servers with their tier, status, and purpose.
+
+Configuration lives in `.vscode/mcp.json` (for VS Code) or equivalent for other editors.
+
+**How to customise**: Add MCP servers by editing `.vscode/mcp.json` or saying "Add an MCP server for ...". Change the tier classification or add stack-specific servers in §13. See [MCP-GUIDE.md](MCP-GUIDE.md) for the full guide.
 
 ---
 

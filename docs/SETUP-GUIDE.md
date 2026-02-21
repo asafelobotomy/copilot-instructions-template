@@ -47,7 +47,7 @@ This is the most interactive part. Copilot first asks which setup level you want
 |-------------|-----------|------|
 | **S — Simple** | S1–S5 (5 questions) | ~1 min |
 | **A — Advanced** | S1–S5 + A6–A15 (15 questions) | ~2 min |
-| **E — Expert** | S1–S5 + A6–A15 + E16–E20 (20 questions) | ~3 min |
+| **E — Expert** | S1–S5 + A6–A15 + E16–E22 (22 questions) | ~3 min |
 
 You can also type "skip" to use all defaults and proceed immediately.
 
@@ -73,8 +73,10 @@ You can also type "skip" to use all defaults and proceed immediately.
 | E18 — VS Code settings | Whether Copilot may modify `.vscode/settings.json` |
 | E19 — Global autonomy | Master 1–5 failsafe that caps all autonomy settings |
 | E20 — Mood lightener | Whether Copilot drops occasional humour |
+| E21 — Verification trust | Which directories get auto-approve, review, or pause-and-confirm |
+| E22 — MCP servers | Whether to configure MCP servers and which tiers to enable |
 
-All answers are written into §10 of your instructions file as a 20-row User Preferences table. Questions you didn't answer (because you chose a lower tier) use sensible defaults. You can change preferences any time by editing that section or triggering an update interview.
+All answers are written into §10 of your instructions file as a 22-row User Preferences table. Questions you didn't answer (because you chose a lower tier) use sensible defaults. You can change preferences any time by editing that section or triggering an update interview.
 
 **0e — Pre-flight summary**
 
@@ -105,6 +107,14 @@ Four agent files are created in `.github/agents/` for VS Code 1.106+ users. Thes
 ### Step 2.8 — Scaffold skill library
 
 Four starter skills are scaffolded into `.github/skills/`, following the [Agent Skills](https://agentskills.io) open standard. These teach the agent reusable workflows: authoring new skills, fixing CI failures, Lean PR reviews, and Conventional Commits. See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for details.
+
+---
+
+### Step 2.12 — Configure MCP servers
+
+If you chose **E22 = B** (always-on only) or **E22 = C** (full configuration) during the Expert interview, Copilot creates `.vscode/mcp.json` with pre-configured MCP servers. Always-on servers (filesystem, memory, git) are enabled by default — they need no credentials and are safe for any project. Credentials-required servers (GitHub, fetch) are disabled by default and need API tokens to activate. With full configuration, Copilot also suggests stack-specific servers based on your project's dependencies (e.g., PostgreSQL, Redis, Docker). See [MCP-GUIDE.md](MCP-GUIDE.md) for details.
+
+If you chose **E22 = A** (none) or used Simple/Advanced setup, this step is skipped entirely.
 
 ---
 

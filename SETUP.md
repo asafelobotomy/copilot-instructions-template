@@ -165,7 +165,7 @@ Present the following to the user:
 >
 > - **S — Simple Setup** (5 questions, ~1 min) — Essential preferences only. Advanced and Expert options use sensible defaults.
 > - **A — Advanced Setup** (15 questions, ~2 min) — Full control over Copilot's coding behaviour.
-> - **E — Expert Setup** (20 questions, ~3 min) — Everything in Advanced, plus persona, autonomy failsafe, tool availability, VS Code settings, and more.
+> - **E — Expert Setup** (22 questions, ~3 min) — Everything in Advanced, plus persona, autonomy failsafe, tool availability, VS Code settings, MCP servers, and more.
 >
 > *(You can also type "skip" to use all defaults and proceed immediately.)*
 
@@ -189,7 +189,7 @@ Use the batch plan below. Do not combine questions across tiers in a single call
 | 4 | Advanced | A10, A11, A12, A13 | File size, Deps, Self-edit, Refactor |
 | 5 | Advanced | A14, A15 | Reporting, Skills |
 | 6 | Expert | E16, E17, E18, E19 | Tools, Persona, VS Code, Failsafe |
-| 7 | Expert | E20, E21 | Mood, Trust |
+| 7 | Expert | E20, E21, E22 | Mood, Trust, MCP |
 
 **Simple** = batches 1–2. **Advanced** = batches 1–5. **Expert** = batches 1–7.
 
@@ -476,13 +476,13 @@ A13 (Refactoring) · A14 (Reporting format) · A15 (Skill search)
 
 ---
 
-#### Expert Setup — 6 additional questions E16–E21 (batches 6–7)
+#### Expert Setup — 7 additional questions E16–E22 (batches 6–7)
 
-If the user chose **E — Expert Setup**, present these 6 questions in **2 batches** following the batch plan above. Collect answers from each batch before issuing the next. If the user chose **S — Simple Setup** or **A — Advanced Setup**, skip these and proceed to 0e.
+If the user chose **E — Expert Setup**, present these 7 questions in **2 batches** following the batch plan above. Collect answers from each batch before issuing the next. If the user chose **S — Simple Setup** or **A — Advanced Setup**, skip these and proceed to 0e.
 
-**Questions in this section** (verify all 6 are asked):
+**Questions in this section** (verify all 7 are asked):
 E16 (Tool availability) · E17 (Agent persona) · E18 (VS Code settings) ·
-E19 (Global autonomy) · E20 (Mood lightener) · E21 (Verification trust)
+E19 (Global autonomy) · E20 (Mood lightener) · E21 (Verification trust) · E22 (MCP servers)
 
 ---
 
@@ -604,6 +604,28 @@ E19 (Global autonomy) · E20 (Mood lightener) · E21 (Verification trust)
 
 ---
 
+**E22 — MCP server configuration**
+
+> The template includes a Model Context Protocol (MCP) integration (§13) that connects Copilot to external tools via `.vscode/mcp.json`. How should MCP servers be configured during setup?
+>
+> **A — None** *(default)*: Do not create an MCP configuration file. I will configure MCP servers manually if needed.
+> **B — Always-on only**: Create `.vscode/mcp.json` with the three always-on servers (filesystem, memory, git) enabled. Credentials-required servers remain disabled.
+> **C — Full configuration**: Create `.vscode/mcp.json` with all five default servers. I will provide credentials for GitHub and fetch servers. Also suggest stack-specific MCP servers based on my project's technology.
+
+| Answer | Instruction written to §10 |
+|--------|---------------------------|
+| A | "MCP integration: None. No `.vscode/mcp.json` is created. The user will configure MCP servers manually if needed. §13 remains as reference documentation only." |
+| B | "MCP integration: Always-on only. `.vscode/mcp.json` is configured with filesystem, memory, and git servers enabled. Credentials-required servers (GitHub, fetch) remain disabled. Suggest enabling them when external API access is needed." |
+| C | "MCP integration: Full configuration. `.vscode/mcp.json` is configured with all five default servers. Suggest stack-specific MCP servers when relevant. Proactively recommend new servers from the MCP registry when a task would benefit from external tool access." |
+
+| Answer | `{{MCP_STACK_SERVERS}}` | `{{MCP_CUSTOM_SERVERS}}` |
+|--------|------------------------|--------------------------|
+| A | *(empty)* | *(empty)* |
+| B | *(empty — stack-specific servers not discovered)* | *(empty)* |
+| C | *(populated from Step 2.12 stack-specific server discovery)* | *(populated from Step 2.12 if user adds custom servers)* |
+
+---
+
 #### Building the User Preferences block
 
 Once all questions are answered, construct the following block and write it into §10 of the instructions file under a `### User Preferences` heading:
@@ -636,9 +658,10 @@ Once all questions are answered, construct the following block and write it into
 | Global autonomy | <E19 answer label or default> | <instruction> |
 | Mood lightener | <E20 answer label or default> | <instruction> |
 | Verification trust | <E21 answer label or default> | <instruction> |
+| MCP servers | <E22 answer label or default> | <instruction> |
 ```
 
-**Simple Setup defaults** (used for A6–A15 and E16–E21 when Simple is chosen):
+**Simple Setup defaults** (used for A6–A15 and E16–E22 when Simple is chosen):
 
 | Question | Default answer | Default instruction |
 |----------|---------------|---------------------|
@@ -658,8 +681,9 @@ Once all questions are answered, construct the following block and write it into
 | E19 — Global autonomy | 3 | Balanced — no override, follow S5 setting |
 | E20 — Mood lightener | A | Never — strictly professional |
 | E21 — Verification trust | A | Use defaults — tests/docs auto-approve, source review, config pause |
+| E22 — MCP servers | A | None — no MCP configuration file created |
 
-**Advanced Setup defaults** (used for E16–E21 when Advanced is chosen):
+**Advanced Setup defaults** (used for E16–E22 when Advanced is chosen):
 
 | Question | Default answer | Default instruction |
 |----------|---------------|---------------------|
@@ -669,6 +693,7 @@ Once all questions are answered, construct the following block and write it into
 | E19 — Global autonomy | 3 | Balanced — no override, follow S5 setting |
 | E20 — Mood lightener | A | Never — strictly professional |
 | E21 — Verification trust | A | Use defaults — tests/docs auto-approve, source review, config pause |
+| E22 — MCP servers | A | None — no MCP configuration file created |
 
 ---
 
@@ -678,9 +703,9 @@ Before proceeding to 0e, count your collected answers and verify against this ta
 
 | Tier | User answers | Defaults applied | Total rows in §10 |
 |------|-------------|-----------------|-------------------|
-| Simple | 5 (S1–S5) | 16 (A6–A15 + E16–E21) | 21 |
-| Advanced | 15 (S1–S5 + A6–A15) | 6 (E16–E21) | 21 |
-| Expert | 21 (S1–S5 + A6–A15 + E16–E21) | 0 | 21 |
+| Simple | 5 (S1–S5) | 17 (A6–A15 + E16–E22) | 22 |
+| Advanced | 15 (S1–S5 + A6–A15) | 7 (E16–E22) | 22 |
+| Expert | 22 (S1–S5 + A6–A15 + E16–E22) | 0 | 22 |
 
 **If your count does not match**: STOP. Re-read §0d and identify which questions were missed. Ask them now before continuing.
 
@@ -692,7 +717,7 @@ List the missing questions by ID (e.g., "A11, A12, A13, A14 were not yet asked")
 
 After completing 0a–0d, present a single summary before writing anything.
 
-> **Output the template below exactly.** Fill every `<label>` field. Show all 21
+> **Output the template below exactly.** Fill every `<label>` field. Show all 22
 > USER PREFERENCES dimensions — for defaulted values, append "(default)" to the
 > label. Do not omit Step 2.5 or Step 2.8 from NEXT STEPS. Do not rearrange or improvise.
 
@@ -726,12 +751,14 @@ Pre-flight complete. Here is what I will do:
     Global autonomy:       <label>
     Mood lightener:        <label>
     Verification trust:    <label>
+    MCP servers:           <label>
 
   NEXT STEPS
     1.   Discover project stack (Step 1)
     2.   Populate instructions file with placeholders + user preferences (Step 2)
     2.5. Write agent files for model-pinned workflows (.github/agents/) (Step 2.5)
     2.8. Scaffold skill library (.github/skills/) (Step 2.8)
+    2.12. Configure MCP servers (.vscode/mcp.json) (Step 2.12)
     3.   Create workspace identity files (Step 3)
     4.   Capture METRICS baseline (Step 4)
     5.   Create documentation stubs (Step 5)
@@ -1062,6 +1089,48 @@ The `copilot-setup-steps.yml` workflow runs before the GitHub Copilot coding age
 
 ---
 
+## Step 2.12 — Configure MCP servers
+
+> **Skip this step** if the E22 interview answer was **A — None** (default). Proceed directly to Step 3.
+
+The Model Context Protocol (MCP) connects Copilot to external tools via `.vscode/mcp.json`. This step scaffolds the configuration based on the user's E22 preference.
+
+1. Fetch the MCP configuration template:
+
+   ```text
+   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/vscode/mcp.json
+   ```
+
+2. Create `.vscode/mcp.json` in the user's project with the fetched content.
+
+3. Configure based on E22 answer:
+
+   | E22 answer | Always-on servers | Credentials servers | Stack-specific |
+   |------------|-------------------|--------------------:|----------------|
+   | B — Always-on only | Enable filesystem, memory, git | Keep disabled | Skip |
+   | C — Full configuration | Enable all | Enable github + fetch (prompt for token) | Discover and suggest |
+
+4. **Stack-specific server discovery** (E22=C only): Based on the technology stack discovered in Step 1, suggest relevant MCP servers:
+
+   | Stack signal | Suggested MCP server | Package |
+   |-------------|---------------------|---------|
+   | PostgreSQL (`pg`, `psycopg2`, `prisma`) | PostgreSQL server | `@modelcontextprotocol/server-postgres` |
+   | SQLite (`sqlite3`, `better-sqlite3`) | SQLite server | `@modelcontextprotocol/server-sqlite` |
+   | Redis (`redis`, `ioredis`) | Redis server | `@nicholasoxford/redis-mcp-server` |
+   | Docker (`Dockerfile`, `docker-compose`) | Docker server | `docker-mcp-server` |
+   | AWS (`aws-sdk`, `boto3`) | AWS server | `@aws/mcp-server-aws` |
+   | Puppeteer / browser testing | Puppeteer server | `@modelcontextprotocol/server-puppeteer` |
+
+   For each suggested server, ask the user if they want to add it. Add confirmed servers to `.vscode/mcp.json`.
+
+5. Populate §13 placeholders in `.github/copilot-instructions.md`:
+   - `{{MCP_STACK_SERVERS}}`: Table rows for any stack-specific servers added, or *(empty)* if none.
+   - `{{MCP_CUSTOM_SERVERS}}`: Any additional custom server entries, or *(empty)* if none.
+
+6. Log the created file to JOURNAL.md.
+
+---
+
 ## Step 3 — Scaffold workspace identity files
 
 > Apply the decisions made in Step 0b (keep / overwrite / selective).
@@ -1276,7 +1345,7 @@ See Step 4 for the stub — do not duplicate it here.
 1. **Review** everything created or modified and print a structured summary to the user.
 
    > **Output the template below exactly.** Include the AGENT FILES and SKILLS sections.
-   > List all 21 preference dimensions under USER PREFERENCES. Do not omit sections or improvise the layout.
+   > List all 22 preference dimensions under USER PREFERENCES. Do not omit sections or improvise the layout.
 
    ```text
    Setup complete. Here is what was done:
@@ -1302,6 +1371,11 @@ See Step 4 for the stub — do not duplicate it here.
      Scaffolded: <list of skills created, or "none">
      Search preference: <local-only / official-only / official-and-community>
 
+   MCP CONFIGURATION
+     .vscode/mcp.json: [created / skipped (E22=None)]
+     Always-on servers: <list or "N/A">
+     Stack-specific servers: <list or "none">
+
    WORKSPACE IDENTITY FILES
      Created: <list>
      Skipped (kept existing): <list>
@@ -1315,7 +1389,7 @@ See Step 4 for the stub — do not duplicate it here.
      Initial baseline row appended: [yes / skipped]
 
    USER PREFERENCES
-     <table of all 21 dimensions with labels>
+     <table of all 22 dimensions with labels>
 
    ANOMALIES
      <any decisions made that the user should verify, or "none">

@@ -1,6 +1,6 @@
 # Copilot Instructions — {{PROJECT_NAME}}
 
-> **Template version**: 1.1.0 | **Applied**: {{SETUP_DATE}}
+> **Template version**: 2.0.0 | **Applied**: {{SETUP_DATE}}
 > Living document — self-edit rules in §8.
 >
 > **Model Quick Reference** — select model in Copilot picker before starting each task, or use `.github/agents/` (VS Code 1.106+). [Why these models?](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)
@@ -341,7 +341,7 @@ When spawning subagents:
 - Pass the full contents of this file as system context.
 - Set `max_depth = {{SUBAGENT_MAX_DEPTH}}`. Stop and surface to user if reached.
 - Each subagent must run the three-check ritual before reporting done.
-- Each subagent inherits the full Tool Protocol (§11) and Skill Protocol (§12) — check the toolbox before building, search before coding, and flag any proposed toolbox saves to the parent.
+- Each subagent inherits the full Tool Protocol (§11), Skill Protocol (§12), and MCP Protocol (§13) — check the toolbox before building, search before coding, and flag any proposed toolbox saves to the parent.
 - Subagent output must include: files changed, LOC delta, test result, any baseline breaches.
 
 ---
@@ -376,6 +376,8 @@ Resolved values and project-specific overrides. Populated during setup; updated 
 | `{{SKILL_SEARCH_PREFERENCE}}` | local-only |
 | `{{EXTRA_METRIC_NAME}}` | *(delete row if not applicable)* |
 | `{{TRUST_OVERRIDES}}` | *(fill during setup — see E21)* |
+| `{{MCP_STACK_SERVERS}}` | *(fill during setup — see Step 2.12)* |
+| `{{MCP_CUSTOM_SERVERS}}` | *(fill during setup — see E22)* |
 
 ### Verification Levels
 
@@ -418,6 +420,7 @@ The Graduated Trust Model assigns verification behaviour based on path patterns.
 | Global autonomy | *(E19)* | |
 | Mood lightener | *(E20)* | |
 | Verification trust | *(E21)* | |
+| MCP servers | *(E22)* | |
 
 ---
 
@@ -636,4 +639,71 @@ Subagents inherit this protocol fully. A subagent may read and follow any projec
 
 ---
 
-*See also: `.github/agents/` (model-pinned VS Code agents) · `.copilot/workspace/` (session identity) · `.copilot/tools/` (reusable tool library) · `.github/skills/` (reusable skill library) · `UPDATE.md` (update protocol) · `AGENTS.md` (AI agent entry point)*
+## §13 — Model Context Protocol (MCP)
+
+MCP enables Copilot to invoke external servers that provide tools, resources, and prompts beyond built-in capabilities. Configuration lives in `.vscode/mcp.json`.
+
+### Server tiers
+
+| Tier | Default servers | When to enable | Configuration |
+|------|----------------|-----------------|---------------|
+| Always-on | filesystem, memory, git | Every project — core development tools | Enabled by default in `.vscode/mcp.json` |
+| Credentials-required | github, fetch | When external API access is needed | Requires `${env:GITHUB_TOKEN}` or equivalent |
+| Stack-specific | {{MCP_STACK_SERVERS}} | When the project's stack has a matching server | Discovered during setup (Step 2.12) |
+
+### MCP decision tree
+
+```text
+Need an external capability
+ │
+ ├─ 1. CHECK built-in — Copilot's native tools cover many tasks
+ │     ├─ Sufficient → USE built-in
+ │     └─ Not sufficient → ↓
+ │
+ ├─ 2. CHECK configured servers — .vscode/mcp.json
+ │     ├─ Server available → INVOKE via tool call
+ │     └─ Not configured → ↓
+ │
+ ├─ 3. SEARCH for an existing MCP server
+ │     a. Official:  github.com/modelcontextprotocol/servers
+ │     b. Registries: mcp.so · glama.ai · smithery.ai
+ │     c. Stack-specific: database, cloud provider, or API servers
+ │     ├─ Found → evaluate (quality gate below), add to mcp.json, use
+ │     └─ Not found → ↓
+ │
+ └─ 4. BUILD a custom server (use mcp-builder skill if available)
+       - Follow the MCP specification: modelcontextprotocol.io
+       - Prefer stdio transport for local servers
+       - Register in .vscode/mcp.json after testing with MCP Inspector
+```
+
+### Server quality gate
+
+Before adding a new MCP server to the project:
+
+- [ ] Server is from a verified publisher or has ≥ 100 GitHub stars
+- [ ] Transport is stdio (local) or SSE/streamable-HTTP with HTTPS (remote)
+- [ ] No credentials hardcoded — uses `${env:VAR}` or `${input:id}` references
+- [ ] License is permissive (MIT, Apache 2.0)
+- [ ] Tested with MCP Inspector or equivalent before committing
+
+### Available servers
+
+| Server | Tier | Purpose |
+|--------|------|---------|
+| `@modelcontextprotocol/server-filesystem` | Always-on | File operations beyond the workspace |
+| `@modelcontextprotocol/server-memory` | Always-on | Persistent key-value memory across sessions |
+| `@modelcontextprotocol/server-git` | Always-on | Git history, diffs, and branch operations |
+| `@modelcontextprotocol/server-github` | Credentials | GitHub API — issues, PRs, repos, actions |
+| `@modelcontextprotocol/server-fetch` | Credentials | HTTP fetch for web content and APIs |
+| {{MCP_STACK_SERVERS}} | Stack-specific | *(populated during setup)* |
+
+{{MCP_CUSTOM_SERVERS}}
+
+### Subagent MCP use
+
+Subagents inherit access to all configured MCP servers. A subagent may invoke any server already in `.vscode/mcp.json`. To **add** a new server, the subagent must flag the proposal to the parent agent, which confirms before modifying `.vscode/mcp.json`.
+
+---
+
+*See also: `.github/agents/` (model-pinned VS Code agents) · `.copilot/workspace/` (session identity) · `.copilot/tools/` (reusable tool library) · `.github/skills/` (reusable skill library) · `.vscode/mcp.json` (MCP server configuration) · `UPDATE.md` (update protocol) · `AGENTS.md` (AI agent entry point)*

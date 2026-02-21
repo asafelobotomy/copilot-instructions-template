@@ -21,7 +21,7 @@ Use the [GitHub issue templates](https://github.com/asafelobotomy/copilot-instru
    - VERSION is valid semver
    - CHANGELOG has an `[Unreleased]` section and an entry for the current VERSION
    - All required files are present
-   - `copilot-instructions.md` has §1–§12
+   - `copilot-instructions.md` has §1–§13
    - README docs-table links resolve
    - No merge-conflict markers
    - Markdown lint passes

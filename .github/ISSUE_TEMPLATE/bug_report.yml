@@ -43,6 +43,7 @@ body:
         - Extension Review feature
         - Tool Protocol (§11)
         - Skills Protocol (§12)
+        - MCP Protocol (§13)
         - Waste Catalogue (§6)
         - Documentation (docs/)
         - CI / Automation
