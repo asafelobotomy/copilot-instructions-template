@@ -121,6 +121,8 @@ Every self-edit is recorded in `JOURNAL.md` so you always know what changed and 
 
 When a heartbeat fires, Copilot reads `.copilot/workspace/HEARTBEAT.md` and runs a checklist of health checks — dependency audits, test coverage deltas, waste scans, memory consolidation, metrics freshness, and settings drift. Results are logged to the file's History table. Copilot reports to you only when alerts exist — healthy heartbeats are silent.
 
+The heartbeat also includes a **Retrospective** — 7 structured self-reflection questions that Copilot answers after completing a task. These questions help the agent refine its reasoning (SOUL.md), build its understanding of the user (USER.md), and consolidate lessons into long-term memory (MEMORY.md). Two questions (issue reports and agent questions) surface directly to the user; the rest are written silently to workspace files.
+
 The heartbeat file is agent-writable: Copilot can add custom triggers and checks as it learns your project's needs. See [HEARTBEAT-GUIDE.md](HEARTBEAT-GUIDE.md) for the full reference.
 
 ---

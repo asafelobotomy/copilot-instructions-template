@@ -336,16 +336,17 @@ Copilot may edit this file when patterns stabilise. Rules:
 
 Event-triggered health checks that keep the agent aligned with real project state. The heartbeat checklist lives in `.copilot/workspace/HEARTBEAT.md`.
 
-**When to fire**: session start; after modifying >5 files; after any refactor, migration, or restructure task; after dependency manifest changes; after CI failure resolution; on the trigger phrase "Check your heartbeat"; or on any custom trigger defined in `HEARTBEAT.md`.
+**When to fire**: session start; after modifying >5 files; after any refactor, migration, or restructure task; after dependency manifest changes; after CI failure resolution; after completing any user-requested task; on the trigger phrase "Check your heartbeat"; or on any custom trigger defined in `HEARTBEAT.md`.
 
 **Procedure**:
 
 1. Read `HEARTBEAT.md` — follow it strictly. Do not infer tasks from prior sessions.
 2. Run every check in the Checks section. Cross-reference: MEMORY.md (consolidation), METRICS.md (freshness), TOOLS.md (dependency audit), SOUL.md (reasoning alignment), §10 (settings drift).
-3. Update Pulse: `HEARTBEAT_OK` if all checks pass; prepend `[!]` with a one-line alert for each failure.
-4. Append a row to History (keep last 5).
-5. Write observations to Agent Notes for the next heartbeat.
-6. Report to user only if alerts exist — silent when healthy.
+3. If the trigger is **task completion** or **explicit**, run the Retrospective section: answer each question internally, persist insights to the indicated workspace files (SOUL.md, USER.md, MEMORY.md), and surface Q4/Q5 to the user if non-empty.
+4. Update Pulse: `HEARTBEAT_OK` if all checks pass; prepend `[!]` with a one-line alert for each failure.
+5. Append a row to History (keep last 5).
+6. Write observations to Agent Notes for the next heartbeat.
+7. Report to user only if alerts exist — silent when healthy (exception: retrospective Q4/Q5 always surface when non-empty).
 
 ---
 

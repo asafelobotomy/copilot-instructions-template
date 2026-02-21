@@ -113,8 +113,9 @@ When a user says any of the following:
 - *"Update heartbeat checklist"*
 - *"Clear heartbeat alerts"*
 - *"Heartbeat history"*
+- *"Run retrospective"*
 
-...follow the Heartbeat Protocol in **§8** of `.github/copilot-instructions.md`. Read `.copilot/workspace/HEARTBEAT.md`, run all checks, update Pulse status, and report any alerts.
+...follow the Heartbeat Protocol in **§8** of `.github/copilot-instructions.md`. Read `.copilot/workspace/HEARTBEAT.md`, run all checks, update Pulse status, and report any alerts. For retrospective triggers, run the Retrospective section and persist insights to the indicated workspace files.
 
 ---
 
@@ -282,3 +283,4 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | Check heartbeat | *"Check your heartbeat"* / *"Run heartbeat checks"* |
 | Show heartbeat status | *"Show heartbeat status"* / *"Heartbeat history"* |
 | Update heartbeat | *"Update heartbeat checklist"* / *"Clear heartbeat alerts"* |
+| Run retrospective | *"Run retrospective"* |

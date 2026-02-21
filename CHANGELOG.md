@@ -20,6 +20,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `docs/HEARTBEAT-GUIDE.md` — human-readable guide: event triggers vs OpenClaw's timed approach, cross-file wiring specification, adding custom triggers and checks, silent-when-healthy contract, interaction with §6/§8/§10/MEMORY.md/METRICS.md/TOOLS.md/SOUL.md.
 - `.github/copilot-instructions.md` — new `### Heartbeat Protocol` subsection in §8: event trigger list, 6-step procedure (read → check → update Pulse → log History → write Agent Notes → report alerts only), cross-file references.
 - `AGENTS.md` — "Heartbeat operations" trigger phrase section (6 phrases); heartbeat entries added to canonical triggers table; `template/workspace/HEARTBEAT.md` and `.copilot/workspace/HEARTBEAT.md` added to file map and bootstrap outputs.
+- `template/workspace/HEARTBEAT.md` — Retrospective introspection section: 7 self-reflection questions with cross-file persistence wiring (SOUL.md for reasoning heuristics, USER.md for user profile observations, MEMORY.md for gap analysis and lessons learned, Agent Notes for self-assessment). Q4 (issue report) and Q5 (agent questions) surface directly to the user.
+- `template/workspace/HEARTBEAT.md` — "Task completion" event trigger: fires the heartbeat (including retrospective) after completing any user-requested task.
+- `AGENTS.md` — "Run retrospective" trigger phrase added to heartbeat operations section and canonical triggers table.
 
 ### Changed
 
@@ -32,6 +35,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `template/BIBLIOGRAPHY.md` — HEARTBEAT.md row added to "Workspace identity" section.
 - `.github/workflows/ci.yml` — `docs/HEARTBEAT-GUIDE.md` and `template/workspace/HEARTBEAT.md` added to required files check.
 - `docs/INSTRUCTIONS-GUIDE.md` — §8 section expanded with "Heartbeat Protocol" subsection explaining event triggers, cross-file wiring, and silent-when-healthy contract.
+- `docs/INSTRUCTIONS-GUIDE.md` — §8 Heartbeat Protocol explanation expanded with retrospective self-reflection description and cross-file persistence (SOUL.md, USER.md, MEMORY.md).
+- `docs/HEARTBEAT-GUIDE.md` — retrospective section added: 7-question table with cross-file wiring, reporting contract exception for Q4/Q5, customisation example for custom retrospective questions; "How it works" flow updated from 7 to 8 steps; "Sections of HEARTBEAT.md" expanded with Retrospective; interaction table expanded for SOUL.md/USER.md/MEMORY.md retrospective writes; "Run retrospective" trigger phrase added.
+- `.github/copilot-instructions.md` — §8 Heartbeat Protocol procedure expanded from 6 to 7 steps: new step 3 runs the Retrospective on task-completion and explicit triggers; "When to fire" list expanded with task completion; step 7 updated with retrospective Q4/Q5 exception to silent-when-healthy rule.
 - `docs/SETUP-GUIDE.md` — "Six files" → "Seven files" in Step 3; HEARTBEAT.md row added to identity files table.
 - `docs/AGENTS-GUIDE.md` — heartbeat trigger phrases added to canonical triggers table.
 
