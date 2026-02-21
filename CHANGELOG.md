@@ -9,6 +9,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [2.1.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v2.0.0...v2.1.0) (2026-02-21)
+
+
+### Features
+
+* enhance heartbeat protocol with retrospective introspection and task completion triggers ([4ef14d9](https://github.com/asafelobotomy/copilot-instructions-template/commit/4ef14d9174890dcd663912398d72e78783dbd83d))
+* implement event-driven heartbeat protocol with health checks and triggers ([d5ceb27](https://github.com/asafelobotomy/copilot-instructions-template/commit/d5ceb27119e48b07a144e09bb1b2ab99c112d52b))
+
+
+### Bug Fixes
+
+* add language specifier to fenced code blocks (MD040) ([1853577](https://github.com/asafelobotomy/copilot-instructions-template/commit/18535770188fcf16da2830d6773c3bc90afa2ac2))
+* add release-please config and manifest to fix CI failure ([74b78e3](https://github.com/asafelobotomy/copilot-instructions-template/commit/74b78e3d62d31a24f02c27560d6525dfceda0341))
+
 ## [Unreleased]
 
 ### Added
