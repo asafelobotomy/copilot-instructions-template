@@ -19,4 +19,41 @@
 - Test results — run them fresh.
 - LOC counts — measure them fresh.
 
-*(Updated as the memory system is used and its effectiveness becomes clear.)*
+## Architectural Decisions
+
+Append rows as decisions are made. Link to the corresponding JOURNAL.md entry.
+
+| Date | Decision | Rationale | JOURNAL.md link |
+|------|----------|-----------|-----------------|
+| | | | |
+
+## Recurring Error Patterns
+
+Append rows when error patterns are identified and resolved.
+
+| Error signature | Root cause | Fix pattern | Last seen |
+|-----------------|------------|-------------|-----------|
+| | | | |
+
+## Team Conventions Discovered
+
+Append rows when conventions are inferred from code, reviews, or discussions.
+
+| Convention | Source | Confidence | Date learned |
+|------------|--------|------------|--------------|
+| | | | |
+
+## Known Gotchas
+
+Append rows for non-obvious behaviours, environment quirks, or dependency traps.
+
+| Gotcha | Affected files | Workaround | Severity |
+|--------|---------------|------------|----------|
+| | | | |
+
+## Maintenance Protocol
+
+- Review and prune this file quarterly (or when it exceeds 100 rows total).
+- Remove entries that are now captured in the instructions file or JOURNAL.md.
+- Archive pruned entries to `.github/archive/memory-pruned-YYYY-MM-DD.md` if historical record is needed.
+- Rules in this file must be falsifiable — remove any entry that no longer improves agent output.

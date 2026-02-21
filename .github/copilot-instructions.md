@@ -297,6 +297,14 @@ Use in Review Mode to tag findings.
 | W6 | Motion | Context switches; scattered logic across many files |
 | W7 | Defects | Bugs, type errors, test failures, silent exceptions |
 | W8 | Unused talent | Missing automation; repetitive manual steps |
+| W9 | Prompt waste | Vague instructions requiring re-prompting; prompt too long for task complexity |
+| W10 | Context window waste | Exceeding token budget with irrelevant files; stale context degrading output quality |
+| W11 | Hallucination rework | Accepting generated code without verification; debugging phantom APIs or methods |
+| W12 | Verification overhead | Testing obvious transformations; re-running passing checks without cause |
+| W13 | Prompt engineering debt | Overgrown instruction files where key rules are ignored; no skill extraction from successful patterns |
+| W14 | Model-task mismatch | Using Opus for a rename; using Haiku for architectural planning |
+| W15 | Tool friction | Manual file reads when codebase search suffices; missing MCP integration for available services |
+| W16 | Over/under-trust | Blindly accepting all suggestions; reviewing every single-line change manually |
 
 ---
 

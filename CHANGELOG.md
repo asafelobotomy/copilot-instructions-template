@@ -13,6 +13,29 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [1.2.0] — 2026-02-20
+
+### Added
+
+- `§6 — Waste Catalogue` expanded with 8 AI-specific waste categories (W9–W16): Prompt waste, Context window waste, Hallucination rework, Verification overhead, Prompt engineering debt, Model-task mismatch, Tool friction, Over/under-trust. Grounded in DORA 2025 research, Stack Overflow Developer Survey 2024, and Claude Code best practices documentation.
+- `template/METRICS.md` — 6 new columns: Deploy Freq, Lead Time, CFR, MTTR, AI Accept Rate, Context Resets. New `## DORA definitions` section with Green/Warn/High thresholds. 4 new placeholder tokens (`{{DEPLOY_FREQ_TARGET}}`, `{{LEAD_TIME_TARGET}}`, `{{CFR_TARGET}}`, `{{MTTR_TARGET}}`).
+- `.github/workflows/ci.yml` — new `actionlint:` job using `raven-actions/actionlint@v2`; catches expression type errors, script injection, and unknown inputs in workflow files.
+- `.github/dependabot.yml` — GitHub Actions dependency management with weekly schedule, grouped minor/patch updates, conventional commit prefix (`ci`), and 5-PR limit.
+- `template/workspace/MEMORY.md` — 4 new structured agent-writable sections: Architectural Decisions, Recurring Error Patterns, Team Conventions Discovered, Known Gotchas (all as append-only tables). New `## Maintenance Protocol` section with quarterly review cadence.
+- `.github/ISSUE_TEMPLATE/bug_report.yml` — added area options: Skills Protocol (§12), Waste Catalogue (§6).
+- `.github/ISSUE_TEMPLATE/feature_request.yml` — added area options: Skills Protocol (§12), Waste Catalogue (§6), Path-Specific Instructions, Prompt Files, MCP Integration.
+
+### Changed
+
+- `.github/workflows/stale.yml` — upgraded from `actions/stale@v9` to `@v10` (Node 24 runtime); added `exempt-draft-pr: true`.
+- `.github/workflows/ci.yml` — upgraded `DavidAnson/markdownlint-cli2-action` from `@v16` to `@v22`.
+
+### Fixed
+
+- `CONTRIBUTING.md` — corrected stale CI checklist reference from `§1–§11` to `§1–§12` (§12 was added in v1.1.0 but CONTRIBUTING.md was not updated).
+
+---
+
 ## [1.1.0] — 2026-02-19
 
 ### Added

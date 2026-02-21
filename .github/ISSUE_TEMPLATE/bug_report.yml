@@ -42,6 +42,8 @@ body:
         - Model-pinned agents (.github/agents/)
         - Extension Review feature
         - Tool Protocol (§11)
+        - Skills Protocol (§12)
+        - Waste Catalogue (§6)
         - Documentation (docs/)
         - CI / Automation
         - Other
