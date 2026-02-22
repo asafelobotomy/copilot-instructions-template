@@ -144,7 +144,7 @@ These notes cover changes that require manual action beyond running "Update your
 **What the update protocol does automatically**:
 
 - Proposes adding §13 as a `NEW_SECTION` — accept it to bring in the full MCP protocol.
-- Proposes any §1–§12 section changes as `UPDATED` items.
+- Proposes changes to existing sections §1 through §12 as `UPDATED` items.
 
 **What requires manual action** (the update protocol does not touch these):
 

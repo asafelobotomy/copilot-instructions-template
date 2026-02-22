@@ -75,7 +75,7 @@ jobs:
           [[ $missing -eq 0 ]] || exit 1
           echo "✅ All required files present"
 
-      - name: copilot-instructions.md has all sections §1–§13
+      - name: "copilot-instructions.md has all sections §1–§13"
         run: |
           missing=0
           for s in "§1" "§2" "§3" "§4" "§5" "§6" "§7" "§8" "§9" "§10" "§11" "§12" "§13"; do
@@ -205,8 +205,8 @@ jobs:
           # This step enforces that — if both have an active push trigger, fail fast.
           has_push() { grep -qE '^  push:' "$1" 2>/dev/null; }
           manual_active=0; please_active=0
-          has_push .github/workflows/release-manual.yml && manual_active=1 || true
-          has_push .github/workflows/release-please.yml && please_active=1 || true
+          if has_push .github/workflows/release-manual.yml; then manual_active=1; fi
+          if has_push .github/workflows/release-please.yml; then please_active=1; fi
           if [[ $manual_active -eq 1 && $please_active -eq 1 ]]; then
             echo "❌ Both release-manual.yml and release-please.yml have active push triggers."
             echo "   Enable only one release strategy — see docs/RELEASE-AUTOMATION-GUIDE.md."
