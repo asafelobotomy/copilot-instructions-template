@@ -41,6 +41,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `docs/SETUP-GUIDE.md` — "Six files" → "Seven files" in Step 3; HEARTBEAT.md row added to identity files table.
 - `docs/AGENTS-GUIDE.md` — heartbeat trigger phrases added to canonical triggers table.
 
+### Fixed
+
+- `docs/UPDATE-GUIDE.md` — stale `§1–§12` section range in v1.x→v2.0.0 migration note changed to "§1 through §12"; resolves cross-reference consistency CI failure.
+- `.github/workflows/ci.yml` — replaced SC2015-flagged `A && B || C` patterns in "Release workflow mutual exclusion" step with `if` statements; resolves actionlint (Workflow lint) CI failure.
+
 ---
 
 ## [2.0.0] — 2026-02-21
