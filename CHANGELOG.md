@@ -40,6 +40,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `.github/copilot-instructions.md` — §8 Heartbeat Protocol procedure expanded from 6 to 7 steps: new step 3 runs the Retrospective on task-completion and explicit triggers; "When to fire" list expanded with task completion; step 7 updated with retrospective Q4/Q5 exception to silent-when-healthy rule.
 - `docs/SETUP-GUIDE.md` — "Six files" → "Seven files" in Step 3; HEARTBEAT.md row added to identity files table.
 - `docs/AGENTS-GUIDE.md` — heartbeat trigger phrases added to canonical triggers table.
+- `template/workspace/HEARTBEAT.md` — retrospective questions rewritten for observable anchoring: Q1 now references concrete errors/corrections/backtracking; Q2 replaced ("Ambition check" → "Scope audit") targeting factual scope drift with write target changed from Agent Notes to MEMORY.md (Known Gotchas); Q3 sharpened to compare original request against delivered result; Q4 expanded with example issue categories; Q6 redesigned to remove emotion inference (observable signals only); Q7 now enforces structured "When [situation], do [action]" format. New Q8 "Correction log" added — captures user corrections as highest-value feedback signal. Research grounding: Reflexion (Shinn et al., NeurIPS 2023), ExpeL (Zhao et al., 2024), Limits of Self-Correction (Huang et al., 2024).
+- `docs/HEARTBEAT-GUIDE.md` — retrospective section updated from 7 to 8 questions; question table rewritten with observable-anchored wording; new "Design rationale" subsection with research citations; reporting contract updated (Q1–3, Q6–8 silent); interaction table updated for scope audit (Q2), correction log (Q8); customisation example renumbered.
 
 ### Fixed
 
