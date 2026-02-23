@@ -877,7 +877,7 @@ Guidelines:
 - Do not modify files in `asafelobotomy/copilot-instructions-template` — that is
   the template repo; all writes go to this project.
 - CRITICAL: The §0d interview is interactive. Ask every question and wait for
-  the user’s typed answer. Never auto-complete, assume, or skip questions.
+  the user's typed answer. Never auto-complete, assume, or skip questions.
 - Use the batch plan in §0d to structure `ask_questions` calls (max 4 per call).
 - Verify answer count matches the selected tier before proceeding to §0e.
 - Copy the §0e and Step 6 summary templates exactly — do not improvise or
@@ -991,7 +991,7 @@ Guidelines:
 
 ## Step 2.8 — Scaffold skill library
 
-Create `.github/skills/` if it does not exist. Then copy the four starter skills from the template:
+Create `.github/skills/` if it does not exist. Then copy the six starter skills from the template:
 
 - **Fetch from template** *(recommended)*: Fetch each skill directly from the template repo:
 
@@ -1000,6 +1000,8 @@ Create `.github/skills/` if it does not exist. Then copy the four starter skills
   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/skills/fix-ci-failure/SKILL.md
   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/skills/lean-pr-review/SKILL.md
   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/skills/conventional-commit/SKILL.md
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/skills/mcp-builder/SKILL.md
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/skills/webapp-testing/SKILL.md
   ```
 
 - **Write from stubs**: Use the inline content below if network access is unavailable.
@@ -1014,6 +1016,8 @@ For each skill, create `.github/skills/<name>/SKILL.md` in the user's project wi
 | `fix-ci-failure` | Systematic CI/GitHub Actions failure diagnosis and resolution |
 | `lean-pr-review` | Structured PR review using Lean waste categories (§6) and severity ratings |
 | `conventional-commit` | Write commit messages following the Conventional Commits specification |
+| `mcp-builder` | Build and register MCP servers for external tool integration |
+| `webapp-testing` | Set up Playwright end-to-end browser testing |
 
 Set the `{{SKILL_SEARCH_PREFERENCE}}` placeholder value based on the A15 interview answer (default: `local-only`).
 
@@ -1116,7 +1120,7 @@ The Model Context Protocol (MCP) connects Copilot to external tools via `.vscode
 4. **Stack-specific server discovery** (E22=C only): Based on the technology stack discovered in Step 1, suggest relevant MCP servers:
 
    | Stack signal | Suggested MCP server | Package |
-   |-------------|---------------------|---------|
+   |-------------|---------------------|--------|
    | PostgreSQL (`pg`, `psycopg2`, `prisma`) | PostgreSQL server | `@modelcontextprotocol/server-postgres` |
    | SQLite (`sqlite3`, `better-sqlite3`) | SQLite server | `@modelcontextprotocol/server-sqlite` |
    | Redis (`redis`, `ioredis`) | Redis server | `@nicholasoxford/redis-mcp-server` |
@@ -1407,6 +1411,7 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `.copilot/workspace/TOOLS.md` | Effective tool usage patterns | — |
 | `.copilot/workspace/MEMORY.md` | Memory system strategy | — |
 | `.copilot/workspace/BOOTSTRAP.md` | Permanent setup origin record | — |
+| `.copilot/workspace/HEARTBEAT.md` | Event-driven health check checklist | — |
 | `.github/skills/*/SKILL.md` | Reusable agent skill library (§12) | — |
 | `CHANGELOG.md` | Keep-a-Changelog | — |
 | `JOURNAL.md` | ADR-style development journal | — |
