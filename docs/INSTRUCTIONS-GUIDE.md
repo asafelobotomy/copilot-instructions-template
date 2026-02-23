@@ -238,6 +238,7 @@ GitHub Copilot resolves instructions from multiple sources. When instructions co
 This template operates at the **repository** level (priority 2). If your organisation sets instructions (priority 3), they are *overridden* by this template where they conflict. If you add file-scoped instructions (priority 1), those override this template for matching files.
 
 **Practical advice**:
+
 - Use `.github/instructions/` for file-specific rules that would bloat the main instructions file.
 - Don't duplicate repository-level rules in organisation instructions — the repository version already takes precedence.
 - Personal instructions are useful for preferences the template doesn't cover (editor behaviour, response language, etc.).

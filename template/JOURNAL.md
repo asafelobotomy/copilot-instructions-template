@@ -11,6 +11,7 @@ Architectural decisions and key context are recorded here in ADR (Architectural 
 **Decision**: Use `.github/copilot-instructions.md` as the primary agent guidance document. Use `.copilot/workspace/` for session-persistent agent identity state. Apply Lean/Kaizen as the development methodology.
 
 **Consequences**:
+
 - Copilot is authorised to update `.github/copilot-instructions.md` when patterns stabilise (see Living Update Protocol in the instructions).
 - All significant architectural decisions are recorded here.
 - METRICS.md tracks measurable baselines over time.

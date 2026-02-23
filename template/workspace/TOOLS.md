@@ -16,6 +16,7 @@
 Custom-built and adapted tools are saved to `.copilot/tools/`. The catalogue is maintained in `.copilot/tools/INDEX.md`.
 
 **Before writing any automation script**, always:
+
 1. Check `.copilot/tools/INDEX.md` for an existing tool.
 2. Follow §11 (Tool Protocol) in `.github/copilot-instructions.md` if no match is found.
 

@@ -45,6 +45,7 @@ npm init playwright@latest -- --quiet
 ```
 
 This creates:
+
 - `playwright.config.ts` — configuration file
 - `tests/` — test directory
 - `tests-examples/` — example tests (can be deleted)
@@ -129,11 +130,13 @@ npx playwright test
 ```
 
 Expected output:
+
 - All tests pass on at least one browser
 - No flaky tests (run twice to confirm)
 - HTML report is generated (`npx playwright show-report`)
 
 If tests fail:
+
 - Check that the dev server starts correctly
 - Verify the `baseURL` matches the actual dev server port
 - Ensure selectors match actual page elements

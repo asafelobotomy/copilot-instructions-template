@@ -99,6 +99,7 @@ server.tool(
 ```
 
 Rules:
+
 - One tool, one action — keep tools focused
 - Validate all inputs with schemas
 - Return structured content (text or JSON)
@@ -111,6 +112,7 @@ npx @modelcontextprotocol/inspector node .mcp-servers/<server-name>/src/index.ts
 ```
 
 Verify:
+
 - [ ] Server starts without errors
 - [ ] Each tool appears in the inspector's tool list
 - [ ] Each tool executes correctly with sample inputs

@@ -79,6 +79,7 @@ The agent receives this as `additionalContext` before processing your first prom
 **Purpose**: Enforces §5 ("Secure by default") deterministically. Even if the agent is tricked via prompt injection, this hook blocks:
 
 **Blocked** (hard deny):
+
 - `rm -rf /`, `rm -rf ~`, `rm -rf .`
 - `DROP TABLE`, `DROP DATABASE`, `TRUNCATE TABLE`
 - `mkfs.*`, `dd if=… of=/dev/`
@@ -86,6 +87,7 @@ The agent receives this as `additionalContext` before processing your first prom
 - Pipe-to-shell patterns (`curl … | sh`, `wget … | sh`)
 
 **Caution** (user confirmation required):
+
 - `rm -rf` (in any path), `rm -r`
 - `DROP`, `DELETE FROM`
 - `git push --force`, `git reset --hard`, `git clean -fd`

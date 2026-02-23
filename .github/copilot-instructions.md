@@ -365,6 +365,7 @@ Hook configuration lives in `.github/hooks/copilot-hooks.json`. The template shi
 Hook scripts accept JSON on stdin and emit JSON on stdout. See `docs/HOOKS-GUIDE.md` for configuration format, customisation instructions, and security considerations.
 
 **Hook interaction with other systems**:
+
 - `guard-destructive.sh` provides hard enforcement for §5 security rules that soft instructions cannot guarantee.
 - `enforce-retrospective.sh` ensures the heartbeat retrospective runs even when sessions end abruptly.
 - `save-context.sh` preserves workspace identity files across long sessions that hit context window limits.
