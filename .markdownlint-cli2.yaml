@@ -1,0 +1,4 @@
+# markdownlint-cli2 options
+# Auto-generated files are excluded from linting
+ignores:
+  - CHANGELOG.md
