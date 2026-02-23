@@ -13,6 +13,10 @@ jobs:
   scorecard:
     name: Scorecard analysis
     runs-on: ubuntu-latest
+    # Scorecard is a security reporting/analysis tool, not a development gate.
+    # GitHub's GraphQL API has occasional transient 500s that cause false failures;
+    # continue-on-error prevents those infrastructure blips from blocking pushes.
+    continue-on-error: true
     permissions:
       security-events: write
       id-token: write
