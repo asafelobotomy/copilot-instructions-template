@@ -759,6 +759,7 @@ Pre-flight complete. Here is what I will do:
     2.5. Write agent files for model-pinned workflows (.github/agents/) (Step 2.5)
     2.8. Scaffold skill library (.github/skills/) (Step 2.8)
     2.12. Configure MCP servers (.vscode/mcp.json) (Step 2.12)
+    2.13. Scaffold agent lifecycle hooks (.github/hooks/) (Step 2.13)
     3.   Create workspace identity files (Step 3)
     4.   Capture METRICS baseline (Step 4)
     5.   Create documentation stubs (Step 5)
@@ -1130,6 +1131,37 @@ The Model Context Protocol (MCP) connects Copilot to external tools via `.vscode
    - `{{MCP_CUSTOM_SERVERS}}`: Any additional custom server entries, or *(empty)* if none.
 
 6. Log the created file to JOURNAL.md.
+
+---
+
+## Step 2.13 — Scaffold agent lifecycle hooks
+
+Create `.github/hooks/` and `.github/hooks/scripts/` if they do not exist. Copy the hooks configuration and five starter scripts from the template:
+
+- **Fetch from template** *(recommended)*: Fetch each file directly from the template repo:
+
+  ```text
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/copilot-hooks.json
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/session-start.sh
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/guard-destructive.sh
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/post-edit-lint.sh
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/enforce-retrospective.sh
+  https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/save-context.sh
+  ```
+
+Write `copilot-hooks.json` to `.github/hooks/copilot-hooks.json` and all `.sh` files to `.github/hooks/scripts/`. Make all shell scripts executable (`chmod +x`).
+
+### Starter hooks
+
+| Hook | Event | What it does |
+|------|-------|-------------|
+| `session-start.sh` | `SessionStart` | Injects project context (name, version, branch, runtimes, heartbeat pulse) |
+| `guard-destructive.sh` | `PreToolUse` | Blocks dangerous commands; flags caution patterns for user confirmation |
+| `post-edit-lint.sh` | `PostToolUse` | Auto-formats edited files using the project's formatter |
+| `enforce-retrospective.sh` | `Stop` | Prevents session end if retrospective has not been run |
+| `save-context.sh` | `PreCompact` | Preserves workspace state before context compaction |
+
+Log the created files to JOURNAL.md: `[hooks] Agent lifecycle hooks scaffolded — 5 starter hooks for security, formatting, retrospective, and context preservation`.
 
 ---
 

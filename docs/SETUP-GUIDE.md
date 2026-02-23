@@ -118,6 +118,22 @@ If you chose **E22 = A** (none) or used Simple/Advanced setup, this step is skip
 
 ---
 
+### Step 2.13 — Scaffold agent lifecycle hooks
+
+Copilot copies five agent lifecycle hook scripts into `.github/hooks/`. Hooks are deterministic shell commands that VS Code executes at specific points during an agent session — they enforce rules that soft instructions cannot guarantee:
+
+| Hook | Event | What it does |
+|------|-------|-------------|
+| `session-start.sh` | `SessionStart` | Injects project context into every new session |
+| `guard-destructive.sh` | `PreToolUse` | Blocks dangerous commands (§5 enforcement) |
+| `post-edit-lint.sh` | `PostToolUse` | Auto-formats edited files |
+| `enforce-retrospective.sh` | `Stop` | Ensures retrospective runs before session end |
+| `save-context.sh` | `PreCompact` | Preserves workspace state before compaction |
+
+This step always runs. See [HOOKS-GUIDE.md](HOOKS-GUIDE.md) for customisation, disabling, and security details.
+
+---
+
 ### Step 3 — Scaffold workspace identity files
 
 Seven files are created in `.copilot/workspace/`:

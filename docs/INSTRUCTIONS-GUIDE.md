@@ -215,6 +215,39 @@ Configuration lives in `.vscode/mcp.json` (for VS Code) or equivalent for other 
 
 ---
 
+## Instruction priority chain
+
+GitHub Copilot resolves instructions from multiple sources. When instructions conflict, the higher-priority source wins. Understanding this chain helps you decide *where* to put a rule.
+
+| Priority | Source | Scope | Location |
+|----------|--------|-------|----------|
+| 1 (highest) | **File-scoped instructions** | Single file or glob pattern | `.github/instructions/*.instructions.md` |
+| 2 | **Repository instructions** | All sessions in this repo | `.github/copilot-instructions.md` (this template) |
+| 3 | **Organisation instructions** | All repos in the GitHub org | Organisation Settings → Copilot → Custom instructions |
+| 4 (lowest) | **Personal instructions** | All repos, all sessions for one user | VS Code Settings → `github.copilot.chat.codeGeneration.instructions` |
+
+### What goes where
+
+- **File-scoped** (`.github/instructions/`): Rules that apply only to specific files or directories. Example: "All files in `src/api/` must include authentication middleware." The file uses YAML frontmatter with `applyTo` globs.
+- **Repository** (`.github/copilot-instructions.md`): Project-wide rules. This is where the template lives — §1–§13 plus your §10 overrides.
+- **Organisation**: Cross-repo standards enforced by your org admin. Example: "All REST endpoints must return JSON with a `data` wrapper." Set in your org's Copilot settings on github.com.
+- **Personal**: Your personal style preferences that follow you everywhere. Example: "Always use single quotes in JavaScript." Set in VS Code settings JSON.
+
+### Interaction with this template
+
+This template operates at the **repository** level (priority 2). If your organisation sets instructions (priority 3), they are *overridden* by this template where they conflict. If you add file-scoped instructions (priority 1), those override this template for matching files.
+
+**Practical advice**:
+- Use `.github/instructions/` for file-specific rules that would bloat the main instructions file.
+- Don't duplicate repository-level rules in organisation instructions — the repository version already takes precedence.
+- Personal instructions are useful for preferences the template doesn't cover (editor behaviour, response language, etc.).
+
+### Prompt files
+
+VS Code also supports `.github/prompts/*.prompt.md` — reusable prompt templates you can invoke with `#` in the chat input. Unlike instructions (which are loaded automatically), prompt files are opt-in per message. Use them for multi-step workflows you trigger manually (e.g., "Generate API endpoint", "Create migration script").
+
+---
+
 ## Updating the instructions
 
 To update your installed instructions to a newer version of the template, open Copilot and say:

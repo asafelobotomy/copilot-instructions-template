@@ -303,7 +303,7 @@ Use in Review Mode to tag findings.
 | W12 | Verification overhead | Testing obvious transformations; re-running passing checks without cause |
 | W13 | Prompt engineering debt | Overgrown instruction files where key rules are ignored; no skill extraction from successful patterns |
 | W14 | Model-task mismatch | Using Opus for a rename; using Haiku for architectural planning |
-| W15 | Tool friction | Manual file reads when codebase search suffices; missing MCP integration for available services |
+| W15 | Tool friction | Manual file reads when `list_code_usages` suffices; running `grep` when `semantic_search` is available; missing MCP integration for available services; not using `get_errors` to verify changes; not using `fetch_webpage` for documentation lookups |
 | W16 | Over/under-trust | Blindly accepting all suggestions; reviewing every single-line change manually |
 
 ---
@@ -316,7 +316,7 @@ Append a row to `METRICS.md` after any session that changes these values materia
 |--------|---------|--------|
 | Total LOC | `{{LOC_COMMAND}}` | Trending down or flat |
 | Test count | `{{TEST_COMMAND}}` | Trending up |
-| Type errors | `{{TYPE_CHECK_COMMAND}}` | Zero |
+| Type errors | `{{TYPE_CHECK_COMMAND}}` (or `get_errors` built-in) | Zero |
 | Runtime deps | count from manifest | ≤ {{DEP_BUDGET}} |
 | {{EXTRA_METRIC_NAME}} | — | — |
 
@@ -347,6 +347,28 @@ Event-triggered health checks that keep the agent aligned with real project stat
 5. Append a row to History (keep last 5).
 6. Write observations to Agent Notes for the next heartbeat.
 7. Report to user only if alerts exist — silent when healthy (exception: retrospective Q4/Q5 always surface when non-empty).
+
+### Agent Hooks
+
+Hooks are deterministic shell commands that VS Code executes at specific lifecycle points during an agent session. Unlike instructions (soft guidance), hooks run your code with guaranteed outcomes — they enforce rules that the agent would otherwise follow probabilistically.
+
+Hook configuration lives in `.github/hooks/copilot-hooks.json`. The template ships five starter hooks:
+
+| Event | Script | Purpose |
+|-------|--------|---------|
+| `SessionStart` | `session-start.sh` | Inject project context (name, version, branch, runtimes, heartbeat pulse) |
+| `PreToolUse` | `guard-destructive.sh` | Block dangerous commands; flag caution patterns for user confirmation (§5 enforcement) |
+| `PostToolUse` | `post-edit-lint.sh` | Auto-format edited files using the project's formatter |
+| `Stop` | `enforce-retrospective.sh` | Prevent session end if retrospective has not been run |
+| `PreCompact` | `save-context.sh` | Preserve workspace state (heartbeat, memory, heuristics) before context compaction |
+
+Hook scripts accept JSON on stdin and emit JSON on stdout. See `docs/HOOKS-GUIDE.md` for configuration format, customisation instructions, and security considerations.
+
+**Hook interaction with other systems**:
+- `guard-destructive.sh` provides hard enforcement for §5 security rules that soft instructions cannot guarantee.
+- `enforce-retrospective.sh` ensures the heartbeat retrospective runs even when sessions end abruptly.
+- `save-context.sh` preserves workspace identity files across long sessions that hit context window limits.
+- `post-edit-lint.sh` eliminates W9 (manual repetition) for formatting after every edit.
 
 ---
 
@@ -453,6 +475,15 @@ Need a tool for task X
  │     ├─ Exact match  → USE IT directly
  │     ├─ Close match  → ADAPT (fork, rename, note source in comment at top of file)
  │     └─ No match     → ↓
+ │
+ ├─ 1.5 BUILT-IN — check VS Code's native tool capabilities
+ │     ├─ `list_code_usages`  → find all references, implementations, callers of a symbol
+ │     ├─ `get_errors`        → get compile/lint errors for a file or the entire workspace
+ │     ├─ `fetch_webpage`     → fetch web pages, docs, APIs (use for documentation lookups)
+ │     ├─ `semantic_search`   → natural language search across the codebase
+ │     ├─ `grep_search`       → fast text/regex search in workspace files
+ │     ├─ Sufficient → USE built-in tool
+ │     └─ Not sufficient → ↓
  │
  ├─ 2. SEARCH online (try in order)
  │     a. MCP server registry  github.com/modelcontextprotocol/servers
@@ -722,4 +753,4 @@ Subagents inherit access to all configured MCP servers. A subagent may invoke an
 
 ---
 
-*See also: `.github/agents/` (model-pinned VS Code agents) · `.copilot/workspace/` (session identity) · `.copilot/tools/` (reusable tool library) · `.github/skills/` (reusable skill library) · `.vscode/mcp.json` (MCP server configuration) · `UPDATE.md` (update protocol) · `AGENTS.md` (AI agent entry point)*
+*See also: `.github/agents/` (model-pinned VS Code agents) · `.github/hooks/` (agent lifecycle hooks) · `.copilot/workspace/` (session identity) · `.copilot/tools/` (reusable tool library) · `.github/skills/` (reusable skill library) · `.vscode/mcp.json` (MCP server configuration) · `UPDATE.md` (update protocol) · `AGENTS.md` (AI agent entry point)*

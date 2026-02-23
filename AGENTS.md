@@ -103,6 +103,18 @@ When a user says any of the following:
 
 ...follow the MCP Protocol in **§13** of `.github/copilot-instructions.md`. Use the decision tree (built-in tool → MCP server → community package → custom tool) and apply the quality gate before adding any new server.
 
+### Hook operations
+
+When a user says any of the following:
+
+- *"Configure hooks"* / *"Set up agent hooks"*
+- *"Show hooks"* / *"List agent hooks"*
+- *"Add a hook"* / *"Create a hook for ..."*
+- *"Disable hooks"* / *"Remove hook ..."*
+- *"Hook diagnostics"* / *"Debug hooks"*
+
+...follow the Agent Hooks section in **§8** of `.github/copilot-instructions.md`. Hooks are configured in `.github/hooks/copilot-hooks.json` — see `docs/HOOKS-GUIDE.md` for the full guide.
+
 ### Heartbeat operations
 
 When a user says any of the following:
@@ -129,6 +141,7 @@ A generic, **living** GitHub Copilot instructions template grounded in **Lean/Ka
 - A one-time setup process (`SETUP.md`) that Copilot runs to tailor everything to the target project's stack.
 - An update process (`UPDATE.md`) that Copilot runs to fetch and apply improvements from this repo to an already-installed project.
 - Four model-pinned agent files (`.github/agents/`) for VS Code 1.106+ — one each for Setup, Coding, Review, and Fast workflows.
+- Five agent lifecycle hooks (`.github/hooks/`) that deterministically enforce security, formatting, and retrospective rules at session boundaries.
 - A reusable skill library (`.github/skills/`) following the [Agent Skills](https://agentskills.io) open standard — four starter skills included.
 - Automatic pre-write backups so every update is reversible — stored in `.github/archive/`.
 - Seven workspace identity files that Copilot maintains across sessions (including an event-driven heartbeat checklist).
@@ -173,6 +186,8 @@ Setup outputs written to the **user's project**:
 | `.github/agents/coding.agent.md` | Model-pinned Coding agent (GPT-5.3-Codex) |
 | `.github/agents/review.agent.md` | Model-pinned Review agent (Claude Opus 4.6) |
 | `.github/agents/fast.agent.md` | Model-pinned Fast agent (Claude Haiku 4.5) |
+| `.github/hooks/copilot-hooks.json` | Agent lifecycle hooks configuration |
+| `.github/hooks/scripts/*.sh` | Five starter hook scripts (security, formatting, retrospective, context) |
 | `.github/skills/*/SKILL.md` | Reusable skill library (6 starter skills from template) |
 | `.vscode/mcp.json` | MCP server configuration (created if E22 ≠ None) |
 | `.copilot/workspace/IDENTITY.md` | Agent self-description |
@@ -242,6 +257,12 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `template/skills/conventional-commit/SKILL.md` | Starter skill — Conventional Commits message authoring |
 | `template/skills/mcp-builder/SKILL.md` | Starter skill — MCP server creation and registration |
 | `template/skills/webapp-testing/SKILL.md` | Starter skill — Playwright-based web app testing |
+| `template/hooks/copilot-hooks.json` | Agent hooks configuration template |
+| `template/hooks/scripts/session-start.sh` | SessionStart hook — project context injection |
+| `template/hooks/scripts/guard-destructive.sh` | PreToolUse hook — destructive command guard |
+| `template/hooks/scripts/post-edit-lint.sh` | PostToolUse hook — auto-format after edits |
+| `template/hooks/scripts/enforce-retrospective.sh` | Stop hook — retrospective enforcement |
+| `template/hooks/scripts/save-context.sh` | PreCompact hook — context preservation |
 | `template/vscode/mcp.json` | MCP server configuration template |
 | `template/workspace/IDENTITY.md` | Agent self-description stub |
 | `template/workspace/SOUL.md` | Agent values & reasoning patterns stub |
@@ -284,3 +305,7 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | Show heartbeat status | *"Show heartbeat status"* / *"Heartbeat history"* |
 | Update heartbeat | *"Update heartbeat checklist"* / *"Clear heartbeat alerts"* |
 | Run retrospective | *"Run retrospective"* |
+| Configure hooks | *"Configure hooks"* / *"Set up agent hooks"* |
+| List hooks | *"Show hooks"* / *"List agent hooks"* |
+| Add a hook | *"Add a hook"* / *"Create a hook for ..."* |
+| Disable hooks | *"Disable hooks"* / *"Remove hook ..."* |

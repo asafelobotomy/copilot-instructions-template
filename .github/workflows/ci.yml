@@ -60,8 +60,15 @@ jobs:
             "docs/MCP-GUIDE.md" \
             "docs/RELEASE-AUTOMATION-GUIDE.md" \
             "docs/HEARTBEAT-GUIDE.md" \
+            "docs/HOOKS-GUIDE.md" \
             "template/copilot-setup-steps.yml" \
             "template/vscode/mcp.json" \
+            "template/hooks/copilot-hooks.json" \
+            "template/hooks/scripts/session-start.sh" \
+            "template/hooks/scripts/guard-destructive.sh" \
+            "template/hooks/scripts/post-edit-lint.sh" \
+            "template/hooks/scripts/enforce-retrospective.sh" \
+            "template/hooks/scripts/save-context.sh" \
             "template/CHANGELOG.md" "template/JOURNAL.md" \
             "template/BIBLIOGRAPHY.md" "template/METRICS.md" \
             "template/workspace/IDENTITY.md" "template/workspace/SOUL.md" \

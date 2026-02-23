@@ -105,6 +105,10 @@ Seven workspace files are scaffolded into your project during setup and maintain
 
 At setup completion Copilot captures a baseline snapshot (file count, LOC, dependency count, test coverage) into `METRICS.md`. Every significant change appends a new row, giving you a continuous improvement record you can actually read.
 
+### 🪩 Agent lifecycle hooks
+
+Five deterministic shell scripts run at key agent lifecycle points — enforcing rules that soft instructions cannot guarantee. Hooks auto-inject project context at session start, block dangerous commands before they execute, auto-format edited files, enforce the retrospective before session end, and preserve workspace state before context compaction. Configure in `.github/hooks/copilot-hooks.json`.
+
 ### 🔍 Extension and test-coverage review
 
 Two built-in review modes surface at the end of any session:
@@ -120,6 +124,8 @@ Two built-in review modes surface at the end of any session:
 |----------|--------|---------|
 | `.github/copilot-instructions.md` | Filled from template | Primary AI guidance — methodology-complete and project-specific |
 | `.github/agents/*.agent.md` | Copied from template | Four model-pinned agents |
+| `.github/hooks/copilot-hooks.json` | Copied from template | Agent lifecycle hooks configuration |
+| `.github/hooks/scripts/*.sh` | Copied from template | Five starter hook scripts (security, formatting, retrospective, context) |
 | `.github/skills/*/SKILL.md` | Copied from template | Six starter skills (Agent Skills standard) |
 | `.github/instructions/*.instructions.md` | Copied from template | Path-specific instruction stubs (tests, API, config, docs) |
 | `.github/prompts/*.prompt.md` | Copied from template | Five reusable slash commands (/explain, /refactor, /test-gen, /review-file, /commit-msg) |
@@ -153,6 +159,7 @@ Every AI-facing file has a plain-English companion in `docs/`:
 | [`docs/EXTENSION-REVIEW-GUIDE.md`](docs/EXTENSION-REVIEW-GUIDE.md) | How the VS Code extension audit feature works |
 | [`docs/TEST-REVIEW-GUIDE.md`](docs/TEST-REVIEW-GUIDE.md) | How the test coverage review and CI recommendation feature works |
 | [`docs/HEARTBEAT-GUIDE.md`](docs/HEARTBEAT-GUIDE.md) | Event-driven heartbeat — triggers, checks, cross-file wiring, and customisation |
+| [`docs/HOOKS-GUIDE.md`](docs/HOOKS-GUIDE.md) | Agent lifecycle hooks — starter scripts, configuration, customisation, and security |
 
 ---
 
@@ -209,8 +216,7 @@ copilot-instructions-template/
 │   ├── PROMPTS-GUIDE.md                # Human guide to reusable prompt files
 │   ├── SECURITY-GUIDE.md              # Human guide to security hardening
 │   ├── MCP-GUIDE.md                    # Human guide to MCP integration
-│   └── RELEASE-AUTOMATION-GUIDE.md     # Human guide to release workflows
-├── template/
+│   └── RELEASE-AUTOMATION-GUIDE.md     # Human guide to release workflows│   └── HOOKS-GUIDE.md                  # Human guide to agent lifecycle hooks├── template/
 │   ├── CHANGELOG.md                    # Keep-a-Changelog stub (scaffolded into consumer projects)
 │   ├── JOURNAL.md                      # ADR-style journal stub
 │   ├── BIBLIOGRAPHY.md                 # File catalogue stub
@@ -225,6 +231,14 @@ copilot-instructions-template/
 │   │   └── webapp-testing/SKILL.md     # Starter skill: Playwright web app testing
 │   ├── vscode/
 │   │   └── mcp.json                    # MCP server configuration template
+│   ├── hooks/
+│   │   ├── copilot-hooks.json          # Agent hooks configuration template
+│   │   └── scripts/
+│   │       ├── session-start.sh        # SessionStart — project context injection
+│   │       ├── guard-destructive.sh    # PreToolUse — dangerous command guard
+│   │       ├── post-edit-lint.sh       # PostToolUse — auto-format after edits
+│   │       ├── enforce-retrospective.sh # Stop — retrospective enforcement
+│   │       └── save-context.sh         # PreCompact — context preservation
 │   └── workspace/
 │       ├── IDENTITY.md                 # Agent self-description stub
 │       ├── SOUL.md                     # Values & reasoning patterns stub

@@ -7,6 +7,19 @@
 - Always prefer reading the source file over recalling a cached summary of it.
 - When a memory conflicts with a source file, the source file wins.
 
+## Copilot Memory coexistence
+
+VS Code's **Copilot Memory** (native memory feature) persists user preferences and patterns across all sessions automatically. This file exists alongside that system — they are complementary, not competing:
+
+| System | Scope | What it stores | Managed by |
+|--------|-------|---------------|------------|
+| **Copilot Memory** (native) | Global — all repos, all sessions | Personal preferences, coding style, tool usage patterns | VS Code (automatic) |
+| **MEMORY.md** (this file) | Project — this repo only | Architectural decisions, error patterns, team conventions, project-specific gotchas | Agent + user (manual) |
+
+**Priority rule**: When native Copilot Memory conflicts with MEMORY.md, **this file wins** for project-specific facts. Native memory wins for personal preferences and cross-project patterns.
+
+**Avoid duplication**: Do not record personal preferences here if Copilot Memory already tracks them. This file is for project-specific knowledge that would be lost if you switched machines or cleared native memory.
+
 ## What to remember
 
 - Hard-won architectural decisions (link to JOURNAL.md entry).
