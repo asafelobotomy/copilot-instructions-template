@@ -5,12 +5,28 @@
 **Instruction firmware for AI-assisted development — grounded in Lean / Kaizen**
 
 [![CI](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml/badge.svg)](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-2.0.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.1.0-blue)](CHANGELOG.md)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/asafelobotomy/copilot-instructions-template/badge)](https://scorecard.dev/viewer/?uri=github.com/asafelobotomy/copilot-instructions-template)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![VS Code](https://img.shields.io/badge/VS_Code-1.106+-007ACC?logo=visualstudiocode)](https://code.visualstudio.com/)
 
 </div>
+
+---
+
+## Contents
+
+- [What is this?](#what-is-this)
+- [Quickstart](#quickstart)
+- [Setup tiers](#setup-tiers)
+- [Key features](#key-features)
+- [What gets scaffolded](#what-gets-scaffolded-into-your-project)
+- [Human-readable guides](#human-readable-guides)
+- [Repository layout](#repository-layout)
+- [Philosophy](#philosophy)
+- [Reference implementation](#reference-implementation)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
@@ -30,7 +46,7 @@ Open a Copilot chat in **any project** and say:
 Setup from asafelobotomy/copilot-instructions-template
 ```
 
-Copilot fetches the template and setup guide directly from GitHub, interviews you with 5–22 questions (your choice of depth), fills every placeholder, scaffolds your workspace files, captures a Kaizen baseline, and self-destructs the setup script. **No cloning, no copying, no manual steps.**
+Copilot fetches the template and setup guide directly from GitHub, interviews you with **5–24 questions** (your choice of depth), fills every placeholder, scaffolds your workspace files, captures a Kaizen baseline, and self-destructs the setup script. **No cloning, no copying, no manual steps.**
 
 > **⚠️ Use the Setup agent or an interactive model.** Codex models (`GPT-5.x-Codex`) run autonomously and cannot present interactive prompts — the preference interview will be silently skipped. Select **Claude Sonnet 4.6** (or any interactive model) in the Copilot picker, or use the `@setup` agent which pins the correct model automatically.
 
@@ -39,6 +55,20 @@ Copilot fetches the template and setup guide directly from GitHub, interviews yo
 > **Prefer to do it manually?** Copy `.github/copilot-instructions.md` and `SETUP.md` into your project, then tell Copilot: *"Please run the setup process described in SETUP.md."*
 >
 > **Starting fresh?** Click **Use this template** on GitHub, then run the quickstart above in your new repo.
+
+---
+
+## Setup tiers
+
+At the start of setup, choose how deep the interview goes:
+
+| Tier | Questions | Time | What gets answered |
+|------|-----------|------|--------------------|
+| **Quick** | 5 | ~3 min | Core workflow: response style, experience, primary mode, testing, autonomy |
+| **Standard** | 17 | ~6 min | Quick + code style, docs, errors, security, dependencies, lifecycle hooks, slash commands, and more |
+| **Full** | 24 | ~10 min | Standard + agent persona, VS Code settings, autonomy ceiling, MCP servers, and more |
+
+Questions you skip always get a sensible default. Every preference is written into §10 of your instructions file and can be changed at any time.
 
 ---
 
@@ -77,7 +107,7 @@ All GitHub Actions are SHA-pinned to immutable commit hashes and protected with 
 
 ### 🔌 Model Context Protocol (MCP) integration
 
-§13 governs how Copilot connects to external tools via MCP. During Expert setup, Copilot scaffolds `.vscode/mcp.json` with three tiers of servers: always-on (filesystem, memory, git), credentials-required (GitHub, fetch), and stack-specific (PostgreSQL, Redis, Docker, AWS — auto-suggested from your dependencies). A quality gate ensures only verified, maintained servers are added.
+§13 governs how Copilot connects to external tools via MCP. During **Full** setup, Copilot scaffolds `.vscode/mcp.json` with three tiers of servers: always-on (filesystem, memory, git), credentials-required (GitHub, fetch), and stack-specific (PostgreSQL, Redis, Docker, AWS — auto-suggested from your dependencies). A quality gate ensures only verified, maintained servers are added.
 
 ### 🔄 Living update protocol
 
@@ -130,7 +160,7 @@ Two built-in review modes surface at the end of any session:
 | `.github/instructions/*.instructions.md` | Copied from template | Path-specific instruction stubs (tests, API, config, docs) |
 | `.github/prompts/*.prompt.md` | Copied from template | Five reusable slash commands (/explain, /refactor, /test-gen, /review-file, /commit-msg) |
 | `.github/workflows/copilot-setup-steps.yml` | Generated from template | Environment setup for GitHub Copilot coding agent |
-| `.vscode/mcp.json` | Generated from template | MCP server configuration (Expert setup, E22 ≠ None) |
+| `.vscode/mcp.json` | Generated from template | MCP server configuration (Full setup, E22 ≠ None) |
 | `AGENTS.md` | Copied from template | AI entry point — trigger phrases and remote sequences |
 | `CHANGELOG.md` | `template/CHANGELOG.md` | Keep-a-Changelog stub for your project's history |
 | `JOURNAL.md` | `template/JOURNAL.md` | ADR-style architectural decision record |
