@@ -68,15 +68,17 @@ You can also type "skip" to use all defaults and proceed immediately.
 | A13 — Refactoring appetite | Proactively fix smells, flag them, or ignore |
 | A14 — Reporting format | How Copilot reports completed work |
 | A15 — Skill search | Whether Copilot searches online skill repositories |
+| A16 — Lifecycle hooks | Whether agent lifecycle hooks are installed (.github/hooks/) |
+| A17 — Prompt commands | Whether slash commands are scaffolded in .github/prompts/ |
 | E16 — Tool availability | What to do when a required tool isn't installed |
 | E17 — Agent persona | Personality / tone (Professional, Mentor, Pair-programmer, etc.) |
 | E18 — VS Code settings | Whether Copilot may modify `.vscode/settings.json` |
-| E19 — Global autonomy | Master 1–5 failsafe that caps all autonomy settings |
+| E19 — Autonomy ceiling | Master 1–5 failsafe that caps all autonomy settings |
 | E20 — Mood lightener | Whether Copilot drops occasional humour |
 | E21 — Verification trust | Which directories get auto-approve, review, or pause-and-confirm |
 | E22 — MCP servers | Whether to configure MCP servers and which tiers to enable |
 
-All answers are written into §10 of your instructions file as a 22-row User Preferences table. Questions you didn't answer (because you chose a lower tier) use sensible defaults. You can change preferences any time by editing that section or triggering an update interview.
+All answers are written into §10 of your instructions file as a 24-row User Preferences table. Questions you didn't answer (because you chose a lower tier) use sensible defaults. You can change preferences any time by editing that section or triggering an update interview.
 
 **0e — Pre-flight summary**
 

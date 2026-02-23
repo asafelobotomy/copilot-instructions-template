@@ -163,9 +163,9 @@ Present the following to the user:
 
 > **Setup mode**: Which level of configuration would you like?
 >
-> - **S — Simple Setup** (5 questions, ~1 min) — Essential preferences only. Advanced and Expert options use sensible defaults.
-> - **A — Advanced Setup** (15 questions, ~2 min) — Full control over Copilot's coding behaviour.
-> - **E — Expert Setup** (22 questions, ~3 min) — Everything in Advanced, plus persona, autonomy failsafe, tool availability, VS Code settings, MCP servers, and more.
+> - **S — Quick Setup** (5 questions, ~3 min) — Essential preferences only. Standard and Full options use sensible defaults.
+> - **A — Standard Setup** (17 questions, ~6 min) — Full control over Copilot's coding behaviour, plus lifecycle hooks and prompt commands.
+> - **E — Full Setup** (21 questions, ~10 min) — Everything in Standard, plus persona, autonomy ceiling, and MCP server configuration.
 >
 > *(You can also type "skip" to use all defaults and proceed immediately.)*
 
@@ -183,19 +183,18 @@ Use the batch plan below. Do not combine questions across tiers in a single call
 
 | Batch | Tier | Questions | Suggested headers |
 |-------|------|-----------|-------------------|
-| 1 | Simple | S1, S2, S3, S4 | Style, Level, Mode, Testing |
-| 2 | Simple | S5 | Autonomy |
-| 3 | Advanced | A6, A7, A8, A9 | Code style, Docs, Errors, Security |
-| 4 | Advanced | A10, A11, A12, A13 | File size, Deps, Self-edit, Refactor |
-| 5 | Advanced | A14, A15 | Reporting, Skills |
-| 6 | Expert | E16, E17, E18, E19 | Tools, Persona, VS Code, Failsafe |
-| 7 | Expert | E20, E21, E22 | Mood, Trust, MCP |
+| 1 | Quick | S1, S2, S3, S4 | Style, Level, Mode, Testing |
+| 2 | Quick | S5 | Autonomy |
+| 3 | Standard | A6, A7, A8, A9 | Code style, Docs, Errors, Security |
+| 4 | Standard | A10, A11, A12, A13 | File size, Deps, Self-edit, Refactor |
+| 5 | Standard | A14, A15, A16, A17 | Reporting, Skills, Hooks, Prompts |
+| 6 | Full | E17, E18, E19, E22 | Persona, VS Code, Failsafe, MCP |
 
-**Simple** = batches 1–2. **Advanced** = batches 1–5. **Expert** = batches 1–7.
+**Quick** = batches 1–2. **Standard** = batches 1–5. **Full** = batches 1–6.
 
 ---
 
-#### Simple Setup — 5 questions (batches 1–2)
+#### Quick Setup — 5 questions (batches 1–2)
 
 Present questions in **2 batches** following the batch plan above. Collect answers from each batch before issuing the next.
 
@@ -239,7 +238,7 @@ Present questions in **2 batches** following the batch plan above. Collect answe
 >
 > **A — Ship features**: Speed matters. Pragmatic over perfect.
 > **B — Code quality** *(default)*: Correctness, maintainability, and test coverage first.
-> **C — Learning**: I want to understand the code I write. Prefer clarity over brevity.
+> **C — Learning**: Prefer readable, well-explained code. Understanding matters more than brevity.
 > **D — Production hardening**: Security, observability, and resilience. Assume this runs in prod.
 
 | Answer | Instruction written to §10 |
@@ -285,14 +284,15 @@ Present questions in **2 batches** following the batch plan above. Collect answe
 
 ---
 
-#### Advanced Setup — 10 additional questions A6–A15 (batches 3–5)
+#### Standard Setup — 12 additional questions A6–A17 (batches 3–5)
 
-If the user chose **A — Advanced Setup** or **E — Expert Setup**, present these 10 questions in **3 batches** following the batch plan above. Collect answers from each batch before issuing the next. If the user chose **S — Simple Setup**, skip these and proceed to 0e.
+If the user chose **A — Standard Setup** or **E — Full Setup**, present these 12 questions in **3 batches** following the batch plan above. Collect answers from each batch before issuing the next. If the user chose **S — Quick Setup**, skip these and proceed to 0e.
 
-**Questions in this section** (verify all 10 are asked):
+**Questions in this section** (verify all 12 are asked):
 A6 (Code style) · A7 (Documentation) · A8 (Error handling) · A9 (Security) ·
 A10 (File size) · A11 (Dependencies) · A12 (Instruction editing) ·
-A13 (Refactoring) · A14 (Reporting format) · A15 (Skill search)
+A13 (Refactoring) · A14 (Reporting format) · A15 (Skill search) ·
+A16 (Lifecycle hooks) · A17 (Prompt slash commands)
 
 ---
 
@@ -456,7 +456,7 @@ A13 (Refactoring) · A14 (Reporting format) · A15 (Skill search)
 
 **A15 — Skill search preference**
 
-> The template includes an Agent Skills system (§12) that provides reusable workflow instructions. When a task would benefit from a skill that doesn't exist locally, should Copilot search online skill repositories?
+> When a task would benefit from a reusable skill not yet in `.github/skills/`, should Copilot search skill repositories online?
 >
 > **A — Local only** *(default)*: Only use skills already in `.github/skills/`. Create new skills in-house when needed. No online searching.
 > **B — Official repositories only**: Search official skill repositories (Anthropic, OpenAI, GitHub) for proven workflows. Adapt and save locally before use.
@@ -476,29 +476,44 @@ A13 (Refactoring) · A14 (Reporting format) · A15 (Skill search)
 
 ---
 
-#### Expert Setup — 7 additional questions E16–E22 (batches 6–7)
+**A16 — Lifecycle hooks**
 
-If the user chose **E — Expert Setup**, present these 7 questions in **2 batches** following the batch plan above. Collect answers from each batch before issuing the next. If the user chose **S — Simple Setup** or **A — Advanced Setup**, skip these and proceed to 0e.
+> Agent lifecycle hooks auto-guard against destructive commands, enforce retrospective runs, and auto-format edited files. Install them?
+>
+> **A — Install all hooks** *(default)*: All five starter hooks (session-start, guard-destructive, post-edit-lint, enforce-retrospective, save-context).
+> **B — Guard only**: Install only `guard-destructive.sh` — blocks dangerous commands and flags caution patterns.
+> **C — Skip hooks**: Do not create any lifecycle hook files.
 
-**Questions in this section** (verify all 7 are asked):
-E16 (Tool availability) · E17 (Agent persona) · E18 (VS Code settings) ·
-E19 (Global autonomy) · E20 (Mood lightener) · E21 (Verification trust) · E22 (MCP servers)
+| Answer | Instruction written to §10 | Step 2.13 |
+|--------|---------------------------|-----------|
+| A | "Agent lifecycle hooks active: guard-destructive blocks dangerous commands; enforce-retrospective requires a retrospective before session end; post-edit-lint auto-formats on save." | Install all 5 hooks |
+| B | "Guard-destructive hook active. Dangerous or irreversible commands are blocked until confirmed." | Install guard-destructive.sh only |
+| C | "No lifecycle hooks installed." | Skip Step 2.13 |
 
 ---
 
-**E16 — Tool and dependency availability**
+**A17 — Prompt slash commands**
 
-> When Copilot needs a tool, dependency, or runtime that isn't currently available (e.g., trying to use `bun` but it's not installed), what should it do?
+> Scaffold five reusable slash commands in `.github/prompts/` (`/explain`, `/refactor`, `/test-gen`, `/review-file`, `/commit-msg`)?
 >
-> **A — Stop and request** *(default)*: Stop, explain what's needed and why, and ask permission to install or configure it before proceeding.
-> **B — Attempt workaround first**: Try an alternative approach. If no viable workaround exists, stop and explain the requirement.
-> **C — Always work around**: Never request new tools or installations. Use only what's available, even if the result is less optimal or incomplete.
+> **A — Yes, create all** *(default)*: All five prompt files written to `.github/prompts/`.
+> **B — No, skip**: Do not create prompt files. They can be added manually later.
 
-| Answer | Instruction written to §10 |
-|--------|---------------------------|
-| A | "When a required tool, dependency, or runtime is unavailable, stop immediately. Explain what is needed, why it's needed, and how to install/configure it. Do not attempt workarounds that compromise solution quality. Wait for the user to make it available." |
-| B | "When a required tool or dependency is unavailable, first attempt a viable alternative approach. If no workaround maintains solution quality, stop and explain the requirement. Never silently degrade the solution." |
-| C | "Never request new tools, dependencies, or installations. Work exclusively with what is currently available. If a task cannot be completed well with available tools, state the limitation but proceed with the best available approach." |
+| Answer | Instruction written to §10 | Step 2.10 |
+|--------|---------------------------|-----------|
+| A | "Prompt slash commands available: /explain, /refactor, /test-gen, /review-file, /commit-msg." | Create all 5 |
+| B | "No prompt slash commands installed." | Skip Step 2.10 |
+
+---
+
+#### Full Setup — 4 additional questions (batch 6)
+
+If the user chose **E — Full Setup**, present these 4 questions in **1 batch** following the batch plan above. If the user chose **S — Quick Setup** or **A — Standard Setup**, skip these and proceed to 0e.
+
+**Questions in this section** (verify all 4 are asked):
+E17 (Agent persona) · E18 (VS Code settings) · E19 (Autonomy ceiling) · E22 (MCP servers)
+
+> **E16, E20, and E21 are auto-defaulted** — not asked interactively. Their defaults are applied automatically and appear in the §10 User Preferences table. Edit §10 directly after setup if you need non-default values.
 
 ---
 
@@ -509,9 +524,7 @@ E19 (Global autonomy) · E20 (Mood lightener) · E21 (Verification trust) · E22
 > **A — Professional** *(default)*: Neutral, efficient, direct. No personality beyond clarity.
 > **B — Mentor**: Patient, educational. Explains like a senior dev guiding a junior. Encouraging language.
 > **C — Pair programmer**: Collaborative, thinks out loud. Uses "we" language. Brainstorms alternatives.
-> **D — Ship-it captain**: High-energy, goal-focused. Celebrates wins. Keeps momentum high. 🚀
-> **E — Zen master**: Calm, philosophical. Values simplicity. Occasionally quotes programming wisdom.
-> **F — Rubber duck**: Minimal. Repeats your problem back in clearer terms. Asks clarifying questions. Lets you find the answer.
+> **D — Ship-it captain**: Goal-focused, high-energy. Celebrates wins, breaks blockers fast. 🚀
 >
 > *(The tool's built-in "Other" option allows you to describe a custom persona if none of the above fit.)*
 
@@ -520,9 +533,7 @@ E19 (Global autonomy) · E20 (Mood lightener) · E21 (Verification trust) · E22
 | A | "Maintain a professional, neutral tone. Be direct, efficient, and clear. No personality embellishments." |
 | B | "Adopt a mentor persona. Be patient and educational. Explain reasoning as if guiding a junior developer. Use encouraging language: 'Great question', 'Good instinct', 'Here's why that matters'." |
 | C | "Adopt a pair-programmer persona. Think out loud. Use 'we' language ('Let's try...', 'We could...'). Brainstorm alternatives before committing to an approach. Be conversational." |
-| D | "Adopt a ship-it captain persona. Be high-energy and goal-focused. Celebrate wins ('Ship it! 🚀', 'Nice catch!'). Keep momentum high. Break down blockers aggressively." |
-| E | "Adopt a zen master persona. Be calm and composed. Value simplicity above all. Occasionally share relevant programming wisdom ('Premature optimisation is the root of all evil'). Prefer the simplest solution." |
-| F | "Adopt a rubber-duck persona. Be minimal. Repeat the user's problem back in clearer terms. Ask clarifying questions before offering solutions. Help the user reason through the problem themselves." |
+| D | "Adopt a ship-it captain persona. Be goal-focused and high-energy. Celebrate wins ('Ship it! 🚀', 'Nice catch!'). Break down blockers aggressively." |
 | Other | *(User types their persona description)* — Record verbatim as the persona instruction. |
 
 ---
@@ -543,7 +554,7 @@ E19 (Global autonomy) · E20 (Mood lightener) · E21 (Verification trust) · E22
 
 ---
 
-**E19 — Global autonomy override (failsafe)**
+**E19 — Autonomy ceiling — hard override**
 
 > Set a master autonomy ceiling on a 1–5 scale. This acts as a **hard override** that caps all other autonomy-related settings (S5, §8, etc.), regardless of what they allow.
 >
@@ -560,47 +571,6 @@ E19 (Global autonomy) · E20 (Mood lightener) · E21 (Verification trust) · E22
 | 3 | "Global autonomy: 3 (Balanced). No autonomy override applied. Follow the S5 setting and §8 Living Update Protocol as configured." |
 | 4 | "Global autonomy: 4 (High autonomy). Act independently on all routine tasks including file creation and modification. Pause only before: deleting files, overwriting large sections, changing config files, or making architectural decisions." |
 | 5 | "Global autonomy: 5 (Full autonomy). Execute any action you believe is correct, including destructive operations. Use best judgment. Log all actions for post-session review. Requires robust version control." |
-
----
-
-**E20 — Mood lightener**
-
-> Long coding sessions can be stressful. Should Copilot occasionally lighten the mood?
->
-> **A — Never** *(default)*: Keep all interactions strictly professional and task-focused.
-> **B — Occasionally**: Drop a programming joke or encouraging comment after resolving a frustrating bug, finishing a long task, or during extended sessions.
-> **C — Frequently**: Sprinkle humour throughout — dev jokes, light comments, relevant references between tasks. Life's too short for boring terminals.
-
-| Answer | Instruction written to §10 |
-|--------|---------------------------|
-| A | "Keep all interactions strictly professional and task-focused. No jokes, humour, or casual commentary." |
-| B | "Occasionally lighten the mood. After resolving a frustrating bug, completing a long task, or during extended sessions, drop a brief programming joke or encouraging comment. Keep it natural — never forced." |
-| C | "Actively lighten the mood. Include programming jokes, light comments, or dev culture references between tasks. Match tone to the moment — celebratory after wins, sympathetic after tough bugs, encouraging during long sessions." |
-
----
-
-**E21 — Verification trust**
-
-> The template includes a Graduated Trust Model (§10) that controls how much verification Copilot applies based on which files are being changed. Which directories should get automatic approval, standard review, or extra caution?
->
-> **A — Use defaults** *(default)*: Tests and docs get auto-approval; source code requires review; config and CI files require pause-and-confirm.
-> **B — Trust everything**: Auto-approve all paths. I use version control and will review diffs myself.
-> **C — Review everything**: All paths require review. No auto-approval for any file.
-> **D — Custom tiers**: I'll describe which paths get which trust level. *(Type it now.)*
-
-| Answer | Instruction written to §10 |
-|--------|---------------------------|
-| A | "Use the default Graduated Trust Model tiers: High trust for tests and docs (auto-approve), Standard for source code (review before writing), Guarded for config and CI files (pause and explain). No custom overrides." |
-| B | "Override the Graduated Trust Model: set all paths to High trust. Auto-approve all changes. The user relies on version control for review." |
-| C | "Override the Graduated Trust Model: set all paths to Standard trust. Describe every planned change and wait for approval before writing, regardless of file type." |
-| D | *(User types their custom tier assignments)* — Record verbatim as `{{TRUST_OVERRIDES}}` in §10. |
-
-| Answer | `{{TRUST_OVERRIDES}}` value |
-|--------|----------------------------|
-| A | *(empty — use defaults)* |
-| B | `> **Trust override**: All paths set to High trust. Auto-approve all changes.` |
-| C | `> **Trust override**: All paths set to Standard trust. Review before every write.` |
-| D | *(user-provided custom tiers)* |
 
 ---
 
@@ -661,7 +631,7 @@ Once all questions are answered, construct the following block and write it into
 | MCP servers | <E22 answer label or default> | <instruction> |
 ```
 
-**Simple Setup defaults** (used for A6–A15 and E16–E22 when Simple is chosen):
+**Quick Setup defaults** (used for A6–A17 and E16–E22 when Quick is chosen):
 
 | Question | Default answer | Default instruction |
 |----------|---------------|---------------------|
@@ -675,25 +645,35 @@ Once all questions are answered, construct the following block and write it into
 | A13 — Refactoring | B | Flag and suggest — note smells but don't auto-fix |
 | A14 — Reporting | A | Bullet list of files changed |
 | A15 — Skill search | A | Local only — no online searching |
+| A16 — Lifecycle hooks | A | Install all hooks — all five starter hooks enabled |
+| A17 — Prompt commands | A | Yes, create all — all five slash commands scaffolded |
 | E16 — Tool availability | A | Stop and request — explain the need, wait for approval |
 | E17 — Persona | A | Professional — neutral, efficient, direct |
 | E18 — VS Code settings | A | Never — suggest only, don't modify |
-| E19 — Global autonomy | 3 | Balanced — no override, follow S5 setting |
+| E19 — Autonomy ceiling | 3 | Balanced — no override, follow S5 setting |
 | E20 — Mood lightener | A | Never — strictly professional |
 | E21 — Verification trust | A | Use defaults — tests/docs auto-approve, source review, config pause |
 | E22 — MCP servers | A | None — no MCP configuration file created |
 
-**Advanced Setup defaults** (used for E16–E22 when Advanced is chosen):
+**Standard Setup defaults** (used for E16–E22 when Standard is chosen):
 
 | Question | Default answer | Default instruction |
 |----------|---------------|---------------------|
 | E16 — Tool availability | A | Stop and request — explain the need, wait for approval |
 | E17 — Persona | A | Professional — neutral, efficient, direct |
 | E18 — VS Code settings | A | Never — suggest only, don't modify |
-| E19 — Global autonomy | 3 | Balanced — no override, follow S5 setting |
+| E19 — Autonomy ceiling | 3 | Balanced — no override, follow S5 setting |
 | E20 — Mood lightener | A | Never — strictly professional |
 | E21 — Verification trust | A | Use defaults — tests/docs auto-approve, source review, config pause |
 | E22 — MCP servers | A | None — no MCP configuration file created |
+
+**Full Setup defaults** (used for E16, E20, and E21 when Full is chosen):
+
+| Question | Default answer | Default instruction |
+|----------|---------------|---------------------|
+| E16 — Tool availability | A | Stop and request — explain the need, wait for approval |
+| E20 — Mood lightener | A | Never — strictly professional |
+| E21 — Verification trust | A | Use defaults — tests/docs auto-approve, source review, config pause |
 
 ---
 
@@ -703,9 +683,9 @@ Before proceeding to 0e, count your collected answers and verify against this ta
 
 | Tier | User answers | Defaults applied | Total rows in §10 |
 |------|-------------|-----------------|-------------------|
-| Simple | 5 (S1–S5) | 17 (A6–A15 + E16–E22) | 22 |
-| Advanced | 15 (S1–S5 + A6–A15) | 7 (E16–E22) | 22 |
-| Expert | 22 (S1–S5 + A6–A15 + E16–E22) | 0 | 22 |
+| Quick | 5 (S1–S5) | 19 (A6–A17 + E16–E22) | 24 |
+| Standard | 17 (S1–S5 + A6–A17) | 7 (E16–E22) | 24 |
+| Full | 21 (S1–S5 + A6–A17 + E17–E19 + E22) | 3 (E16, E20, E21) | 24 |
 
 **If your count does not match**: STOP. Re-read §0d and identify which questions were missed. Ask them now before continuing.
 
@@ -717,7 +697,7 @@ List the missing questions by ID (e.g., "A11, A12, A13, A14 were not yet asked")
 
 After completing 0a–0d, present a single summary before writing anything.
 
-> **Output the template below exactly.** Fill every `<label>` field. Show all 22
+> **Output the template below exactly.** Fill every `<label>` field. Show all 24
 > USER PREFERENCES dimensions — for defaulted values, append "(default)" to the
 > label. Do not omit Step 2.5 or Step 2.8 from NEXT STEPS. Do not rearrange or improvise.
 
@@ -745,10 +725,12 @@ Pre-flight complete. Here is what I will do:
     Refactoring appetite:  <label>
     Reporting format:      <label>
     Skill search:          <label>
+    Lifecycle hooks:       <label>
+    Prompt commands:       <label>
     Tool availability:     <label>
     Agent persona:         <label>
     VS Code settings:      <label>
-    Global autonomy:       <label>
+    Autonomy ceiling:      <label>
     Mood lightener:        <label>
     Verification trust:    <label>
     MCP servers:           <label>
@@ -1432,7 +1414,7 @@ See Step 4 for the stub — do not duplicate it here.
 1. **Review** everything created or modified and print a structured summary to the user.
 
    > **Output the template below exactly.** Include the AGENT FILES and SKILLS sections.
-   > List all 22 preference dimensions under USER PREFERENCES. Do not omit sections or improvise the layout.
+   > List all 24 preference dimensions under USER PREFERENCES. Do not omit sections or improvise the layout.
 
    ```text
    Setup complete. Here is what was done:
@@ -1476,7 +1458,7 @@ See Step 4 for the stub — do not duplicate it here.
      Initial baseline row appended: [yes / skipped]
 
    USER PREFERENCES
-     <table of all 22 dimensions with labels>
+     <table of all 24 dimensions with labels>
 
    ANOMALIES
      <any decisions made that the user should verify, or "none">
