@@ -9,6 +9,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [2.1.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v2.0.0...v2.1.0) (2026-02-23)
+
+
+### Features
+
+* add agent lifecycle hooks and enhance built-in tool discovery ([26a4dc2](https://github.com/asafelobotomy/copilot-instructions-template/commit/26a4dc21eef2683c46e2c4d236d2ee24edbef816))
+* enhance heartbeat protocol with retrospective introspection and task completion triggers ([4ef14d9](https://github.com/asafelobotomy/copilot-instructions-template/commit/4ef14d9174890dcd663912398d72e78783dbd83d))
+* implement event-driven heartbeat protocol with health checks and triggers ([d5ceb27](https://github.com/asafelobotomy/copilot-instructions-template/commit/d5ceb27119e48b07a144e09bb1b2ab99c112d52b))
+
+
+### Bug Fixes
+
+* add language specifier to fenced code blocks (MD040) ([1853577](https://github.com/asafelobotomy/copilot-instructions-template/commit/18535770188fcf16da2830d6773c3bc90afa2ac2))
+* add release-please config and manifest to fix CI failure ([74b78e3](https://github.com/asafelobotomy/copilot-instructions-template/commit/74b78e3d62d31a24f02c27560d6525dfceda0341))
+* correct skill counts, tree formatting, file counts, SHA-pin examples, and CHANGELOG ref ([5fb1096](https://github.com/asafelobotomy/copilot-instructions-template/commit/5fb109618ac514777aa0c4646aa39c407914294a))
+* resolve all review findings ([ac9aefc](https://github.com/asafelobotomy/copilot-instructions-template/commit/ac9aefc8e5007ee5853273ef1267de834ad089fc))
+* resolve CI and actionlint failures ([441feda](https://github.com/asafelobotomy/copilot-instructions-template/commit/441feda06fa50442055ac353364327421371a71b))
+* **SETUP.md:** add mcp-builder + webapp-testing to Step 2.8 and HEARTBEAT.md to BIBLIOGRAPHY stub ([8a593d8](https://github.com/asafelobotomy/copilot-instructions-template/commit/8a593d8af1c976be99eeff0bc0cefd0497b7db56))
+
 ## [Unreleased]
 
 ### Added
