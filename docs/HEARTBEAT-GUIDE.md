@@ -19,7 +19,7 @@ The concept is adapted from [OpenClaw's heartbeat mechanism](https://docs.opencl
 1. A trigger event occurs (see below).
 2. Copilot reads `.copilot/workspace/HEARTBEAT.md`.
 3. Copilot runs every check in the Checks section.
-4. If the trigger is **task completion** or **explicit**, Copilot runs the **Retrospective** — 7 self-reflection questions that persist insights to workspace files.
+4. If the trigger is **task completion** or **explicit**, Copilot runs the **Retrospective** — 8 self-reflection questions that persist insights to workspace files.
 5. Copilot updates the **Pulse** status: `HEARTBEAT_OK` if all checks pass, or `[!] <alert>` for each failure.
 6. Copilot appends a row to the **History** table (keeping the last 5 entries).
 7. Copilot writes observations to **Agent Notes** for the next heartbeat.
@@ -78,34 +78,44 @@ Add new checks below the `<!-- Add custom checks below this line -->` comment in
 
 ## Retrospective
 
-The retrospective is a structured self-reflection that runs after **task completion** and **explicit** heartbeat triggers. It helps Copilot grow its understanding of itself, the project, and the user over time by asking 7 introspective questions and writing the answers to the appropriate workspace files.
+The retrospective is a structured self-reflection that runs after **task completion** and **explicit** heartbeat triggers. It helps Copilot improve its effectiveness by asking 8 introspective questions grounded in observable events and writing the answers to the appropriate workspace files.
 
-Unlike health checks (which are project-focused), the retrospective is **agent-focused** — it builds the agent's memory, values, and user model.
+Unlike health checks (which are project-focused), the retrospective is **agent-focused** — it builds the agent's memory, reasoning heuristics, and user model.
 
-### The 7 questions
+### The 8 questions
 
 | # | Question | Label | Writes to |
 |---|----------|-------|-----------|
-| 1 | With the task complete, could I have done anything differently? | Approach review | `SOUL.md` — new reasoning heuristic |
-| 2 | Could I have achieved more during this session? | Ambition check | Agent Notes — self-assessment for next heartbeat |
-| 3 | Was there anything I missed or failed to address? | Gap analysis | `MEMORY.md` — Known Gotchas table |
-| 4 | Did I spot any issues (related or unrelated) to report to $USER? | Issue report | **Surface to $USER** |
+| 1 | Were there any errors, corrections, or backtracking during this task? What concrete signal caused the course change? | Approach review | `SOUL.md` — reasoning heuristic |
+| 2 | Did the task scope grow or shrink during execution? Were any user requests deferred, simplified, or left incomplete? | Scope audit | `MEMORY.md` — Known Gotchas table |
+| 3 | Review the original request and the delivered result. Is there any explicit requirement I did not address, or any file I modified without updating its tests or docs? | Gap analysis | `MEMORY.md` |
+| 4 | Did I spot any issues to report to $USER? (e.g. security concerns, tech debt, broken assumptions, stale dependencies) | Issue report | **Surface to $USER** |
 | 5 | Do I have questions, suggestions, or things I misunderstood? | Agent questions | **Surface to $USER** |
-| 6 | What was $USER's approach, methodology, emotion, and thinking? | User profile | `USER.md` — observed profile |
-| 7 | Are there lessons to remember for future tasks? | Lessons learned | `MEMORY.md` + `SOUL.md` |
+| 6 | What explicit preferences, corrections, or working patterns did $USER demonstrate? (Only record directly observable signals; do not infer emotion or intent.) | User profile | `USER.md` — observed profile |
+| 7 | State as concrete rules: "When [situation], do [action] instead of [what usually fails]." Only record lessons grounded in this session's events. | Lessons learned | `MEMORY.md` + `SOUL.md` |
+| 8 | Did $USER correct, reject, or redirect anything I produced? What was my original output and what did $USER want instead? | Correction log | `MEMORY.md` — Recurring Error Patterns + `SOUL.md` |
 
 **$USER** is the user's name (from `USER.md`) if they've shared it, or "the user" otherwise.
 
 ### Reporting contract
 
-Questions 4 and 5 are **communication questions** — they always surface to the user when Copilot has something to report, even during an otherwise silent heartbeat. Questions 1–3 and 6–7 are **silent** — Copilot writes insights to workspace files without interrupting the user.
+Questions 4 and 5 are **communication questions** — they always surface to the user when Copilot has something to report, even during an otherwise silent heartbeat. Questions 1–3 and 6–8 are **silent** — Copilot writes insights to workspace files without interrupting the user.
+
+### Design rationale
+
+The retrospective questions are grounded in research on LLM self-reflection:
+
+- **Observable anchoring** (Q1, Q3, Q6, Q8): Questions reference concrete events (errors, corrections, user feedback) rather than asking for open-ended self-assessment. LLMs lack reliable metacognition ([Huang et al., 2024](https://arxiv.org/abs/2310.01798)), so questions are anchored to verifiable signals.
+- **Structured output** (Q7): The "When X, do Y" format produces retrievable rules rather than vague prose, following the ExpeL pattern ([Zhao et al., 2024](https://arxiv.org/abs/2308.10144)) for cross-task experience extraction.
+- **User corrections as signal** (Q8): User corrections are the highest-value external feedback available in a Copilot session. This question implements the core Reflexion insight ([Shinn et al., NeurIPS 2023](https://arxiv.org/abs/2303.11366)) — learning from environmental feedback stored in episodic memory.
+- **No emotion inference** (Q6): LLMs exhibit stereotypical biases when assessing emotional states. The question restricts recording to directly observable patterns only.
 
 ### Adding custom retrospective questions
 
 Add new questions below the `<!-- Add custom retrospective questions below this line -->` comment in `HEARTBEAT.md`. Use the same numbered format:
 
 ```markdown
-8. **Label** — question text? → *Target file*
+9. **Label** — question text? → *Target file*
 ```
 
 ---
@@ -131,7 +141,7 @@ The checklist of health checks. Each check has a checkbox (`- [ ]`) that Copilot
 
 ### Retrospective
 
-A numbered list of 7 self-reflection questions that Copilot answers internally after task completion. Each question targets a specific workspace file for persistence. Two questions (Q4 and Q5) surface directly to the user.
+A numbered list of 8 self-reflection questions that Copilot answers internally after task completion. Each question targets a specific workspace file for persistence. Two questions (Q4 and Q5) surface directly to the user.
 
 ### Agent Notes
 
@@ -158,10 +168,10 @@ The heartbeat follows an important principle: **report only when alerts exist**.
 | **§8 Living Update Protocol** | Heartbeat is a subsection of §8. It follows the same additive-by-default rules. |
 | **§6 Waste Catalogue** | The waste scan check references W1–W16 categories from §6. |
 | **§10 Project-Specific Overrides** | The settings drift check verifies §10 overrides match reality. |
-| **MEMORY.md** | The consolidation check triggers writes to MEMORY.md tables. The retrospective writes gap analysis (Q3) and lessons learned (Q7) to MEMORY.md. |
+| **MEMORY.md** | The consolidation check triggers writes to MEMORY.md tables. The retrospective writes scope audit (Q2), gap analysis (Q3), lessons learned (Q7), and correction log (Q8) to MEMORY.md. |
 | **METRICS.md** | The freshness and coverage checks read from METRICS.md rows. |
 | **TOOLS.md** | The dependency audit check cross-references TOOLS.md patterns. |
-| **SOUL.md** | The heartbeat procedure references SOUL.md for reasoning alignment. The retrospective writes approach reviews (Q1) and lessons learned (Q7) to SOUL.md reasoning heuristics. |
+| **SOUL.md** | The heartbeat procedure references SOUL.md for reasoning alignment. The retrospective writes approach reviews (Q1), lessons learned (Q7), and correction log (Q8) to SOUL.md reasoning heuristics. |
 | **USER.md** | The retrospective writes user profile observations (Q6) to USER.md. |
 
 ---
@@ -203,5 +213,5 @@ Say any of these in Copilot chat:
 ### Add a retrospective question for code quality
 
 ```markdown
-8. **Quality reflection** — did the code I wrote meet the project's quality standards? → *Agent Notes*
+9. **Quality reflection** — did the code I wrote meet the project's quality standards? → *Agent Notes*
 ```

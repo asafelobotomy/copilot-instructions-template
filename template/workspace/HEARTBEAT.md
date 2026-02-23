@@ -36,13 +36,14 @@ Run each check; prepend `[!]` to Pulse if any fails:
 
 After completing a task, reflect on these questions. Write insights to the indicated workspace files. Surface Q4 and Q5 to $USER directly — all other answers are silent.
 
-1. **Approach review** — With the task complete, could I have done anything differently? → *SOUL.md*
-2. **Ambition check** — Could I have achieved more during this session? → *Agent Notes*
-3. **Gap analysis** — Was there anything I missed or failed to address? → *MEMORY.md*
-4. **Issue report** — Did I spot any issues (related or unrelated) to report to $USER? → *Surface to $USER*
+1. **Approach review** — Were there any errors, corrections, or backtracking during this task? What concrete signal caused the course change? → *SOUL.md*
+2. **Scope audit** — Did the task scope grow or shrink during execution? Were any user requests deferred, simplified, or left incomplete? → *MEMORY.md (Known Gotchas)*
+3. **Gap analysis** — Review the original request and the delivered result. Is there any explicit requirement I did not address, or any file I modified without updating its tests or docs? → *MEMORY.md*
+4. **Issue report** — Did I spot any issues to report to $USER? (e.g. security concerns, tech debt, broken assumptions, stale dependencies) → *Surface to $USER*
 5. **Agent questions** — Do I have questions, suggestions, or things I misunderstood? → *Surface to $USER*
-6. **User profile** — What was $USER's approach, methodology, emotion, and thinking? → *USER.md*
-7. **Lessons learned** — Are there lessons to remember for future tasks? → *MEMORY.md + SOUL.md*
+6. **User profile** — What explicit preferences, corrections, or working patterns did $USER demonstrate? (Only record directly observable signals; do not infer emotion or intent.) → *USER.md*
+7. **Lessons learned** — State as concrete rules: "When [situation], do [action] instead of [what usually fails]." Only record lessons grounded in this session's events. → *MEMORY.md + SOUL.md*
+8. **Correction log** — Did $USER correct, reject, or redirect anything I produced? What was my original output and what did $USER want instead? → *MEMORY.md (Recurring Error Patterns) + SOUL.md*
 
 <!-- Add custom retrospective questions below this line -->
 
