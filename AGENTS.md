@@ -142,7 +142,7 @@ A generic, **living** GitHub Copilot instructions template grounded in **Lean/Ka
 - An update process (`UPDATE.md`) that Copilot runs to fetch and apply improvements from this repo to an already-installed project.
 - Four model-pinned agent files (`.github/agents/`) for VS Code 1.106+ — one each for Setup, Coding, Review, and Fast workflows.
 - Five agent lifecycle hooks (`.github/hooks/`) that deterministically enforce security, formatting, and retrospective rules at session boundaries.
-- A reusable skill library (`.github/skills/`) following the [Agent Skills](https://agentskills.io) open standard — four starter skills included.
+- A reusable skill library (`.github/skills/`) following the [Agent Skills](https://agentskills.io) open standard — six starter skills included.
 - Automatic pre-write backups so every update is reversible — stored in `.github/archive/`.
 - Seven workspace identity files that Copilot maintains across sessions (including an event-driven heartbeat checklist).
 - Documentation stubs (CHANGELOG, JOURNAL, BIBLIOGRAPHY, METRICS).

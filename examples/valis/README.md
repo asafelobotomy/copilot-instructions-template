@@ -11,7 +11,7 @@ Valis is a **CLI AI assistant** built on Bun and large language models. It was t
 | Template concept | Valis implementation |
 |-----------------|---------------------|
 | `.github/copilot-instructions.md` | Present and mature; Bun/TypeScript-specific overrides in §10 |
-| `.copilot/workspace/` | Implemented as `.valis/workspace/` — same six files |
+| `.copilot/workspace/` | Implemented as `.valis/workspace/` — same seven files |
 | `CHANGELOG.md` | Full Keep-a-Changelog history from v0.1.x |
 | `JOURNAL.md` | Rich ADR history including major architectural pivots |
 | `BIBLIOGRAPHY.md` | Every file catalogued with LOC |

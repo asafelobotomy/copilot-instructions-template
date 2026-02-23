@@ -186,7 +186,7 @@ The protocol has three stages:
 2. **Search** — look online (if enabled via `{{SKILL_SEARCH_PREFERENCE}}`) in official or community repositories.
 3. **Create** — author a new skill from scratch following the authoring rules.
 
-Four starter skills are scaffolded during setup: `skill-creator` (meta-skill for authoring), `fix-ci-failure` (CI diagnosis), `lean-pr-review` (Lean PR review), and `conventional-commit` (commit messages).
+Six starter skills are scaffolded during setup: `skill-creator` (meta-skill for authoring), `fix-ci-failure` (CI diagnosis), `lean-pr-review` (Lean PR review), `conventional-commit` (commit messages), `mcp-builder` (MCP server creation), and `webapp-testing` (Playwright e2e testing).
 
 **How to customise**: Create new skills in `.github/skills/<name>/SKILL.md`. Say "Create a skill for ..." to have Copilot author one for you. Change the search preference in §10 (`{{SKILL_SEARCH_PREFERENCE}}`). See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for the full guide.
 

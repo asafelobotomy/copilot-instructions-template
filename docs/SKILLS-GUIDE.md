@@ -40,7 +40,7 @@ This keeps context efficient — only relevant skills consume the agent's contex
 
 ## Starter skills
 
-Four skills are scaffolded into your project during setup:
+Six skills are scaffolded into your project during setup:
 
 | Skill | What it does | Trigger examples |
 |-------|-------------|-----------------|
@@ -48,6 +48,8 @@ Four skills are scaffolded into your project during setup:
 | `fix-ci-failure` | Diagnose and fix failing CI pipelines / GitHub Actions | "Fix CI", "Why is the pipeline red?" |
 | `lean-pr-review` | Review a PR using Lean waste categories and severity ratings | "Review this PR", "Check my changes" |
 | `conventional-commit` | Write commit messages following Conventional Commits | "Write a commit message" |
+| `mcp-builder` | Build and register MCP servers for external tool integration | "Build an MCP server", "Add an MCP server for..." |
+| `webapp-testing` | Set up Playwright end-to-end browser testing | "Set up e2e tests", "Add browser tests" |
 
 ---
 

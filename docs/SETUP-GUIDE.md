@@ -106,7 +106,25 @@ Four agent files are created in `.github/agents/` for VS Code 1.106+ users. Thes
 
 ### Step 2.8 — Scaffold skill library
 
-Four starter skills are scaffolded into `.github/skills/`, following the [Agent Skills](https://agentskills.io) open standard. These teach the agent reusable workflows: authoring new skills, fixing CI failures, Lean PR reviews, and Conventional Commits. See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for details.
+Six starter skills are scaffolded into `.github/skills/`, following the [Agent Skills](https://agentskills.io) open standard. These teach the agent reusable workflows: authoring new skills, fixing CI failures, Lean PR reviews, Conventional Commits, MCP server creation, and Playwright e2e testing. See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for details.
+
+---
+
+### Step 2.9 — Scaffold path-specific instruction files
+
+Copilot detects which instruction stubs are relevant based on your project structure (tests, API routes, config files, documentation) and copies matching stubs into `.github/instructions/`. These files use `applyTo:` frontmatter with glob patterns so Copilot automatically loads file-specific rules when editing matching paths. See [PATH-INSTRUCTIONS-GUIDE.md](PATH-INSTRUCTIONS-GUIDE.md) for details.
+
+---
+
+### Step 2.10 — Scaffold prompt files
+
+Five starter prompt files are copied into `.github/prompts/`. These become VS Code slash commands (`/explain`, `/refactor`, `/test-gen`, `/review-file`, `/commit-msg`) — each encapsulating a workflow grounded in the template’s Lean methodology. See [PROMPTS-GUIDE.md](PROMPTS-GUIDE.md) for details.
+
+---
+
+### Step 2.11 — Scaffold Copilot setup steps workflow
+
+Copilot generates `.github/workflows/copilot-setup-steps.yml` — an environment setup workflow for the GitHub Copilot coding agent. It detects your project’s runtime from Step 1, populates the install/build/test commands, and removes unused runtime sections. See [docs/RELEASE-AUTOMATION-GUIDE.md](RELEASE-AUTOMATION-GUIDE.md) for optional release automation.
 
 ---
 

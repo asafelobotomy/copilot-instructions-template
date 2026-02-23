@@ -136,7 +136,7 @@ Two built-in review modes surface at the end of any session:
 | `JOURNAL.md` | `template/JOURNAL.md` | ADR-style architectural decision record |
 | `BIBLIOGRAPHY.md` | `template/BIBLIOGRAPHY.md` | File catalogue with LOC tracking |
 | `METRICS.md` | `template/METRICS.md` | Kaizen baseline snapshot table |
-| `.copilot/workspace/*.md` | `template/workspace/` | Six workspace identity files |
+| `.copilot/workspace/*.md` | `template/workspace/` | Seven workspace identity files |
 
 ---
 
@@ -216,7 +216,10 @@ copilot-instructions-template/
 │   ├── PROMPTS-GUIDE.md                # Human guide to reusable prompt files
 │   ├── SECURITY-GUIDE.md              # Human guide to security hardening
 │   ├── MCP-GUIDE.md                    # Human guide to MCP integration
-│   └── RELEASE-AUTOMATION-GUIDE.md     # Human guide to release workflows│   └── HOOKS-GUIDE.md                  # Human guide to agent lifecycle hooks├── template/
+│   ├── RELEASE-AUTOMATION-GUIDE.md     # Human guide to release workflows
+│   ├── HEARTBEAT-GUIDE.md              # Human guide to event-driven heartbeat
+│   └── HOOKS-GUIDE.md                  # Human guide to agent lifecycle hooks
+├── template/
 │   ├── CHANGELOG.md                    # Keep-a-Changelog stub (scaffolded into consumer projects)
 │   ├── JOURNAL.md                      # ADR-style journal stub
 │   ├── BIBLIOGRAPHY.md                 # File catalogue stub

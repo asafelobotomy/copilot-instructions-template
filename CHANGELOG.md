@@ -115,7 +115,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 ### Changed
 
 - `.github/workflows/ci.yml` — SHA-pinned all actions; added harden-runner to all 3 jobs; new advisory (non-blocking) check for `compatibility` and `allowed-tools` fields in template skills; added `docs/SECURITY-GUIDE.md` to required files.
-- `.github/workflows/release.yml` — SHA-pinned all actions; added harden-runner.
+- `.github/workflows/release-manual.yml` — SHA-pinned all actions; added harden-runner.
 - `.github/workflows/stale.yml` — SHA-pinned all actions; added harden-runner.
 - `.github/workflows/links.yml` — SHA-pinned all actions; added harden-runner.
 - `.github/workflows/vale.yml` — SHA-pinned all actions; added harden-runner.
