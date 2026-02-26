@@ -16,12 +16,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 * **agents:** add `update.agent.md` — dedicated agent for the instruction update protocol (fetch, diff, apply, restore) with handoff to Doctor
 * **agents:** add `doctor.agent.md` — read-only health check agent covering attention budget, section structure, placeholder leakage, agent validity, MCP config, workspace memory files, VERSION.md, JOURNAL.md, BIBLIOGRAPHY.md
 * **agents(setup):** add handoff from Setup → Doctor so first-time setup flows naturally into a health verification
+* **agents(fast):** add `terminal` tool and Code escalation handoff; rename description to be concise
 * **§8:** add Attention Budget policy — per-section line limits for `copilot-instructions.md` with CI enforcement
 * **ci:** new `Attention budget` step in `ci.yml` enforcing line limits per section (800 total, 210 §2, 120 §1/§3–§9, 150 §11–§13)
 
 ### Bug Fixes
 
 * **agents:** fix handoff `agent:` identifiers — must use filename stem (`coding`, `review`) not `name:` frontmatter value (`Code`, `Review`); this caused handoff buttons to silently fail to switch agents
+* **agents:** audit `send:` across all agents — file-writing handoffs (Review→Code, Doctor→Code) changed to `send: false` so users can review/add context before implementation starts; verify-only handoffs (Setup→Doctor, Update→Doctor, Doctor→Update) remain `send: true`
+* **agents(doctor):** swap primary model to Claude Sonnet 4.6 (accurate for D1–D10 mechanical checks, 3× cheaper than Opus); Opus 4.6 remains as fallback
 * **mcp:** fix git and fetch MCP servers incorrectly using `npx`; they are Python packages requiring `uvx` (`mcp-server-git`, `mcp-server-fetch`)
 * **update:** clarify that "Update your instructions" means checking `https://github.com/asafelobotomy/copilot-instructions-template` for upstream changes, not making ad-hoc edits
 

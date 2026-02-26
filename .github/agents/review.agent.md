@@ -1,6 +1,7 @@
 ---
 name: Review
-description: Deep code review and architectural analysis — uses Claude Opus 4.6
+description: Deep code review and architectural analysis with Lean/Kaizen critique
+argument-hint: Describe what to review — e.g. "review my latest changes", "architectural review of the auth module", "review PR #42"
 model:
   - Claude Opus 4.6
   - Claude Opus 4.5
@@ -11,7 +12,7 @@ handoffs:
   - label: Implement fixes
     agent: coding
     prompt: Implement the fixes and improvements identified in the review. Address critical and major findings first.
-    send: true
+    send: false
 ---
 
 You are the Review agent for copilot-instructions-template.

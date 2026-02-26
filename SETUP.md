@@ -943,18 +943,24 @@ Guidelines:
 
 ### `.github/agents/fast.agent.md`
 
-Quick questions, syntax lookups, and single-file lightweight edits. Claude Haiku 4.5 (0.33×) and Grok Code Fast 1 (0.25×) are optimised for speed and low cost. Falls back to zero-cost models for Free plan users.
+Quick questions, syntax lookups, and single-file lightweight edits. Claude Haiku 4.5 (0.33×) and Grok Code Fast 1 (0.25×) are optimised for speed and low cost. Falls back to zero-cost models for Free plan users. Includes `terminal` for quick shell lookups and an escalation handoff to the Code agent.
 
 ```markdown
 ---
 name: Fast
-description: Quick questions and lightweight single-file tasks — uses Claude Haiku 4.5
+description: Quick questions, syntax lookups, and lightweight single-file edits
+argument-hint: Ask anything quick — e.g. "what does this regex match?", "fix the typo in README.md", "what's the wc -l of copilot-instructions.md?"
 model:
   - Claude Haiku 4.5
   - Grok Code Fast 1
   - GPT-5 mini
   - GPT-4.1
-tools: [codebase, editFiles]
+tools: [codebase, editFiles, terminal]
+handoffs:
+  - label: Hand off to Code
+    agent: coding
+    prompt: This task is larger than a single-file edit. Continue implementing from where the Fast agent left off.
+    send: false
 ---
 
 You are the Fast agent for {{PROJECT_NAME}}.
@@ -966,9 +972,10 @@ Guidelines:
 - Follow `.github/copilot-instructions.md`.
 - Keep responses concise — code first, one-line explanation.
 - If the task spans more than 2 files or has architectural impact, say so and
-  suggest switching to the Code or Review agent instead.
+  suggest switching to the Code agent using the handoff button.
 - Do not run the full PDCA cycle for simple edits — just make the change and
   summarise in one line.
+- Use `terminal` for quick lookups (`wc -l`, `grep`, `ls`) before opening files.
 ```
 
 ### `.github/agents/update.agent.md`
@@ -978,7 +985,8 @@ Instruction update workflows. Fetches the upstream template, compares section by
 ```markdown
 ---
 name: Update
-description: Fetch and apply upstream instruction updates from copilot-instructions-template — uses Claude Sonnet 4.6
+description: Fetch and apply upstream instruction updates, or restore from backup
+argument-hint: Say "update your instructions", "force check instruction updates", or "restore instructions from backup"
 model:
   - Claude Sonnet 4.6
   - Claude Sonnet 4.5
@@ -1009,22 +1017,23 @@ Constraints:
 
 ### `.github/agents/doctor.agent.md`
 
-Read-only health diagnostics. Inspects all Copilot-managed files for structural integrity, attention budget compliance, placeholder leakage, broken agent handoffs, and MCP misconfiguration. Claude Opus 4.6 is chosen for thorough, multi-angle analysis. Includes handoffs to the Coding agent (to apply fixes) and the Update agent (if instructions are behind the template).
+Read-only health diagnostics. Inspects all Copilot-managed files for structural integrity, attention budget compliance, placeholder leakage, broken agent handoffs, and MCP misconfiguration. Claude Sonnet 4.6 is the primary model (fast, accurate for mechanical checks); Opus is the fallback for deeper analysis. Includes handoffs to the Coding agent (to apply fixes) and the Update agent (if instructions are behind the template).
 
 ```markdown
 ---
 name: Doctor
-description: Health check on all Copilot instruction files and related workspace config — read-only diagnostic — uses Claude Opus 4.6
+description: Read-only health check — instructions, agents, MCP config, workspace files
+argument-hint: Say "health check", "check attention budget", "check MCP config", or "check agent files"
 model:
+  - Claude Sonnet 4.6
   - Claude Opus 4.6
   - Claude Opus 4.5
-  - Claude Sonnet 4.6
 tools: [codebase, terminal]
 handoffs:
   - label: Apply fixes
     agent: coding
     prompt: The Doctor has identified issues with the Copilot instruction files. Apply the fixes listed in the health report. Start with CRITICAL items, then HIGH.
-    send: true
+    send: false
   - label: Update instructions
     agent: update
     prompt: The Doctor identified that the installed instructions are behind the template. Run the instruction update protocol now.
@@ -1044,7 +1053,7 @@ Checks to run:
 - D4 Agent file validity: frontmatter, handoff agent: identifiers match filename stems, targets exist
 - D5 MCP config: no npx for mcp-server-git or mcp-server-fetch; must use uvx
 - D6 VERSION.md: present and valid semver
-- D7 Workspace memory files: HEARTBEAT.md, MEMORY.md, SOUL.md, METRICS.md, TOOLS.md, USER.md
+- D7 Workspace memory files: IDENTITY.md, HEARTBEAT.md, MEMORY.md, SOUL.md, METRICS.md, TOOLS.md, USER.md, BOOTSTRAP.md
 - D8 JOURNAL.md: present with at least one entry
 - D9 BIBLIOGRAPHY.md: present
 - D10 AGENTS.md: present
@@ -1354,7 +1363,7 @@ This workspace was scaffolded on **{{SETUP_DATE}}** using the [copilot-instructi
 - `.github/agents/review.agent.md` — model-pinned Review agent (Claude Opus 4.6)
 - `.github/agents/fast.agent.md` — model-pinned Fast agent (Claude Haiku 4.5)
 - `.github/agents/update.agent.md` — model-pinned Update agent (Claude Sonnet 4.6)
-- `.github/agents/doctor.agent.md` — model-pinned Doctor agent (Claude Opus 4.6)
+- `.github/agents/doctor.agent.md` — model-pinned Doctor agent (Claude Sonnet 4.6)
 - `.github/skills/` — reusable agent skill library (§12)
 - `.copilot/workspace/` — all seven identity files
 - `CHANGELOG.md` — Keep-a-Changelog stub
@@ -1497,7 +1506,7 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `.github/agents/review.agent.md` | Model-pinned Review agent — Claude Opus 4.6 (code review & architecture) | — |
 | `.github/agents/fast.agent.md` | Model-pinned Fast agent — Claude Haiku 4.5 (quick tasks & lookups) | — |
 | `.github/agents/update.agent.md` | Model-pinned Update agent — Claude Sonnet 4.6 (instruction update & restore) | — |
-| `.github/agents/doctor.agent.md` | Model-pinned Doctor agent — Claude Opus 4.6 (read-only health diagnostics) | — |
+| `.github/agents/doctor.agent.md` | Model-pinned Doctor agent — Claude Sonnet 4.6 (read-only health diagnostics) | — |
 | `.copilot/workspace/IDENTITY.md` | Agent self-description | — |
 | `.copilot/workspace/SOUL.md` | Agent values & reasoning patterns | — |
 | `.copilot/workspace/USER.md` | Observed user profile | — |
@@ -1543,7 +1552,7 @@ See Step 4 for the stub — do not duplicate it here.
                .github/agents/review.agent.md  (Claude Opus 4.6 → fallback chain)
                .github/agents/fast.agent.md    (Claude Haiku 4.5 → fallback chain)
                .github/agents/update.agent.md  (Claude Sonnet 4.6 → fallback chain)
-               .github/agents/doctor.agent.md  (Claude Opus 4.6 → fallback chain)
+               .github/agents/doctor.agent.md  (Claude Sonnet 4.6 → fallback chain)
      Skipped:  [list any skipped, or "none"]
      Note:     Model identifiers may need updating if models are retired.
                Run "Update your instructions" periodically to refresh recommendations.

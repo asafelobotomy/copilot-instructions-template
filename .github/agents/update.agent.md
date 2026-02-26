@@ -1,6 +1,7 @@
 ---
 name: Update
-description: Fetch and apply upstream instruction updates from copilot-instructions-template — uses Claude Sonnet 4.6
+description: Fetch and apply upstream instruction updates, or restore from backup
+argument-hint: Say "update your instructions", "force check instruction updates", or "restore instructions from backup"
 model:
   - Claude Sonnet 4.6
   - Claude Sonnet 4.5

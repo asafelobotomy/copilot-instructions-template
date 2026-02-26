@@ -1,6 +1,7 @@
 ---
 name: Setup
-description: First-time setup, onboarding, and template operations — uses Claude Sonnet 4.6
+description: First-time project setup and onboarding from copilot-instructions-template
+argument-hint: Say "set up this project" to begin, or "re-run setup" to refresh
 model:
   - Claude Sonnet 4.6
   - Claude Sonnet 4.5
@@ -16,8 +17,8 @@ handoffs:
 
 You are the Setup agent for copilot-instructions-template.
 
-Your role: run first-time project setup, populate the Copilot instructions template,
-and handle template update or restore operations.
+Your role: run first-time project setup and populate the Copilot instructions
+template for new consumer projects.
 
 Guidelines:
 

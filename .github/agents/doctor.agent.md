@@ -1,16 +1,17 @@
 ---
 name: Doctor
-description: Health check on all Copilot instruction files and related workspace config — read-only diagnostic — uses Claude Opus 4.6
+description: Read-only health check — instructions, agents, MCP config, workspace files
+argument-hint: Say "health check", "check attention budget", "check MCP config", or "check agent files"
 model:
+  - Claude Sonnet 4.6
   - Claude Opus 4.6
   - Claude Opus 4.5
-  - Claude Sonnet 4.6
 tools: [codebase, terminal]
 handoffs:
   - label: Apply fixes
     agent: coding
     prompt: The Doctor has identified issues with the Copilot instruction files. Apply the fixes listed in the health report. Start with CRITICAL items, then HIGH.
-    send: true
+    send: false
   - label: Update instructions
     agent: update
     prompt: The Doctor identified that the installed instructions are behind the template. Run the instruction update protocol now.
@@ -43,12 +44,14 @@ patterns. Use `codebase` to read file contents.
 - `.github/agents/*.agent.md` — all files in this directory
 
 ### Workspace memory files
+- `.copilot/workspace/IDENTITY.md`
 - `.copilot/workspace/HEARTBEAT.md`
 - `.copilot/workspace/MEMORY.md`
 - `.copilot/workspace/SOUL.md`
 - `.copilot/workspace/METRICS.md`
 - `.copilot/workspace/TOOLS.md`
 - `.copilot/workspace/USER.md`
+- `.copilot/workspace/BOOTSTRAP.md`
 
 ### Project tracking files
 - `VERSION.md`
@@ -152,7 +155,7 @@ Check each file listed under "Workspace memory files" above:
 - Does it exist?
 - Is it non-empty?
 
-Flag: `[HIGH]` if `HEARTBEAT.md` is missing (critical for heartbeat protocol).
+Flag: `[HIGH]` if `HEARTBEAT.md` or `IDENTITY.md` is missing (critical for heartbeat protocol and agent self-description).
 Flag: `[WARN]` for any other missing workspace file.
 
 ### D8 — JOURNAL.md

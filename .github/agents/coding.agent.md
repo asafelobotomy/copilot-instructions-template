@@ -1,6 +1,7 @@
 ---
 name: Code
-description: Implementation, refactoring, and multi-step coding — uses GPT-5.3-Codex
+description: Implement features, refactor, and run multi-step coding tasks
+argument-hint: Describe what to build or fix — e.g. "add pagination to the search endpoint" or "refactor auth module to use JWT"
 model:
   - GPT-5.3-Codex
   - GPT-5.2-Codex
