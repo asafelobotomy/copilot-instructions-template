@@ -19,15 +19,11 @@ Copilot fetches `UPDATE.md` from the template repo and follows the protocol exac
 
 ### 1 — Version check
 
-Copilot reads your installed version stamp from `.github/copilot-instructions.md`:
+Copilot reads your installed version from `VERSION.md`.
 
-```text
-> **Template version**: 1.0.0 | **Applied**: 2026-02-19
-```
+It then fetches the current `VERSION.md` from the template repo. If the versions are equal, it reports "already up to date" and stops.
 
-It then fetches the current `VERSION` from the template repo. If the versions are equal, it reports "already up to date" and stops.
-
-Use *"Force check instruction updates"* to run a full comparison even when versions match — useful if you edited your version stamp manually or want to verify sync.
+Use *"Force check instruction updates"* to run a full comparison even when versions match — useful if you edited your local files manually or want to verify sync.
 
 ---
 

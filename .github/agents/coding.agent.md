@@ -10,11 +10,9 @@ model:
 tools: [editFiles, terminal, codebase, githubRepo, runCommands]
 handoffs:
   - label: Review changes
-    agent: review
-    prompt: >
-      Review the changes just made for quality, correctness, and
-      Lean/Kaizen alignment. Tag all findings with waste categories.
-    send: false
+    agent: Review
+    prompt: Review the changes just made for quality, correctness, and Lean/Kaizen alignment. Tag all findings with waste categories.
+    send: true
 ---
 
 You are the Coding agent for copilot-instructions-template.

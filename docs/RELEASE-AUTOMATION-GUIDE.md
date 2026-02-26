@@ -10,15 +10,15 @@ This template ships with two release workflows. **Use one or the other** — hav
 
 ### Option A: Manual release (`release-manual.yml`)
 
-**How it works**: When you push a change to `VERSION` on `main`, the workflow reads the new version, extracts matching changelog notes from `CHANGELOG.md`, and creates a GitHub release with that tag.
+**How it works**: When you push a change to `VERSION.md` on `main`, the workflow reads the new version, extracts matching changelog notes from `CHANGELOG.md`, and creates a GitHub release with that tag.
 
 **You are responsible for**:
 
-- Bumping `VERSION` manually
+- Bumping `VERSION.md` manually
 - Writing the `CHANGELOG.md` entry manually (following Keep a Changelog format)
-- Ensuring the version in `VERSION` matches the `## [x.y.z]` heading in `CHANGELOG.md`
+- Ensuring the version in `VERSION.md` matches the `## [x.y.z]` heading in `CHANGELOG.md`
 
-**Best for**: Projects that want full control over version numbers and changelog prose. The CI validation job already enforces that `VERSION` and `CHANGELOG.md` stay in sync.
+**Best for**: Projects that want full control over version numbers and changelog prose. The CI validation job already enforces that `VERSION.md` and `CHANGELOG.md` stay in sync.
 
 ### Option B: Release Please (`release-please.yml`)
 
@@ -33,7 +33,7 @@ This template ships with two release workflows. **Use one or the other** — hav
 
 - Determining the version bump (patch for `fix:`, minor for `feat:`, major for `feat!:` or `BREAKING CHANGE:`)
 - Updating `CHANGELOG.md` with auto-generated notes
-- Updating `VERSION` via the `extra-files` configuration
+- Updating `VERSION.md` via the `extra-files` configuration
 - Creating the GitHub release and git tag
 
 **Best for**: Projects that follow Conventional Commits and want fully automated versioning.
@@ -47,7 +47,7 @@ This template ships with two release workflows. **Use one or the other** — hav
 | Changelog quality | Hand-written, narrative style | Auto-generated from commits |
 | Version control | You choose every number | Computed from commit types |
 | Commit discipline | Any commit style | Requires Conventional Commits |
-| Release timing | Push `VERSION` change when ready | Merge the release PR when ready |
+| Release timing | Push `VERSION.md` change when ready | Merge the release PR when ready |
 | CI dependencies | None beyond existing checks | Needs `contents: write` + `pull-requests: write` |
 
 ### Switching strategies
@@ -69,10 +69,10 @@ on:
   push:
     branches: [main]
     paths:
-      - VERSION        # Only triggers when VERSION file changes
+      - VERSION.md     # Only triggers when VERSION.md file changes
 ```
 
-No additional configuration needed. The workflow reads `VERSION` and `CHANGELOG.md` directly.
+No additional configuration needed. The workflow reads `VERSION.md` and `CHANGELOG.md` directly.
 
 ### release-please.yml
 
@@ -86,8 +86,8 @@ Key configuration in the action step:
 
 | Parameter | Value | Purpose |
 |-----------|-------|---------|
-| `release-type` | `simple` | Uses `VERSION` file for version tracking (no `package.json` needed) |
-| `extra-files` | `VERSION` | Tells release-please to update the `VERSION` file when bumping |
+| `release-type` | `simple` | Uses `VERSION.md` file for version tracking (no `package.json` needed) |
+| `extra-files` | `VERSION.md` | Tells release-please to update the `VERSION.md` file when bumping |
 
 For advanced configuration (monorepo support, custom changelog sections, bootstrap versions), see the [release-please documentation](https://github.com/googleapis/release-please).
 
@@ -115,4 +115,4 @@ feat!: add §13 MCP Protocol (breaking: changes section count)
 
 ---
 
-*See also: `.github/workflows/release-manual.yml` (VERSION-triggered release) · `.github/workflows/release-please.yml` (automated release) · `CHANGELOG.md` (version history) · `VERSION` (current version)*
+*See also: `.github/workflows/release-manual.yml` (VERSION.md-triggered release) · `.github/workflows/release-please.yml` (automated release) · `CHANGELOG.md` (version history) · `VERSION.md` (current version)*

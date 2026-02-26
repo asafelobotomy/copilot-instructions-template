@@ -3,7 +3,7 @@
   "release-type": "simple",
   "packages": {
     ".": {
-      "version-file": "VERSION",
+      "version-file": "VERSION.md",
       "changelog-path": "CHANGELOG.md"
     }
   }

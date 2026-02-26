@@ -1,6 +1,6 @@
 # Copilot Instructions — {{PROJECT_NAME}}
 
-> **Template version**: 2.0.0 | **Applied**: {{SETUP_DATE}}
+> **Template version**: 2.1.0 | **Applied**: {{SETUP_DATE}}
 > Living document — self-edit rules in §8.
 >
 > **Model Quick Reference** — select model in Copilot picker before starting each task, or use `.github/agents/` (VS Code 1.106+). [Why these models?](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)
@@ -607,9 +607,8 @@ Task requires a workflow
  ├─ 2. SEARCH (if enabled by {{SKILL_SEARCH_PREFERENCE}})
  │     ├─ "official-only"   → search official skill repositories:
  │     │     a. github.com/anthropics/skills
- │     │     b. github.com/openai/skills
- │     │     c. github.com/github/awesome-copilot
- │     │     d. agentskills.io/registry (when available)
+ │     │     b. github.com/github/awesome-copilot
+ │     │     c. agentskills.io/registry (when available)
  │     │     ├─ Found → evaluate fit, adapt, save locally
  │     │     └─ Not found → ↓
  │     │
@@ -696,7 +695,7 @@ MCP enables Copilot to invoke external servers that provide tools, resources, an
 | Tier | Default servers | When to enable | Configuration |
 |------|----------------|-----------------|---------------|
 | Always-on | filesystem, memory, git | Every project — core development tools | Enabled by default in `.vscode/mcp.json` |
-| Credentials-required | github, fetch | When external API access is needed | Requires `${env:GITHUB_TOKEN}` or equivalent |
+| Credentials-required | github, fetch | When external API access is needed | Requires `${input:github-token}` or `${env:GITHUB_PERSONAL_ACCESS_TOKEN}` (GitHub) |
 | Stack-specific | {{MCP_STACK_SERVERS}} | When the project's stack has a matching server | Discovered during setup (Step 2.12) |
 
 ### MCP decision tree
@@ -741,9 +740,9 @@ Before adding a new MCP server to the project:
 |--------|------|---------|
 | `@modelcontextprotocol/server-filesystem` | Always-on | File operations beyond the workspace |
 | `@modelcontextprotocol/server-memory` | Always-on | Persistent key-value memory across sessions |
-| `@modelcontextprotocol/server-git` | Always-on | Git history, diffs, and branch operations |
+| `mcp-server-git` (via `uvx`) | Always-on | Git history, diffs, and branch operations |
 | `@modelcontextprotocol/server-github` | Credentials | GitHub API — issues, PRs, repos, actions |
-| `@modelcontextprotocol/server-fetch` | Credentials | HTTP fetch for web content and APIs |
+| `mcp-server-fetch` (via `uvx`) | Credentials | HTTP fetch for web content and APIs |
 | {{MCP_STACK_SERVERS}} | Stack-specific | *(populated during setup)* |
 
 {{MCP_CUSTOM_SERVERS}}

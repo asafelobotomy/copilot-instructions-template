@@ -217,7 +217,7 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 
 ### 2 — Follow the update protocol
 
-Follow every step in `UPDATE.md` exactly. The protocol: reads installed version; fetches current `VERSION`/`CHANGELOG.md`/template; builds §1–§9 change manifest (§10 always protected); presents Pre-flight Report; user chooses **U** (update all) / **S** (skip) / **C** (customise per-section); backs up to `.github/archive/pre-update-YYYY-MM-DD-vX.Y.Z/`; writes confirmed changes; appends to `JOURNAL.md` and `CHANGELOG.md`.
+Follow every step in `UPDATE.md` exactly. The protocol: reads installed version; fetches current `VERSION.md`/`CHANGELOG.md`/template; builds §1–§9 change manifest (§10 always protected); presents Pre-flight Report; user chooses **U** (update all) / **S** (skip) / **C** (customise per-section); backs up to `.github/archive/pre-update-YYYY-MM-DD-vX.Y.Z/`; writes confirmed changes; appends to `JOURNAL.md` and `CHANGELOG.md`.
 
 ---
 
@@ -244,7 +244,7 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `AGENTS.md` | This file — AI agent entry point |
 | `SETUP.md` | Complete setup guide (remote-executable) |
 | `UPDATE.md` | Complete update + restore protocol (remote-executable) |
-| `VERSION` | Current template version number (semver) |
+| `VERSION.md` | Current template version number (semver) |
 | `CHANGELOG.md` | Template version history |
 | `.github/copilot-instructions.md` | Generic instructions template with `{{PLACEHOLDER}}` tokens |
 | `.github/agents/setup.agent.md` | Model-pinned Setup agent stub (Claude Sonnet 4.6) |

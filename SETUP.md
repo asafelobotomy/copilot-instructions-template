@@ -1074,7 +1074,7 @@ The `copilot-setup-steps.yml` workflow runs before the GitHub Copilot coding age
 5. Remove commented-out sections for other runtimes.
 6. Log the created file to JOURNAL.md.
 
-> **Release automation** (optional next step): If you want automated GitHub Releases for this project, the template provides two release strategies — a manual VERSION-bump approach and a Conventional Commits-based approach using release-please. See `docs/RELEASE-AUTOMATION-GUIDE.md` in the template repo for a trade-off comparison and full configuration instructions. If you adopt the release-please strategy, also scaffold `release-please-config.json` and `.release-please-manifest.json` at the project root (exact content is in the guide).
+> **Release automation** (optional next step): If you want automated GitHub Releases for this project, the template provides two release strategies — a manual VERSION.md-bump approach and a Conventional Commits-based approach using release-please. See `docs/RELEASE-AUTOMATION-GUIDE.md` in the template repo for a trade-off comparison and full configuration instructions. If you adopt the release-please strategy, also scaffold `release-please-config.json` and `.release-please-manifest.json` at the project root (exact content is in the guide).
 
 ---
 
@@ -1098,6 +1098,27 @@ The Model Context Protocol (MCP) connects Copilot to external tools via `.vscode
    |------------|-------------------|--------------------:|----------------|
    | B — Always-on only | Enable filesystem, memory, git | Keep disabled | Skip |
    | C — Full configuration | Enable all | Enable github + fetch (prompt for token) | Discover and suggest |
+
+3.5. **Prerequisite for git/fetch MCP servers (`uvx`)**:
+
+   The official `git` and `fetch` MCP servers are Python packages launched via `uvx`.
+
+   - Before enabling or starting those servers, check availability:
+
+     ```bash
+     command -v uvx
+     ```
+
+   - If missing, install `uv`/`uvx` first (see <https://docs.astral.sh/uv/getting-started/installation/>), then continue.
+
+   - After writing `.vscode/mcp.json`, verify both servers can start with the configured commands:
+
+     ```bash
+     timeout 6s uvx mcp-server-git --repository "${PWD}"
+     timeout 6s uvx mcp-server-fetch
+     ```
+
+     Exit code `124` from `timeout` is expected here and means the server stayed running on stdio.
 
 4. **Stack-specific server discovery** (E22=C only): Based on the technology stack discovered in Step 1, suggest relevant MCP servers:
 

@@ -48,14 +48,26 @@ These need access tokens. They are pre-configured in `mcp.json` but set to `"dis
 
 | Server | What it does | Required credential |
 |--------|-------------|---------------------|
-| **github** | GitHub API — issues, PRs, repos, Actions | `GITHUB_TOKEN` |
+| **github** | GitHub API — issues, PRs, repos, Actions | GitHub PAT via `${input:github-token}` or `GITHUB_PERSONAL_ACCESS_TOKEN` |
 | **fetch** | HTTP fetch for web content and APIs | None (but rate limits may apply) |
 
 To enable a credentials-required server:
 
 1. Remove `"disabled": true` from the server entry in `.vscode/mcp.json`
-2. Set the required environment variable (e.g., `export GITHUB_TOKEN=ghp_...`)
+2. Provide required credentials (for GitHub, use the configured input prompt or set `GITHUB_PERSONAL_ACCESS_TOKEN`)
 3. Restart VS Code
+
+> **Note:** The official `git` and `fetch` MCP servers are Python packages and are launched with `uvx` in the template. Install `uv`/`uvx` before using those servers.
+
+Quick startup verification for those two servers:
+
+```bash
+command -v uvx
+timeout 6s uvx mcp-server-git --repository "${PWD}"
+timeout 6s uvx mcp-server-fetch
+```
+
+An exit code of `124` from `timeout` is expected — it means the MCP server started and remained active on stdio.
 
 ### Stack-specific (added during setup)
 

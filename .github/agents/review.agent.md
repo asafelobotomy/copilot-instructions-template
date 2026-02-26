@@ -9,11 +9,9 @@ model:
 tools: [codebase, githubRepo]
 handoffs:
   - label: Implement fixes
-    agent: coding
-    prompt: >
-      Implement the fixes and improvements identified in the review.
-      Address critical and major findings first.
-    send: false
+    agent: Code
+    prompt: Implement the fixes and improvements identified in the review. Address critical and major findings first.
+    send: true
 ---
 
 You are the Review agent for copilot-instructions-template.

@@ -18,8 +18,8 @@ Use the [GitHub issue templates](https://github.com/asafelobotomy/copilot-instru
 1. **Fork** the repo and create a branch from `main`.
 2. Make your changes — keep commits small and focused.
 3. Ensure CI passes locally before pushing:
-   - VERSION is valid semver
-   - CHANGELOG has an `[Unreleased]` section and an entry for the current VERSION
+   - VERSION.md is valid semver
+   - CHANGELOG has an `[Unreleased]` section and an entry for the current VERSION.md
    - All required files are present
    - `copilot-instructions.md` has §1–§13
    - README docs-table links resolve

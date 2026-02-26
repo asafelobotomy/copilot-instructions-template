@@ -4,7 +4,7 @@
 
 ## Checklist
 
-- [ ] `VERSION` bumped if template behaviour changes
+- [ ] `VERSION.md` bumped if template behaviour changes
 - [ ] `CHANGELOG.md` has an entry under `## [Unreleased]`
 - [ ] `{{PLACEHOLDER}}` tokens remain in template source (not resolved upstream)
 - [ ] `docs/` guides updated if a new user-facing feature was added
@@ -20,4 +20,4 @@
 - [ ] Feature / enhancement
 - [ ] Documentation only
 - [ ] Refactor / cleanup
-- [ ] Release prep (VERSION + CHANGELOG)
+- [ ] Release prep (VERSION.md + CHANGELOG)

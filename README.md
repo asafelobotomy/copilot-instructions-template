@@ -5,7 +5,7 @@
 **Instruction firmware for AI-assisted development — grounded in Lean / Kaizen**
 
 [![CI](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml/badge.svg)](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-2.1.0-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.1.0-blue)](VERSION.md)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/asafelobotomy/copilot-instructions-template/badge)](https://scorecard.dev/viewer/?uri=github.com/asafelobotomy/copilot-instructions-template)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![VS Code](https://img.shields.io/badge/VS_Code-1.106+-007ACC?logo=visualstudiocode)](https://code.visualstudio.com/)
@@ -224,7 +224,7 @@ copilot-instructions-template/
 │   │   └── commit-msg.prompt.md        # /commit-msg — Conventional Commits
 │   ├── workflows/
 │   │   ├── ci.yml                      # Validates structure, links, and sections on push/PR
-│   │   ├── release-manual.yml          # Manual GitHub release when VERSION is bumped
+│   │   ├── release-manual.yml          # Manual GitHub release when VERSION.md is bumped
 │   │   ├── release-please.yml          # Automated Conventional Commits release
 │   │   ├── stale.yml                   # Closes stale issues and PRs weekly
 │   │   ├── links.yml                   # Lychee link checker (weekly + PR)
@@ -286,7 +286,7 @@ copilot-instructions-template/
 ├── AGENTS.md                           # AI entry point — trigger phrases + remote sequences
 ├── SETUP.md                            # One-time agentic setup (self-destructs after use)
 ├── UPDATE.md                           # Update protocol (run on demand)
-├── VERSION                             # Semver — read by update pre-flight check
+├── VERSION.md                          # Semver — single source of truth for template version
 ├── CHANGELOG.md                        # This template's own version history
 ├── CONTRIBUTING.md                     # Contribution guidelines
 ├── LICENSE                             # MIT

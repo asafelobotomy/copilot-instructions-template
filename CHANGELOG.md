@@ -58,6 +58,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ### Changed
 
+- Version source-of-truth migrated from `VERSION` to `VERSION.md`; CI/release workflows, setup/update docs, and templates now read `VERSION.md`.
+- Added `scripts/sync-version.sh` to propagate `VERSION.md` into derived references (`.github/copilot-instructions.md` stamp, `README.md` version badge, `.release-please-manifest.json`). CI now enforces these derived files are synced.
+
 - `template/skills/skill-creator/SKILL.md` — trimmed `description` field to a concise one-sentence form matching the §12 recommendation for reliable agent discovery.
 - `template/skills/conventional-commit/SKILL.md` — expanded opaque `§10` and `§4`/`§10` references in "When NOT to use" to include `of their project's Copilot instructions`, improving readability when the skill is used outside the template context.
 - `SETUP.md` — added release automation callout after Step 2.11 pointing to `docs/RELEASE-AUTOMATION-GUIDE.md` and noting the `release-please-config.json` / `.release-please-manifest.json` requirement for the release-please strategy; Step 0b updated from 6 to 7 identity files (HEARTBEAT.md added); Step 3 expanded with HEARTBEAT.md scaffold section; BOOTSTRAP.md stub updated from "all six" to "all seven" identity files.
@@ -94,7 +97,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 ### Added
 
 - **§13 — Model Context Protocol (MCP)** in `.github/copilot-instructions.md` — subsections: MCP server tiers (always-on / credentials-required / stack-specific), server configuration (references `.vscode/mcp.json`), MCP decision tree (built-in tool → MCP server → community package → custom tool), server quality gate (4 checks), available server reference table with `{{MCP_STACK_SERVERS}}` and `{{MCP_CUSTOM_SERVERS}}` placeholders.
-- **`template/vscode/mcp.json`** — preconfigured MCP server template with 5 official servers: filesystem, memory, git (always-on, enabled), github, fetch (credentials-required, disabled by default). Uses `${workspaceFolder}` and `${env:GITHUB_TOKEN}` variables.
+- **`template/vscode/mcp.json`** — preconfigured MCP server template with 5 official servers: filesystem, memory, git (always-on, enabled), github, fetch (credentials-required, disabled by default). Uses `${workspaceFolder}` and `${input:github-token}` for GitHub credentials.
 - **`template/skills/mcp-builder/SKILL.md`** — starter skill adapted from Anthropic's official library. 7-step workflow: clarify purpose, choose transport (stdio/SSE/streamable HTTP), scaffold project, implement handlers, test with MCP Inspector, register in `.vscode/mcp.json`, document.
 - **`template/skills/webapp-testing/SKILL.md`** — starter skill adapted from Anthropic's official library. 7-step Playwright-based e2e testing workflow: detect framework, install runner, scaffold test structure, write first test, verify passing, add to CI, document.
 - **E22 — MCP server configuration** interview question added to `SETUP.md` Expert tier (batch 7). Three options: None (default) / Always-on only / Full configuration. Maps to `{{MCP_STACK_SERVERS}}` and `{{MCP_CUSTOM_SERVERS}}` placeholders.

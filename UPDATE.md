@@ -35,10 +35,12 @@ Complete all five steps before presenting anything to the user. Do not write any
 
 Read `.github/copilot-instructions.md` in the **user's current project**.
 
+Read `VERSION.md` in the **user's current project**.
+
 Extract:
 
-- **Installed version**: from the line `> **Template version**: X.Y.Z | **Applied**: DATE`.
-  - If this line is absent, treat installed version as `unknown` and proceed with a full comparison.
+- **Installed version**: from `VERSION.md` (must be semver `x.y.z`).
+  - If `VERSION.md` is absent or invalid, treat installed version as `unknown` and proceed with a full comparison.
 - **Applied date**: the `Applied` value from that line.
 - **Updated date**: the `Updated` value if present (set by a previous update run).
 - **§10 content**: the entire `## §10 — Project-Specific Overrides` section — this is preserved unconditionally and never included in the diff.
@@ -47,7 +49,7 @@ Extract:
 ### U2 — Fetch the current template version
 
 ```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/VERSION
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/VERSION.md
 ```
 
 If the fetched version **equals** the installed version → report:
@@ -177,7 +179,7 @@ Create the directory:
 Where:
 
 - `<TODAY>` is today's date in `YYYY-MM-DD` format.
-- `<INSTALLED_VERSION>` is the version extracted in U1 (or `unknown` if the stamp was absent).
+- `<INSTALLED_VERSION>` is the version extracted in U1 (or `unknown` if `VERSION.md` was absent/invalid).
 
 If that directory already exists (e.g., the user ran an update twice on the same day from the same version), append a counter: `-2`, `-3`, etc.
 
@@ -336,18 +338,13 @@ Apply these checks **before writing any section**, regardless of the decision pa
 
 After all changes are confirmed and written:
 
-### 1 — Update the version stamp
+### 1 — Update the version file
 
-Find the line: `> **Template version**: OLD | **Applied**: DATE`
+Set `VERSION.md` content to `NEW` (semver only).
 
-Update it to:
+If `scripts/sync-version.sh` exists, run it immediately after updating `VERSION.md` so derived references stay aligned.
 
-```text
-> **Template version**: NEW | **Applied**: ORIGINAL_DATE | **Updated**: TODAY
-```
-
-- The original `Applied` date is preserved — it is the record of the initial setup date.
-- `Updated` is set to today (ISO 8601). If a previous `Updated` date exists, replace it.
+If `scripts/sync-version.sh` does not exist, update any derived version strings manually (for example, template stamp lines and README badge values).
 
 ### 2 — Append to JOURNAL.md
 

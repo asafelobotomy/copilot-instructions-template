@@ -60,5 +60,5 @@ body:
   - type: input
     id: template-version
     attributes:
-      label: Template version (content of VERSION file)
+      label: Template version (content of VERSION.md)
       placeholder: e.g. 1.0.2
