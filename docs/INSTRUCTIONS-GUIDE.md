@@ -108,12 +108,24 @@ After any session that meaningfully changes your codebase, Copilot appends a row
 Copilot is allowed to edit `.github/copilot-instructions.md` when you use any of these phrases:
 
 - "Add this to your instructions" → Copilot adds the convention to the appropriate section.
-- "Update your instructions" → Copilot fetches the latest template and proposes a merge.
+- "Update your instructions" → Copilot goes to the upstream template repository at [`asafelobotomy/copilot-instructions-template`](https://github.com/asafelobotomy/copilot-instructions-template), checks for a newer version, and walks you through applying changes. This is specifically a check-for-upstream-updates command, not a general edit request.
 - "Remember this for next time" → Copilot adds the pattern to the file.
 
 Every self-edit is recorded in `JOURNAL.md` so you always know what changed and why.
 
 **What Copilot cannot do**: Delete existing rules without your explicit instruction, restructure sections unilaterally, or apply template updates without showing you a diff first.
+
+#### Attention Budget
+
+The instructions file is loaded into the LLM context on every interaction. To prevent the agent from missing rules buried in a long document, §8 defines a line budget:
+
+- **Entire file**: ≤ 800 lines
+- **§2 (Operating Modes)**: ≤ 210 lines (largest section — contains all workflow modes)
+- **Other §1–§9 sections**: ≤ 120 lines each
+- **§11–§13 protocol sections**: ≤ 150 lines each
+- **§10 (project-specific)**: No hard limit (grows with your project)
+
+CI enforces these limits on the template. When a section approaches its budget, extract detailed procedures into a skill file, path-specific instruction file, or prompt file — and leave a one-line reference in the main section. This keeps the always-loaded context tight while preserving detail for on-demand use.
 
 #### Heartbeat Protocol
 

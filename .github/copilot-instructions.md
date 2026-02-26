@@ -329,8 +329,24 @@ Copilot may edit this file when patterns stabilise. Rules:
 1. **Never delete** existing rules without explicit user instruction.
 2. **Additive by default** — append to sections; don't restructure them.
 3. **Flag before writing** — describe the change and wait for confirmation on edits to §1–§7.
-4. **Self-update trigger phrases**: "Update your instructions", "Add this to your instructions", "Remember this for next time".
-5. **Template updates**: When the user says "Update from template", fetch the latest template and apply the update protocol in `UPDATE.md`.
+4. **Self-update trigger phrases**: "Add this to your instructions", "Remember this for next time" — these add a convention to this file.
+5. **Template updates**: When the user says **"Update your instructions"** (or any variant: "Check for instruction updates", "Update from template", "Sync instructions with the template"), this means: go to the upstream template repository at `https://github.com/asafelobotomy/copilot-instructions-template`, fetch the latest version, compare it against the installed version, and run the update protocol defined in `UPDATE.md`. This is not a request to make arbitrary edits — it is specifically a check-for-upstream-updates command.
+
+### Attention Budget
+
+This file is loaded into the LLM context on every interaction. To prevent instruction-following degradation from context dilution:
+
+| Scope | Budget | Enforced by |
+|-------|--------|-------------|
+| **Entire file** (§1–§13) | ≤ 800 lines | CI (`ci.yml`) |
+| **§2 (Operating Modes)** | ≤ 210 lines | CI (`ci.yml`) — largest section; contains all workflow modes |
+| **Other §1–§9 sections** | ≤ 120 lines each | CI (`ci.yml`) |
+| **§10 (Project-Specific Overrides)** | No hard limit | Grows with project — review during heartbeat |
+| **§11–§13 (protocols)** | ≤ 150 lines each | CI (`ci.yml`) |
+
+**Overflow rule**: When a section approaches its budget, extract detailed procedures into a skill file (`.github/skills/`), a path-specific instruction file (`.github/instructions/`), or a prompt file (`.github/prompts/`). Leave a one-line reference in the main section. This keeps the always-loaded context tight while preserving the detail in on-demand files.
+
+**Why this matters**: LLMs exhibit attention degradation in long contexts — content in the middle of a large prompt receives less focus than content near the start or end. Keeping the core instructions concise ensures every rule gets reliable attention.
 
 ### Heartbeat Protocol
 
@@ -736,14 +752,14 @@ Before adding a new MCP server to the project:
 
 ### Available servers
 
-| Server | Tier | Purpose |
-|--------|------|---------|
-| `@modelcontextprotocol/server-filesystem` | Always-on | File operations beyond the workspace |
-| `@modelcontextprotocol/server-memory` | Always-on | Persistent key-value memory across sessions |
-| `mcp-server-git` (via `uvx`) | Always-on | Git history, diffs, and branch operations |
-| `@modelcontextprotocol/server-github` | Credentials | GitHub API — issues, PRs, repos, actions |
-| `mcp-server-fetch` (via `uvx`) | Credentials | HTTP fetch for web content and APIs |
-| {{MCP_STACK_SERVERS}} | Stack-specific | *(populated during setup)* |
+| Server | Tier | Command | Purpose |
+|--------|------|---------|--------|
+| `@modelcontextprotocol/server-filesystem` | Always-on | `npx` | File operations beyond the workspace |
+| `@modelcontextprotocol/server-memory` | Always-on | `npx` | Persistent key-value memory across sessions |
+| `mcp-server-git` | Always-on | **`uvx`** (Python — not on npm) | Git history, diffs, and branch operations |
+| `@modelcontextprotocol/server-github` | Credentials | `npx` | GitHub API — issues, PRs, repos, actions |
+| `mcp-server-fetch` | Credentials | **`uvx`** (Python — not on npm) | HTTP fetch for web content and APIs |
+| {{MCP_STACK_SERVERS}} | Stack-specific | | *(populated during setup)* |
 
 {{MCP_CUSTOM_SERVERS}}
 

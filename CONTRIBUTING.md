@@ -56,6 +56,24 @@ Use the [GitHub issue templates](https://github.com/asafelobotomy/copilot-instru
 
 ---
 
+## Attention budget (copilot-instructions.md)
+
+`.github/copilot-instructions.md` is loaded into the LLM context on **every** interaction. Long instructions cause attention degradation — the agent misses rules buried in the middle. To prevent this, the file has a line budget enforced by CI:
+
+| Scope | Max lines |
+|-------|-----------|
+| Entire file (§1–§13) | 800 |
+| §2 (Operating Modes) | 210 |
+| Other §1–§9 sections | 120 each |
+| §11–§13 protocol sections | 150 each |
+| §10 (project-specific) | No hard limit |
+
+If your change would push a section over budget, extract detail into a skill (`.github/skills/`), path-specific instruction (`.github/instructions/`), or prompt file (`.github/prompts/`) and leave a one-line reference in the main section. See §8 (Attention Budget) in the instructions file for the full rationale.
+
+CI will fail if these limits are exceeded in the **template** file. Consumer projects inherit the budgets but are free to adjust them in §10.
+
+---
+
 ## Code of conduct
 
 Be respectful, constructive, and inclusive. We're all here to make AI-assisted development better.
