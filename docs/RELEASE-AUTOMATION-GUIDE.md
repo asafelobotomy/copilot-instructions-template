@@ -22,12 +22,12 @@ This template ships with two release workflows. **Use one or the other** — hav
 
 ### Option B: Release Please (`release-please.yml`)
 
-**How it works**: [Release Please](https://github.com/googleapis/release-please) reads your commit history (expecting [Conventional Commits](https://www.conventionalcommits.org/)), determines the next semver bump, generates a changelog, and opens a "release PR". Merging that PR triggers the actual GitHub release.
+**How it works**: [Release Please](https://github.com/googleapis/release-please) reads your commit history (expecting [Conventional Commits](https://www.conventionalcommits.org/)), determines the next semver bump, generates a changelog, and opens a "release PR". The workflow enables **auto-merge** on the PR so it lands automatically once CI passes — no manual merge required.
 
 **You are responsible for**:
 
 - Writing commit messages in Conventional Commits format (`feat:`, `fix:`, `chore:`, etc.)
-- Reviewing and merging the release PR when you are ready to cut a release
+- Enabling **Allow auto-merge** in repo Settings → General → Pull Requests (one-time setup)
 
 **Release Please handles**:
 
@@ -47,7 +47,7 @@ This template ships with two release workflows. **Use one or the other** — hav
 | Changelog quality | Hand-written, narrative style | Auto-generated from commits |
 | Version control | You choose every number | Computed from commit types |
 | Commit discipline | Any commit style | Requires Conventional Commits |
-| Release timing | Push `VERSION.md` change when ready | Merge the release PR when ready |
+| Release timing | Push `VERSION.md` change when ready | Automatic — PR auto-merges when CI passes |
 | CI dependencies | None beyond existing checks | Needs `contents: write` + `pull-requests: write` |
 
 ### Switching strategies

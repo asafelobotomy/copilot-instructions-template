@@ -4,6 +4,10 @@ name: Release Please
 # Creates a "release PR" that accumulates Conventional Commits, bumps version,
 # and updates CHANGELOG.md. Merging the PR triggers a GitHub release.
 #
+# Auto-merge is enabled so release PRs land without manual intervention.
+# The underlying commits already pass CI on main — the PR only bumps
+# VERSION.md + CHANGELOG.md.
+#
 # Coexists with release-manual.yml — use one or the other, not both.
 # See docs/RELEASE-AUTOMATION-GUIDE.md for trade-offs.
 
@@ -26,5 +30,16 @@ jobs:
           egress-policy: audit
 
       - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
+        id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Auto-merge release PR
+        if: steps.release.outputs.pr && !steps.release.outputs.release_created
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge ${{ fromJSON(steps.release.outputs.pr).number }} \
+            --repo ${{ github.repository }} \
+            --squash \
+            --auto
