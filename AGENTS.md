@@ -131,6 +131,20 @@ When a user says any of the following:
 
 ...follow the Heartbeat Protocol in **§8** of `.github/copilot-instructions.md`. Read `.copilot/workspace/HEARTBEAT.md`, run all checks, update Pulse status, and report any alerts. For retrospective triggers, run the Retrospective section and persist insights to the indicated workspace files.
 
+### Doctor health check
+
+When a user says any of the following:
+
+- *"Run health check"*
+- *"Doctor check"*
+- *"Check instruction files"*
+- *"Check attention budget"*
+- *"Check MCP config"*
+- *"Check agent files"*
+- *"Diagnose copilot setup"*
+
+...activate the **Doctor agent** (`.github/agents/doctor.agent.md`). The Doctor performs a read-only audit of all Copilot-facing files: attention budget, section structure, placeholder leakage, agent validity, MCP config, version file, workspace memory files, and project tracking files. It produces a structured health report with CRITICAL / HIGH / WARN ratings and offers handoffs to the Coding or Update agent if issues are found.
+
 ---
 
 ## What this repo is
@@ -189,7 +203,7 @@ Setup outputs written to the **user's project**:
 | `.github/agents/review.agent.md` | Model-pinned Review agent (Claude Opus 4.6) |
 | `.github/agents/fast.agent.md` | Model-pinned Fast agent (Claude Haiku 4.5) |
 | `.github/agents/update.agent.md` | Model-pinned Update agent (Claude Sonnet 4.6) |
-| `.github/agents/doctor.agent.md` | Model-pinned Doctor agent (Claude Opus 4.6) |
+| `.github/agents/doctor.agent.md` | Model-pinned Doctor agent (Claude Sonnet 4.6) |
 | `.github/hooks/copilot-hooks.json` | Agent lifecycle hooks configuration |
 | `.github/hooks/scripts/*.sh` | Five starter hook scripts (security, formatting, retrospective, context) |
 | `.github/skills/*/SKILL.md` | Reusable skill library (6 starter skills from template) |
@@ -256,7 +270,7 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `.github/agents/review.agent.md` | Model-pinned Review agent stub (Claude Opus 4.6) |
 | `.github/agents/fast.agent.md` | Model-pinned Fast agent stub (Claude Haiku 4.5) |
 | `.github/agents/update.agent.md` | Model-pinned Update agent stub (Claude Sonnet 4.6) |
-| `.github/agents/doctor.agent.md` | Model-pinned Doctor agent stub (Claude Opus 4.6) |
+| `.github/agents/doctor.agent.md` | Model-pinned Doctor agent stub (Claude Sonnet 4.6) |
 | `template/skills/skill-creator/SKILL.md` | Starter skill — meta-skill for authoring new skills |
 | `template/skills/fix-ci-failure/SKILL.md` | Starter skill — CI failure diagnosis and resolution |
 | `template/skills/lean-pr-review/SKILL.md` | Starter skill — Lean PR review with waste categories |
@@ -311,6 +325,7 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | Show heartbeat status | *"Show heartbeat status"* / *"Heartbeat history"* |
 | Update heartbeat | *"Update heartbeat checklist"* / *"Clear heartbeat alerts"* |
 | Run retrospective | *"Run retrospective"* |
+| Run health check (Doctor) | *"Run health check"* / *"Doctor check"* / *"Check instruction files"* |
 | Configure hooks | *"Configure hooks"* / *"Set up agent hooks"* |
 | List hooks | *"Show hooks"* / *"List agent hooks"* |
 | Add a hook | *"Add a hook"* / *"Create a hook for ..."* |

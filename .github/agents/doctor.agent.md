@@ -51,13 +51,13 @@ patterns. Use `codebase` to read file contents.
 - `.copilot/workspace/HEARTBEAT.md`
 - `.copilot/workspace/MEMORY.md`
 - `.copilot/workspace/SOUL.md`
-- `.copilot/workspace/METRICS.md`
 - `.copilot/workspace/TOOLS.md`
 - `.copilot/workspace/USER.md`
 - `.copilot/workspace/BOOTSTRAP.md`
 
 ### Project tracking files
 
+- `METRICS.md` *(project root — not inside `.copilot/workspace/`)*
 - `.github/copilot-version.md`
 - `JOURNAL.md`
 - `BIBLIOGRAPHY.md`
@@ -158,7 +158,7 @@ Flag: `[HIGH]` if absent or malformed.
 
 ### D7 — Workspace memory files
 
-Check each file listed under "Workspace memory files" above:
+Check each file listed under "Workspace memory files" and `METRICS.md` above:
 
 - Does it exist?
 - Is it non-empty?

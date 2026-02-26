@@ -58,8 +58,8 @@ walk the user through applying changes to their project — exactly as defined i
 
 ## Pre-flight URLs (in order)
 
-1. Installed version: `.github/copilot-instructions.md` + `VERSION.md` in the
-   current project.
+1. Installed version: `.github/copilot-version.md` in the current project
+   (the template-installed version — distinct from the consumer project's own `VERSION.md`).
 2. Template version: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/VERSION.md`
 3. Template changelog: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/CHANGELOG.md`
 4. New template file: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/copilot-instructions.md`
