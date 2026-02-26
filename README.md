@@ -6,7 +6,7 @@
 
 [![CI](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml/badge.svg)](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml)
 <!-- x-release-please-version -->
-[![Version](https://img.shields.io/badge/version-3.0.0-blue)](VERSION.md)
+[![Version](https://img.shields.io/badge/version-3.0.1-blue)](VERSION.md)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/asafelobotomy/copilot-instructions-template/badge)](https://scorecard.dev/viewer/?uri=github.com/asafelobotomy/copilot-instructions-template)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![VS Code](https://img.shields.io/badge/VS_Code-1.106+-007ACC?logo=visualstudiocode)](https://code.visualstudio.com/)
@@ -204,14 +204,17 @@ copilot-instructions-template/
 │   │   ├── setup.agent.md              # Claude Sonnet 4.6 — onboarding & template ops
 │   │   ├── coding.agent.md             # GPT-5.3-Codex — implementation & refactoring
 │   │   ├── review.agent.md             # Claude Opus 4.6 — architectural review
-│   │   └── fast.agent.md               # Claude Haiku 4.5 — quick questions
+│   │   ├── fast.agent.md               # Claude Haiku 4.5 — quick questions
+│   │   ├── update.agent.md             # Claude Sonnet 4.6 — instruction update & restore
+│   │   └── doctor.agent.md             # Claude Sonnet 4.6 — read-only health diagnostics
 │   ├── skills/
 │   │   ├── skill-creator/SKILL.md      # Meta-skill — author new skills
 │   │   ├── fix-ci-failure/SKILL.md     # Diagnose and fix CI failures
 │   │   ├── lean-pr-review/SKILL.md     # Lean waste-categorised PR review
 │   │   ├── conventional-commit/SKILL.md # Conventional Commits messages
 │   │   ├── mcp-builder/SKILL.md        # Build and register MCP servers
-│   │   └── webapp-testing/SKILL.md     # Playwright-based web app testing
+│   │   ├── webapp-testing/SKILL.md     # Playwright-based web app testing
+│   │   └── issue-triage/SKILL.md       # Issue triage with severity scoring
 │   ├── instructions/
 │   │   ├── tests.instructions.md       # Path rules for test files
 │   │   ├── api-routes.instructions.md  # Path rules for API routes
@@ -234,7 +237,10 @@ copilot-instructions-template/
 │   ├── ISSUE_TEMPLATE/
 │   │   ├── bug_report.yml              # Structured bug report form
 │   │   └── feature_request.yml         # Structured feature request form
-│   └── PULL_REQUEST_TEMPLATE.md        # PR checklist (auto-shown on new PRs)
+│   ├── PULL_REQUEST_TEMPLATE.md        # PR checklist (auto-shown on new PRs)
+│   ├── dependabot.yml                  # Automated dependency updates (weekly, grouped)
+│   └── vale/
+│       └── styles/                     # Vale style packages (downloaded at lint time)
 ├── docs/
 │   ├── INSTRUCTIONS-GUIDE.md           # Human guide to copilot-instructions.md
 │   ├── SKILLS-GUIDE.md                 # Human guide to the Agent Skills library
@@ -245,7 +251,7 @@ copilot-instructions-template/
 │   ├── TEST-REVIEW-GUIDE.md            # Human guide to the test coverage review feature
 │   ├── PATH-INSTRUCTIONS-GUIDE.md      # Human guide to path-specific instructions
 │   ├── PROMPTS-GUIDE.md                # Human guide to reusable prompt files
-│   ├── SECURITY-GUIDE.md              # Human guide to security hardening
+│   ├── SECURITY-GUIDE.md               # Human guide to security hardening
 │   ├── MCP-GUIDE.md                    # Human guide to MCP integration
 │   ├── RELEASE-AUTOMATION-GUIDE.md     # Human guide to release workflows
 │   ├── HEARTBEAT-GUIDE.md              # Human guide to event-driven heartbeat
@@ -262,17 +268,18 @@ copilot-instructions-template/
 │   │   ├── lean-pr-review/SKILL.md     # Starter skill: Lean PR review
 │   │   ├── conventional-commit/SKILL.md # Starter skill: Conventional Commits
 │   │   ├── mcp-builder/SKILL.md        # Starter skill: MCP server creation
-│   │   └── webapp-testing/SKILL.md     # Starter skill: Playwright web app testing
+│   │   ├── webapp-testing/SKILL.md     # Starter skill: Playwright web app testing
+│   │   └── issue-triage/SKILL.md       # Starter skill: Issue triage with severity scoring
 │   ├── vscode/
 │   │   └── mcp.json                    # MCP server configuration template
 │   ├── hooks/
 │   │   ├── copilot-hooks.json          # Agent hooks configuration template
 │   │   └── scripts/
-│   │       ├── session-start.sh        # SessionStart — project context injection
-│   │       ├── guard-destructive.sh    # PreToolUse — dangerous command guard
-│   │       ├── post-edit-lint.sh       # PostToolUse — auto-format after edits
-│   │       ├── enforce-retrospective.sh # Stop — retrospective enforcement
-│   │       └── save-context.sh         # PreCompact — context preservation
+│   │       ├── session-start.sh / .ps1        # SessionStart — project context injection
+│   │       ├── guard-destructive.sh / .ps1    # PreToolUse — dangerous command guard
+│   │       ├── post-edit-lint.sh / .ps1       # PostToolUse — auto-format after edits
+│   │       ├── enforce-retrospective.sh / .ps1 # Stop — retrospective enforcement
+│   │       └── save-context.sh / .ps1         # PreCompact — context preservation
 │   └── workspace/
 │       ├── IDENTITY.md                 # Agent self-description stub
 │       ├── SOUL.md                     # Values & reasoning patterns stub
@@ -281,19 +288,25 @@ copilot-instructions-template/
 │       ├── MEMORY.md                   # Memory strategy stub
 │       ├── BOOTSTRAP.md                # Permanent setup origin record stub
 │       └── HEARTBEAT.md                # Event-driven health check checklist stub
+├── scripts/
+│   └── sync-version.sh                 # CI safety-net: syncs version constants from VERSION.md
 ├── examples/
 │   └── valis/
 │       └── README.md                   # Reference implementation (asafelobotomy/Valis)
 ├── AGENTS.md                           # AI entry point — trigger phrases + remote sequences
 ├── SETUP.md                            # One-time agentic setup (self-destructs after use)
 ├── UPDATE.md                           # Update protocol (run on demand)
+├── CONTRIBUTING.md                     # Contribution guidelines
 ├── VERSION.md                          # Semver — single source of truth for template version
 ├── CHANGELOG.md                        # This template's own version history
-├── CONTRIBUTING.md                     # Contribution guidelines
 ├── LICENSE                             # MIT
-├── .markdownlint.json                  # Lint rules enforced by CI
-├── .vale.ini                           # Vale prose linting configuration
-└── .github/dependabot.yml             # Automated dependency updates
+├── llms.txt                            # llmstxt.org spec — project overview for LLM indexers
+├── release-please-config.json          # Release Please package config + extra-files
+├── .release-please-manifest.json       # Release Please version manifest
+├── .gitignore                          # Ignored paths
+├── .markdownlint.json                  # Markdownlint rule configuration
+├── .markdownlint-cli2.yaml             # Markdownlint CLI2 options (ignore patterns)
+└── .vale.ini                           # Vale prose linting configuration
 ```
 
 ---

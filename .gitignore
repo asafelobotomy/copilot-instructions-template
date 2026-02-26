@@ -1,3 +1,16 @@
+# JavaScript
 node_modules/
 package.json
 package-lock.json
+
+# Vale — downloaded style packages (not committed; fetched by `vale sync`)
+.github/vale/styles/Vale/
+.github/vale/styles/Google/
+.github/vale/styles/write-good/
+
+# OS / Editor artefacts
+.DS_Store
+Thumbs.db
+*.bak
+*.orig
+*~

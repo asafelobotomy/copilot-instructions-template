@@ -24,6 +24,8 @@ Maintenance rule: run `{{LOC_COMMAND}}` and compare outputs to this table. Any f
 | `.github/agents/coding.agent.md` | Coding agent — GPT-5.3-Codex (implementation & refactoring) | — |
 | `.github/agents/review.agent.md` | Review agent — Claude Opus 4.6 (code review & architectural analysis) | — |
 | `.github/agents/fast.agent.md` | Fast agent — Claude Haiku 4.5 (quick questions & lightweight edits) | — |
+| `.github/agents/update.agent.md` | Update agent — Claude Sonnet 4.6 (instruction update & restore) | — |
+| `.github/agents/doctor.agent.md` | Doctor agent — Claude Sonnet 4.6 (read-only health diagnostics) | — |
 
 ## Workspace identity
 
