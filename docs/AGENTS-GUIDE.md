@@ -39,6 +39,8 @@ The template creates four agent files in `.github/agents/`. These appear in the 
 | **Code** | GPT-5.3-Codex | Implementation, refactoring, multi-step coding tasks |
 | **Review** | Claude Opus 4.6 | Deep code review, architectural analysis, Lean/Kaizen critique |
 | **Fast** | Claude Haiku 4.5 | Quick questions, syntax lookups, single-file lightweight edits |
+| **Update** | Claude Sonnet 4.6 | Fetch and apply upstream instruction updates from the template repo |
+| **Doctor** | Claude Opus 4.6 | Read-only health check on all Copilot instruction and config files |
 
 Each agent has a fallback chain so it degrades gracefully if a model is unavailable on your plan.
 
@@ -48,9 +50,9 @@ Each agent has a fallback chain so it degrades gracefully if a model is unavaila
 
 | Model | Reason chosen |
 |-------|--------------|
-| **Claude Sonnet 4.6** (Setup) | Strong instruction-following; handles the 3-tier preference interview (5–19 questions) and complex conditional logic in setup well |
+| **Claude Sonnet 4.6** (Setup, Update) | Strong instruction-following; handles the 3-tier preference interview (5–19 questions) and complex conditional logic in setup well. Also used for Update: reliable at fetch → compare → apply workflows |
 | **GPT-5.3-Codex** (Code) | GitHub's latest agentic coding model (GA Feb 9 2026); ~25% faster than its predecessor; supports real-time mid-task steering. Stays in the Codex lineage for clean fallbacks |
-| **Claude Opus 4.6** (Review) | Agent Teams capability — delegates sub-tasks to specialised virtual agents in parallel, making it ideal for systematic Lean/Kaizen architectural review. 3× multiplier cost; reserve for genuine deep reviews |
+| **Claude Opus 4.6** (Review, Doctor) | Agent Teams capability — delegates sub-tasks to specialised virtual agents in parallel, making it ideal for systematic Lean/Kaizen architectural review. Also used for Doctor: the careful, comprehensive analysis mode benefits from Opus's longer reasoning |
 | **Claude Haiku 4.5** (Fast) | 0.33× cost multiplier; fastest response time. Right-sized for questions that don't warrant a premium model |
 
 ---
@@ -65,6 +67,8 @@ If a model is unavailable on your plan, the agent falls back in order:
 | Code | GPT-5.3-Codex → GPT-5.2-Codex → GPT-5.1-Codex → GPT-5.1 → GPT-5 mini |
 | Review | Claude Opus 4.6 → Claude Opus 4.5 → Claude Sonnet 4.6 → GPT-5.1 |
 | Fast | Claude Haiku 4.5 → Grok Code Fast 1 → GPT-5 mini → GPT-4.1 |
+| Update | Claude Sonnet 4.6 → Claude Sonnet 4.5 → GPT-5.1 |
+| Doctor | Claude Opus 4.6 → Claude Opus 4.5 → Claude Sonnet 4.6 |
 
 ---
 
@@ -80,10 +84,16 @@ Model names and availability change over time. If a model disappears from your C
 
 ## Agent handoffs
 
-The Code and Review agents have pre-configured handoffs:
+Handoffs wire guided one-click transitions between agents:
 
-- **Code → Review**: After implementing changes, Copilot offers "Review changes" — one click hands off to the Review agent.
-- **Review → Code**: After a review, Copilot offers "Implement fixes" — hands off back to the Code agent.
+| From | Button | To | When |
+|------|--------|----|------|
+| **Code** | Review changes | Review | After implementing, get a Lean/Kaizen review |
+| **Review** | Implement fixes | Code | After a review, apply the identified fixes |
+| **Setup** | Run health check | Doctor | After first-time setup, verify everything is well-formed |
+| **Update** | Run health check | Doctor | After an instruction update, verify the result is healthy |
+| **Doctor** | Apply fixes | Code | Doctor found file-content issues to fix |
+| **Doctor** | Update instructions | Update | Doctor found instructions are behind the template |
 
 These handoffs keep the model selection optimal throughout your workflow without requiring manual switching.
 

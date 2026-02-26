@@ -7,6 +7,11 @@ model:
   - GPT-5.1
   - GPT-5 mini
 tools: [editFiles, fetch, githubRepo, codebase]
+handoffs:
+  - label: Run health check
+    agent: doctor
+    prompt: Setup is complete. Run a full Doctor health check to verify all instruction files are well-formed, within budget, and have no placeholder leakage.
+    send: true
 ---
 
 You are the Setup agent for copilot-instructions-template.

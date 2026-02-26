@@ -142,7 +142,7 @@ A generic, **living** GitHub Copilot instructions template grounded in **Lean/Ka
 - A structured `.github/copilot-instructions.md` template (§1–§13) with `{{PLACEHOLDER}}` tokens for project-specific values.
 - A one-time setup process (`SETUP.md`) that Copilot runs to tailor everything to the target project's stack.
 - An update process (`UPDATE.md`) that Copilot runs to fetch and apply improvements from this repo to an already-installed project.
-- Four model-pinned agent files (`.github/agents/`) for VS Code 1.106+ — one each for Setup, Coding, Review, and Fast workflows.
+- Six model-pinned agent files (`.github/agents/`) for VS Code 1.106+ — Setup, Coding, Review, Fast, Update, and Doctor.
 - Five agent lifecycle hooks (`.github/hooks/`) that deterministically enforce security, formatting, and retrospective rules at session boundaries.
 - A reusable skill library (`.github/skills/`) following the [Agent Skills](https://agentskills.io) open standard — six starter skills included.
 - Automatic pre-write backups so every update is reversible — stored in `.github/archive/`.
@@ -188,6 +188,8 @@ Setup outputs written to the **user's project**:
 | `.github/agents/coding.agent.md` | Model-pinned Coding agent (GPT-5.3-Codex) |
 | `.github/agents/review.agent.md` | Model-pinned Review agent (Claude Opus 4.6) |
 | `.github/agents/fast.agent.md` | Model-pinned Fast agent (Claude Haiku 4.5) |
+| `.github/agents/update.agent.md` | Model-pinned Update agent (Claude Sonnet 4.6) |
+| `.github/agents/doctor.agent.md` | Model-pinned Doctor agent (Claude Opus 4.6) |
 | `.github/hooks/copilot-hooks.json` | Agent lifecycle hooks configuration |
 | `.github/hooks/scripts/*.sh` | Five starter hook scripts (security, formatting, retrospective, context) |
 | `.github/skills/*/SKILL.md` | Reusable skill library (6 starter skills from template) |
@@ -253,6 +255,8 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `.github/agents/coding.agent.md` | Model-pinned Coding agent stub (GPT-5.3-Codex) |
 | `.github/agents/review.agent.md` | Model-pinned Review agent stub (Claude Opus 4.6) |
 | `.github/agents/fast.agent.md` | Model-pinned Fast agent stub (Claude Haiku 4.5) |
+| `.github/agents/update.agent.md` | Model-pinned Update agent stub (Claude Sonnet 4.6) |
+| `.github/agents/doctor.agent.md` | Model-pinned Doctor agent stub (Claude Opus 4.6) |
 | `template/skills/skill-creator/SKILL.md` | Starter skill — meta-skill for authoring new skills |
 | `template/skills/fix-ci-failure/SKILL.md` | Starter skill — CI failure diagnosis and resolution |
 | `template/skills/lean-pr-review/SKILL.md` | Starter skill — Lean PR review with waste categories |

@@ -13,6 +13,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ### Features
 
+* **agents:** add `update.agent.md` — dedicated agent for the instruction update protocol (fetch, diff, apply, restore) with handoff to Doctor
+* **agents:** add `doctor.agent.md` — read-only health check agent covering attention budget, section structure, placeholder leakage, agent validity, MCP config, workspace memory files, VERSION.md, JOURNAL.md, BIBLIOGRAPHY.md
+* **agents(setup):** add handoff from Setup → Doctor so first-time setup flows naturally into a health verification
 * **§8:** add Attention Budget policy — per-section line limits for `copilot-instructions.md` with CI enforcement
 * **ci:** new `Attention budget` step in `ci.yml` enforcing line limits per section (800 total, 210 §2, 120 §1/§3–§9, 150 §11–§13)
 
