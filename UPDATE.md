@@ -17,6 +17,8 @@ When a user says any of the following in a project that already has Copilot inst
 - *"Check the template for updates"*
 - *"Force check instruction updates"* *(bypasses version equality check — see end of document)*
 
+> **Disambiguation**: All of these phrases mean the same thing — check the upstream template repository at `https://github.com/asafelobotomy/copilot-instructions-template` for a newer version and, if one exists, walk the user through applying the changes. This is not a request to edit the instructions in an ad-hoc way.
+
 To restore a previous version after an update:
 
 - *"Restore instructions from backup"*

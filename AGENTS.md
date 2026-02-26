@@ -29,6 +29,8 @@ When a user says any of the following in a project that **already has Copilot in
 - *"Check the template for updates"*
 - *"Force check instruction updates"* *(bypasses version equality check)*
 
+> **What "update" means**: Go to the upstream template repository at `https://github.com/asafelobotomy/copilot-instructions-template`, fetch the latest `VERSION.md` to check for a newer release, and — if one exists — run the full update protocol defined in `UPDATE.md`. This is **not** a general-purpose edit command. It specifically means: check the template repo for upstream changes and apply them to the user's local instructions.
+
 ...perform the **Remote Update Sequence** below.
 
 ### Restore (from backup)
@@ -286,7 +288,7 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | Action | Trigger phrase |
 |--------|----------------|
 | First-time setup | *"Setup from asafelobotomy/copilot-instructions-template"* |
-| Check for updates | *"Update your instructions"* |
+| Check for updates (from [template repo](https://github.com/asafelobotomy/copilot-instructions-template)) | *"Update your instructions"* |
 | Force full comparison | *"Force check instruction updates"* |
 | Restore a backup | *"Restore instructions from backup"* |
 | List available backups | *"List instruction backups"* |

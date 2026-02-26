@@ -11,7 +11,7 @@ Open a Copilot chat and say:
 
 > *"Update your instructions"*
 
-Copilot fetches `UPDATE.md` from the template repo and follows the protocol exactly.
+This tells Copilot to check the upstream template repository at [`asafelobotomy/copilot-instructions-template`](https://github.com/asafelobotomy/copilot-instructions-template) for a newer version. Copilot fetches `UPDATE.md` from that repo and follows the update protocol exactly — comparing versions, building a change manifest, and letting you decide what to apply.
 
 ---
 

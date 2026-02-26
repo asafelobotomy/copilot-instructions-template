@@ -9,6 +9,27 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [Unreleased]
+
+### Features
+
+* **§8:** add Attention Budget policy — per-section line limits for `copilot-instructions.md` with CI enforcement
+* **ci:** new `Attention budget` step in `ci.yml` enforcing line limits per section (800 total, 210 §2, 120 §1/§3–§9, 150 §11–§13)
+
+### Bug Fixes
+
+* **mcp:** fix git and fetch MCP servers incorrectly using `npx`; they are Python packages requiring `uvx` (`mcp-server-git`, `mcp-server-fetch`)
+* **update:** clarify that "Update your instructions" means checking `https://github.com/asafelobotomy/copilot-instructions-template` for upstream changes, not making ad-hoc edits
+
+### Documentation
+
+* **CONTRIBUTING.md:** add Attention Budget section explaining per-section limits and overflow rule
+* **docs/INSTRUCTIONS-GUIDE.md:** document Attention Budget under §8 guide
+* **docs/MCP-GUIDE.md:** strengthen note on `uvx` vs `npx` distinction for git/fetch servers
+* **docs/UPDATE-GUIDE.md, AGENTS.md, UPDATE.md, README.md:** make "Update your instructions" trigger explicitly reference the upstream repo URL
+
+---
+
 ## [2.2.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v2.1.0...v2.2.0) (2026-02-26)
 
 

@@ -111,7 +111,7 @@ All GitHub Actions are SHA-pinned to immutable commit hashes and protected with 
 
 ### 🔄 Living update protocol
 
-The template ships versioned. When a new version is released, say *"Update your instructions"* and Copilot will fetch the diff, present a section-by-section change manifest, let you apply / skip / customise each change, back up the current file, write the updates, and record everything in `JOURNAL.md` and `CHANGELOG.md`. The update is always reversible.
+The template ships versioned. When a new version is released, say *"Update your instructions"* — this tells Copilot to check [`asafelobotomy/copilot-instructions-template`](https://github.com/asafelobotomy/copilot-instructions-template) for a newer release. Copilot will fetch the diff, present a section-by-section change manifest, let you apply / skip / customise each change, back up the current file, write the updates, and record everything in `JOURNAL.md` and `CHANGELOG.md`. The update is always reversible.
 
 ### 💓 Event-driven heartbeat
 
