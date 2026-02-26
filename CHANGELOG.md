@@ -13,6 +13,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ### Features
 
+* **version:** bump to 2.3.0; move installed version tracking from root `VERSION.md` → `.github/copilot-version.md` to avoid collision with consumer project version files; update all references in `UPDATE.md`, `AGENTS.md`, `SETUP.md`, `doctor.agent.md`, and `docs/UPDATE-GUIDE.md`
 * **context(items 1-5):** research-backed LLM attention and grounding improvements — Critical Reminders block at preamble (beats Lost-in-the-Middle), `<project_config>` XML tags on §10 placeholder table, parallel execution directive at §11 head, read-before-claiming rule in §4, few-shot `<examples>` blocks in §2 Review Mode / §5 PDCA / `review.agent.md`
 * **context(items 6-7):** skill description anti-smells added to §12 authoring rule 2; output-efficiency bullet added to §11 Other rules — prefer `grep`/`head`/`jq` over raw dumps, return minimum token payload
 * **context(item 8):** add `llms.txt` at repo root per llmstxt.org spec — project overview, key file links, agent inventory, skill inventory, MCP server summary, workspace identity file catalogue

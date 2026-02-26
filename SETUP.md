@@ -1052,7 +1052,7 @@ Checks to run:
 - D3 Placeholder leakage: no unresolved {{PLACEHOLDER}} tokens in §1–§9
 - D4 Agent file validity: frontmatter, handoff agent: identifiers match filename stems, targets exist
 - D5 MCP config: no npx for mcp-server-git or mcp-server-fetch; must use uvx
-- D6 VERSION.md: present and valid semver
+- D6 .github/copilot-version.md: present and valid semver
 - D7 Workspace memory files: IDENTITY.md, HEARTBEAT.md, MEMORY.md, SOUL.md, METRICS.md, TOOLS.md, USER.md, BOOTSTRAP.md
 - D8 JOURNAL.md: present with at least one entry
 - D9 BIBLIOGRAPHY.md: present

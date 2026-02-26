@@ -19,7 +19,7 @@ This tells Copilot to check the upstream template repository at [`asafelobotomy/
 
 ### 1 — Version check
 
-Copilot reads your installed version from `VERSION.md`.
+Copilot reads your installed version from `.github/copilot-version.md`.
 
 It then fetches the current `VERSION.md` from the template repo. If the versions are equal, it reports "already up to date" and stops.
 

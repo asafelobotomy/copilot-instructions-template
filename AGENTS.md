@@ -248,7 +248,7 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `AGENTS.md` | This file — AI agent entry point |
 | `SETUP.md` | Complete setup guide (remote-executable) |
 | `UPDATE.md` | Complete update + restore protocol (remote-executable) |
-| `VERSION.md` | Current template version number (semver) |
+| `.github/copilot-version.md` | Installed template version number (semver) — kept in `.github/` to avoid conflict with the consumer project's own version file |
 | `CHANGELOG.md` | Template version history |
 | `.github/copilot-instructions.md` | Generic instructions template with `{{PLACEHOLDER}}` tokens |
 | `.github/agents/setup.agent.md` | Model-pinned Setup agent stub (Claude Sonnet 4.6) |

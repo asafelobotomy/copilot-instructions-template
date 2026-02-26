@@ -54,7 +54,7 @@ patterns. Use `codebase` to read file contents.
 - `.copilot/workspace/BOOTSTRAP.md`
 
 ### Project tracking files
-- `VERSION.md`
+- `.github/copilot-version.md`
 - `JOURNAL.md`
 - `BIBLIOGRAPHY.md`
 - `AGENTS.md`
@@ -143,7 +143,7 @@ Flag: `[HIGH]` for any `@modelcontextprotocol/server-git` or `@modelcontextproto
 
 ### D6 — Version file
 
-Check `VERSION.md`:
+Check `.github/copilot-version.md`:
 - Present?
 - Contains a valid semver string (`X.Y.Z`)?
 
@@ -191,7 +191,7 @@ After all checks, print the full health report:
 
 Checked: <DATE>
 Project: <working directory>
-Instructions version: <from VERSION.md, or "unknown">
+Instructions version: <from .github/copilot-version.md, or "unknown">
 
 ──────────────────────────────────────────────────────────────
 D1  ATTENTION BUDGET
@@ -223,7 +223,7 @@ D5  MCP CONFIGURATION
 ──────────────────────────────────────────────────────────────
 D6  VERSION FILE
 ──────────────────────────────────────────────────────────────
-  <findings or "VERSION.md present — vX.Y.Z">
+  <findings or ".github/copilot-version.md present — vX.Y.Z">
 
 ──────────────────────────────────────────────────────────────
 D7  WORKSPACE MEMORY FILES

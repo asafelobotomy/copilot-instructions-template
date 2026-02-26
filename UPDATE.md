@@ -37,12 +37,12 @@ Complete all five steps before presenting anything to the user. Do not write any
 
 Read `.github/copilot-instructions.md` in the **user's current project**.
 
-Read `VERSION.md` in the **user's current project**.
+Read `.github/copilot-version.md` in the **user's current project**.
 
 Extract:
 
-- **Installed version**: from `VERSION.md` (must be semver `x.y.z`).
-  - If `VERSION.md` is absent or invalid, treat installed version as `unknown` and proceed with a full comparison.
+- **Installed version**: from `.github/copilot-version.md` (must be semver `x.y.z`).
+  - If `.github/copilot-version.md` is absent or invalid, treat installed version as `unknown` and proceed with a full comparison.
 - **Applied date**: the `Applied` value from that line.
 - **Updated date**: the `Updated` value if present (set by a previous update run).
 - **§10 content**: the entire `## §10 — Project-Specific Overrides` section — this is preserved unconditionally and never included in the diff.
@@ -181,7 +181,7 @@ Create the directory:
 Where:
 
 - `<TODAY>` is today's date in `YYYY-MM-DD` format.
-- `<INSTALLED_VERSION>` is the version extracted in U1 (or `unknown` if `VERSION.md` was absent/invalid).
+- `<INSTALLED_VERSION>` is the version extracted in U1 (or `unknown` if `.github/copilot-version.md` was absent/invalid).
 
 If that directory already exists (e.g., the user ran an update twice on the same day from the same version), append a counter: `-2`, `-3`, etc.
 
@@ -342,11 +342,9 @@ After all changes are confirmed and written:
 
 ### 1 — Update the version file
 
-Set `VERSION.md` content to `NEW` (semver only).
+Set `.github/copilot-version.md` content to `NEW` (semver only, no trailing whitespace).
 
-If `scripts/sync-version.sh` exists, run it immediately after updating `VERSION.md` so derived references stay aligned.
-
-If `scripts/sync-version.sh` does not exist, update any derived version strings manually (for example, template stamp lines and README badge values).
+Do **not** run `scripts/sync-version.sh` — that script is template-repo infrastructure and does not exist in consumer projects.
 
 ### 2 — Append to JOURNAL.md
 
