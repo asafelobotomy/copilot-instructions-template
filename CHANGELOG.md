@@ -9,6 +9,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [2.2.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v2.1.0...v2.2.0) (2026-02-26)
+
+
+### Features
+
+* **setup:** revamp onboarding UX — Quick/Standard/Full tiers, A16/A17, streamline E-tier ([e456d36](https://github.com/asafelobotomy/copilot-instructions-template/commit/e456d36f5cf2303b3a4ce8d675ff1dcebd279ad3))
+
+
+### Bug Fixes
+
+* **ci:** make scorecard job non-blocking via continue-on-error ([c347934](https://github.com/asafelobotomy/copilot-instructions-template/commit/c347934b3b1f337e5fbb774f0dc937b01caaa825))
+* **lint:** resolve 271 markdownlint errors in CHANGELOG.md ([1e88d66](https://github.com/asafelobotomy/copilot-instructions-template/commit/1e88d6623437249dec7fae8cce0a43b7481edf53))
+
 ## [2.1.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v2.0.0...v2.1.0) (2026-02-23)
 
 
