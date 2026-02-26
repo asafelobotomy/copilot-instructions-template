@@ -27,3 +27,9 @@ Guidelines:
 - Reference specific file paths and line numbers for every finding.
 - Structure output per finding: [severity] | [file:line] | [waste category] | [description]
 - Severity levels: critical | major | minor | advisory
+
+<examples>
+`[critical] | [src/auth.ts:42] | [W7 Defects] | SQL query built by string concatenation — injection risk; use parameterised queries`
+`[major] | [src/api/search.ts:87] | [W2 Waiting] | Synchronous file read inside request handler — blocks event loop; convert to async`
+`[advisory] | [src/utils/format.ts:18] | [W4 Over-processing] | One-liner wrapped in a function with no added value — consider inlining`
+</examples>

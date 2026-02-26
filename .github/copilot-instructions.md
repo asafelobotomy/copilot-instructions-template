@@ -17,6 +17,13 @@
 > **⚠️ Codex models** (`GPT-5.x-Codex`) are designed for **autonomous, headless execution** and **cannot** present interactive prompts. Never use a Codex model for Setup/onboarding — the interview will be silently skipped. The Setup agent pins Claude Sonnet 4.6 for this reason.
 >
 > If a model is missing from your picker, check [Supported AI models](https://docs.github.com/en/copilot/reference/ai-models/supported-models) and update agent files.
+>
+> **⚡ Critical Reminders** — every session, every task:
+> 1. **Test** — run `{{THREE_CHECK_COMMAND}}` before marking any task done (§3).
+> 2. **BIBLIOGRAPHY** — update on every file create, rename, or delete (§5).
+> 3. **PDCA** — Plan→Do→Check→Act for every non-trivial change (§5).
+> 4. **Read first** — never claim or modify a file not opened this session (§4).
+> 5. **Additive** — never delete existing rules without explicit user instruction (§8).
 
 ---
 
@@ -53,6 +60,11 @@ Switch modes explicitly. Default is **Implement**.
 - Tag every finding with a waste category (§6).
 - Use format: `[severity] | [file:line] | [waste category] | [description]`
 - Severity: `critical` | `major` | `minor` | `advisory`
+
+  <examples>
+  `[critical] | [src/auth.ts:42] | [W7 Defects] | SQL query built by string concatenation — injection risk; use parameterised queries`
+  `[minor] | [src/utils/format.ts:18] | [W4 Over-processing] | One-liner wrapped in a function with no added value — consider inlining`
+  </examples>
 
 #### Extension Review
 
@@ -269,6 +281,8 @@ When asked to review test coverage, recommend tests, or audit the test suite:
 - No commented-out code — git history is the undo stack.
 - Imports are grouped: stdlib → third-party → internal. One blank line between groups.
 - Functions do one thing. If you need "and" in the name, split it.
+- Read before claiming — never describe, reference, or modify a file not opened this session.
+  `semantic_search` or `grep_search` confirms existence; reading the file confirms content.
 
 ---
 
@@ -280,6 +294,13 @@ Apply to every non-trivial change.
 **Do**: Implement. Write tests alongside code, not after.
 **Check**: Run `{{THREE_CHECK_COMMAND}}`. Review output. Fix before proceeding.
 **Act**: If baseline exceeded, address it now. Update `BIBLIOGRAPHY.md`. Summarise what changed.
+
+<example>
+**Plan**: Add rate-limiting middleware to `/api/search`. Files: `src/middleware/rate-limit.ts` (new), `src/server.ts` (edit). Estimated delta: +48 LOC.
+**Do**: Implemented token-bucket limiter; unit tests in `tests/rate-limit.test.ts`.
+**Check**: `npm test && npx tsc --noEmit` — 38 tests pass, 0 type errors. LOC delta +52.
+**Act**: Within 400-line hard limit. Updated `BIBLIOGRAPHY.md`. No baselines breached.
+</example>
 
 ---
 
@@ -405,6 +426,7 @@ When spawning subagents:
 
 Resolved values and project-specific overrides. Populated during setup; updated via §8.
 
+<project_config>
 | Placeholder | Resolved value |
 |-------------|---------------|
 | `{{PROJECT_NAME}}` | *(fill during setup)* |
@@ -433,6 +455,8 @@ Resolved values and project-specific overrides. Populated during setup; updated 
 | `{{TRUST_OVERRIDES}}` | *(fill during setup — see E21)* |
 | `{{MCP_STACK_SERVERS}}` | *(fill during setup — see Step 2.12)* |
 | `{{MCP_CUSTOM_SERVERS}}` | *(fill during setup — see E22)* |
+
+</project_config>
 
 ### Verification Levels
 
@@ -480,6 +504,10 @@ The Graduated Trust Model assigns verification behaviour based on path patterns.
 ---
 
 ## §11 — Tool Protocol
+
+> **Parallel execution**: When multiple independent tool calls are needed (reading N files,
+> running N searches, fetching N URLs), execute all in one parallel batch. Never sequence
+> independent tool calls — check for data dependencies first, then parallelize everything else.
 
 When a task requires automation, a scripted command sequence, or a repeatable utility, follow this decision tree before writing anything ad-hoc.
 
