@@ -57,7 +57,7 @@ To enable a credentials-required server:
 2. Provide required credentials (for GitHub, use the configured input prompt or set `GITHUB_PERSONAL_ACCESS_TOKEN`)
 3. Restart VS Code
 
-> **Note:** The official `git` and `fetch` MCP servers are Python packages and are launched with `uvx` in the template. Install `uv`/`uvx` before using those servers.
+> **Note:** The `git` and `fetch` MCP servers are **Python** packages (`mcp-server-git`, `mcp-server-fetch`) launched with **`uvx`**. They are **not** available on npm — using `npx` for these will produce a 404 error. Only `filesystem`, `memory`, and `github` servers use `npx` (they are Node packages under `@modelcontextprotocol/`).
 
 Quick startup verification for those two servers:
 

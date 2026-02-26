@@ -1101,7 +1101,9 @@ The Model Context Protocol (MCP) connects Copilot to external tools via `.vscode
 
 3.5. **Prerequisite for git/fetch MCP servers (`uvx`)**:
 
-   The official `git` and `fetch` MCP servers are Python packages launched via `uvx`.
+   The official `git` and `fetch` MCP servers are **Python** packages launched via `uvx` (from [uv](https://docs.astral.sh/uv/)). They do **not** exist on npm. Using `npx` for these servers will produce a 404 error.
+
+   > **CRITICAL**: The `git` server uses `"command": "uvx"` with args `["mcp-server-git", ...]`. The `fetch` server uses `"command": "uvx"` with args `["mcp-server-fetch"]`. Do **not** use `npx` or `@modelcontextprotocol/server-git` — that npm package does not exist. Only `filesystem`, `memory`, and `github` servers use `npx`.
 
    - Before enabling or starting those servers, check availability:
 
