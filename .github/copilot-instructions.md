@@ -1,6 +1,6 @@
 # Copilot Instructions — {{PROJECT_NAME}}
 
-> **Template version**: 2.1.0 | **Applied**: {{SETUP_DATE}}
+> **Template version**: 2.3.0 | **Applied**: {{SETUP_DATE}}
 > Living document — self-edit rules in §8.
 >
 > **Model Quick Reference** — select model in Copilot picker before starting each task, or use `.github/agents/` (VS Code 1.106+). [Why these models?](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)
@@ -19,6 +19,7 @@
 > If a model is missing from your picker, check [Supported AI models](https://docs.github.com/en/copilot/reference/ai-models/supported-models) and update agent files.
 >
 > **⚡ Critical Reminders** — every session, every task:
+>
 > 1. **Test** — run `{{THREE_CHECK_COMMAND}}` before marking any task done (§3).
 > 2. **BIBLIOGRAPHY** — update on every file create, rename, or delete (§5).
 > 3. **PDCA** — Plan→Do→Check→Act for every non-trivial change (§5).
@@ -421,6 +422,7 @@ When spawning subagents:
 Resolved values and project-specific overrides. Populated during setup; updated via §8.
 
 <project_config>
+
 | Placeholder | Resolved value |
 |-------------|---------------|
 | `{{PROJECT_NAME}}` | *(fill during setup)* |

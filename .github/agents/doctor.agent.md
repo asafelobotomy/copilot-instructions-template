@@ -38,12 +38,15 @@ Run every check below. Use the `terminal` tool to count lines and grep for
 patterns. Use `codebase` to read file contents.
 
 ### Core instructions
+
 - `.github/copilot-instructions.md`
 
 ### Agent files
+
 - `.github/agents/*.agent.md` — all files in this directory
 
 ### Workspace memory files
+
 - `.copilot/workspace/IDENTITY.md`
 - `.copilot/workspace/HEARTBEAT.md`
 - `.copilot/workspace/MEMORY.md`
@@ -54,6 +57,7 @@ patterns. Use `codebase` to read file contents.
 - `.copilot/workspace/BOOTSTRAP.md`
 
 ### Project tracking files
+
 - `.github/copilot-version.md`
 - `JOURNAL.md`
 - `BIBLIOGRAPHY.md`
@@ -61,10 +65,12 @@ patterns. Use `codebase` to read file contents.
 - `CHANGELOG.md`
 
 ### VS Code config
+
 - `.vscode/mcp.json`
 - `.vscode/extensions.json`
 
 ### Lifecycle files
+
 - `.github/hooks/` — list any hook files present
 - `.github/skills/` — list any skill files present
 - `.github/prompts/` — list any prompt files present
@@ -144,6 +150,7 @@ Flag: `[HIGH]` for any `@modelcontextprotocol/server-git` or `@modelcontextproto
 ### D6 — Version file
 
 Check `.github/copilot-version.md`:
+
 - Present?
 - Contains a valid semver string (`X.Y.Z`)?
 
@@ -152,6 +159,7 @@ Flag: `[HIGH]` if absent or malformed.
 ### D7 — Workspace memory files
 
 Check each file listed under "Workspace memory files" above:
+
 - Does it exist?
 - Is it non-empty?
 

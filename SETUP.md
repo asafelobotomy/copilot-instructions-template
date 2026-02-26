@@ -1198,6 +1198,7 @@ The Model Context Protocol (MCP) connects Copilot to external tools via `.vscode
 
    > **CRITICAL**: The `git` server uses `"command": "uvx"` with args `["mcp-server-git", ...]`. The `fetch` server uses `"command": "uvx"` with args `["mcp-server-fetch"]`. Do **not** use `npx` or `@modelcontextprotocol/server-git` — that npm package does not exist. Only `filesystem`, `memory`, and `github` servers use `npx`.
 
+<!-- markdownlint-disable MD007 -->
    - Before enabling or starting those servers, check availability:
 
      ```bash
@@ -1215,6 +1216,9 @@ The Model Context Protocol (MCP) connects Copilot to external tools via `.vscode
 
      Exit code `124` from `timeout` is expected here and means the server stayed running on stdio.
 
+<!-- markdownlint-enable MD007 -->
+
+<!-- markdownlint-disable MD029 -->
 4. **Stack-specific server discovery** (E22=C only): Based on the technology stack discovered in Step 1, suggest relevant MCP servers:
 
    | Stack signal | Suggested MCP server | Package |
@@ -1233,6 +1237,7 @@ The Model Context Protocol (MCP) connects Copilot to external tools via `.vscode
    - `{{MCP_CUSTOM_SERVERS}}`: Any additional custom server entries, or *(empty)* if none.
 
 6. Log the created file to JOURNAL.md.
+<!-- markdownlint-enable MD029 -->
 
 ---
 
