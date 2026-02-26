@@ -9,6 +9,85 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [3.0.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v2.3.0...v3.0.0) (2026-02-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* New §13 (MCP Protocol) changes section count from 12 to 13. Step 2.12 generates .vscode/mcp.json during setup. Interview expands to 22 questions (E22 added to Expert tier).
+
+### Features
+
+* §2 Test Coverage Review — local test recommendations + CI workflow generation ([e21e64f](https://github.com/asafelobotomy/copilot-instructions-template/commit/e21e64fec3c5381404b530e23719206289f15b1d))
+* 3-tier preference interview — Simple (5) / Advanced (+9) / Expert (+5) ([8c77f9b](https://github.com/asafelobotomy/copilot-instructions-template/commit/8c77f9b4cf246ed8b2c353f0ba39365ce366c1ea))
+* add §11 Tool Protocol — find/adapt/build/save decision tree with toolbox ([30e798c](https://github.com/asafelobotomy/copilot-instructions-template/commit/30e798c33a864174976cfceaaf296c3cfa6c3fbb))
+* add agent lifecycle hooks and enhance built-in tool discovery ([26a4dc2](https://github.com/asafelobotomy/copilot-instructions-template/commit/26a4dc21eef2683c46e2c4d236d2ee24edbef816))
+* add Agent Skills system (§12, A15, 4 starter skills, docs) ([#1](https://github.com/asafelobotomy/copilot-instructions-template/issues/1)) ([6b485b2](https://github.com/asafelobotomy/copilot-instructions-template/commit/6b485b228358de3f87fda6536d0d3dfa49a92f21))
+* add Agent Skills system (§12, A15, 4 starter skills, docs) ([#1](https://github.com/asafelobotomy/copilot-instructions-template/issues/1)) ([6b485b2](https://github.com/asafelobotomy/copilot-instructions-template/commit/6b485b228358de3f87fda6536d0d3dfa49a92f21))
+* add model-pinned agent files to .github/agents/ ([0f4cc16](https://github.com/asafelobotomy/copilot-instructions-template/commit/0f4cc1634f263a9687a43ec34ed8053c71bfc771))
+* add model-pinned agent files to .github/agents/ ([d6f94b4](https://github.com/asafelobotomy/copilot-instructions-template/commit/d6f94b42f4b820b9ca309e1b4f30542ca0fdb20e))
+* add model-pinned agent files to .github/agents/ ([a106ed6](https://github.com/asafelobotomy/copilot-instructions-template/commit/a106ed6c4bc4611cb19d8785f9764eeb97814f30))
+* add model-pinned agent files to .github/agents/ ([694b1e5](https://github.com/asafelobotomy/copilot-instructions-template/commit/694b1e582c753e5e5bfaedf44c1af0bc02a65484))
+* add remote bootstrap — trigger phrase activates full setup via GitHub fetch ([b4b2d52](https://github.com/asafelobotomy/copilot-instructions-template/commit/b4b2d520c1984246f6c1be5076d26695906e14d8))
+* add Tool Protocol trigger phrases and toolbox entries to AGENTS.md ([f702e8e](https://github.com/asafelobotomy/copilot-instructions-template/commit/f702e8eac2e6eba6edbd52b1ad78bd1f943a2648))
+* add toolbox note to BOOTSTRAP.md stub ([675a2f0](https://github.com/asafelobotomy/copilot-instructions-template/commit/675a2f049e2f54d78d9ccc4a5b2a73dfc9d4700c))
+* add Toolbox section to BIBLIOGRAPHY.md stub ([32ee8ad](https://github.com/asafelobotomy/copilot-instructions-template/commit/32ee8ad3acc7b6e2a12d5618cc74cd8ddb5780aa))
+* add UPDATE.md — full update protocol with pre-flight, report, and decision paths ([e7f34f8](https://github.com/asafelobotomy/copilot-instructions-template/commit/e7f34f855da0c5297e912a1aa6d654be49478ffe))
+* **agents:** add restore trigger phrases and Remote Restore Sequence ([5506949](https://github.com/asafelobotomy/copilot-instructions-template/commit/5506949e91539e31616ce97662066110c0b44514))
+* **agents:** add Update and Doctor custom agents ([749ec1a](https://github.com/asafelobotomy/copilot-instructions-template/commit/749ec1ab275453bedfd35dc3cc74c6449e7d650e))
+* **agents:** add update trigger phrases and Remote Update Sequence ([b71b9ba](https://github.com/asafelobotomy/copilot-instructions-template/commit/b71b9bab484968fcf0e3ddeba287dcd74cd28c81))
+* **context:** deepen LLM grounding, add llms.txt and issue-triage skill (items 6-13) ([2fe86fa](https://github.com/asafelobotomy/copilot-instructions-template/commit/2fe86fac2532a5946a218e95ce5c076f0e1d6b01))
+* **context:** improve LLM attention, grounding, and efficiency (items 1-5) ([ed9b9fa](https://github.com/asafelobotomy/copilot-instructions-template/commit/ed9b9fa1476d862098e32b838fc5fda685644ecd))
+* enhance heartbeat protocol with retrospective introspection and task completion triggers ([4ef14d9](https://github.com/asafelobotomy/copilot-instructions-template/commit/4ef14d9174890dcd663912398d72e78783dbd83d))
+* implement event-driven heartbeat protocol with health checks and triggers ([d5ceb27](https://github.com/asafelobotomy/copilot-instructions-template/commit/d5ceb27119e48b07a144e09bb1b2ab99c112d52b))
+* initial scaffold — generic Lean/Kaizen living Copilot instructions template ([4a43021](https://github.com/asafelobotomy/copilot-instructions-template/commit/4a4302113985a90d49e09026ee4aaf3cc3bbf8d7))
+* **instructions:** add Attention Budget policy with CI enforcement ([d9c9a6b](https://github.com/asafelobotomy/copilot-instructions-template/commit/d9c9a6b339927fad131d329a6ff7930264c3a3fb))
+* **instructions:** add model quick reference table ([43bdad2](https://github.com/asafelobotomy/copilot-instructions-template/commit/43bdad215173040bb95af89b7d0977216a572b25))
+* offer fetch-from-template option in SETUP.md Step 2.5 ([2105d78](https://github.com/asafelobotomy/copilot-instructions-template/commit/2105d7826ce49e7b8682146a82e9965786ad576d))
+* **setup:** add pre-flight detection for existing instructions and files ([cb8568d](https://github.com/asafelobotomy/copilot-instructions-template/commit/cb8568d81dae87d47b9c9b71bc9c56d80c8d0a77))
+* **setup:** add Step 2.5 with four model-pinned agent file stubs ([426b29c](https://github.com/asafelobotomy/copilot-instructions-template/commit/426b29cc2b0b7642ec3fb28ef491c4ff117a45fb))
+* **setup:** add user preference interview to pre-flight (Step 0d) ([36887c8](https://github.com/asafelobotomy/copilot-instructions-template/commit/36887c8d5b410de518dd841c69885b3d8accd360))
+* **setup:** revamp onboarding UX — Quick/Standard/Full tiers, A16/A17, streamline E-tier ([e456d36](https://github.com/asafelobotomy/copilot-instructions-template/commit/e456d36f5cf2303b3a4ce8d675ff1dcebd279ad3))
+* **template:** add template update subsection to §8 Living Update Protocol ([da3f089](https://github.com/asafelobotomy/copilot-instructions-template/commit/da3f08997e6997cac46b4622c4e23a47221a1fd4))
+* update TOOLS.md stub — add toolbox section and §11 reference ([7e9a173](https://github.com/asafelobotomy/copilot-instructions-template/commit/7e9a173ac24a09d49e4a68eb5e7428a0c8da22d5))
+* **update:** add automatic pre-write backup + restore flow ([15c0eda](https://github.com/asafelobotomy/copilot-instructions-template/commit/15c0eda3920030f414dd8f075be736d344312aa9))
+* v1.2.0 — Waste Taxonomy & CI Hardening ([0b26c58](https://github.com/asafelobotomy/copilot-instructions-template/commit/0b26c58bca8a38857e85f91a4ec5e520f6eb324a))
+* v1.3.0 — Context Precision ([76843e2](https://github.com/asafelobotomy/copilot-instructions-template/commit/76843e2681f9a0b222c59dcf14e0f20241f7be35))
+* v1.4.0 — Security & Trust ([524789d](https://github.com/asafelobotomy/copilot-instructions-template/commit/524789d771d1f361eb848252729655d84f60685e))
+* v2.0.0 — MCP Integration & Ecosystem ([802f086](https://github.com/asafelobotomy/copilot-instructions-template/commit/802f08615c0d75c91a8f0c6a945d0ecf5eee4cf4))
+
+
+### Bug Fixes
+
+* add .github/agents/ entries to AGENTS.md file map and bootstrap outputs ([4109bff](https://github.com/asafelobotomy/copilot-instructions-template/commit/4109bff84fc4e29abbdd5774f80a8f10eb069057))
+* add agents dir, AGENTS.md, UPDATE.md, VERSION to README file list and tree ([735c1d9](https://github.com/asafelobotomy/copilot-instructions-template/commit/735c1d939dda636ddf764397bff3e3568af30d93))
+* add language specifier to fenced code blocks (MD040) ([1853577](https://github.com/asafelobotomy/copilot-instructions-template/commit/18535770188fcf16da2830d6773c3bc90afa2ac2))
+* add model-pinned agent files to template/workspace/BOOTSTRAP.md ([e323b24](https://github.com/asafelobotomy/copilot-instructions-template/commit/e323b2477ea4d3d73265f715023b331169d08bc1))
+* add model-pinned agents section to template/BIBLIOGRAPHY.md stub ([6fb0d56](https://github.com/asafelobotomy/copilot-instructions-template/commit/6fb0d56466d7d0cb337b0d3173dacb94be2a9ed8))
+* add release-please config and manifest to fix CI failure ([74b78e3](https://github.com/asafelobotomy/copilot-instructions-template/commit/74b78e3d62d31a24f02c27560d6525dfceda0341))
+* **agents:** correct handoff agent: identifiers to use filename stems ([095bf86](https://github.com/asafelobotomy/copilot-instructions-template/commit/095bf862c827186bfe132ddd8d275b5f732170ac))
+* **ci:** make scorecard job non-blocking via continue-on-error ([c347934](https://github.com/asafelobotomy/copilot-instructions-template/commit/c347934b3b1f337e5fbb774f0dc937b01caaa825))
+* correct §10 notation, fix stale section names, optimize Pre-flight Report format ([f00d3ed](https://github.com/asafelobotomy/copilot-instructions-template/commit/f00d3ed472eb3a229457699a1085d8d41dc7aae9))
+* correct section names and add agent files to CHANGELOG.md ([71576cd](https://github.com/asafelobotomy/copilot-instructions-template/commit/71576cdc6a0ca4942428d389209742f891fb77e5))
+* correct skill counts, tree formatting, file counts, SHA-pin examples, and CHANGELOG ref ([5fb1096](https://github.com/asafelobotomy/copilot-instructions-template/commit/5fb109618ac514777aa0c4646aa39c407914294a))
+* full repo review — 10 findings addressed ([979c271](https://github.com/asafelobotomy/copilot-instructions-template/commit/979c27152c827a018599b6c890eb8adb0722e618))
+* **lint:** resolve 22 markdownlint errors and sync version stamp ([43499ff](https://github.com/asafelobotomy/copilot-instructions-template/commit/43499ff0929f0cf89868e5e9d686974f0dcbc8d1))
+* **lint:** resolve 271 markdownlint errors in CHANGELOG.md ([1e88d66](https://github.com/asafelobotomy/copilot-instructions-template/commit/1e88d6623437249dec7fae8cce0a43b7481edf53))
+* markdownlint bulk cleanup — all CI errors resolved ([ae9d4f9](https://github.com/asafelobotomy/copilot-instructions-template/commit/ae9d4f9950c2de14e4772016777292fa6da793a8))
+* **mcp:** correct git and fetch MCP servers to use uvx not npx ([6f13858](https://github.com/asafelobotomy/copilot-instructions-template/commit/6f138585f84dfe3b896f87d738d1b792b56db510))
+* **models:** correct coding agent to GPT-5.3-Codex; update all SETUP.md references ([b1cc2fa](https://github.com/asafelobotomy/copilot-instructions-template/commit/b1cc2faf0a8b91d001f95c7791eb82278ff72e5a))
+* **models:** restore copilot-instructions.md with updated model quick reference table ([6b29a1b](https://github.com/asafelobotomy/copilot-instructions-template/commit/6b29a1b3e8096b4a3ba074a515914963c796ad7f))
+* resolve all review findings ([ac9aefc](https://github.com/asafelobotomy/copilot-instructions-template/commit/ac9aefc8e5007ee5853273ef1267de834ad089fc))
+* resolve CI and actionlint failures ([441feda](https://github.com/asafelobotomy/copilot-instructions-template/commit/441feda06fa50442055ac353364327421371a71b))
+* setup interview guardrails — batch plan, verification gate, Codex warnings ([abec974](https://github.com/asafelobotomy/copilot-instructions-template/commit/abec9745d6f6752f864e52135f43a01363f8a69c))
+* **SETUP.md:** add mcp-builder + webapp-testing to Step 2.8 and HEARTBEAT.md to BIBLIOGRAPHY stub ([8a593d8](https://github.com/asafelobotomy/copilot-instructions-template/commit/8a593d8af1c976be99eeff0bc0cefd0497b7db56))
+* **update:** clarify 'Update your instructions' means checking upstream template repo ([1846d99](https://github.com/asafelobotomy/copilot-instructions-template/commit/1846d99f1b044b737297957b5fadc05f32817ce4))
+
+
+### Performance Improvements
+
+* lossless compression — copilot-instructions.md + AGENTS.md (7.6% token reduction) ([61b8d1e](https://github.com/asafelobotomy/copilot-instructions-template/commit/61b8d1e0f5e8cdd17c7df4dc3647611f70eb0a95))
+
 ## [Unreleased]
 
 ### Features
