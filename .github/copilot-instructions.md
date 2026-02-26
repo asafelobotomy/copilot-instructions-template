@@ -384,6 +384,7 @@ Event-triggered health checks that keep the agent aligned with real project stat
 5. Append a row to History (keep last 5).
 6. Write observations to Agent Notes for the next heartbeat.
 7. Report to user only if alerts exist — silent when healthy (exception: retrospective Q4/Q5 always surface when non-empty).
+8. **Context limit**: if context pressure is high, run `save-context.sh`, append a resume note to Agent Notes, then continue — never abandon a task mid-flight.
 
 ### Agent Hooks
 
@@ -400,13 +401,6 @@ Hook configuration lives in `.github/hooks/copilot-hooks.json`. The template shi
 | `PreCompact` | `save-context.sh` | Preserve workspace state (heartbeat, memory, heuristics) before context compaction |
 
 Hook scripts accept JSON on stdin and emit JSON on stdout. See `docs/HOOKS-GUIDE.md` for configuration format, customisation instructions, and security considerations.
-
-**Hook interaction with other systems**:
-
-- `guard-destructive.sh` provides hard enforcement for §5 security rules that soft instructions cannot guarantee.
-- `enforce-retrospective.sh` ensures the heartbeat retrospective runs even when sessions end abruptly.
-- `save-context.sh` preserves workspace identity files across long sessions that hit context window limits.
-- `post-edit-lint.sh` eliminates W9 (manual repetition) for formatting after every edit.
 
 ---
 
@@ -603,6 +597,7 @@ Files: `INDEX.md` (catalogue) · `*.sh` · `*.py` · `*.js`/`*.ts` · `*.mcp.jso
 - Retire unused tools: mark `[DEPRECATED]` in INDEX.md; counts as W1 (Overproduction)
 - Tools follow the same LOC baseline as source code (§3 hard limit: {{LOC_HIGH_THRESHOLD}} lines)
 - Observability: after using a toolbox tool, note it in the session summary; ≥ 3 uses → document the workflow in `TOOLS.md` "Discovered workflow patterns"
+- Output efficiency — prefer targeted reads (`grep`, `head`, `jq`) over raw dumps; return the minimum token payload the callsite requires.
 
 ### Subagent tool use
 
@@ -698,8 +693,8 @@ Reject any skill that fails two or more checks. For borderline cases, present th
 When creating or adapting a skill:
 
 1. **One skill, one workflow** — a skill does one thing well. If you need "and", split it.
-2. **Description is the index** — write a precise one-sentence description; this is how the agent discovers the skill.
-3. **Steps, not prose** — use numbered steps with clear action verbs. The agent follows these literally.
+2. **Description is the index** — write a precise one-sentence description; this is how the agent discovers the skill. Anti-smells: vague scope (“handles X stuff”), missing activation criteria, omitted output contract.
+3. **Steps for procedures, goals for judgment** — numbered steps for deterministic workflows; goal-level language (“ensure…”, “verify…”) for tasks requiring reasoning and flexibility.
 4. **No hardcoded paths** — use relative references and contextual lookups, not project-specific paths.
 5. **Idempotent** — running the skill twice should produce the same result.
 6. **Test instructions** — include a "Verify" step at the end that confirms the skill completed correctly.

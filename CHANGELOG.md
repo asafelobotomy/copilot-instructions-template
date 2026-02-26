@@ -13,6 +13,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ### Features
 
+* **context(items 1-5):** research-backed LLM attention and grounding improvements — Critical Reminders block at preamble (beats Lost-in-the-Middle), `<project_config>` XML tags on §10 placeholder table, parallel execution directive at §11 head, read-before-claiming rule in §4, few-shot `<examples>` blocks in §2 Review Mode / §5 PDCA / `review.agent.md`
+* **context(items 6-7):** skill description anti-smells added to §12 authoring rule 2; output-efficiency bullet added to §11 Other rules — prefer `grep`/`head`/`jq` over raw dumps, return minimum token payload
+* **context(item 8):** add `llms.txt` at repo root per llmstxt.org spec — project overview, key file links, agent inventory, skill inventory, MCP server summary, workspace identity file catalogue
+* **context(item 9):** add step 8 (context limit protocol) to §8 Heartbeat Procedure — run `save-context.sh`, write resume note to Agent Notes, continue mid-task (never abandon)
+* **memory(item 10):** add MCP memory server row to `MEMORY.md` coexistence table — session-scoped, ephemeral, lowest priority; update priority rule to cover all three memory systems
+* **skills(item 11):** add `issue-triage` agentic workflow skill — triage GitHub issues with severity classification, Lean waste category mapping, next-action recommendation, and structured comment draft
+* **docs(item 12):** add "Sub-directory instruction scoping" section to `docs/AGENTS-GUIDE.md` — covers `AGENTS.md`/`CLAUDE.md` per-path overrides, `excludeAgent:` frontmatter, priority rules, and practical workflow
+* **§12(item 13):** replace "Steps, not prose" authoring rule with "Steps for procedures, goals for judgment" — numbered steps for deterministic workflows; goal-level language for reasoning tasks
 * **agents:** add `update.agent.md` — dedicated agent for the instruction update protocol (fetch, diff, apply, restore) with handoff to Doctor
 * **agents:** add `doctor.agent.md` — read-only health check agent covering attention budget, section structure, placeholder leakage, agent validity, MCP config, workspace memory files, VERSION.md, JOURNAL.md, BIBLIOGRAPHY.md
 * **agents(setup):** add handoff from Setup → Doctor so first-time setup flows naturally into a health verification

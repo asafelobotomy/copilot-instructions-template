@@ -99,3 +99,43 @@ Handoffs wire guided one-click transitions between agents:
 These handoffs keep the model selection optimal throughout your workflow without requiring manual switching.
 
 > **Important**: The `agent:` value in a handoff must match the **filename stem** of the target `.agent.md` file, not the `name:` frontmatter field. For example, `coding.agent.md` is referenced as `agent: coding`, not `agent: Code`.
+
+---
+
+## Sub-directory instruction scoping
+
+GitHub Copilot resolves instruction files hierarchically. You can place a scoped instruction file inside any subdirectory to override or extend the root-level `copilot-instructions.md` for that path.
+
+### AGENTS.md / CLAUDE.md
+
+Placing an `AGENTS.md` file in a subdirectory gives Copilot path-scoped instructions that apply only when working in that directory tree. `CLAUDE.md` is treated as an alias — Copilot reads it with the same precedence.
+
+**Common use cases**:
+
+| Location | Purpose |
+|----------|---------|
+| `src/api/AGENTS.md` | REST API conventions, authentication rules, response shape standards |
+| `src/ui/AGENTS.md` | Component library patterns, accessibility rules, styling conventions |
+| `scripts/AGENTS.md` | Shell scripting standards, safety rules for destructive commands |
+| `tests/AGENTS.md` | Test naming conventions, fixture patterns, coverage expectations |
+
+**Priority**: Sub-directory `AGENTS.md` instructions are additive — they extend root-level instructions. When a sub-directory rule conflicts with a root rule, the sub-directory rule takes precedence for files within its path.
+
+### excludeAgent frontmatter
+
+You can prevent specific `.github/instructions/*.instructions.md` files from being applied within a path by adding `excludeAgent:` to their frontmatter alongside the `applyTo:` glob:
+
+```yaml
+---
+applyTo: "**"
+excludeAgent: "src/generated/**"
+---
+```
+
+Use this to stop formatting or lint instructions from firing on auto-generated or vendored code paths that should not be edited manually.
+
+### Practical workflow
+
+1. Create `src/<area>/AGENTS.md` with a concise set of area-specific rules.
+2. Keep root-level `copilot-instructions.md` as the universal baseline — avoid duplicating area rules there.
+3. Run the Doctor agent after adding any new instruction file to verify Copilot detects and respects it correctly.

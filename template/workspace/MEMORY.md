@@ -15,8 +15,9 @@ VS Code's **Copilot Memory** (native memory feature) persists user preferences a
 |--------|-------|---------------|------------|
 | **Copilot Memory** (native) | Global — all repos, all sessions | Personal preferences, coding style, tool usage patterns | VS Code (automatic) |
 | **MEMORY.md** (this file) | Project — this repo only | Architectural decisions, error patterns, team conventions, project-specific gotchas | Agent + user (manual) |
+| **MCP memory server** (`@modelcontextprotocol/server-memory`) | Session — ephemeral; clears on server restart | Knowledge graphs, intermediate reasoning state, mid-task scratchpad when context limit forces truncation | Agent (automatic, transient) |
 
-**Priority rule**: When native Copilot Memory conflicts with MEMORY.md, **this file wins** for project-specific facts. Native memory wins for personal preferences and cross-project patterns.
+**Priority rule**: When native Copilot Memory conflicts with MEMORY.md, **this file wins** for project-specific facts. Native memory wins for personal preferences and cross-project patterns. MCP memory server has lowest priority — treat its entries as transient scratchpad, not ground truth.
 
 **Avoid duplication**: Do not record personal preferences here if Copilot Memory already tracks them. This file is for project-specific knowledge that would be lost if you switched machines or cleared native memory.
 
