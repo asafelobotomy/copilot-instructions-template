@@ -9,6 +9,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [3.0.4](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.0.3...v3.0.4) (2026-02-26)
+
+
+### Bug Fixes
+
+* **ci:** inline x-release-please-version markers and add auto-commit sync ([8a4d108](https://github.com/asafelobotomy/copilot-instructions-template/commit/8a4d1083198b1e309643b73d5b55a7448cb6c41c))
+
 ## [3.0.3](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.0.2...v3.0.3) (2026-02-26)
 
 
