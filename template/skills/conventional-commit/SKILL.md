@@ -1,7 +1,7 @@
 ---
 name: conventional-commit
 description: Write a commit message following the Conventional Commits specification with scope and body
-version: "1.0"
+version: "1.1"
 license: MIT
 tags: [git, commit, conventional-commits, changelog, versioning]
 compatibility: ">=1.4"
@@ -70,7 +70,27 @@ Write a well-structured commit message following the [Conventional Commits](http
    <footer>
    ```
 
-8. **Wait for approval** — Do not run `git commit` until the user approves or modifies the message.
+8. **Wait for approval** — Present the message and wait. Do not run `git commit` until the user approves or modifies the message.
+
+9. **Execute** — Once the user approves, run:
+
+   ```bash
+   git commit -m "<subject>" -m "<body>"
+   ```
+
+   For multi-line messages with footers, use a heredoc or a temporary file to avoid shell escaping issues:
+
+   ```bash
+   git commit -F - <<'EOF'
+   <type>(<scope>): <subject>
+
+   <body>
+
+   <footer>
+   EOF
+   ```
+
+   Confirm the commit was created: `git log --oneline -1`
 
 ## Verify
 
@@ -79,3 +99,4 @@ Write a well-structured commit message following the [Conventional Commits](http
 - [ ] Body explains what and why (if present)
 - [ ] Breaking changes have both `!` marker and `BREAKING CHANGE:` footer
 - [ ] The message accurately describes all staged changes
+- [ ] `git log --oneline -1` confirms the commit was created

@@ -1,7 +1,7 @@
 ---
 name: issue-triage
 description: Triage a GitHub issue by classifying severity, labelling waste category, proposing next action, and drafting a structured response
-version: "1.0"
+version: "1.1"
 license: MIT
 tags: [triage, issues, github, lean, kaizen, bug, feature-request]
 compatibility: ">=1.4"
@@ -35,16 +35,18 @@ Systematically triage a GitHub issue using Lean waste categories, severity class
    - `minor` — cosmetic, edge-case, or low-frequency impact
    - `advisory` — enhancement or improvement with no current breakage
 
-4. **Map to waste category** (§6 Muda):
-   - W1 Overproduction — duplicate feature/issue already in backlog
-   - W2 Waiting — blocked on external dependency, PR, or decision
-   - W3 Transport — data moving across too many layers unnecessarily
-   - W4 Over-processing — unnecessary complexity in the reported behaviour
-   - W5 Inventory — stale issue that may no longer be reproducible
-   - W6 Motion — poor UX causing user confusion (not a code defect)
-   - W7 Defects — code correctness bug
-   - W8 Unused talent — missing documentation or missing abstraction
-   - W9 Repetition — manual process that should be automated
+4. **Map to waste category** (§6 Muda — use the full catalogue; most common for issues):
+
+   | Waste code | Name | Typical issue signal |
+   |-----------|------|---------------------|
+   | W1 Overproduction | Duplicate feature/issue already in backlog | "This was reported in #NNN" |
+   | W2 Waiting | Blocked on external dependency, PR, or decision | "Waiting on upstream fix" |
+   | W5 Inventory | Stale issue; may no longer be reproducible | Reported > 6 months ago, no recent activity |
+   | W6 Motion | Poor UX causing user confusion — not a code defect | "I couldn't find the button" |
+   | W7 Defects | Code correctness bug | Crash, wrong output, data loss |
+   | W8 Unused talent | Missing automation or documentation causing repeated effort | "We keep getting this question" |
+
+   Codes W3, W4, W9–W16 may apply — consult §6 for the full definitions if the above don't fit.
 
 5. **Propose next action** — choose one:
    - `fix` — assign to a sprint, link to affected file(s)

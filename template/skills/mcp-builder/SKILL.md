@@ -1,7 +1,7 @@
 ---
 name: mcp-builder
 description: Create a new MCP server — clarify purpose, choose transport, scaffold, implement, test, and register
-version: "1.0"
+version: "1.1"
 license: MIT
 tags: [mcp, server, tool, integration, scaffold]
 compatibility: ">=2.0"
@@ -50,6 +50,7 @@ mkdir -p .mcp-servers/<server-name>
 cd .mcp-servers/<server-name>
 npm init -y
 npm install @modelcontextprotocol/sdk zod
+npm install --save-dev tsx typescript @types/node
 ```
 
 Create the entry point (`src/index.ts` or `index.js`):
@@ -108,8 +109,10 @@ Rules:
 ### 5. Test with MCP Inspector
 
 ```bash
-npx @modelcontextprotocol/inspector node .mcp-servers/<server-name>/src/index.ts
+npx @modelcontextprotocol/inspector tsx .mcp-servers/<server-name>/src/index.ts
 ```
+
+> **Python alternative**: `npx @modelcontextprotocol/inspector python .mcp-servers/<server-name>/main.py`
 
 Verify:
 
@@ -126,14 +129,16 @@ Add the server to the project's MCP configuration:
 {
   "<server-name>": {
     "type": "stdio",
-    "command": "node",
-    "args": [".mcp-servers/<server-name>/src/index.ts"],
+    "command": "npx",
+    "args": ["tsx", ".mcp-servers/<server-name>/src/index.ts"],
     "env": {
       "API_KEY": "${env:SERVER_NAME_API_KEY}"
     }
   }
 }
 ```
+
+> **Note**: For production use, compile TypeScript first (`npx tsc`) and reference the compiled JS output instead of running `tsx` at runtime.
 
 ### 7. Document
 

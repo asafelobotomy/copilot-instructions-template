@@ -1,11 +1,11 @@
 ---
 name: skill-creator
 description: Create a new agent skill following the Agent Skills open standard
-version: "1.0"
+version: "1.1"
 license: MIT
 tags: [meta, authoring, skill, scaffold]
 compatibility: ">=1.4"
-allowed-tools: [codebase, editFiles]
+allowed-tools: [codebase, editFiles, terminal]
 ---
 
 # Skill Creator
@@ -33,6 +33,8 @@ Create a new agent skill that follows the [Agent Skills](https://agentskills.io)
    version: "1.0"
    license: MIT
    tags: [<2-5 keywords matching common task descriptions>]
+   compatibility: ">=<current template version>"  # e.g. ">=3.0"
+   allowed-tools: [codebase, editFiles]  # restrict to tools the skill actually uses
    ---
    ```
 

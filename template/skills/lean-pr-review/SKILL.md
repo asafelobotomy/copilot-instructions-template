@@ -1,7 +1,7 @@
 ---
 name: lean-pr-review
 description: Review a pull request using Lean waste categories and structured severity ratings
-version: "1.0"
+version: "1.1"
 license: MIT
 tags: [review, pull-request, lean, kaizen, code-review]
 compatibility: ">=1.4"
@@ -41,9 +41,22 @@ Perform a structured pull request review using §2 Review Mode conventions and �
    - `minor` — nice to fix; style issue, naming, minor inefficiency
    - `advisory` — informational; suggestion for future improvement
 
-   Waste categories (§6):
-   - W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing
-   - W5 Inventory · W6 Motion · W7 Defects · W8 Unused talent
+   Waste categories (§6) — full list W1–W16; most common in PR review:
+
+   | Code | Name | Typical PR signal |
+   |------|------|------------------|
+   | W1 | Overproduction | Dead code, unused exports, features not yet needed |
+   | W2 | Waiting | Blocking sync calls, missing timeouts |
+   | W3 | Transport | Unnecessary data copying, prop drilling 3+ levels |
+   | W4 | Over-processing | Abstraction for its own sake, premature generalisation |
+   | W5 | Inventory | Large WIP; changes that could be split into smaller PRs |
+   | W6 | Motion | Logic scattered across many files without justification |
+   | W7 | Defects | Bugs, type errors, missing error handling, test failures |
+   | W8 | Unused talent | Missing tests, missing automation, repetitive manual patterns |
+   | W11 | Hallucination rework | Phantom API usage, methods that don't exist, incorrect assumptions |
+   | W14 | Model-task mismatch | Overly complex solution to a trivial problem |
+
+   For W9–W10, W12–W13, W15–W16 definitions, see §6 of `.github/copilot-instructions.md`.
 
 4. **Check test coverage** — Verify that new or changed behaviour has corresponding tests. Flag untested paths as `major | W7 Defects`.
 
