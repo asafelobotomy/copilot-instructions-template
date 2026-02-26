@@ -9,7 +9,7 @@ model:
 tools: [codebase, githubRepo]
 handoffs:
   - label: Implement fixes
-    agent: Code
+    agent: coding
     prompt: Implement the fixes and improvements identified in the review. Address critical and major findings first.
     send: true
 ---

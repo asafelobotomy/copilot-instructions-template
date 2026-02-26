@@ -86,3 +86,5 @@ The Code and Review agents have pre-configured handoffs:
 - **Review → Code**: After a review, Copilot offers "Implement fixes" — hands off back to the Code agent.
 
 These handoffs keep the model selection optimal throughout your workflow without requiring manual switching.
+
+> **Important**: The `agent:` value in a handoff must match the **filename stem** of the target `.agent.md` file, not the `name:` frontmatter field. For example, `coding.agent.md` is referenced as `agent: coding`, not `agent: Code`.

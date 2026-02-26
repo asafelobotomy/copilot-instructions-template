@@ -10,7 +10,7 @@ model:
 tools: [editFiles, terminal, codebase, githubRepo, runCommands]
 handoffs:
   - label: Review changes
-    agent: Review
+    agent: review
     prompt: Review the changes just made for quality, correctness, and Lean/Kaizen alignment. Tag all findings with waste categories.
     send: true
 ---

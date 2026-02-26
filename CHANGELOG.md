@@ -18,6 +18,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ### Bug Fixes
 
+* **agents:** fix handoff `agent:` identifiers — must use filename stem (`coding`, `review`) not `name:` frontmatter value (`Code`, `Review`); this caused handoff buttons to silently fail to switch agents
 * **mcp:** fix git and fetch MCP servers incorrectly using `npx`; they are Python packages requiring `uvx` (`mcp-server-git`, `mcp-server-fetch`)
 * **update:** clarify that "Update your instructions" means checking `https://github.com/asafelobotomy/copilot-instructions-template` for upstream changes, not making ad-hoc edits
 
