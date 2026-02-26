@@ -1,5 +1,6 @@
 # Copilot Instructions — {{PROJECT_NAME}}
 
+<!-- x-release-please-version -->
 > **Template version**: 3.0.0 | **Applied**: {{SETUP_DATE}}
 > Living document — self-edit rules in §8.
 >

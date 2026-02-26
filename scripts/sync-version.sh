@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+# sync-version.sh — CI safety net for version constants.
+#
+# Single source of truth: VERSION.md
+# Primary sync: release-please extra-files (x-release-please-version markers)
+# This script: fallback validation — CI runs it and checks for a dirty tree.
+#              If release-please updated all markers correctly, this is a no-op.
 set -euo pipefail
 
 ROOT_DIR=$(cd "$(dirname "$0")/.." && pwd)

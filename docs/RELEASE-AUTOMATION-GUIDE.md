@@ -33,7 +33,8 @@ This template ships with two release workflows. **Use one or the other** — hav
 
 - Determining the version bump (patch for `fix:`, minor for `feat:`, major for `feat!:` or `BREAKING CHANGE:`)
 - Updating `CHANGELOG.md` with auto-generated notes
-- Updating `VERSION.md` via the `extra-files` configuration
+- Updating `VERSION.md` via the `version-file` configuration
+- Updating derived version references in `copilot-instructions.md` and `README.md` via `extra-files` + `x-release-please-version` markers
 - Creating the GitHub release and git tag
 
 **Best for**: Projects that follow Conventional Commits and want fully automated versioning.
@@ -87,7 +88,7 @@ Key configuration in the action step:
 | Parameter | Value | Purpose |
 |-----------|-------|---------|
 | `release-type` | `simple` | Uses `VERSION.md` file for version tracking (no `package.json` needed) |
-| `extra-files` | `VERSION.md` | Tells release-please to update the `VERSION.md` file when bumping |
+| `extra-files` | `.github/copilot-instructions.md`, `README.md` | Tells release-please to also bump the version stamp / badge in these files via `x-release-please-version` markers |
 
 For advanced configuration (monorepo support, custom changelog sections, bootstrap versions), see the [release-please documentation](https://github.com/googleapis/release-please).
 

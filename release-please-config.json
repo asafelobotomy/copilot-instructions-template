@@ -4,7 +4,11 @@
   "packages": {
     ".": {
       "version-file": "VERSION.md",
-      "changelog-path": "CHANGELOG.md"
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        ".github/copilot-instructions.md",
+        "README.md"
+      ]
     }
   }
 }
