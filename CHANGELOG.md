@@ -9,6 +9,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [3.0.2](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.0.1...v3.0.2) (2026-02-26)
+
+
+### Bug Fixes
+
+* **agents:** correct four LLM-clarity bugs in agent instructions ([7385170](https://github.com/asafelobotomy/copilot-instructions-template/commit/738517019694fa0f586e197e9f23d8a2b9593c9b))
+
 ## [3.0.1](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.0.0...v3.0.1) (2026-02-26)
 
 
