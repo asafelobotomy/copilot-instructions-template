@@ -5,8 +5,7 @@
 **Instruction firmware for AI-assisted development — grounded in Lean / Kaizen**
 
 [![CI](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml/badge.svg)](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml)
-<!-- x-release-please-version -->
-[![Version](https://img.shields.io/badge/version-3.0.2-blue)](VERSION.md)
+[![Version](https://img.shields.io/badge/version-3.0.3-blue)](VERSION.md) <!-- x-release-please-version -->
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/asafelobotomy/copilot-instructions-template/badge)](https://scorecard.dev/viewer/?uri=github.com/asafelobotomy/copilot-instructions-template)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![VS Code](https://img.shields.io/badge/VS_Code-1.106+-007ACC?logo=visualstudiocode)](https://code.visualstudio.com/)

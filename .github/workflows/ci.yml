@@ -9,6 +9,8 @@ jobs:
   validate:
     name: Structural validation
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Harden runner
         uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2
@@ -27,6 +29,17 @@ jobs:
 
       - name: Sync derived version references
         run: bash scripts/sync-version.sh
+
+      - name: Auto-commit version sync (push to main only)
+        if: github.event_name == 'push'
+        run: |
+          if ! git diff --quiet; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add .github/copilot-instructions.md README.md .release-please-manifest.json
+            git commit -m "chore: sync version references [skip ci]"
+            git push
+          fi
 
       - name: Version-derived files are in sync
         run: |
