@@ -7,7 +7,7 @@
 set -euo pipefail
 
 INPUT=$(cat)
-TOOL_NAME=$(echo "$INPUT" | grep -o '"tool_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*: *"\(.*\)"/\1/')
+TOOL_NAME=$(echo "$INPUT" | grep -o '"tool_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*: *"\(.*\)"/\1/') || TOOL_NAME=""
 
 # Only guard terminal/command tools
 if [[ "$TOOL_NAME" != *"terminal"* && "$TOOL_NAME" != *"command"* && "$TOOL_NAME" != *"bash"* && "$TOOL_NAME" != *"shell"* ]]; then
@@ -29,7 +29,7 @@ except:
 BLOCKED_PATTERNS=(
   'rm -rf /'
   'rm -rf ~'
-  'rm -rf \.'
+  'rm -rf \.(\s|$)'
   'DROP TABLE'
   'DROP DATABASE'
   'TRUNCATE TABLE'

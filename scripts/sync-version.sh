@@ -7,7 +7,7 @@
 #              If release-please updated all markers correctly, this is a no-op.
 set -euo pipefail
 
-ROOT_DIR=$(cd "$(dirname "$0")/.." && pwd)
+ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
 VERSION_FILE="$ROOT_DIR/VERSION.md"
 
 if [[ ! -f "$VERSION_FILE" ]]; then

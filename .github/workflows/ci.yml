@@ -309,6 +309,33 @@ jobs:
           fi
           echo "✅ Release workflow mutual exclusion OK"
 
+      - name: JSON files parse without errors
+        run: |
+          failed=0
+          for f in \
+            template/hooks/copilot-hooks.json \
+            template/vscode/mcp.json \
+            release-please-config.json \
+            .release-please-manifest.json; do
+            if [[ -f "$f" ]]; then
+              python3 -c "import json, sys; json.load(open(sys.argv[1]))" "$f" \
+                && echo "✅ $f" \
+                || { echo "❌ Invalid JSON: $f"; failed=1; }
+            fi
+          done
+          [[ $failed -eq 0 ]] || exit 1
+
+      - name: Agent files have required 'model' field
+        run: |
+          failed=0
+          for f in .github/agents/*.agent.md; do
+            [[ -f "$f" ]] || continue
+            grep -q '^model:' "$f" \
+              || { echo "❌ $f missing 'model:' frontmatter field"; failed=1; }
+          done
+          [[ $failed -eq 0 ]] || exit 1
+          echo "✅ All agent files have 'model' field"
+
   markdownlint:
     name: Markdown lint
     runs-on: ubuntu-latest
@@ -338,3 +365,40 @@ jobs:
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: raven-actions/actionlint@e01d1ea33dd6a5ed517d95b4c0c357560ac6f518 # v2
+
+  shellcheck:
+    name: Shell script lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: ShellCheck
+        uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38 # 2.0.0
+        with:
+          scandir: '.'
+          severity: warning
+
+  script-tests:
+    name: Script unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433785f215b # v2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Test sync-version.sh
+        run: bash tests/test-sync-version.sh
+
+      - name: Test guard-destructive.sh
+        run: bash tests/test-guard-destructive.sh
+
+      - name: Test hook scripts
+        run: bash tests/test-hooks.sh

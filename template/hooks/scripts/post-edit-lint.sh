@@ -7,7 +7,7 @@
 set -euo pipefail
 
 INPUT=$(cat)
-TOOL_NAME=$(echo "$INPUT" | grep -o '"tool_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*: *"\(.*\)"/\1/')
+TOOL_NAME=$(echo "$INPUT" | grep -o '"tool_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*: *"\(.*\)"/\1/') || TOOL_NAME=""
 
 # Only run after file-editing tools
 if [[ "$TOOL_NAME" != *"edit"* && "$TOOL_NAME" != *"create"* && "$TOOL_NAME" != *"write"* && "$TOOL_NAME" != *"replace"* ]]; then
