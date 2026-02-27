@@ -119,6 +119,39 @@ assert_contains "reads version from package.json" "$output" "9.9.9"
 rm -rf "$TMPDIR_NPM"
 echo ""
 
+echo "7s. Detects pyproject.toml (Python) project"
+TMPDIR_PY=$(mktemp -d)
+printf '[project]\nname = "my-python-project"\nversion = "2.3.4"\n' > "$TMPDIR_PY/pyproject.toml"
+output=$(cd "$TMPDIR_PY" && echo '{}' | bash "$SESSION_START" 2>/dev/null)
+assert_contains "reads name from pyproject.toml"    "$output" "my-python-project"
+assert_contains "reads version from pyproject.toml" "$output" "2.3.4"
+rm -rf "$TMPDIR_PY"
+echo ""
+
+echo "8s. Detects Cargo.toml (Rust) project"
+TMPDIR_RUST=$(mktemp -d)
+printf '[package]\nname = "my-rust-project"\nversion = "7.8.9"\n' > "$TMPDIR_RUST/Cargo.toml"
+output=$(cd "$TMPDIR_RUST" && echo '{}' | bash "$SESSION_START" 2>/dev/null)
+assert_contains "reads name from Cargo.toml"    "$output" "my-rust-project"
+assert_contains "reads version from Cargo.toml" "$output" "7.8.9"
+rm -rf "$TMPDIR_RUST"
+echo ""
+
+echo "9s. HEARTBEAT.md pulse is included in session context"
+TMPDIR_HB_SESS=$(mktemp -d)
+mkdir -p "$TMPDIR_HB_SESS/.copilot/workspace"
+printf 'HEARTBEAT: green 🟢\n' > "$TMPDIR_HB_SESS/.copilot/workspace/HEARTBEAT.md"
+output=$(cd "$TMPDIR_HB_SESS" && echo '{}' | bash "$SESSION_START" 2>/dev/null)
+assert_contains "HEARTBEAT pulse in session context" "$output" "green"
+rm -rf "$TMPDIR_HB_SESS"
+echo ""
+
+echo "10s. Output contains Node and Python version fields"
+output=$(echo '{}' | bash "$SESSION_START" 2>/dev/null)
+assert_contains "Node: field present"   "$output" "Node:"
+assert_contains "Python: field present" "$output" "Python:"
+echo ""
+
 # ── post-edit-lint.sh ─────────────────────────────────────────────────────────
 echo "=== post-edit-lint.sh ==="
 echo ""
@@ -150,6 +183,27 @@ echo '' | bash "$POST_LINT" 2>/dev/null
 assert_no_crash "empty input" $?
 echo '{}' | bash "$POST_LINT" 2>/dev/null
 assert_no_crash "empty JSON object" $?
+echo ""
+
+echo "11p. 'write' tool name variant triggers lint path"
+TMPFILE_WRITE=$(mktemp /tmp/test_XXXXXX.txt)
+output=$(printf '{"tool_name": "write_to_file", "tool_input": {"filePath": "%s"}}' "$TMPFILE_WRITE" | bash "$POST_LINT" 2>/dev/null)
+assert_contains "write_to_file triggers and continues" "$output" '"continue": true'
+rm -f "$TMPFILE_WRITE"
+echo ""
+
+echo "12p. 'create' tool name variant triggers lint path"
+TMPFILE_CREATE=$(mktemp /tmp/test_XXXXXX.txt)
+output=$(printf '{"tool_name": "create_file", "tool_input": {"filePath": "%s"}}' "$TMPFILE_CREATE" | bash "$POST_LINT" 2>/dev/null)
+assert_contains "create_file triggers and continues" "$output" '"continue": true'
+rm -f "$TMPFILE_CREATE"
+echo ""
+
+echo "13p. File path via alternate field name 'file'"
+TMPFILE_ALT=$(mktemp /tmp/test_XXXXXX.txt)
+output=$(printf '{"tool_name": "edit_file", "tool_input": {"file": "%s"}}' "$TMPFILE_ALT" | bash "$POST_LINT" 2>/dev/null)
+assert_contains "alternate 'file' key continues" "$output" '"continue": true'
+rm -f "$TMPFILE_ALT"
 echo ""
 
 # ── enforce-retrospective.sh ──────────────────────────────────────────────────
@@ -192,6 +246,30 @@ echo 'not-json' | bash "$ENFORCE_RETRO" 2>/dev/null
 assert_no_crash "malformed JSON" $?
 echo ""
 
+echo "16r. Transcript WITHOUT retrospective keyword → still blocks"
+TMPDIR_NO_RETRO=$(mktemp -d)
+TRANSCRIPT_NORETRO="$TMPDIR_NO_RETRO/transcript.txt"
+printf 'The agent coded features and committed changes.\n' > "$TRANSCRIPT_NORETRO"
+output=$(printf '{"stop_hook_active": false, "transcript_path": "%s"}' "$TRANSCRIPT_NORETRO" | bash "$ENFORCE_RETRO" 2>/dev/null)
+assert_contains "no retro keyword → block" "$output" '"decision": "block"'
+assert_valid_json "valid JSON when blocking"  "$output"
+rm -rf "$TMPDIR_NO_RETRO"
+echo ""
+
+echo "17r. HEARTBEAT.md older than 5 minutes → block"
+TMPDIR_STALE=$(mktemp -d)
+mkdir -p "$TMPDIR_STALE/.copilot/workspace"
+STALE_HB="$TMPDIR_STALE/.copilot/workspace/HEARTBEAT.md"
+touch "$STALE_HB"
+# Set mtime to 10 minutes ago
+touch -d "10 minutes ago" "$STALE_HB" 2>/dev/null \
+  || python3 -c "import os,time; os.utime('$STALE_HB', (time.time()-600, time.time()-600))" 2>/dev/null \
+  || true
+output=$(cd "$TMPDIR_STALE" && printf '{"stop_hook_active": false}' | bash "$ENFORCE_RETRO" 2>/dev/null)
+assert_contains "stale HEARTBEAT.md → block" "$output" '"decision": "block"'
+rm -rf "$TMPDIR_STALE"
+echo ""
+
 # ── save-context.sh ───────────────────────────────────────────────────────────
 echo "=== save-context.sh ==="
 echo ""
@@ -223,6 +301,38 @@ echo '{}' | bash "$SAVE_CTX" 2>/dev/null
 assert_no_crash "no workspace files" $?
 cd "$REPO_ROOT"
 rm -rf "$TMPDIR_EMPTY"
+echo ""
+
+echo "20c. MEMORY.md recent entries appear in additionalContext"
+TMPDIR_MEM=$(mktemp -d)
+mkdir -p "$TMPDIR_MEM/.copilot/workspace"
+printf 'HEARTBEAT: ok\n' > "$TMPDIR_MEM/.copilot/workspace/HEARTBEAT.md"
+printf 'Learned: always prefer small commits over large ones.\n' > "$TMPDIR_MEM/.copilot/workspace/MEMORY.md"
+output=$(cd "$TMPDIR_MEM" && echo '{}' | bash "$SAVE_CTX" 2>/dev/null)
+assert_contains "MEMORY.md content in context" "$output" "small commits"
+assert_valid_json "valid JSON with MEMORY.md" "$output"
+rm -rf "$TMPDIR_MEM"
+echo ""
+
+echo "21c. SOUL.md heuristics appear in additionalContext"
+TMPDIR_SOUL=$(mktemp -d)
+mkdir -p "$TMPDIR_SOUL/.copilot/workspace"
+printf 'HEARTBEAT: ok\n' > "$TMPDIR_SOUL/.copilot/workspace/HEARTBEAT.md"
+printf '## Key heuristics\npattern: test before committing\n' > "$TMPDIR_SOUL/.copilot/workspace/SOUL.md"
+output=$(cd "$TMPDIR_SOUL" && echo '{}' | bash "$SAVE_CTX" 2>/dev/null)
+assert_contains "SOUL.md heuristics in context" "$output" "test before committing"
+assert_valid_json "valid JSON with SOUL.md" "$output"
+rm -rf "$TMPDIR_SOUL"
+echo ""
+
+echo "22c. Output contains 'additionalContext' key when workspace files exist"
+TMPDIR_KEYS=$(mktemp -d)
+mkdir -p "$TMPDIR_KEYS/.copilot/workspace"
+printf 'HEARTBEAT: running\n' > "$TMPDIR_KEYS/.copilot/workspace/HEARTBEAT.md"
+output=$(cd "$TMPDIR_KEYS" && echo '{}' | bash "$SAVE_CTX" 2>/dev/null)
+assert_contains "additionalContext key present" "$output" "additionalContext"
+assert_contains "PreCompact hookEventName present" "$output" "PreCompact"
+rm -rf "$TMPDIR_KEYS"
 echo ""
 
 # ── Summary ───────────────────────────────────────────────────────────────────
