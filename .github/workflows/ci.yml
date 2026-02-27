@@ -402,3 +402,6 @@ jobs:
 
       - name: Test hook scripts
         run: bash tests/test-hooks.sh
+
+      - name: Test security edge cases
+        run: bash tests/test-security-edge-cases.sh
