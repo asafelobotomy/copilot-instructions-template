@@ -289,6 +289,11 @@ copilot-instructions-template/
 │       └── HEARTBEAT.md                # Event-driven health check checklist stub
 ├── scripts/
 │   └── sync-version.sh                 # CI safety-net: syncs version constants from VERSION.md
+├── tests/
+│   ├── test-sync-version.sh            # Unit tests for sync-version.sh (18 assertions)
+│   ├── test-guard-destructive.sh       # Unit tests for guard-destructive.sh (40 assertions)
+│   ├── test-hooks.sh                   # Unit tests for all five hook scripts (46 assertions)
+│   └── test-security-edge-cases.sh     # Security & contract edge-case tests (29 assertions)
 ├── examples/
 │   └── valis/
 │       └── README.md                   # Reference implementation (asafelobotomy/Valis)

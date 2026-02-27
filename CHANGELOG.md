@@ -9,6 +9,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [Unreleased]
+
+### Added
+
+- `tests/test-security-edge-cases.sh` — 29-assertion security and contract edge-case suite for `guard-destructive.sh` and `sync-version.sh`. Covers six gap categories identified by online research (OWASP Command Injection cheat sheet, BATS testing best practices): exit-code contract (hook must always exit 0), JSON output validity (every response parseable), `tool_input.input` field alias support, OWASP-sourced chained/embedded command detection (`;`, `&&`, `||`, subshell), SQL keyword case-insensitivity, and `sync-version.sh` idempotency.
+
+### Fixed
+
+- `README.md` — badge URL missing `-blue` Shields.io color parameter (discovered during idempotency test run).
+
+### CI
+
+- Added `Test security edge cases` step to `script-tests` job in `ci.yml`.
+
+---
+
 ## [3.0.4](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.0.3...v3.0.4) (2026-02-26)
 
 

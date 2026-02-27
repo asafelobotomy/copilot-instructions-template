@@ -91,7 +91,7 @@ The agent receives this as `additionalContext` before processing your first prom
 - `rm -rf` (in any path), `rm -r`
 - `DROP`, `DELETE FROM`
 - `git push --force`, `git reset --hard`, `git clean -fd`
-- `npm publish`, `cargo publish`
+- `npm publish`, `cargo publish`, `pip install --`
 
 Only terminal/command tools are inspected — file edits and other tools pass through.
 
