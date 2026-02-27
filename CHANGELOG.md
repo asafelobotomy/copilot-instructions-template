@@ -9,6 +9,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [3.1.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.0.4...v3.1.0) (2026-02-27)
+
+
+### Features
+
+* add mcp-builder skill for creating MCP servers ([69f5609](https://github.com/asafelobotomy/copilot-instructions-template/commit/69f5609e2e846cfef39d511960435b221e6305f4))
+* add post-edit linting script for auto-formatting files ([69f5609](https://github.com/asafelobotomy/copilot-instructions-template/commit/69f5609e2e846cfef39d511960435b221e6305f4))
+* create save-context script for pre-compaction workspace snapshot ([69f5609](https://github.com/asafelobotomy/copilot-instructions-template/commit/69f5609e2e846cfef39d511960435b221e6305f4))
+* implement session-start script to inject project context ([69f5609](https://github.com/asafelobotomy/copilot-instructions-template/commit/69f5609e2e846cfef39d511960435b221e6305f4))
+* implement skill-creator for new agent skills ([69f5609](https://github.com/asafelobotomy/copilot-instructions-template/commit/69f5609e2e846cfef39d511960435b221e6305f4))
+
 ## [Unreleased]
 
 ### Added
