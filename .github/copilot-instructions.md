@@ -1,6 +1,6 @@
-# Copilot Instructions — {{PROJECT_NAME}}
+# Copilot Instructions — copilot-instructions-template
 
-> **Template version**: 3.0.4 <!-- x-release-please-version --> | **Applied**: {{SETUP_DATE}}
+> **Template version**: 3.0.4 <!-- x-release-please-version --> | **Applied**: 2026-02-27
 > Living document — self-edit rules in §8.
 >
 > **Model Quick Reference** — select model in Copilot picker before starting each task, or use `.github/agents/` (VS Code 1.106+). [Why these models?](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)
@@ -20,7 +20,7 @@
 >
 > **⚡ Critical Reminders** — every session, every task:
 >
-> 1. **Test** — run `{{THREE_CHECK_COMMAND}}` before marking any task done (§3).
+> 1. **Test** — run `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh` before marking any task done (§3).
 > 2. **BIBLIOGRAPHY** — update on every file create, rename, or delete (§5).
 > 3. **PDCA** — Plan→Do→Check→Act for every non-trivial change (§5).
 > 4. **Read first** — never claim or modify a file not opened this session (§4).
@@ -33,8 +33,8 @@
 | # | Principle | This project |
 |---|-----------|-------------|
 | 1 | Eliminate waste (Muda) | Every line of code has a cost; every unused feature is waste |
-| 2 | Map the value stream | {{VALUE_STREAM_DESCRIPTION}} |
-| 3 | Create flow | {{FLOW_DESCRIPTION}} |
+| 2 | Map the value stream | Template → Copilot setup interview → populated instructions tailored to user's project |
+| 3 | Create flow | Single-pass setup; no blocking steps; CI validates structural integrity |
 | 4 | Establish pull | Build only what is needed, when it is needed |
 | 5 | Seek perfection | Small, continuous improvements (Kaizen) over big rewrites |
 
@@ -82,9 +82,9 @@ When asked to review or recommend VS Code extensions:
 1. **Audit current state**:
    - Cross-reference the installed list from step 0 against workspace recommendations.
    - Scan for linter/formatter config files: `.eslintrc.*`, `.prettierrc.*`, `oxlint.json`, `biome.json`, `.stylelintrc.*`, `ruff.toml`, `pyproject.toml`, `rustfmt.toml`, etc.
-   - Check `package.json` scripts and `{{TEST_COMMAND}}` for tooling references.
+   - Check `package.json` scripts and `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh` for tooling references.
 
-2. **Match to stack** — use the detection table below; also check `{{LANGUAGE}}` / `{{RUNTIME}}` / `{{TEST_FRAMEWORK}}` / `{{PACKAGE_MANAGER}}` placeholders:
+2. **Match to stack** — use the detection table below; also check `Markdown / Shell` / `bash` / `bash (custom shell test scripts)` / `N/A` placeholders:
 
    | Stack signals | Recommended extensions |
    |--------------|------------------------|
@@ -124,7 +124,7 @@ When asked to review or recommend VS Code extensions:
 6. **Present in chat**:
 
    ```markdown
-   ## Extension Review — {{PROJECT_NAME}}
+   ## Extension Review — copilot-instructions-template
 
    ### ✅ Keep (N extensions)
    - `publisher.extension-id` — reason to keep
@@ -161,7 +161,7 @@ When asked to review test coverage, recommend tests, or audit the test suite:
    | `build.gradle` (Gradle) | JUnit + JaCoCo | `./gradlew test jacocoTestReport` |
    | `*.spec.rb`, `Gemfile` + rspec | RSpec + SimpleCov | `bundle exec rspec --format progress` |
 
-   Also read `{{TEST_COMMAND}}`, `{{TEST_FRAMEWORK}}`, and `.github/workflows/` for configured test steps.
+   Also read `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh`, `bash (custom shell test scripts)`, and `.github/workflows/` for configured test steps.
 
 1. **Get coverage data** — cannot run commands directly. Ask user to run the step-0 command and paste output. If no tooling exists, note it and proceed with step 2 (static analysis).
 
@@ -195,46 +195,7 @@ When asked to review test coverage, recommend tests, or audit the test suite:
 
    For each recommendation: include a ready-to-use YAML snippet the user can copy directly into `.github/workflows/`.
 
-6. **Present in chat**:
-
-   ````markdown
-   ## Test Coverage Review — {{PROJECT_NAME}}
-
-   ### 📊 Current coverage snapshot
-   - Framework: <framework> | Runner: `<command>`
-   - Overall coverage: X% (or "not yet measured — run `<cmd>` and paste output")
-   - Test files found: N | Source files without tests: M
-
-   ### ✅ Well-covered (≥ 80%)
-   - `src/foo.ts` — 92%
-
-   ### ⚠️ Partially covered (20–79%)
-   - `src/bar.ts` — 54% — missing: error branch at line 42, null-input guard
-
-   ### ❌ Untested or near-zero (< 20%)
-   - `src/baz.ts` — 0% — **critical**: handles user auth input
-
-   ### 🧪 Recommended local tests
-   | File | Test type | Priority | What to cover |
-   |------|-----------|----------|--------------|
-   | `src/baz.ts` | Unit | critical | Happy path, null input, token expiry |
-   | `src/bar.ts` | Unit | high | Error branch at line 42 |
-
-   ### ⚙️ Recommended CI workflows
-   **Coverage gate** — fail PR if coverage < 80%:
-   ```yaml
-   # .github/workflows/coverage.yml  (paste this file)
-   <ready-to-use YAML snippet>
-   ```
-
-   **Coverage comments on PRs**:
-   ```yaml
-   <ready-to-use YAML snippet>
-   ```
-
-   ### ℹ️ Notes
-   - <framework-specific context, tooling gaps, coverage tooling not yet installed>
-   ````
+6. **Present in chat**: *(use the Test Coverage Review template from §2)*
 
 7. **Wait** — do not write test files, workflow files, or config until user explicitly asks.
 
@@ -254,26 +215,31 @@ When asked to review test coverage, recommend tests, or audit the test suite:
 
 | Baseline | Value | Action if exceeded |
 |----------|-------|--------------------|
-| File LOC (warn) | {{LOC_WARN_THRESHOLD}} lines | Flag, suggest decomposition |
-| File LOC (hard) | {{LOC_HIGH_THRESHOLD}} lines | Refuse to extend; decompose first |
-| Dependency budget | {{DEP_BUDGET}} runtime deps | Propose removal before adding |
-| Dependency budget (warn) | {{DEP_BUDGET_WARN}} runtime deps | Flag for review |
-| Test command | `{{TEST_COMMAND}}` | Must pass before task is done |
-| Type check | `{{TYPE_CHECK_COMMAND}}` | Must pass before task is done |
-| Three-check ritual | `{{THREE_CHECK_COMMAND}}` | Run before marking complete |
-| Integration test gate | `{{INTEGRATION_TEST_ENV_VAR}}` | Set to run integration tests |
-| Max subagent depth | {{SUBAGENT_MAX_DEPTH}} | Stop and report to user |
+| File LOC (warn) | 250 lines | Flag, suggest decomposition |
+| File LOC (hard) | 400 lines | Refuse to extend; decompose first |
+| Dependency budget | 6 runtime deps | Propose removal before adding |
+| Dependency budget (warn) | 8 runtime deps | Flag for review |
+| Test command | `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh` | Must pass before task is done |
+| Type check | `echo "no type check configured"` | Must pass before task is done |
+| Three-check ritual | `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh` | Run before marking complete |
+| Integration test gate | INTEGRATION_TESTS=1 | Set to run integration tests |
+| Max subagent depth | 3 | Stop and report to user |
 
 ---
 
 ## §4 — Coding Conventions
 
-- Language: **{{LANGUAGE}}** · Runtime: **{{RUNTIME}}** · Package manager: **{{PACKAGE_MANAGER}}**
-- Test framework: **{{TEST_FRAMEWORK}}**
-- Preferred serialisation: **{{PREFERRED_SERIALISATION}}**
+- Language: **Markdown / Shell** · Runtime: **bash** · Package manager: **N/A**
+- Test framework: **bash (custom shell test scripts)**
+- Preferred serialisation: **JSON**
 
 **Patterns observed in this codebase**:
-{{CODING_PATTERNS}}
+
+- Shell scripts use `set -euo pipefail` for strict error handling
+- Hook scripts accept JSON on stdin and emit JSON on stdout (stdio protocol)
+- Markdown files follow markdownlint configuration (`.markdownlint.json`, `.markdownlint-cli2.yaml`)
+- CI validates structural integrity — all §1–§13 sections present, attention budget limits, cross-references
+- Version managed via `VERSION.md` as single source of truth with `x-release-please-version` markers
 
 **Universal rules**:
 
@@ -293,7 +259,7 @@ Apply to every non-trivial change.
 
 **Plan**: State the goal. List the files that will change. Estimate LOC delta.
 **Do**: Implement. Write tests alongside code, not after.
-**Check**: Run `{{THREE_CHECK_COMMAND}}`. Review output. Fix before proceeding.
+**Check**: Run `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh`. Review output. Fix before proceeding.
 **Act**: If baseline exceeded, address it now. Update `BIBLIOGRAPHY.md`. Summarise what changed.
 
 <example>
@@ -336,11 +302,10 @@ Append a row to `METRICS.md` after any session that changes these values materia
 
 | Metric | Command | Target |
 |--------|---------|--------|
-| Total LOC | `{{LOC_COMMAND}}` | Trending down or flat |
-| Test count | `{{TEST_COMMAND}}` | Trending up |
-| Type errors | `{{TYPE_CHECK_COMMAND}}` (or `get_errors` built-in) | Zero |
-| Runtime deps | count from manifest | ≤ {{DEP_BUDGET}} |
-| {{EXTRA_METRIC_NAME}} | — | — |
+| Total LOC | `find . \( -name '*.sh' -o -name '*.md' \) -not -path './node_modules/*' \| xargs wc -l \| tail -1` | Trending down or flat |
+| Test count | `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh` | Trending up |
+| Type errors | `echo "no type check configured"` (or `get_errors` built-in) | Zero |
+| Runtime deps | count from manifest | ≤ 6 |
 
 ---
 
@@ -410,7 +375,7 @@ Hook scripts accept JSON on stdin and emit JSON on stdout. See `docs/HOOKS-GUIDE
 When spawning subagents:
 
 - Pass the full contents of this file as system context.
-- Set `max_depth = {{SUBAGENT_MAX_DEPTH}}`. Stop and surface to user if reached.
+- Set `max_depth = 3`. Stop and surface to user if reached.
 - Each subagent must run the three-check ritual before reporting done.
 - Each subagent inherits the full Tool Protocol (§11), Skill Protocol (§12), and MCP Protocol (§13) — check the toolbox before building, search before coding, and flag any proposed toolbox saves to the parent.
 - Subagent output must include: files changed, LOC delta, test result, any baseline breaches.
@@ -425,32 +390,31 @@ Resolved values and project-specific overrides. Populated during setup; updated 
 
 | Placeholder | Resolved value |
 |-------------|---------------|
-| `{{PROJECT_NAME}}` | *(fill during setup)* |
-| `{{LANGUAGE}}` | *(fill during setup)* |
-| `{{RUNTIME}}` | *(fill during setup)* |
-| `{{PACKAGE_MANAGER}}` | *(fill during setup)* |
-| `{{TEST_COMMAND}}` | *(fill during setup)* |
-| `{{TYPE_CHECK_COMMAND}}` | *(fill during setup)* |
-| `{{THREE_CHECK_COMMAND}}` | *(fill during setup)* |
-| `{{LOC_COMMAND}}` | *(fill during setup)* |
-| `{{METRICS_COMMAND}}` | *(fill during setup)* |
-| `{{TEST_FRAMEWORK}}` | *(fill during setup)* |
+| `{{PROJECT_NAME}}` | copilot-instructions-template |
+| `{{LANGUAGE}}` | Markdown / Shell |
+| `{{RUNTIME}}` | bash |
+| `{{PACKAGE_MANAGER}}` | N/A |
+| `{{TEST_COMMAND}}` | `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh` |
+| `{{TYPE_CHECK_COMMAND}}` | `echo "no type check configured"` |
+| `{{THREE_CHECK_COMMAND}}` | `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh` |
+| `{{LOC_COMMAND}}` | `find . \( -name '*.sh' -o -name '*.md' \) -not -path './node_modules/*' \| xargs wc -l \| tail -1` |
+| `{{METRICS_COMMAND}}` | *(same as LOC_COMMAND)* |
+| `{{TEST_FRAMEWORK}}` | bash (custom shell test scripts) |
 | `{{LOC_WARN_THRESHOLD}}` | 250 |
 | `{{LOC_HIGH_THRESHOLD}}` | 400 |
-| `{{DEP_BUDGET}}` | *(fill during setup)* |
-| `{{DEP_BUDGET_WARN}}` | *(fill during setup)* |
+| `{{DEP_BUDGET}}` | 6 |
+| `{{DEP_BUDGET_WARN}}` | 8 |
 | `{{INTEGRATION_TEST_ENV_VAR}}` | INTEGRATION_TESTS=1 |
 | `{{PREFERRED_SERIALISATION}}` | JSON |
 | `{{SUBAGENT_MAX_DEPTH}}` | 3 |
-| `{{VALUE_STREAM_DESCRIPTION}}` | *(fill during setup)* |
-| `{{FLOW_DESCRIPTION}}` | *(fill during setup)* |
-| `{{PROJECT_CORE_VALUE}}` | *(fill during setup)* |
-| `{{SETUP_DATE}}` | *(fill during setup)* |
-| `{{SKILL_SEARCH_PREFERENCE}}` | local-only |
-| `{{EXTRA_METRIC_NAME}}` | *(delete row if not applicable)* |
-| `{{TRUST_OVERRIDES}}` | *(fill during setup — see E21)* |
-| `{{MCP_STACK_SERVERS}}` | *(fill during setup — see Step 2.12)* |
-| `{{MCP_CUSTOM_SERVERS}}` | *(fill during setup — see E22)* |
+| `{{VALUE_STREAM_DESCRIPTION}}` | Template → Copilot setup interview → populated instructions tailored to user's project |
+| `{{FLOW_DESCRIPTION}}` | Single-pass setup; no blocking steps; CI validates structural integrity |
+| `{{PROJECT_CORE_VALUE}}` | Instruction firmware for AI-assisted development |
+| `{{SETUP_DATE}}` | 2026-02-27 |
+| `{{SKILL_SEARCH_PREFERENCE}}` | official-and-community |
+| `{{TRUST_OVERRIDES}}` | *(none — using defaults)* |
+| `{{MCP_STACK_SERVERS}}` | *(none — no stack-specific servers applicable)* |
+| `{{MCP_CUSTOM_SERVERS}}` | *(none)* |
 
 </project_config>
 
@@ -464,38 +428,36 @@ The Graduated Trust Model assigns verification behaviour based on path patterns.
 | Standard | `src/`, `lib/`, `app/`, `packages/` | Review: Copilot describes the planned change and waits for approval before writing. |
 | Guarded | `*.config.*`, `.*rc`, `.github/`, `.env*`, `Dockerfile`, `docker-compose*` | Pause: Copilot stops, explains the change in detail, and waits for explicit "go ahead" before any modification. |
 
-{{TRUST_OVERRIDES}}
-
-> **Override rules**: Project-specific trust overrides from E21 are inserted above. They take precedence over the default tiers. Paths not covered by any tier default to **Standard**.
+> **Override rules**: No project-specific trust overrides configured. Paths not covered by any tier default to **Standard**.
 
 ### User Preferences
 
-*(Populated during setup from interview responses — see SETUP.md §0d.)*
+> *Set during initial setup on 2026-02-27. Update this section using the Living Update Protocol when preferences change.*
 
 | Dimension | Setting | Instruction |
 |-----------|---------|-------------|
-| Response style | *(S1)* | |
-| Experience level | *(S2)* | |
-| Primary mode | *(S3)* | |
-| Testing | *(S4)* | |
-| Autonomy | *(S5)* | |
-| Code style | *(A6)* | |
-| Documentation | *(A7)* | |
-| Error handling | *(A8)* | |
-| Security | *(A9)* | |
-| File size discipline | *(A10)* | |
-| Dependency management | *(A11)* | |
-| Instruction self-editing | *(A12)* | |
-| Refactoring appetite | *(A13)* | |
-| Reporting format | *(A14)* | |
-| Skill search | *(A15)* | |
-| Tool availability | *(E16)* | |
-| Agent persona | *(E17)* | |
-| VS Code settings | *(E18)* | |
-| Global autonomy | *(E19)* | |
-| Mood lightener | *(E20)* | |
-| Verification trust | *(E21)* | |
-| MCP servers | *(E22)* | |
+| Response style | B — Balanced | Balance code with reasoning. Always explain decisions that aren't obvious from context. Skip explanations of standard patterns the user already knows. |
+| Experience level | B — Intermediate | The user knows the basics of this stack. Explain non-obvious choices, but skip well-known patterns. Don't over-explain standard library usage. |
+| Primary mode | B — Code quality | Optimise for code quality. Correctness and test coverage take priority over delivery speed. Flag and address technical debt proactively. |
+| Testing | A — Write tests alongside every change | Write tests alongside every code change. Never submit a change without at least one test covering the new or modified behaviour. Writing tests is not optional. |
+| Autonomy | C — Ask only for risky changes | Act freely on routine changes. Before deleting files, overwriting significant content, or making changes that are hard to reverse, pause and ask for confirmation. |
+| Code style | A — Infer from existing code | Infer coding style from existing code, linter configs (`.eslintrc.*`, `biome.json`, `ruff.toml`, etc.), and formatter configs (`.prettierrc.*`, `rustfmt.toml`, etc.). Match the patterns already present before applying any external standard. |
+| Documentation | A — Minimal but accurate | Add brief inline comments only for non-obvious logic. Public functions and types should have type signatures. Avoid comment noise on obvious code. |
+| Error handling | B — Defensive (return values) | Prefer returning error values (`null`, `Result<T,E>`, `Option<T>`) over throwing. Let the caller decide how to handle failure. Reserve exceptions for truly unrecoverable states. |
+| Security | B — Flag when directly relevant | Flag security concerns only when the change directly touches authentication, authorisation, data handling, or external input processing. |
+| File size discipline | B — Standard (250/400) | Enforce standard file size limits. Flag files exceeding 250 lines; refuse to extend past 400 without decomposing first. |
+| Dependency management | B — Pragmatic | Add dependencies when they provide clear value and are well-maintained. Always check if existing dependencies cover the need. Propose removing unused dependencies before adding new ones. |
+| Instruction self-editing | A — Free to update | You may update `.github/copilot-instructions.md` freely when patterns stabilise. Append to §10 or add rules to §4. Report what was changed at the end of the session. |
+| Refactoring appetite | A — Fix proactively | Proactively refactor code smells and waste when encountered during any task. Include cleanup in the PDCA scope. Tag each refactoring with its waste category (§6). |
+| Reporting format | D — Narrative paragraph | After completing a task, write a short narrative paragraph explaining what changed, the key decisions made, and any follow-up items. |
+| Skill search | C — Official + community | Skill search: official + community. Search official repositories first, then community sources (GitHub search, awesome-agent-skills). Community skills must pass the §12 quality gate before adoption. |
+| Tool availability | A — Stop and request (default) | When a task would benefit from a tool not currently available, explain the need and wait for the user to enable or install it. Do not proceed without the tool unless explicitly told to. |
+| Agent persona | B — Mentor | Adopt a mentor persona. Be patient and educational. Explain reasoning as if guiding a junior developer. Use encouraging language: 'Great question', 'Good instinct', 'Here's why that matters'. |
+| VS Code settings | C — Auto-apply workspace settings | Freely create or modify `.vscode/settings.json` when it improves the development experience (e.g., enabling formatOnSave, configuring linter paths, setting file associations). Summarise changes after applying. Never touch user-level settings. |
+| Global autonomy | 4 — High autonomy | Global autonomy: 4 (High autonomy). Act independently on all routine tasks including file creation and modification. Pause only before: deleting files, overwriting large sections, changing config files, or making architectural decisions. |
+| Mood lightener | A — Never (default) | Never use humour, emoji, or casual language. Strictly professional tone at all times. |
+| Verification trust | A — Use defaults (default) | Use the default graduated trust model: tests/docs auto-approve, source code review, config files pause for approval. |
+| MCP servers | C — Full configuration | MCP integration: Full configuration. `.vscode/mcp.json` is configured with all five default servers. Suggest stack-specific MCP servers when relevant. Proactively recommend new servers from the MCP registry when a task would benefit from external tool access. |
 
 ---
 
@@ -576,17 +538,6 @@ Files: `INDEX.md` (catalogue) · `*.sh` · `*.py` · `*.js`/`*.ts` · `*.mcp.jso
 
 **Naming** — Tool names must be a verb-noun kebab phrase describing the action (`count-exports`, `sync-schema`), not a noun or generic label (`exports`, `utils`).
 
-**Description anti-smells** — poor descriptions are the leading cause of incorrect tool selection and argument errors (empirically confirmed across 856 real-world MCP tools). Every tool header must avoid these six smells:
-
-| Smell | Anti-pattern | Fix |
-|-------|-------------|-----|
-| Unclear purpose | "handles export stuff" | One sentence stating exactly what it does and what it returns |
-| Missing usage guidelines | no when/when-not-to | Explicit activation criteria AND contraindications |
-| Unstated limitations | silent failure modes | Note scope bounds, volume limits, known edge cases |
-| Opaque parameters | `--mode <value>` | Type + valid values + behavioural effect for every argument |
-| Missing output declaration | result undocumented | Declare type and structure in `# outputs:` header field |
-| Underspecified length | one-line stub | ≥ 3 substantive sentences for any non-trivial tool |
-
 **Risk tier**:
 
 - `safe` — read-only or fully idempotent; invoke without confirmation
@@ -597,8 +548,7 @@ Files: `INDEX.md` (catalogue) · `*.sh` · `*.py` · `*.js`/`*.ts` · `*.mcp.jso
 - Tools must be idempotent where possible
 - Tools must not hardcode project-specific paths, names, or secrets — accept arguments
 - Retire unused tools: mark `[DEPRECATED]` in INDEX.md; counts as W1 (Overproduction)
-- Tools follow the same LOC baseline as source code (§3 hard limit: {{LOC_HIGH_THRESHOLD}} lines)
-- Observability: after using a toolbox tool, note it in the session summary; ≥ 3 uses → document the workflow in `TOOLS.md` "Discovered workflow patterns"
+- Tools follow the same LOC baseline as source code (§3 hard limit: 400 lines)
 - Output efficiency — prefer targeted reads (`grep`, `head`, `jq`) over raw dumps; return the minimum token payload the callsite requires.
 
 ### Subagent tool use
@@ -613,27 +563,6 @@ Skills are reusable markdown-based **behavioural instructions** that teach the a
 
 Skills follow the [Agent Skills](https://agentskills.io) open standard. Each skill is a `SKILL.md` file with YAML frontmatter and a markdown body containing step-by-step workflow instructions.
 
-### Skill anatomy
-
-```yaml
----
-name: <short name>
-description: <one-sentence summary — used for discovery matching>
-version: "1.0"
-license: MIT
-tags: [<keyword>, <keyword>]
-compatibility: ">=1.0"
-allowed-tools: [codebase, editFiles, terminal]
----
-
-<markdown body with step-by-step workflow instructions>
-```
-
-Required fields: `name`, `description`. Recommended fields: `compatibility`, `allowed-tools`. All others are optional.
-
-- **`compatibility`** — semver range indicating which template versions this skill is designed for (e.g., `">=1.4"`, `"1.x"`). Agents should warn if the current template version falls outside the range.
-- **`allowed-tools`** — array of tool identifiers the skill is permitted to use. Agents should restrict tool access to this list when executing the skill. Omit to allow all tools.
-
 ### Discovery and activation
 
 Skills are loaded **on demand** — the agent reads a skill's `SKILL.md` only when the `description` field matches the current task context. Do not pre-load all skills.
@@ -645,81 +574,23 @@ Task requires a workflow
  │     ├─ Match found  → READ the full SKILL.md, follow its instructions
  │     └─ No match     → ↓
  │
- ├─ 2. SEARCH (if enabled by {{SKILL_SEARCH_PREFERENCE}})
- │     ├─ "official-only"   → search official skill repositories:
- │     │     a. github.com/anthropics/skills
- │     │     b. github.com/github/awesome-copilot
- │     │     c. agentskills.io/registry (when available)
- │     │     ├─ Found → evaluate fit, adapt, save locally
+ ├─ 2. SEARCH (if enabled by official-and-community)
+ │     ├─ Search official repos (anthropics/skills, github/awesome-copilot) THEN:
+ │     │     community sources (GitHub search, awesome-agent-skills)
+ │     │     ├─ Found → evaluate fit, quality-check, adapt, save locally
  │     │     └─ Not found → ↓
- │     │
- │     ├─ "official-and-community" → search official repos (above) THEN:
- │     │     e. github.com/search?type=repositories&q=agent+skill+<topic>
- │     │     f. Community lists: awesome-agent-skills, huggingface/skills
- │     │     ├─ Found → evaluate fit, quality-check (see below), adapt, save locally
- │     │     └─ Not found → ↓
- │     │
- │     └─ "local-only" (default) → skip online search entirely → ↓
  │
  └─ 3. CREATE — author a new skill from scratch
-       - Follow the authoring rules below
        - Save to .github/skills/<kebab-name>/SKILL.md
        - Append to JOURNAL.md: `[skill] <name> created — <one-line reason>`
 ```
 
 ### Scope hierarchy
 
-Skills are resolved in priority order:
-
 | Priority | Location | Scope |
 |----------|----------|-------|
 | 1 (highest) | `.github/skills/<name>/SKILL.md` | Project — checked into version control |
 | 2 | `~/.copilot/skills/<name>/SKILL.md` | Personal — shared across all projects for one user |
-
-Project skills always override personal skills with the same name.
-
-### Community skill quality gate
-
-Before adopting a community-sourced skill (search tier "official-and-community"), verify:
-
-- [ ] Repository has ≥ 50 stars or is from a recognised organisation
-- [ ] `SKILL.md` has both `name` and `description` in frontmatter
-- [ ] Instructions are clear, specific, and non-destructive
-- [ ] No embedded credentials, tokens, or suspicious URLs
-- [ ] License is permissive (MIT, Apache 2.0, CC-BY)
-
-Reject any skill that fails two or more checks. For borderline cases, present the skill to the user for review before adopting.
-
-### Authoring rules
-
-When creating or adapting a skill:
-
-1. **One skill, one workflow** — a skill does one thing well. If you need "and", split it.
-2. **Description is the index** — write a precise one-sentence description; this is how the agent discovers the skill. Anti-smells: vague scope (“handles X stuff”), missing activation criteria, omitted output contract.
-3. **Steps for procedures, goals for judgment** — numbered steps for deterministic workflows; goal-level language (“ensure…”, “verify…”) for tasks requiring reasoning and flexibility.
-4. **No hardcoded paths** — use relative references and contextual lookups, not project-specific paths.
-5. **Idempotent** — running the skill twice should produce the same result.
-6. **Test instructions** — include a "Verify" step at the end that confirms the skill completed correctly.
-7. **Tag for discovery** — use 2–5 tags that match common task descriptions.
-
-### Lifecycle
-
-| Event | Action |
-|-------|--------|
-| Skill created | Save to `.github/skills/`, log in JOURNAL.md |
-| Skill used 3+ times | Promote: consider contributing upstream |
-| Skill unused for 3 months | Flag for review; mark `[DEPRECATED]` if no longer relevant |
-| Skill from online source | Adapt to project conventions before saving locally |
-
-### Skill vs. Tool
-
-| Aspect | Skill (§12) | Tool (§11) |
-|--------|------------|------------|
-| Format | Markdown (`SKILL.md`) | Executable script (`.sh`, `.py`, `.js`) |
-| Purpose | Teach *how* to approach a workflow | Automate a specific *action* |
-| Invocation | Agent reads and follows instructions | Agent executes the script |
-| Location | `.github/skills/` | `.copilot/tools/` |
-| Composable | Skills can reference tools | Tools don't reference skills |
 
 ### Subagent skill use
 
@@ -737,43 +608,6 @@ MCP enables Copilot to invoke external servers that provide tools, resources, an
 |------|----------------|-----------------|---------------|
 | Always-on | filesystem, memory, git | Every project — core development tools | Enabled by default in `.vscode/mcp.json` |
 | Credentials-required | github, fetch | When external API access is needed | Requires `${input:github-token}` or `${env:GITHUB_PERSONAL_ACCESS_TOKEN}` (GitHub) |
-| Stack-specific | {{MCP_STACK_SERVERS}} | When the project's stack has a matching server | Discovered during setup (Step 2.12) |
-
-### MCP decision tree
-
-```text
-Need an external capability
- │
- ├─ 1. CHECK built-in — Copilot's native tools cover many tasks
- │     ├─ Sufficient → USE built-in
- │     └─ Not sufficient → ↓
- │
- ├─ 2. CHECK configured servers — .vscode/mcp.json
- │     ├─ Server available → INVOKE via tool call
- │     └─ Not configured → ↓
- │
- ├─ 3. SEARCH for an existing MCP server
- │     a. Official:  github.com/modelcontextprotocol/servers
- │     b. Registries: mcp.so · glama.ai · smithery.ai
- │     c. Stack-specific: database, cloud provider, or API servers
- │     ├─ Found → evaluate (quality gate below), add to mcp.json, use
- │     └─ Not found → ↓
- │
- └─ 4. BUILD a custom server (use mcp-builder skill if available)
-       - Follow the MCP specification: modelcontextprotocol.io
-       - Prefer stdio transport for local servers
-       - Register in .vscode/mcp.json after testing with MCP Inspector
-```
-
-### Server quality gate
-
-Before adding a new MCP server to the project:
-
-- [ ] Server is from a verified publisher or has ≥ 100 GitHub stars
-- [ ] Transport is stdio (local) or SSE/streamable-HTTP with HTTPS (remote)
-- [ ] No credentials hardcoded — uses `${env:VAR}` or `${input:id}` references
-- [ ] License is permissive (MIT, Apache 2.0)
-- [ ] Tested with MCP Inspector or equivalent before committing
 
 ### Available servers
 
@@ -784,9 +618,6 @@ Before adding a new MCP server to the project:
 | `mcp-server-git` | Always-on | **`uvx`** (Python — not on npm) | Git history, diffs, and branch operations |
 | `@modelcontextprotocol/server-github` | Credentials | `npx` | GitHub API — issues, PRs, repos, actions |
 | `mcp-server-fetch` | Credentials | **`uvx`** (Python — not on npm) | HTTP fetch for web content and APIs |
-| {{MCP_STACK_SERVERS}} | Stack-specific | | *(populated during setup)* |
-
-{{MCP_CUSTOM_SERVERS}}
 
 ### Subagent MCP use
 

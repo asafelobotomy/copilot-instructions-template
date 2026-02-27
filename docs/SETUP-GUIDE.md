@@ -102,7 +102,7 @@ Every `{{PLACEHOLDER}}` in `.github/copilot-instructions.md` is replaced with th
 
 ### Step 2.5 — Write model-pinned agent files
 
-Four agent files are created in `.github/agents/` for VS Code 1.106+ users. These pre-configure the Copilot agent dropdown with the recommended model for each task type. See [AGENTS-GUIDE.md](AGENTS-GUIDE.md) for details.
+Six agent files are created in `.github/agents/` for VS Code 1.106+ users. These pre-configure the Copilot agent dropdown with the recommended model for each task type. See [AGENTS-GUIDE.md](AGENTS-GUIDE.md) for details.
 
 ---
 

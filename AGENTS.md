@@ -263,7 +263,9 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `SETUP.md` | Complete setup guide (remote-executable) |
 | `UPDATE.md` | Complete update + restore protocol (remote-executable) |
 | `.github/copilot-version.md` | Installed template version number (semver) — kept in `.github/` to avoid conflict with the consumer project's own version file |
+| `VERSION.md` | Single source of truth for template version number (semver) |
 | `CHANGELOG.md` | Template version history |
+| `scripts/sync-version.sh` | Propagate version from `VERSION.md` to all `x-release-please-version` marker files |
 | `.github/copilot-instructions.md` | Generic instructions template with `{{PLACEHOLDER}}` tokens |
 | `.github/agents/setup.agent.md` | Model-pinned Setup agent stub (Claude Sonnet 4.6) |
 | `.github/agents/coding.agent.md` | Model-pinned Coding agent stub (GPT-5.3-Codex) |
@@ -271,18 +273,33 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `.github/agents/fast.agent.md` | Model-pinned Fast agent stub (Claude Haiku 4.5) |
 | `.github/agents/update.agent.md` | Model-pinned Update agent stub (Claude Sonnet 4.6) |
 | `.github/agents/doctor.agent.md` | Model-pinned Doctor agent stub (Claude Sonnet 4.6) |
+| `.github/instructions/tests.instructions.md` | Path-specific instructions for test files (`*.test.*`, `*.spec.*`, `tests/**`) |
+| `.github/instructions/api-routes.instructions.md` | Path-specific instructions for API/route/controller files |
+| `.github/instructions/config.instructions.md` | Path-specific instructions for config and rc files |
+| `.github/instructions/docs.instructions.md` | Path-specific instructions for Markdown and docs files |
+| `.github/prompts/explain.prompt.md` | Slash command `/explain` — waste-aware code explanation |
+| `.github/prompts/refactor.prompt.md` | Slash command `/refactor` — PDCA-driven refactoring workflow |
+| `.github/prompts/test-gen.prompt.md` | Slash command `/test-gen` — convention-following test generation |
+| `.github/prompts/review-file.prompt.md` | Slash command `/review-file` — structured Lean file review |
+| `.github/prompts/commit-msg.prompt.md` | Slash command `/commit-msg` — Conventional Commits message authoring |
 | `template/skills/skill-creator/SKILL.md` | Starter skill — meta-skill for authoring new skills |
 | `template/skills/fix-ci-failure/SKILL.md` | Starter skill — CI failure diagnosis and resolution |
 | `template/skills/lean-pr-review/SKILL.md` | Starter skill — Lean PR review with waste categories |
 | `template/skills/conventional-commit/SKILL.md` | Starter skill — Conventional Commits message authoring |
 | `template/skills/mcp-builder/SKILL.md` | Starter skill — MCP server creation and registration |
 | `template/skills/webapp-testing/SKILL.md` | Starter skill — Playwright-based web app testing |
+| `template/skills/issue-triage/SKILL.md` | Starter skill — issue triage with severity classification and structured response |
 | `template/hooks/copilot-hooks.json` | Agent hooks configuration template |
 | `template/hooks/scripts/session-start.sh` | SessionStart hook — project context injection |
 | `template/hooks/scripts/guard-destructive.sh` | PreToolUse hook — destructive command guard |
 | `template/hooks/scripts/post-edit-lint.sh` | PostToolUse hook — auto-format after edits |
 | `template/hooks/scripts/enforce-retrospective.sh` | Stop hook — retrospective enforcement |
 | `template/hooks/scripts/save-context.sh` | PreCompact hook — context preservation |
+| `template/hooks/scripts/session-start.ps1` | SessionStart hook — Windows PowerShell counterpart |
+| `template/hooks/scripts/guard-destructive.ps1` | PreToolUse hook — Windows PowerShell counterpart |
+| `template/hooks/scripts/post-edit-lint.ps1` | PostToolUse hook — Windows PowerShell counterpart |
+| `template/hooks/scripts/enforce-retrospective.ps1` | Stop hook — Windows PowerShell counterpart |
+| `template/hooks/scripts/save-context.ps1` | PreCompact hook — Windows PowerShell counterpart |
 | `template/vscode/mcp.json` | MCP server configuration template |
 | `template/workspace/IDENTITY.md` | Agent self-description stub |
 | `template/workspace/SOUL.md` | Agent values & reasoning patterns stub |
@@ -295,7 +312,22 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `template/JOURNAL.md` | ADR journal stub |
 | `template/BIBLIOGRAPHY.md` | File catalogue stub |
 | `template/METRICS.md` | Metrics baseline table stub |
+| `template/copilot-setup-steps.yml` | GitHub Copilot coding agent environment setup workflow stub |
 | `examples/valis/README.md` | Reference implementation |
+| `docs/AGENTS-GUIDE.md` | Human-readable guide to model-pinned agents, trigger phrases, and fallback chains |
+| `docs/SETUP-GUIDE.md` | Human-readable walkthrough of the setup interview and output files |
+| `docs/UPDATE-GUIDE.md` | Human-readable guide to the update and restore protocol |
+| `docs/HOOKS-GUIDE.md` | Human-readable guide to agent lifecycle hooks: config, customisation, security |
+| `docs/SKILLS-GUIDE.md` | Human-readable guide to the Agent Skills system |
+| `docs/MCP-GUIDE.md` | Human-readable guide to MCP server configuration and server tiers |
+| `docs/HEARTBEAT-GUIDE.md` | Human-readable guide to the heartbeat protocol and checklist |
+| `docs/EXTENSION-REVIEW-GUIDE.md` | Human-readable guide to the extension review workflow |
+| `docs/TEST-REVIEW-GUIDE.md` | Human-readable guide to the test coverage review workflow |
+| `docs/PATH-INSTRUCTIONS-GUIDE.md` | Human-readable guide to path-specific instruction files |
+| `docs/PROMPTS-GUIDE.md` | Human-readable guide to reusable prompt files and slash commands |
+| `docs/INSTRUCTIONS-GUIDE.md` | Human-readable guide to the copilot-instructions.md structure |
+| `docs/SECURITY-GUIDE.md` | Human-readable guide to CI hardening, SHA-pinning, and Graduated Trust Model |
+| `docs/RELEASE-AUTOMATION-GUIDE.md` | Human-readable guide to release-please and version management |
 | `.github/skills/<name>/SKILL.md` | Scaffolded skill library (skills copied from template during setup) |
 | `.copilot/tools/INDEX.md` | Toolbox catalogue — created in consumer project on first tool save |
 

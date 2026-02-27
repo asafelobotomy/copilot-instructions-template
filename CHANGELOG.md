@@ -14,10 +14,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 ### Added
 
 - `tests/test-security-edge-cases.sh` — 29-assertion security and contract edge-case suite for `guard-destructive.sh` and `sync-version.sh`. Covers six gap categories identified by online research (OWASP Command Injection cheat sheet, BATS testing best practices): exit-code contract (hook must always exit 0), JSON output validity (every response parseable), `tool_input.input` field alias support, OWASP-sourced chained/embedded command detection (`;`, `&&`, `||`, subshell), SQL keyword case-insensitivity, and `sync-version.sh` idempotency.
+- Copilot instructions scaffolded from [copilot-instructions-template](https://github.com/asafelobotomy/copilot-instructions-template) — populated `.github/copilot-instructions.md`, workspace identity files, skills, hooks, MCP config, and documentation stubs.
 
 ### Fixed
 
 - `README.md` — badge URL missing `-blue` Shields.io color parameter (discovered during idempotency test run).
+- `README.md` — "Four model-pinned agents" heading and table updated to reflect all six agents (setup, coding, review, fast, update, doctor); added `update.agent.md` and `doctor.agent.md` rows; scaffolding table row updated to "Six model-pinned agents".
+- `docs/AGENTS-GUIDE.md` — "four agent files" prose corrected to "six agent files"; Doctor agent model column corrected from Claude Opus 4.6 to Claude Sonnet 4.6 (primary model; Opus 4.6 is the fallback).
+- `docs/SETUP-GUIDE.md` — "Four agent files" prose in Step 2.5 corrected to "Six agent files".
+- `AGENTS.md` — file map expanded with 15 missing entries: `VERSION.md`, `scripts/sync-version.sh`, `.github/instructions/*.instructions.md` (4 files), `.github/prompts/*.prompt.md` (5 files), `template/skills/issue-triage/SKILL.md`, `template/hooks/scripts/*.ps1` (5 Windows counterparts), `template/copilot-setup-steps.yml`, and all 15 `docs/*.md` human-readable guides.
 
 ### CI
 

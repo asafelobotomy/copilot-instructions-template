@@ -78,9 +78,9 @@ Questions you skip always get a sensible default. Every preference is written in
 
 `.github/copilot-instructions.md` ships with thirteen named sections (§1–§13) covering identity, workflow mode, safety gates, coding conventions, the PDCA cycle, waste cataloguing, self-editing protocol, test/extension review, project-specific overrides, a reusable tool library, a skill-based workflow system, and Model Context Protocol (MCP) integration. Every section is placeholder-driven — nothing is hardcoded to a particular stack.
 
-### 🤖 Four model-pinned agents
+### 🤖 Six model-pinned agents
 
-`.github/agents/` contains four VS Code agent files (requires VS Code 1.106+), each pinned to the model best suited for its role:
+`.github/agents/` contains six VS Code agent files (requires VS Code 1.106+), each pinned to the model best suited for its role:
 
 | Agent | Model | Role |
 |-------|-------|------|
@@ -88,6 +88,8 @@ Questions you skip always get a sensible default. Every preference is written in
 | `coding.agent.md` | GPT-5.3-Codex | Implementation, refactoring, test writing |
 | `review.agent.md` | Claude Opus 4.6 | Architectural review, Lean waste audit |
 | `fast.agent.md` | Claude Haiku 4.5 | Quick lookups, explanations, small edits |
+| `update.agent.md` | Claude Sonnet 4.6 | Fetch and apply upstream instruction updates from the template repo |
+| `doctor.agent.md` | Claude Sonnet 4.6 | Read-only health check on all Copilot instruction and config files |
 
 ### 📚 Agent Skills library
 
@@ -153,7 +155,7 @@ Two built-in review modes surface at the end of any session:
 | Artifact | Source | Purpose |
 |----------|--------|---------|
 | `.github/copilot-instructions.md` | Filled from template | Primary AI guidance — methodology-complete and project-specific |
-| `.github/agents/*.agent.md` | Copied from template | Four model-pinned agents |
+| `.github/agents/*.agent.md` | Copied from template | Six model-pinned agents |
 | `.github/hooks/copilot-hooks.json` | Copied from template | Agent lifecycle hooks configuration |
 | `.github/hooks/scripts/*.sh` | Copied from template | Five starter hook scripts (security, formatting, retrospective, context) |
 | `.github/skills/*/SKILL.md` | Copied from template | Six starter skills (Agent Skills standard) |

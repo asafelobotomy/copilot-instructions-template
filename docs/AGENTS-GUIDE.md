@@ -31,7 +31,7 @@ There are also variations:
 
 ### Option B — Model-pinned agents (VS Code 1.106+)
 
-The template creates four agent files in `.github/agents/`. These appear in the Copilot agent dropdown in VS Code. When you select an agent, Copilot automatically switches to the pinned model for that session — no manual model selection needed.
+The template creates six agent files in `.github/agents/`. These appear in the Copilot agent dropdown in VS Code. When you select an agent, Copilot automatically switches to the pinned model for that session — no manual model selection needed.
 
 | Agent | Model | Best for |
 |-------|-------|----------|
@@ -40,7 +40,7 @@ The template creates four agent files in `.github/agents/`. These appear in the 
 | **Review** | Claude Opus 4.6 | Deep code review, architectural analysis, Lean/Kaizen critique |
 | **Fast** | Claude Haiku 4.5 | Quick questions, syntax lookups, single-file lightweight edits |
 | **Update** | Claude Sonnet 4.6 | Fetch and apply upstream instruction updates from the template repo |
-| **Doctor** | Claude Opus 4.6 | Read-only health check on all Copilot instruction and config files |
+| **Doctor** | Claude Sonnet 4.6 | Read-only health check on all Copilot instruction and config files |
 
 Each agent has a fallback chain so it degrades gracefully if a model is unavailable on your plan.
 
