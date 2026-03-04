@@ -317,7 +317,7 @@ Copilot may edit this file when patterns stabilise. Rules:
 2. **Additive by default** — append to sections; don't restructure them.
 3. **Flag before writing** — describe the change and wait for confirmation on edits to §1–§7.
 4. **Self-update trigger phrases**: "Add this to your instructions", "Remember this for next time" — these add a convention to this file.
-5. **Template updates**: When the user says **"Update your instructions"** (or any variant: "Check for instruction updates", "Update from template", "Sync instructions with the template"), this means: go to the upstream template repository at `https://github.com/asafelobotomy/copilot-instructions-template`, fetch the latest version, compare it against the installed version, and run the update protocol defined in `UPDATE.md`. This is not a request to make arbitrary edits — it is specifically a check-for-upstream-updates command.
+5. **Template updates**: When the user says **"Update your instructions"** (or any variant listed in the Canonical triggers table of `AGENTS.md`), this means: go to the upstream template repository at `https://github.com/asafelobotomy/copilot-instructions-template`, fetch the latest version, compare it against the installed version, and run the update protocol defined in `UPDATE.md`. This is not a request to make arbitrary edits — it is specifically a check-for-upstream-updates command.
 
 ### Attention Budget
 
@@ -356,7 +356,7 @@ Event-triggered health checks that keep the agent aligned with real project stat
 
 Hooks are deterministic shell commands that VS Code executes at specific lifecycle points during an agent session. Unlike instructions (soft guidance), hooks run your code with guaranteed outcomes — they enforce rules that the agent would otherwise follow probabilistically.
 
-Hook configuration lives in `.github/hooks/copilot-hooks.json`. The template ships five starter hooks:
+Hook configuration lives in `.github/hooks/copilot-hooks.json`. VS Code supports eight lifecycle events. The template ships five starter hooks:
 
 | Event | Script | Purpose |
 |-------|--------|---------|
@@ -366,7 +366,7 @@ Hook configuration lives in `.github/hooks/copilot-hooks.json`. The template shi
 | `Stop` | `enforce-retrospective.sh` | Prevent session end if retrospective has not been run |
 | `PreCompact` | `save-context.sh` | Preserve workspace state (heartbeat, memory, heuristics) before context compaction |
 
-Hook scripts accept JSON on stdin and emit JSON on stdout. See `docs/HOOKS-GUIDE.md` for configuration format, customisation instructions, and security considerations.
+Additional events available: `UserPromptSubmit`, `SubagentStart`, `SubagentStop`. See `docs/HOOKS-GUIDE.md` for the full event reference and customisation instructions.
 
 ---
 
@@ -467,162 +467,40 @@ The Graduated Trust Model assigns verification behaviour based on path patterns.
 > running N searches, fetching N URLs), execute all in one parallel batch. Never sequence
 > independent tool calls — check for data dependencies first, then parallelize everything else.
 
-When a task requires automation, a scripted command sequence, or a repeatable utility, follow this decision tree before writing anything ad-hoc.
+When a task requires automation or scripting, activate the **tool-protocol** skill (`.github/skills/tool-protocol/SKILL.md`) and follow its decision tree: Find → Built-in → Search → Compose → Build → Evaluate reusability.
 
-### Decision tree
+Key rules (always loaded):
 
-```text
-Need a tool for task X
- │
- ├─ 1. FIND — check .copilot/tools/INDEX.md
- │     ├─ Exact match  → USE IT directly
- │     ├─ Close match  → ADAPT (fork, rename, note source in comment at top of file)
- │     └─ No match     → ↓
- │
- ├─ 1.5 BUILT-IN — check VS Code's native tool capabilities
- │     ├─ `list_code_usages`  → find all references, implementations, callers of a symbol
- │     ├─ `get_errors`        → get compile/lint errors for a file or the entire workspace
- │     ├─ `fetch_webpage`     → fetch web pages, docs, APIs (use for documentation lookups)
- │     ├─ `semantic_search`   → natural language search across the codebase
- │     ├─ `grep_search`       → fast text/regex search in workspace files
- │     ├─ Sufficient → USE built-in tool
- │     └─ Not sufficient → ↓
- │
- ├─ 2. SEARCH online (try in order)
- │     a. MCP server registry  github.com/modelcontextprotocol/servers
- │     b. GitHub search        github.com/search?type=repositories&q=<task>
- │     c. Awesome lists        awesome-cli-apps · awesome-shell · awesome-python · awesome-rust · awesome-go
- │     d. Stack registry       npmjs.com / pypi.org / crates.io / pkg.go.dev
- │     e. Official CLI docs    git · docker · gh · jq · ripgrep · sed · awk (built-ins first)
- │     ├─ Found something usable → evaluate fit, adapt as needed, note source
- │     └─ Nothing applicable → ↓
- │
- ├─ 2.5 COMPOSE — can this be assembled from 2+ existing toolbox tools via pipe or import?
- │     ├─ Yes → compose; document the pipeline; save to toolbox if reusable
- │     └─ No  → ↓
- │
- └─ 3. BUILD — write the tool from scratch
-          - Follow §4 coding conventions and §3 LOC baselines
-          - Single-purpose: one tool, one job; compose via pipes or imports
-          - Accept arguments instead of hardcoding project-specific paths
-          - Required inline header at the top of every built or saved tool:
-            # purpose:  <what this tool does — one precise sentence>
-            # when:     <when to invoke it | when NOT to invoke it>
-            # inputs:   <argument list with types and valid values>
-            # outputs:  <what it returns — type and structure>
-            # risk:     safe | destructive
-            # source:   <url or "original" if built from scratch>
-          │
-          └─ 4. EVALUATE reusability
-                ├─ ≥ 2 distinct tasks in this project would benefit → SAVE to toolbox
-                │   a. Place file in .copilot/tools/<kebab-name>.<ext>
-                │   b. Add a row to .copilot/tools/INDEX.md (see format below)
-                │   c. Append to JOURNAL.md: `[tool] <name> added to toolbox — <one-line reason>`
-                └─ Single-use / too project-specific → use inline only; do not save
-```
-
-### Toolbox
-
-`.copilot/tools/` is created on first tool save (no setup step required). Contents:
-
-Files: `INDEX.md` (catalogue) · `*.sh` · `*.py` · `*.js`/`*.ts` · `*.mcp.json`
-
-**INDEX.md row format**:
-
-| Tool | Lang | What it does | When to use | Output | Risk |
-|------|------|-------------|------------|--------|------|
-| `count-exports.sh` | bash | Count exported symbols per file | API surface audits | symbol counts to stdout | safe |
-| `summarise-metrics.py` | python | Parse METRICS.md and print trends | Kaizen review sessions | trend table to stdout | safe |
-
-### Tool quality rules
-
-**Naming** — Tool names must be a verb-noun kebab phrase describing the action (`count-exports`, `sync-schema`), not a noun or generic label (`exports`, `utils`).
-
-**Risk tier**:
-
-- `safe` — read-only or fully idempotent; invoke without confirmation
-- `destructive` — deletes files, overwrites data, or writes to remote systems; **must pause and confirm with the user before execution**, regardless of session autonomy level
-
-**Other rules**:
-
-- Tools must be idempotent where possible
-- Tools must not hardcode project-specific paths, names, or secrets — accept arguments
-- Retire unused tools: mark `[DEPRECATED]` in INDEX.md; counts as W1 (Overproduction)
-- Tools follow the same LOC baseline as source code (§3 hard limit: 400 lines)
-- Output efficiency — prefer targeted reads (`grep`, `head`, `jq`) over raw dumps; return the minimum token payload the callsite requires.
-
-### Subagent tool use
-
-Subagents inherit this protocol fully. A subagent may build or adapt a tool independently. To **save** a tool to the toolbox, the subagent must first flag the proposal to the parent agent, which confirms before any write to `.copilot/tools/`.
+- Tools are saved to `.copilot/tools/` with a row in `INDEX.md`
+- `safe` tools run without confirmation; `destructive` tools **must pause and confirm**
+- Tools must be idempotent, accept arguments (no hardcoded paths), and follow §3 LOC baselines
+- Subagents inherit this protocol; they flag toolbox saves to the parent agent
 
 ---
 
 ## §12 — Skill Protocol
 
-Skills are reusable markdown-based **behavioural instructions** that teach the agent *how* to perform a specific workflow. Unlike tools (§11) which are executable scripts, skills are declarative — they shape the agent's approach rather than running code.
+Skills are reusable markdown-based behavioural instructions following the [Agent Skills](https://agentskills.io) open standard. Activate the **skill-management** skill (`.github/skills/skill-management/SKILL.md`) for the full discovery and activation workflow.
 
-Skills follow the [Agent Skills](https://agentskills.io) open standard. Each skill is a `SKILL.md` file with YAML frontmatter and a markdown body containing step-by-step workflow instructions.
+Key rules (always loaded):
 
-### Discovery and activation
-
-Skills are loaded **on demand** — the agent reads a skill's `SKILL.md` only when the `description` field matches the current task context. Do not pre-load all skills.
-
-```text
-Task requires a workflow
- │
- ├─ 1. SCAN — check .github/skills/*/SKILL.md descriptions
- │     ├─ Match found  → READ the full SKILL.md, follow its instructions
- │     └─ No match     → ↓
- │
- ├─ 2. SEARCH (if enabled by official-and-community)
- │     ├─ Search official repos (anthropics/skills, github/awesome-copilot) THEN:
- │     │     community sources (GitHub search, awesome-agent-skills)
- │     │     ├─ Found → evaluate fit, quality-check, adapt, save locally
- │     │     └─ Not found → ↓
- │
- └─ 3. CREATE — author a new skill from scratch
-       - Save to .github/skills/<kebab-name>/SKILL.md
-       - Append to JOURNAL.md: `[skill] <name> created — <one-line reason>`
-```
-
-### Scope hierarchy
-
-| Priority | Location | Scope |
-|----------|----------|-------|
-| 1 (highest) | `.github/skills/<name>/SKILL.md` | Project — checked into version control |
-| 2 | `~/.copilot/skills/<name>/SKILL.md` | Personal — shared across all projects for one user |
-
-### Subagent skill use
-
-Subagents inherit this protocol fully. A subagent may read and follow any project or personal skill. To **create** a new skill, the subagent must flag the proposal to the parent agent, which confirms before any write to `.github/skills/`.
+- Skills are loaded **on demand** — read `SKILL.md` only when its `description` matches the current task
+- Priority: project (`.github/skills/`) > personal (`~/.copilot/skills/`)
+- Subagents inherit this protocol; they flag skill creation to the parent agent
 
 ---
 
 ## §13 — Model Context Protocol (MCP)
 
-MCP enables Copilot to invoke external servers that provide tools, resources, and prompts beyond built-in capabilities. Configuration lives in `.vscode/mcp.json`.
+MCP enables Copilot to invoke external servers beyond built-in capabilities. Configuration lives in `.vscode/mcp.json`. Activate the **mcp-management** skill (`.github/skills/mcp-management/SKILL.md`) for server configuration and management.
 
-### Server tiers
+Key rules (always loaded):
 
-| Tier | Default servers | When to enable | Configuration |
-|------|----------------|-----------------|---------------|
-| Always-on | filesystem, memory, git | Every project — core development tools | Enabled by default in `.vscode/mcp.json` |
-| Credentials-required | github, fetch | When external API access is needed | Requires `${input:github-token}` or `${env:GITHUB_PERSONAL_ACCESS_TOKEN}` (GitHub) |
-
-### Available servers
-
-| Server | Tier | Command | Purpose |
-|--------|------|---------|--------|
-| `@modelcontextprotocol/server-filesystem` | Always-on | `npx` | File operations beyond the workspace |
-| `@modelcontextprotocol/server-memory` | Always-on | `npx` | Persistent key-value memory across sessions |
-| `mcp-server-git` | Always-on | **`uvx`** (Python — not on npm) | Git history, diffs, and branch operations |
-| `@modelcontextprotocol/server-github` | Credentials | `npx` | GitHub API — issues, PRs, repos, actions |
-| `mcp-server-fetch` | Credentials | **`uvx`** (Python — not on npm) | HTTP fetch for web content and APIs |
-
-### Subagent MCP use
-
-Subagents inherit access to all configured MCP servers. A subagent may invoke any server already in `.vscode/mcp.json`. To **add** a new server, the subagent must flag the proposal to the parent agent, which confirms before modifying `.vscode/mcp.json`.
+- **Always-on** servers: filesystem, memory, git — enabled by default
+- **Credentials-required** servers: github, fetch — need token configuration
+- Never hardcode secrets — use `${input:}` or `${env:}` variable syntax
+- Subagents inherit access; they flag new server additions to the parent agent
 
 ---
 
-*See also: `.github/agents/` (model-pinned VS Code agents) · `.github/hooks/` (agent lifecycle hooks) · `.copilot/workspace/` (session identity) · `.copilot/tools/` (reusable tool library) · `.github/skills/` (reusable skill library) · `.vscode/mcp.json` (MCP server configuration) · `UPDATE.md` (update protocol) · `AGENTS.md` (AI agent entry point)*
+*See also: `.github/agents/` (model-pinned VS Code agents) · `.github/hooks/` (agent lifecycle hooks) · `.copilot/workspace/` (session identity) · `.copilot/tools/` (reusable tool library) · `.github/skills/` (reusable skill library) · `.vscode/mcp.json` (MCP server configuration) · `UPDATE.md` (update protocol) · `MIGRATION.md` (per-version migration registry) · `AGENTS.md` (AI agent entry point)*

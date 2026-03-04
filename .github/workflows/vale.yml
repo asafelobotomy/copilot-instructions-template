@@ -5,6 +5,9 @@ on:
     paths:
       - "**/*.md"
 
+permissions:
+  pull-requests: write
+
 jobs:
   vale:
     name: Vale prose check

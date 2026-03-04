@@ -256,6 +256,21 @@ Right-click in the Chat view → **Diagnostics** to see loaded hooks and validat
 
 Open the **Output** panel → select **GitHub Copilot Chat Hooks** from the channel dropdown.
 
+### Dependencies
+
+The five starter hook scripts require **Python 3** to be installed and available on `$PATH`.
+Python 3 is used for JSON parsing — if it is missing, `guard-destructive.sh` will silently
+pass all commands through (including dangerous ones) and other hooks will produce no output.
+
+Verify Python 3 is available:
+
+```bash
+python3 --version
+```
+
+On macOS, install via `brew install python`. On Windows (WSL), `sudo apt install python3`.
+On minimal CI images, add `python3` to your environment setup.
+
 ### Common issues
 
 | Problem | Fix |
@@ -265,6 +280,7 @@ Open the **Output** panel → select **GitHub Copilot Chat Hooks** from the chan
 | Timeout errors | Increase `timeout` in the JSON config (default: 30s) |
 | JSON parse errors | Ensure scripts output valid JSON to stdout |
 | Stop hook loops | Always check `stop_hook_active` before blocking |
+| `guard-destructive.sh` not blocking dangerous commands | Python 3 may be missing — see [Dependencies](#dependencies) above |
 
 ---
 

@@ -7,6 +7,7 @@ model:
   - Claude Sonnet 4.5
   - GPT-5.1
 tools: [fetch, editFiles, codebase]
+disable-model-invocation: true
 handoffs:
   - label: Run health check
     agent: doctor
@@ -20,9 +21,11 @@ Your role: fetch the latest upstream instructions from the template repository a
 walk the user through applying changes to their project — exactly as defined in
 `UPDATE.md`.
 
-> **Read `UPDATE.md` now** (fetch from the template repo or read locally) and
-> follow every step precisely. This agent is a thin wrapper that ensures you
+> **Always fetch `UPDATE.md` from the upstream template repo** (not the local copy)
+> and follow every step precisely. This agent is a thin wrapper that ensures you
 > execute that protocol; `UPDATE.md` is the single source of truth.
+>
+> Fetch URL: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/UPDATE.md`
 
 ## Trigger phrases this agent handles
 
@@ -61,8 +64,10 @@ walk the user through applying changes to their project — exactly as defined i
 1. Installed version: `.github/copilot-version.md` in the current project
    (the template-installed version — distinct from the consumer project's own `VERSION.md`).
 2. Template version: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/VERSION.md`
-3. Template changelog: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/CHANGELOG.md`
-4. New template file: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/copilot-instructions.md`
+3. Migration registry: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/MIGRATION.md`
+4. Template changelog: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/CHANGELOG.md`
+5. New template file: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/copilot-instructions.md`
+6. Old baseline template (at installed version tag): `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/v<INSTALLED_VERSION>/.github/copilot-instructions.md`
 
 ## After a successful update
 

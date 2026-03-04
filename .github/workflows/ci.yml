@@ -72,7 +72,7 @@ jobs:
             ".github/agents/coding.agent.md" \
             ".github/agents/review.agent.md" \
             ".github/agents/fast.agent.md" \
-            "SETUP.md" "UPDATE.md" "AGENTS.md" "VERSION.md" "CHANGELOG.md" \
+            "SETUP.md" "UPDATE.md" "MIGRATION.md" "AGENTS.md" "VERSION.md" "CHANGELOG.md" \
             "LICENSE" "CONTRIBUTING.md" \
             "scripts/sync-version.sh" \
             "docs/INSTRUCTIONS-GUIDE.md" "docs/SETUP-GUIDE.md" \
@@ -107,6 +107,38 @@ jobs:
           done
           [[ $missing -eq 0 ]] || exit 1
           echo "✅ All required files present"
+
+      - name: Template copies in sync with working copies
+        run: |
+          drift=0
+          # Skills: .github/skills/* must match template/skills/*
+          for dir in .github/skills/*/; do
+            skill=$(basename "$dir")
+            template_skill="template/skills/$skill/SKILL.md"
+            if [[ -f "$template_skill" ]]; then
+              if ! diff -q "$dir/SKILL.md" "$template_skill" > /dev/null 2>&1; then
+                echo "❌ Drift: $dir/SKILL.md ≠ $template_skill"; drift=1
+              fi
+            fi
+          done
+          # Hooks: .github/hooks/scripts/* must match template/hooks/scripts/*
+          for f in .github/hooks/scripts/*.sh; do
+            tf="template/hooks/scripts/$(basename "$f")"
+            if [[ -f "$tf" ]] && ! diff -q "$f" "$tf" > /dev/null 2>&1; then
+              echo "❌ Drift: $f ≠ $tf"; drift=1
+            fi
+          done
+          for f in .github/hooks/scripts/*.ps1; do
+            tf="template/hooks/scripts/$(basename "$f")"
+            if [[ -f "$tf" ]] && ! diff -q "$f" "$tf" > /dev/null 2>&1; then
+              echo "❌ Drift: $f ≠ $tf"; drift=1
+            fi
+          done
+          if ! diff -q .github/hooks/copilot-hooks.json template/hooks/copilot-hooks.json > /dev/null 2>&1; then
+            echo "❌ Drift: copilot-hooks.json"; drift=1
+          fi
+          [[ $drift -eq 0 ]] || { echo "Sync the drifted files and commit."; exit 1; }
+          echo "✅ All template copies in sync"
 
       - name: "copilot-instructions.md has all sections §1–§13"
         run: |
@@ -388,7 +420,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden runner
-        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433785f215b # v2
+        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2
         with:
           egress-policy: audit
 

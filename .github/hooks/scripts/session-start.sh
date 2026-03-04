@@ -33,12 +33,15 @@ if [[ -f .copilot/workspace/HEARTBEAT.md ]]; then
   PULSE=$(grep -m1 'HEARTBEAT' .copilot/workspace/HEARTBEAT.md 2>/dev/null | head -1 || echo "unknown")
 fi
 
-# Emit context for the agent
+# Emit context for the agent — JSON-escape to handle special characters
+CONTEXT="Project: ${PROJECT_NAME} v${PROJECT_VER} | Branch: ${BRANCH} (${COMMIT}) | Node: ${NODE_VER} | Python: ${PYTHON_VER} | Heartbeat: ${PULSE}"
+CONTEXT_ESC=$(printf '%s' "$CONTEXT" | python3 -c "import sys,json; print(json.dumps(sys.stdin.read()), end='')" 2>/dev/null | sed 's/^"//;s/"$//' || printf '%s' "$CONTEXT")
+
 cat <<EOF
 {
   "hookSpecificOutput": {
     "hookEventName": "SessionStart",
-    "additionalContext": "Project: ${PROJECT_NAME} v${PROJECT_VER} | Branch: ${BRANCH} (${COMMIT}) | Node: ${NODE_VER} | Python: ${PYTHON_VER} | Heartbeat: ${PULSE}"
+    "additionalContext": "${CONTEXT_ESC}"
   }
 }
 EOF

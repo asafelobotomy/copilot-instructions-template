@@ -29,13 +29,18 @@ Use *"Force check instruction updates"* to run a full comparison even when versi
 
 ### 2 — Build the change manifest
 
-Copilot compares your installed file section-by-section against the new template (§1–§9 only). For each section it assigns a status:
+Copilot fetches `MIGRATION.md` from the template repo — a structured registry of what changed at each version. It then performs a **version-walk**: identifying every tagged version between your installed version and the latest, and collecting per-version metadata (sections changed, companion files, breaking changes, new placeholders, manual actions).
+
+For a **three-way merge**, Copilot also fetches the template at your installed version's tag (the old baseline). This lets it distinguish:
 
 | Status | Meaning |
 |--------|---------|
 | `UNCHANGED` | Section is identical to the template |
-| `UPDATED` | Template has a newer version of this section |
-| `USER_MODIFIED` | Your installed section differs from both old and new template — you may have edited it |
+| `UPDATED` | Template changed upstream; your copy was not edited — clean merge |
+| `USER_MODIFIED` | Both you and the template changed this section — requires your decision |
+| `USER_ONLY` | You edited this section but the template did not change it — your edits are preserved |
+| `BREAKING` | Template changed this section with breaking impact — requires explicit confirmation |
+| `NEW_SECTION` | New section introduced in the template |
 | `PROTECTED` | §10 — always excluded from comparison and never touched |
 
 ---
@@ -44,9 +49,13 @@ Copilot compares your installed file section-by-section against the new template
 
 Copilot presents a report showing:
 
-- The version comparison
-- What changed in the new version (from CHANGELOG)
-- The section-by-section diff table
+- The version comparison and version steps traversed
+- Breaking changes (if any)
+- What changed in each version (from CHANGELOG, grouped by version)
+- The section-by-section diff table with which version introduced each change
+- Companion files available (agent files, skills, hooks, MCP config, etc.)
+- New placeholders that need resolution
+- Manual actions from MIGRATION.md
 - A guardrail check
 
 **Nothing has been written yet.** You choose what to do.
@@ -85,12 +94,14 @@ This backup is created unconditionally. You can restore from it at any time.
 
 ### 6 — Apply changes
 
-Copilot writes only the confirmed sections. It never touches:
+Copilot writes only the confirmed sections and companion files. It never touches:
 
 - §10 (Project-Specific Overrides) — entire section
 - Your User Preferences block
 - Any `<!-- migrated -->` or `<!-- user-added -->` blocks
 - Resolved placeholder values (commands and thresholds you've set)
+
+Companion files (agent files, skills, hooks, MCP config, path instructions, prompt files) are created or updated based on your decisions. User-customised companion files are preserved unless you explicitly choose to overwrite them.
 
 ---
 
@@ -131,33 +142,39 @@ These items are **never** modified by an update, regardless of what you choose:
 
 ## Notable version migrations
 
-These notes cover changes that require manual action beyond running "Update your instructions". The update protocol handles all §1–§9 section changes automatically — these notes cover companion files and setup steps that the protocol does not touch.
+> **Machine-readable source**: All per-version migration data (sections changed, companion files, new placeholders, breaking changes, manual actions) is maintained in [`MIGRATION.md`](../MIGRATION.md) at the repository root. The update protocol reads this file automatically during the version-walk.
+>
+> The entries below are a human-readable summary. For the authoritative data, see `MIGRATION.md`.
 
-### v1.x → v2.0.0 (Major)
+### v1.x → v2.0.0 (Major — Breaking)
 
 **New in this release**: §13 Model Context Protocol (MCP), MCP server template, two new starter skills, and an automated release workflow option.
 
-**What the update protocol does automatically**:
+**What the update protocol handles automatically** (since the version-walk update):
 
 - Proposes adding §13 as a `NEW_SECTION` — accept it to bring in the full MCP protocol.
-- Proposes changes to existing sections §1 through §12 as `UPDATED` items.
+- Proposes changes to existing §1–§12 sections as `UPDATED` items.
+- Offers companion files: `.vscode/mcp.json`, `mcp-builder` skill, `webapp-testing` skill.
+- Detects new placeholders: `{{MCP_STACK_SERVERS}}`, `{{MCP_CUSTOM_SERVERS}}`.
 
-**What requires manual action** (the update protocol does not touch these):
+**What still requires manual action**:
 
 | Item | Action |
 |------|--------|
-| MCP server config | Optionally create `.vscode/mcp.json` by fetching `template/vscode/mcp.json` from the template repo and configuring your preferred servers |
-| New starter skills | Optionally fetch `template/skills/mcp-builder/SKILL.md` and `template/skills/webapp-testing/SKILL.md` into `.github/skills/` |
-| Release automation | Optionally adopt `release-please.yml` — requires `release-please-config.json` and `.release-please-manifest.json` at repo root; see `docs/RELEASE-AUTOMATION-GUIDE.md` |
-| §10 User Preferences | Manually add an `MCP servers` row (E22) to your existing User Preferences table if you want to document your MCP choice |
+| §10 User Preferences | Manually add an `MCP servers` row (E22) to your existing User Preferences table |
+| Release automation | Optionally adopt `release-please.yml` — see `docs/RELEASE-AUTOMATION-GUIDE.md` |
 
 ### v1.0.x / v1.1.0 → v1.4.0
 
-**New in this release**: SHA-pinned actions, harden-runner, OpenSSF Scorecard, Graduated Trust Model (§10), skill `compatibility` and `allowed-tools` fields.
+**New in this release**: SHA-pinned actions, harden-runner, OpenSSF Scorecard, Graduated Trust Model (§10), skill `compatibility` and `allowed-tools` fields, path-specific instructions, prompt files.
 
-**What requires manual action**:
+**What the update protocol handles automatically** (since the version-walk update):
+
+- Offers companion files: 4 path instruction files, 5 prompt files, updated skills.
+- Detects new placeholder: `{{TRUST_OVERRIDES}}`.
+
+**What still requires manual action**:
 
 | Item | Action |
 |------|--------|
-| Skill security fields | Optionally add `compatibility: ">=1.4"` and `allowed-tools: [...]` frontmatter to your existing `.github/skills/*/SKILL.md` files |
-| §10 Verification trust | Manually add a `Verification trust` row (E21) to your User Preferences table and fill in `{{TRUST_OVERRIDES}}` in §10 |
+| §10 Verification trust | Manually add a `Verification trust` row (E21) to your User Preferences table |

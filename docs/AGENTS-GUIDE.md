@@ -50,7 +50,7 @@ Each agent has a fallback chain so it degrades gracefully if a model is unavaila
 
 | Model | Reason chosen |
 |-------|--------------|
-| **Claude Sonnet 4.6** (Setup, Update) | Strong instruction-following; handles the 3-tier preference interview (5–19 questions) and complex conditional logic in setup well. Also used for Update: reliable at fetch → compare → apply workflows |
+| **Claude Sonnet 4.6** (Setup, Update) | Strong instruction-following; handles the 3-tier preference interview (5–24 questions) and complex conditional logic in setup well. Also used for Update: reliable at fetch → compare → apply workflows |
 | **GPT-5.3-Codex** (Code) | GitHub's latest agentic coding model (GA Feb 9 2026); ~25% faster than its predecessor; supports real-time mid-task steering. Stays in the Codex lineage for clean fallbacks |
 | **Claude Opus 4.6** (Review) | Agent Teams capability — delegates sub-tasks to specialised virtual agents in parallel, making it ideal for systematic Lean/Kaizen architectural review. 3× multiplier cost; reserve for genuine deep reviews |
 | **Claude Haiku 4.5** (Fast) | 0.33× cost multiplier; fastest response time. Right-sized for questions that don't warrant a premium model |
@@ -67,7 +67,7 @@ If a model is unavailable on your plan, the agent falls back in order:
 | Setup | Claude Sonnet 4.6 → Claude Sonnet 4.5 → GPT-5.1 → GPT-5 mini |
 | Code | GPT-5.3-Codex → GPT-5.2-Codex → GPT-5.1-Codex → GPT-5.1 → GPT-5 mini |
 | Review | Claude Opus 4.6 → Claude Opus 4.5 → Claude Sonnet 4.6 → GPT-5.1 |
-| Fast | Claude Haiku 4.5 → Grok Code Fast 1 → GPT-5 mini → GPT-4.1 |
+| Fast | Claude Haiku 4.5 → GPT-5 mini → GPT-4.1 |
 | Update | Claude Sonnet 4.6 → Claude Sonnet 4.5 → GPT-5.1 |
 | Doctor | Claude Sonnet 4.6 → Claude Opus 4.6 → Claude Opus 4.5 |
 
@@ -97,6 +97,19 @@ Handoffs wire guided one-click transitions between agents:
 | **Doctor** | Update instructions | Update | Doctor found instructions are behind the template |
 
 These handoffs keep the model selection optimal throughout your workflow without requiring manual switching.
+
+---
+
+## Invocation controls
+
+Two frontmatter properties control how agents are discovered and invoked:
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `user-invokable` | `true` | Whether the agent appears in the agents dropdown. Set `false` for subagent-only agents. |
+| `disable-model-invocation` | `false` | Prevents the model from autonomously invoking this agent as a subagent. Handoffs are unaffected. |
+
+The template sets `disable-model-invocation: true` on **Setup** and **Update** because both run interactive processes (interviews, pre-flight reports) unsuitable for autonomous subagent invocation.
 
 > **Important**: The `agent:` value in a handoff must match the **filename stem** of the target `.agent.md` file, not the `name:` frontmatter field. For example, `coding.agent.md` is referenced as `agent: coding`, not `agent: Code`.
 

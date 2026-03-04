@@ -4,7 +4,6 @@ description: Quick questions, syntax lookups, and lightweight single-file edits
 argument-hint: Ask anything quick — e.g. "what does this regex match?", "fix the typo in README.md", "what's the wc -l of copilot-instructions.md?"
 model:
   - Claude Haiku 4.5
-  - Grok Code Fast 1
   - GPT-5 mini
   - GPT-4.1
 tools: [codebase, editFiles, terminal]

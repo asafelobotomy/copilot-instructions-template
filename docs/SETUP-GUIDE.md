@@ -45,9 +45,9 @@ This is the most interactive part. Copilot first asks which setup level you want
 
 | Setup level | Questions | Time |
 |-------------|-----------|------|
-| **S — Simple** | S1–S5 (5 questions) | ~1 min |
-| **A — Advanced** | S1–S5 + A6–A15 (15 questions) | ~2 min |
-| **E — Expert** | S1–S5 + A6–A15 + E16–E22 (22 questions) | ~3 min |
+| **Q — Quick** | S1–S5 (5 questions) | ~3 min |
+| **S — Standard** | S1–S5 + A6–A17 (17 questions) | ~6 min |
+| **F — Full** | S1–S5 + A6–A17 + E16–E22 (24 questions) | ~10 min |
 
 You can also type "skip" to use all defaults and proceed immediately.
 
@@ -108,7 +108,7 @@ Six agent files are created in `.github/agents/` for VS Code 1.106+ users. These
 
 ### Step 2.8 — Scaffold skill library
 
-Six starter skills are scaffolded into `.github/skills/`, following the [Agent Skills](https://agentskills.io) open standard. These teach the agent reusable workflows: authoring new skills, fixing CI failures, Lean PR reviews, Conventional Commits, MCP server creation, and Playwright e2e testing. See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for details.
+Seven starter skills are scaffolded into `.github/skills/`, following the [Agent Skills](https://agentskills.io) open standard. These teach the agent reusable workflows: authoring new skills, fixing CI failures, Lean PR reviews, Conventional Commits, MCP server creation, Playwright e2e testing, and structured issue triage. See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for details.
 
 ---
 

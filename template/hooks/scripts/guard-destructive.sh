@@ -6,6 +6,11 @@
 # risk:     safe
 set -euo pipefail
 
+# JSON-escape a string for safe embedding in heredoc JSON output
+json_escape() {
+  printf '%s' "$1" | python3 -c "import sys,json; print(json.dumps(sys.stdin.read()), end='')" 2>/dev/null | sed 's/^"//;s/"$//' || printf '%s' "$1"
+}
+
 INPUT=$(cat)
 TOOL_NAME=$(echo "$INPUT" | grep -o '"tool_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*: *"\(.*\)"/\1/') || TOOL_NAME=""
 
@@ -29,7 +34,7 @@ except:
 BLOCKED_PATTERNS=(
   'rm -rf /'
   'rm -rf ~'
-  'rm -rf \.(\s|$)'
+  'rm -rf \.([[:space:]]|$)'
   'DROP TABLE'
   'DROP DATABASE'
   'TRUNCATE TABLE'
@@ -44,12 +49,13 @@ BLOCKED_PATTERNS=(
 
 for pattern in "${BLOCKED_PATTERNS[@]}"; do
   if echo "$TOOL_INPUT" | grep -qiE "$pattern"; then
+    PATTERN_ESC=$(json_escape "$pattern")
     cat <<EOF
 {
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
     "permissionDecision": "deny",
-    "permissionDecisionReason": "Blocked by security hook: matched destructive pattern '${pattern}'"
+    "permissionDecisionReason": "Blocked by security hook: matched destructive pattern '${PATTERN_ESC}'"
   }
 }
 EOF
@@ -73,13 +79,15 @@ CAUTION_PATTERNS=(
 
 for pattern in "${CAUTION_PATTERNS[@]}"; do
   if echo "$TOOL_INPUT" | grep -qiE "$pattern"; then
+    PATTERN_ESC=$(json_escape "$pattern")
+    COMMAND_ESC=$(json_escape "$(echo "$TOOL_INPUT" | head -c 200)")
     cat <<EOF
 {
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
     "permissionDecision": "ask",
-    "permissionDecisionReason": "Potentially destructive command detected: matches '${pattern}'. Requires user confirmation.",
-    "additionalContext": "The command '$(echo "$TOOL_INPUT" | head -c 200)' matched a caution pattern. Verify this is intended before proceeding."
+    "permissionDecisionReason": "Potentially destructive command detected: matches '${PATTERN_ESC}'. Requires user confirmation.",
+    "additionalContext": "The command '${COMMAND_ESC}' matched a caution pattern. Verify this is intended before proceeding."
   }
 }
 EOF

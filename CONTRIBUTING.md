@@ -17,16 +17,20 @@ Use the [GitHub issue templates](https://github.com/asafelobotomy/copilot-instru
 
 1. **Fork** the repo and create a branch from `main`.
 2. Make your changes — keep commits small and focused.
-3. Ensure CI passes locally before pushing:
-   - VERSION.md is valid semver
-   - CHANGELOG has an `[Unreleased]` section and an entry for the current VERSION.md
-   - All required files are present
-   - `copilot-instructions.md` has §1–§13
-   - README docs-table links resolve
-   - No merge-conflict markers
-   - Markdown lint passes
-4. Update `CHANGELOG.md` under `[Unreleased]` with a description of your change.
-5. Open a PR — the [PR template](.github/PULL_REQUEST_TEMPLATE.md) will guide you through the checklist.
+3. Run all tests locally before pushing:
+
+   ```bash
+   bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh
+   ```
+
+4. If you changed `VERSION.md`, run the version sync script to propagate the version to all `x-release-please-version` markers:
+
+   ```bash
+   bash scripts/sync-version.sh
+   ```
+
+5. Update `CHANGELOG.md` under `[Unreleased]` with a description of your change.
+6. Open a PR — the [PR template](.github/PULL_REQUEST_TEMPLATE.md) will guide you through the checklist.
 
 ---
 

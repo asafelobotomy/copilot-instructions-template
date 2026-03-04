@@ -35,6 +35,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `docs/SETUP-GUIDE.md` — "Four agent files" prose in Step 2.5 corrected to "Six agent files".
 - `AGENTS.md` — file map expanded with 15 missing entries: `VERSION.md`, `scripts/sync-version.sh`, `.github/instructions/*.instructions.md` (4 files), `.github/prompts/*.prompt.md` (5 files), `template/skills/issue-triage/SKILL.md`, `template/hooks/scripts/*.ps1` (5 Windows counterparts), `template/copilot-setup-steps.yml`, and all 15 `docs/*.md` human-readable guides.
 
+### Update protocol
+
+- **`MIGRATION.md` (new)** — structured machine-parseable per-version migration registry. Each tagged version has an entry documenting: sections changed, companion files added/updated, new placeholders, breaking changes, and manual actions. This is the data source for the version-walk algorithm.
+- **`UPDATE.md` rewrite** — U3–U5 pre-flight sequence redesigned:
+  - **Version-walk**: walks through all intermediate tagged versions between installed and latest, collecting per-version change metadata from `MIGRATION.md`.
+  - **Three-way merge**: fetches the template at the installed version's tag (old baseline) for accurate `USER_MODIFIED` vs `UPDATED` classification. Falls back to two-way diff if the tag is unavailable.
+  - **Companion file manifest**: agents, skills, hooks, MCP config, path instructions, and prompt files are now part of the change manifest — offered as `NEW`, `UPDATABLE`, or `USER_CUSTOMISED`.
+  - **Breaking change tracking**: sections with breaking impact from any intermediate version flagged with `BREAKING` status and ⚠ marker.
+  - **New placeholder detection**: unresolved `{{PLACEHOLDER}}` tokens introduced across intermediate versions are listed and resolved during the update.
+  - **Expanded backup scope**: companion files modified during the update are now backed up alongside `copilot-instructions.md`.
+  - Pre-flight Report now shows per-version change groups, companion file manifest, breaking changes, new placeholders, and manual actions.
+- **`update.agent.md`** — fixed ambiguous "fetch from template repo or read locally" to always fetch upstream; added `MIGRATION.md` as pre-flight URL #3; added old-baseline template fetch as URL #6.
+- **`AGENTS.md`** — Remote Update Sequence rewritten to describe version-walk, three-way merge, companion file handling, and breaking change flagging; `MIGRATION.md` added to file map.
+- **`docs/UPDATE-GUIDE.md`** — human-readable guide updated: step 2 describes three-way merge and version-walk; step 3 lists expanded Pre-flight Report contents; step 6 covers companion file handling; "Notable version migrations" section now references `MIGRATION.md` as authoritative source.
+
 ### CI
 
 - Added `Test security edge cases` step to `script-tests` job in `ci.yml`.
@@ -148,7 +163,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 * lossless compression — copilot-instructions.md + AGENTS.md (7.6% token reduction) ([61b8d1e](https://github.com/asafelobotomy/copilot-instructions-template/commit/61b8d1e0f5e8cdd17c7df4dc3647611f70eb0a95))
 
-## [Unreleased]
+## [2.3.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v2.2.0...v2.3.0) (2026-02-26)
 
 ### Features
 
@@ -216,8 +231,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 * resolve all review findings ([ac9aefc](https://github.com/asafelobotomy/copilot-instructions-template/commit/ac9aefc8e5007ee5853273ef1267de834ad089fc))
 * resolve CI and actionlint failures ([441feda](https://github.com/asafelobotomy/copilot-instructions-template/commit/441feda06fa50442055ac353364327421371a71b))
 * **SETUP.md:** add mcp-builder + webapp-testing to Step 2.8 and HEARTBEAT.md to BIBLIOGRAPHY stub ([8a593d8](https://github.com/asafelobotomy/copilot-instructions-template/commit/8a593d8af1c976be99eeff0bc0cefd0497b7db56))
-
-## [Unreleased]
 
 ### Added
 
@@ -598,7 +611,7 @@ Initial public release. All features below ship in this version.
 - `.github/agents/setup.agent.md` — Setup agent pinned to Claude Sonnet 4.6 (onboarding & template operations). Fallback: Claude Sonnet 4.5 → GPT-5.1 → GPT-5 mini.
 - `.github/agents/coding.agent.md` — Coding agent pinned to GPT-5.3-Codex (implementation & refactoring, GA Feb 9 2026, 25% faster than 5.2-Codex, real-time steering). Fallback: GPT-5.2-Codex → GPT-5.1-Codex → GPT-5.1 → GPT-5 mini.
 - `.github/agents/review.agent.md` — Review agent pinned to Claude Opus 4.6 (architectural review, Agent Teams capability, 3× multiplier). Fallback: Claude Opus 4.5 → Claude Sonnet 4.6 → GPT-5.1.
-- `.github/agents/fast.agent.md` — Fast agent pinned to Claude Haiku 4.5 (quick questions, 0.33× cost). Fallback: Grok Code Fast 1 → GPT-5 mini → GPT-4.1.
+- `.github/agents/fast.agent.md` — Fast agent pinned to Claude Haiku 4.5 (quick questions, 0.33× cost). Fallback: GPT-5 mini → GPT-4.1.
 
 #### Update system
 

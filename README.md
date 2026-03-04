@@ -5,7 +5,7 @@
 **Instruction firmware for AI-assisted development — grounded in Lean / Kaizen**
 
 [![CI](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml/badge.svg)](https://github.com/asafelobotomy/copilot-instructions-template/actions/workflows/ci.yml)
-[![Version](https://img.shields.io/badge/version-3.1.0)](VERSION.md) <!-- x-release-please-version -->
+[![Version](https://img.shields.io/badge/version-3.1.0-blue)](VERSION.md) <!-- x-release-please-version -->
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/asafelobotomy/copilot-instructions-template/badge)](https://scorecard.dev/viewer/?uri=github.com/asafelobotomy/copilot-instructions-template)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![VS Code](https://img.shields.io/badge/VS_Code-1.106+-007ACC?logo=visualstudiocode)](https://code.visualstudio.com/)
@@ -93,7 +93,7 @@ Questions you skip always get a sensible default. Every preference is written in
 
 ### 📚 Agent Skills library
 
-Six starter skills are scaffolded into `.github/skills/` during setup, following the [Agent Skills](https://agentskills.io) open standard. Skills are markdown-based behavioural instructions that teach the agent *how* to perform specific workflows — from authoring new skills to building MCP servers. Optionally search official and community skill repositories for proven workflows.
+Seven starter skills are scaffolded into `.github/skills/` during setup, following the [Agent Skills](https://agentskills.io) open standard. Skills are markdown-based behavioural instructions that teach the agent *how* to perform specific workflows — from authoring new skills to building MCP servers. Optionally search official and community skill repositories for proven workflows.
 
 ### 📂 Path-specific instructions
 
@@ -158,7 +158,7 @@ Two built-in review modes surface at the end of any session:
 | `.github/agents/*.agent.md` | Copied from template | Six model-pinned agents |
 | `.github/hooks/copilot-hooks.json` | Copied from template | Agent lifecycle hooks configuration |
 | `.github/hooks/scripts/*.sh` | Copied from template | Five starter hook scripts (security, formatting, retrospective, context) |
-| `.github/skills/*/SKILL.md` | Copied from template | Six starter skills (Agent Skills standard) |
+| `.github/skills/*/SKILL.md` | Copied from template | Seven starter skills (Agent Skills standard) |
 | `.github/instructions/*.instructions.md` | Copied from template | Path-specific instruction stubs (tests, API, config, docs) |
 | `.github/prompts/*.prompt.md` | Copied from template | Five reusable slash commands (/explain, /refactor, /test-gen, /review-file, /commit-msg) |
 | `.github/workflows/copilot-setup-steps.yml` | Generated from template | Environment setup for GitHub Copilot coding agent |
@@ -302,6 +302,7 @@ copilot-instructions-template/
 ├── AGENTS.md                           # AI entry point — trigger phrases + remote sequences
 ├── SETUP.md                            # One-time agentic setup (self-destructs after use)
 ├── UPDATE.md                           # Update protocol (run on demand)
+├── MIGRATION.md                        # Per-version migration registry (drives version-walk)
 ├── CONTRIBUTING.md                     # Contribution guidelines
 ├── VERSION.md                          # Semver — single source of truth for template version
 ├── CHANGELOG.md                        # This template's own version history

@@ -8,6 +8,7 @@ model:
   - GPT-5.1
   - GPT-5 mini
 tools: [editFiles, fetch, githubRepo, codebase]
+disable-model-invocation: true
 handoffs:
   - label: Run health check
     agent: doctor

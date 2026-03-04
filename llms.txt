@@ -6,7 +6,8 @@
 
 - [.github/copilot-instructions.md](.github/copilot-instructions.md): Main always-loaded system prompt (§1–§13). Start here.
 - [AGENTS.md](AGENTS.md): Machine-readable entry point for AI agents — trigger phrases, bootstrap sequence, update protocol.
-- [UPDATE.md](UPDATE.md): Protocol for fetching and applying upstream template updates.
+- [UPDATE.md](UPDATE.md): Protocol for fetching and applying upstream template updates (version-walk, three-way merge, companion files).
+- [MIGRATION.md](MIGRATION.md): Per-version migration registry — drives the version-walk update algorithm.
 - [SETUP.md](SETUP.md): Human-readable first-time setup guide.
 - [docs/AGENTS-GUIDE.md](docs/AGENTS-GUIDE.md): Human reference for agents, model assignments, fallback chains, handoffs, and sub-directory instruction scoping.
 - [docs/HOOKS-GUIDE.md](docs/HOOKS-GUIDE.md): Hook configuration format, available events, security considerations.
@@ -48,11 +49,17 @@
 
 - `HEARTBEAT.md` — health check checklist and pulse history
 - `MEMORY.md` — architectural decisions, error patterns, team conventions
-- `METRICS.md` — LOC baselines, test coverage, deployment frequency
 - `SOUL.md` — agent reasoning alignment and heuristics
 - `USER.md` — user preferences observed over time
+- `IDENTITY.md` — agent self-description
+- `TOOLS.md` — effective tool usage patterns
+- `BOOTSTRAP.md` — permanent setup origin record
+
+## Project tracking files (project root after install)
+
 - `JOURNAL.md` — chronological log of significant decisions and events
 - `BIBLIOGRAPHY.md` — complete catalogue of all project files
+- `METRICS.md` — LOC baselines, test coverage, deployment frequency
 
 ## Optional: full docs
 
