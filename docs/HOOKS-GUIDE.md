@@ -250,7 +250,7 @@ exit 0
 
 ### View hook diagnostics
 
-Right-click in the Chat view → **Diagnostics** to see loaded hooks and validation errors.
+Open `Developer: Open Agent Debug Panel` (Command Palette) to see loaded hooks and validation errors. This replaced the previous right-click → Diagnostics action in VS Code 1.110.
 
 ### View hook output
 
@@ -290,6 +290,53 @@ On minimal CI images, add `python3` to your environment setup.
 - Use the `chat.tools.edits.autoApprove` setting to prevent the agent from editing hook scripts without manual approval.
 - Never hardcode secrets in hook scripts — use environment variables.
 - The `guard-destructive.sh` script is a safety net, not a replacement for proper access controls.
+
+---
+
+## Terminal auto-approval (VS Code 1.102+)
+
+VS Code has built-in terminal command auto-approval via allowlist/denylist settings. This operates at the **terminal level** — after the agent issues a command but before the terminal executes it.
+
+| Setting | Purpose |
+|---------|---------|
+| `github.copilot.chat.agent.terminal.allowList` | Commands auto-approved without user confirmation |
+| `github.copilot.chat.agent.terminal.denyList` | Commands always blocked |
+
+**Relationship to `guard-destructive.sh`**: These are complementary layers. The hook runs at `PreToolUse` (before dispatch, covers all tools), while auto-approval runs at the terminal level (after dispatch, terminal only). Use both for defense-in-depth.
+
+### `/yolo` and `/disableYolo` (VS Code 1.110+)
+
+The `/yolo` slash command (also available as `/autoApprove`) enables session-level auto-approval for all agent actions — file edits, terminal commands, etc. Use `/disableYolo` to restore normal confirmation behavior.
+
+> **Caution**: `/yolo` bypasses all confirmation dialogs including `guard-destructive.sh` caution-tier patterns. It does **not** bypass hard-deny patterns — the hook still blocks commands matching the deny list.
+
+---
+
+## Terminal sandboxing (VS Code 1.110+ — preview)
+
+VS Code 1.110 introduced terminal sandboxing as a preview feature. When enabled, agent-executed terminal commands run in a restricted environment that limits filesystem access and network operations.
+
+This is an additional security layer below both hooks and auto-approval. It restricts what the terminal *can* do even if a command is approved.
+
+---
+
+## Context management commands (VS Code 1.110+)
+
+VS Code 1.110 introduced built-in commands for managing conversation context. These complement the template's `save-context.sh` PreCompact hook.
+
+### `/compact` — manual context compaction
+
+Type `/compact` in the chat input to manually trigger context compaction. VS Code summarises the conversation so far and starts fresh with the summary as context. Automatic compaction also happens when the context window fills.
+
+**Relationship to `save-context.sh`**: The PreCompact hook fires *before* compaction (whether manual via `/compact` or automatic). It injects structured project state (heartbeat pulse, memory excerpts, git status) into the compacted context. This ensures the agent retains project awareness even after compaction strips earlier messages.
+
+### `/fork` — fork a chat session
+
+Type `/fork` in the chat input to create a new chat session branching from the current point. The forked session inherits the full conversation history. Use it to explore alternatives, investigate side questions, or create checkpoints before risky operations.
+
+### Session memory for plans
+
+The built-in Plan agent persists plans across conversation turns using session memory. Plans survive context compaction. The template's Planning Mode (§2) complements this — it produces task breakdowns, while session memory ensures they persist.
 
 ---
 

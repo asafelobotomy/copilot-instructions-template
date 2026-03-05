@@ -9,17 +9,20 @@
 
 ## Copilot Memory coexistence
 
-VS Code's **Copilot Memory** (native memory feature) persists user preferences and patterns across all sessions automatically. This file exists alongside that system — they are complementary, not competing:
+VS Code's **built-in memory tool** (`/memories/`) provides persistent storage across sessions with three scopes. This file exists alongside that system — they are complementary, not competing:
 
 | System | Scope | What it stores | Managed by |
 |--------|-------|---------------|------------|
-| **Copilot Memory** (native) | Global — all repos, all sessions | Personal preferences, coding style, tool usage patterns | VS Code (automatic) |
-| **MEMORY.md** (this file) | Project — this repo only | Architectural decisions, error patterns, team conventions, project-specific gotchas | Agent + user (manual) |
-| **MCP memory server** (`@modelcontextprotocol/server-memory`) | Session — ephemeral; clears on server restart | Knowledge graphs, intermediate reasoning state, mid-task scratchpad when context limit forces truncation | Agent (automatic, transient) |
+| **Built-in memory** `/memories/` (user scope) | Global — all repos, all sessions | Personal preferences, coding style, cross-project patterns | VS Code (persistent) |
+| **Built-in memory** `/memories/session/` | Session — current conversation only | Task-specific context, in-progress notes, working state | VS Code (cleared after conversation) |
+| **Built-in memory** `/memories/repo/` | Repository — this workspace | Repository-scoped facts stored locally via Copilot | VS Code (persistent, repo-scoped) |
+| **MEMORY.md** (this file) | Project — git-tracked, team-shared | Architectural decisions, error patterns, team conventions, project-specific gotchas | Agent + user (manual, version-controlled) |
 
-**Priority rule**: When native Copilot Memory conflicts with MEMORY.md, **this file wins** for project-specific facts. Native memory wins for personal preferences and cross-project patterns. MCP memory server has lowest priority — treat its entries as transient scratchpad, not ground truth.
+**Priority rule**: When built-in memory conflicts with MEMORY.md, **this file wins** for project-specific facts. Built-in user memory wins for personal preferences and cross-project patterns.
 
-**Avoid duplication**: Do not record personal preferences here if Copilot Memory already tracks them. This file is for project-specific knowledge that would be lost if you switched machines or cleared native memory.
+**Key distinction**: MEMORY.md is **git-tracked and team-shared** — every team member benefits from the knowledge recorded here. Built-in memory is personal and machine-local. Use MEMORY.md for knowledge that should survive contributor changes, machine migrations, and onboarding.
+
+**Avoid duplication**: Do not record personal preferences here if built-in user memory already tracks them. This file is for project-specific knowledge that would be lost if you switched machines or cleared native memory.
 
 ## What to remember
 

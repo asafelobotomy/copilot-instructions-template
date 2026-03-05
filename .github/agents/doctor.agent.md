@@ -186,6 +186,18 @@ Flag: `[WARN]` if absent.
 
 Flag: `[WARN]` if absent.
 
+### D11 — Agent plugins
+
+Check for agent plugin integration:
+
+1. **Naming conflicts** — do any `.github/agents/*.agent.md` files share a `name:` with a plugin-contributed agent? Use the Agent Debug Panel or scan `chat.plugins.paths` in `.vscode/settings.json`.
+2. **Skill collisions** — do any `.github/skills/*/SKILL.md` files share a `name:` with a plugin-contributed skill?
+3. **Plugin settings** — is `chat.plugins.enabled` set in `.vscode/settings.json`? If plugins paths are configured, are the paths valid?
+
+Flag: `[WARN]` if naming conflicts detected.
+Flag: `[WARN]` if `chat.plugins.paths` contains non-existent paths.
+Skip this check silently if no plugin settings or paths are configured.
+
 ---
 
 ## Report format
@@ -252,6 +264,11 @@ D9  BIBLIOGRAPHY.MD
 D10 AGENTS.MD
 ──────────────────────────────────────────────────────────────
   <findings or "Present">
+
+──────────────────────────────────────────────────────────────
+D11 AGENT PLUGINS
+──────────────────────────────────────────────────────────────
+  <findings or "No conflicts detected" or "Skipped — no plugin config">
 
 ══════════════════════════════════════════════════════════════
 SUMMARY

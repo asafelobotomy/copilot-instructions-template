@@ -1,3 +1,9 @@
+---
+description: Refactor selected code using PDCA cycle and Lean waste elimination
+mode: agent
+tools: [editFiles, terminal, codebase]
+---
+
 # Refactor Code
 
 Refactor the selected code following Lean principles from §1 and the PDCA cycle from §5.

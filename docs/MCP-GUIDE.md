@@ -9,6 +9,8 @@
 
 The **Model Context Protocol** (MCP) is an open standard that lets AI agents communicate with external tools and data sources through a structured JSON-RPC protocol. Instead of building custom integrations for each data source, MCP provides a universal interface.
 
+**MCP is GA in VS Code** as of v1.102. It is a first-class feature with profile-level configuration, a dedicated marketplace, and support for tools, resources, prompts, sampling, elicitations, and auth flows.
+
 In this template, MCP extends Copilot's capabilities beyond its built-in tools. Want Copilot to query your database, interact with Jira, or fetch API documentation? An MCP server makes that possible.
 
 ---
@@ -24,9 +26,25 @@ Section 13 of `.github/copilot-instructions.md` tells Copilot how to discover, e
 - A **quality gate** for evaluating new servers before adding them
 - An **available servers table** showing what is currently configured
 
-### `.vscode/mcp.json`
+### Configuration locations
 
-This is where MCP servers are configured. It lives in your project's `.vscode/` directory and VS Code reads it automatically. The template includes a starter version with five official servers.
+MCP servers can be configured at multiple levels:
+
+| Location | Scope | Version control | Best for |
+|----------|-------|----------------|----------|
+| `.vscode/mcp.json` | Workspace | Yes — committed to repo | Project-specific servers shared with the team |
+| Profile-level `mcp.json` | User (per profile) | No — local only | Personal servers available across all workspaces |
+| `settings.json` → `"mcp"` key | User or Workspace | Depends on scope | Inline config alongside other settings |
+| Dev container `customizations.vscode.mcp` | Container | Yes — in devcontainer.json | Per-container MCP servers |
+
+**VS Code commands for MCP configuration:**
+
+- `MCP: Open Workspace Configuration` — opens `.vscode/mcp.json`
+- `MCP: Open User Configuration` — opens profile-level `mcp.json`
+- `MCP: Open Remote User Configuration` — opens remote user-level config
+- `MCP: List Servers` — shows all configured servers and their status
+
+The template uses `.vscode/mcp.json` (workspace-level) so that MCP configuration is version-controlled and shared with the team.
 
 ---
 
@@ -39,8 +57,9 @@ These servers provide core capabilities useful in every project:
 | Server | What it does |
 |--------|-------------|
 | **filesystem** | Read and write files beyond the VS Code workspace boundary |
-| **memory** | Persistent key-value store that survives across sessions |
 | **git** | Git operations — history, diffs, branches, commit details |
+
+> **Removed (v3.2.0):** The MCP `memory` server (`@modelcontextprotocol/server-memory`) has been removed from defaults. VS Code's built-in memory tool (`/memories/`) provides superior persistent storage with three scopes: user (cross-workspace), session (conversation-scoped), and repository. If you still need the MCP memory server, add it manually to `.vscode/mcp.json`.
 
 ### Credentials-required (disabled by default)
 
@@ -57,7 +76,7 @@ To enable a credentials-required server:
 2. Provide required credentials (for GitHub, use the configured input prompt or set `GITHUB_PERSONAL_ACCESS_TOKEN`)
 3. Restart VS Code
 
-> **Note:** The `git` and `fetch` MCP servers are **Python** packages (`mcp-server-git`, `mcp-server-fetch`) launched with **`uvx`**. They are **not** available on npm — using `npx` for these will produce a 404 error. Only `filesystem`, `memory`, and `github` servers use `npx` (they are Node packages under `@modelcontextprotocol/`).
+> **Note:** The `git` and `fetch` MCP servers are **Python** packages (`mcp-server-git`, `mcp-server-fetch`) launched with **`uvx`**. They are **not** available on npm — using `npx` for these will produce a 404 error. Only `filesystem` and `github` servers use `npx` (they are Node packages under `@modelcontextprotocol/`).
 
 Quick startup verification for those two servers:
 
@@ -148,6 +167,40 @@ Add `"disabled": true` to temporarily disable a server without removing its conf
 
 ---
 
+## MCP capabilities (GA since v1.102)
+
+MCP servers can expose four capability types:
+
+| Capability | Description | How Copilot uses it |
+|-----------|-------------|---------------------|
+| **Tools** | Functions the agent can invoke (e.g., query database, call API) | Agent calls tools directly during tasks |
+| **Resources** | Data sources the agent can read (e.g., schemas, configs, logs) | Available via `#` context menu in chat |
+| **Prompts** | Reusable prompt templates provided by the server | Available as `/` slash commands |
+| **Sampling** | Server requests the agent to generate text on its behalf | Agent responds to server-initiated requests |
+
+Additional MCP features:
+
+- **Elicitations** — servers can request user input via the agent UI (e.g., confirmation dialogs, form fields)
+- **MCP Auth** — OAuth and token-based authentication flows for secure server connections
+- **Agent `mcp-servers` field** — agent files (`.agent.md`) can restrict which MCP servers are available using the `mcp-servers` frontmatter field
+
+---
+
+## Server discovery
+
+Before building a custom server, check these sources:
+
+| Source | URL | What it offers |
+|--------|-----|---------------|
+| **MCP Marketplace** | `code.visualstudio.com/mcp` | Browse and install directly from VS Code |
+| **Official registry** | `github.com/modelcontextprotocol/servers` | Reference implementations by Anthropic |
+| **Agent plugins** | Extensions view → `@agentPlugins` | Pre-packaged bundles that may include MCP servers |
+| **mcp.so** | `mcp.so` | Community server directory |
+| **Glama** | `glama.ai/mcp/servers` | Community server directory with ratings |
+| **Smithery** | `smithery.ai` | Community server repository |
+
+---
+
 ## The MCP decision tree
 
 Before reaching for an MCP server, Copilot follows this priority order:
@@ -226,5 +279,5 @@ During Expert setup (E22), you choose how MCP is configured:
 | Option | What happens |
 |--------|-------------|
 | **A — None** | No `.vscode/mcp.json` is created. MCP can be added later. |
-| **B — Always-on only** (default) | filesystem, memory, git servers enabled. Credentials-required servers disabled. |
+| **B — Always-on only** (default) | filesystem, git servers enabled. Credentials-required servers disabled. |
 | **C — Full configuration** | All servers configured. Copilot asks about each credentials-required and stack-specific server. |

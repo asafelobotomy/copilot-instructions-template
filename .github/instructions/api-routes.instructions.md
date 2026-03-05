@@ -1,5 +1,6 @@
 ---
 applyTo: "**/api/**,**/routes/**,**/controllers/**,**/handlers/**"
+description: "Conventions for API routes, controllers, and handlers — input validation, status codes, pagination, and error handling"
 ---
 
 # API Route Instructions

@@ -13,11 +13,6 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"]
     },
-    "memory": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"]
-    },
     "git": {
       "type": "stdio",
       "command": "uvx",

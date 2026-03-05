@@ -24,7 +24,50 @@ the next tagged version (listed in **Includes**).
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<tag>/<template-source-path>
 ```
 
-**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4
+**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0
+
+---
+
+## v3.2.0
+
+| Breaking | Sections changed | Sections added | Includes |
+|----------|-----------------|----------------|----------|
+| No | §12, §13 | — | v3.1.0 |
+
+**What changed**: §12 updated to include agent plugin priority hierarchy and plugin-management skill reference. §13 updated to reference MCP GA status. Instruction files gain `description` frontmatter for on-demand loading (VS Code 1.102+). Prompt files gain YAML frontmatter (`description`, `mode`, `tools`). Skills updated to reference `/create-*` built-in commands and agent plugins. Heartbeat adds agent compatibility check and Retrospective section. Guard-destructive scripts document auto-approval complementarity. AGENTS-GUIDE expanded: agent plugin strategic roadmap, Claude agent format compatibility, and actionable org-level agent setup steps. Doctor agent gains D11 plugin health check.
+
+**New placeholders**: —
+
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/instructions/tests.instructions.md` | `.github/instructions/tests.instructions.md` | Updated (`description` field added) |
+| `.github/instructions/api-routes.instructions.md` | `.github/instructions/api-routes.instructions.md` | Updated (`description` field added) |
+| `.github/instructions/config.instructions.md` | `.github/instructions/config.instructions.md` | Updated (`description` field added) |
+| `.github/instructions/docs.instructions.md` | `.github/instructions/docs.instructions.md` | Updated (`description` field added) |
+| `.github/prompts/explain.prompt.md` | `.github/prompts/explain.prompt.md` | Updated (YAML frontmatter added) |
+| `.github/prompts/refactor.prompt.md` | `.github/prompts/refactor.prompt.md` | Updated (YAML frontmatter added) |
+| `.github/prompts/test-gen.prompt.md` | `.github/prompts/test-gen.prompt.md` | Updated (YAML frontmatter added) |
+| `.github/prompts/review-file.prompt.md` | `.github/prompts/review-file.prompt.md` | Updated (YAML frontmatter added) |
+| `.github/prompts/commit-msg.prompt.md` | `.github/prompts/commit-msg.prompt.md` | Updated (YAML frontmatter added) |
+| `.github/skills/skill-creator/SKILL.md` | `template/skills/skill-creator/SKILL.md` | Updated (`/create-skill` reference) |
+| `.github/skills/skill-management/SKILL.md` | `template/skills/skill-management/SKILL.md` | Updated (agent plugins, org agents) |
+| `.github/skills/mcp-management/SKILL.md` | `template/skills/mcp-management/SKILL.md` | Updated (MCP GA, capabilities, discovery) |
+| `.github/hooks/scripts/guard-destructive.sh` | `template/hooks/scripts/guard-destructive.sh` | Updated (auto-approval documentation) |
+| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` | Updated (agent compatibility check) |
+| `.copilot/workspace/TOOLS.md` | `template/workspace/TOOLS.md` | Updated (built-in tools table) |
+| `.vscode/mcp.json` | `template/vscode/mcp.json` | Updated (**`memory` server removed** — replaced by built-in `/memories/` tool) |
+| `.copilot/workspace/MEMORY.md` | `template/workspace/MEMORY.md` | Updated (coexistence section rewritten for built-in memory) |
+| `.copilot/workspace/USER.md` | `template/workspace/USER.md` | Updated (coexistence note added) |
+| `.github/skills/webapp-testing/SKILL.md` | `template/skills/webapp-testing/SKILL.md` | Updated (v2.0 — dual-path: browser tools + Playwright) |
+| `.github/skills/conventional-commit/SKILL.md` | `template/skills/conventional-commit/SKILL.md` | Updated (`git.addAICoAuthor` section added) |
+| `.github/skills/plugin-management/SKILL.md` | `template/skills/plugin-management/SKILL.md` | **New** (agent plugin discovery, evaluation, management) |
+| `.github/agents/doctor.agent.md` | `.github/agents/doctor.agent.md` | Updated (D11 agent plugin health check) |
+
+**Manual actions**:
+
+1. If you rely on the MCP `memory` server, re-add it manually to `.vscode/mcp.json` after updating. VS Code's built-in memory tool (`/memories/`) is the recommended replacement.
 
 ---
 

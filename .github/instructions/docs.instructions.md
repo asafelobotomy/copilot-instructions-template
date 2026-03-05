@@ -1,5 +1,6 @@
 ---
 applyTo: "**/*.md,**/docs/**"
+description: "Conventions for Markdown and documentation files — active voice, code fences, link integrity, and accessible writing"
 ---
 
 # Documentation File Instructions

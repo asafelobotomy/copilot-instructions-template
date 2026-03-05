@@ -26,6 +26,39 @@ The toolbox directory is created lazily — it does not exist until the first to
 
 *(Copilot appends effective multi-step tool workflows here as they become repeatable.)*
 
+### Built-in VS Code tools (v1.110+)
+
+These tools are available natively in VS Code and do not require MCP servers:
+
+| Tool | Purpose | Notes |
+|------|---------|-------|
+| `usages` | Find all references/usages of a symbol | Replaces grep-based usage search |
+| `rename` | Rename a symbol across the workspace | Language-server powered, safe refactoring |
+| `editFiles` | Create, edit, or delete files | Core file editing capability |
+| `terminal` | Run shell commands | Subject to auto-approval and guard-destructive |
+| `codebase` | Semantic code search | Workspace-wide semantic search |
+| `fetch` | Fetch web content | Requires network access |
+| `githubRepo` | GitHub repository operations | Requires GitHub token |
+| `runCommands` | Run VS Code commands | Extension and editor commands |
+| `Explore` (subagent) | Read-only codebase exploration | Delegated search without modifying files |
+
+### Agentic browser tools (v1.110+, Preview)
+
+Browser tools allow Copilot to interact with web pages directly. Requires `workbench.browser.enableChatTools: true`.
+
+| Tool | Purpose |
+|------|---------|
+| `openBrowserPage` | Open a URL in a managed browser |
+| `navigatePage` | Navigate to a new URL |
+| `readPage` | Read page content (text, links, forms, structure) |
+| `screenshotPage` | Capture a screenshot for visual verification |
+| `clickElement` | Click a button, link, or interactive element |
+| `hoverElement` | Hover over an element |
+| `dragElement` | Drag and drop an element |
+| `typeInPage` | Type text into input fields |
+| `handleDialog` | Accept or dismiss browser dialogs |
+| `runPlaywrightCode` | Run custom Playwright code in the browser context |
+
 ### Extension audit workflow
 
 1. User asks to *"review extensions"* or *"check my extensions"*

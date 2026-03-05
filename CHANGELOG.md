@@ -26,6 +26,51 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 - `tests/test-security-edge-cases.sh` — 29-assertion security and contract edge-case suite for `guard-destructive.sh` and `sync-version.sh`. Covers six gap categories identified by online research (OWASP Command Injection cheat sheet, BATS testing best practices): exit-code contract (hook must always exit 0), JSON output validity (every response parseable), `tool_input.input` field alias support, OWASP-sourced chained/embedded command detection (`;`, `&&`, `||`, subshell), SQL keyword case-insensitivity, and `sync-version.sh` idempotency.
 - Copilot instructions scaffolded from [copilot-instructions-template](https://github.com/asafelobotomy/copilot-instructions-template) — populated `.github/copilot-instructions.md`, workspace identity files, skills, hooks, MCP config, and documentation stubs.
+- `description` field added to all 4 path-specific instruction files (`.github/instructions/*.instructions.md`) for VS Code 1.102+ on-demand loading.
+- YAML frontmatter (`description`, `mode`, `tools`) added to all 5 prompt files (`.github/prompts/*.prompt.md`) for VS Code prompt integration.
+- MCP capabilities section (tools, resources, prompts, sampling, elicitations, auth) added to `mcp-management` skill and `docs/MCP-GUIDE.md`.
+- MCP server discovery sources (MCP Marketplace, agent plugins, community registries) documented in `mcp-management` skill and `docs/MCP-GUIDE.md`.
+- Profile-level MCP configuration (`mcp.json`, VS Code commands) documented alongside workspace-level `.vscode/mcp.json`.
+- Agent plugins documentation (VS Code 1.110+ experimental) added to `docs/AGENTS-GUIDE.md` and `docs/SKILLS-GUIDE.md`.
+- Built-in `/create-*` slash commands (`/create-prompt`, `/create-instruction`, `/create-skill`, `/create-agent`, `/create-hook`) documented in `docs/AGENTS-GUIDE.md`.
+- Organization-level agents section added to `docs/AGENTS-GUIDE.md`.
+- Agent Debug Panel documentation (replaces Diagnostics) added to `docs/AGENTS-GUIDE.md` and `docs/HOOKS-GUIDE.md`.
+- Explore subagent documentation added to `docs/AGENTS-GUIDE.md`.
+- Terminal auto-approval (`allowList`/`denyList`) and sandboxing sections added to `docs/HOOKS-GUIDE.md`.
+- `/yolo` and `/disableYolo` commands documented in `docs/HOOKS-GUIDE.md`.
+- MCP `memory` server (`@modelcontextprotocol/server-memory`) removed from `.vscode/mcp.json` defaults — replaced by VS Code's built-in memory tool (`/memories/`) with three scopes (user, session, repository).
+- §13 updated: `memory` removed from always-on server list; migration note added.
+- `mcp-management` skill updated with removal note and built-in memory alternative.
+- `template/workspace/MEMORY.md` coexistence section rewritten — MCP memory server row removed, updated to 2-layer hierarchy (built-in memory + MEMORY.md).
+- `template/workspace/USER.md` gains coexistence note distinguishing project-scoped profile from built-in user memory.
+- `webapp-testing` skill (v2.0) rewritten with dual-path architecture: Path A (built-in browser tools, 10 agentic tools, interactive) and Path B (Playwright, CI-ready).
+- `template/workspace/TOOLS.md` gains agentic browser tools table (10 tools, Preview, `workbench.browser.enableChatTools`).
+- `docs/HOOKS-GUIDE.md` gains context management section: `/compact`, `/fork`, session memory for plans.
+- `docs/AGENTS-GUIDE.md` gains Chat Customizations editor and session management sections.
+- `docs/SKILLS-GUIDE.md` gains built-in accessibility skill note.
+- `plugin-management` skill created — discover, evaluate, install, test, and manage agent plugins (VS Code 1.110+).
+- §12 (Skill Protocol) updated: agent plugins added to priority hierarchy; `plugin-management` skill reference.
+- Doctor agent gains D11 check: agent plugin naming conflicts, skill collisions, and settings validation.
+- Plugin trigger phrases added to `AGENTS.md`: "Show plugins", "Find a plugin for...", "Test as plugin", "Check plugin conflicts".
+- Repo HEARTBEAT.md synced with template: Retrospective section (8 questions) and Task completion trigger added.
+- `docs/AGENTS-GUIDE.md` gains custom thinking phrases (`chat.agent.thinking.phrases`) and `askQuestions` core tool documentation.
+- `BIBLIOGRAPHY.md` refreshed: all LOC counts updated to current values; new plugin-management skill entries added.
+- `conventional-commit` skill gains `git.addAICoAuthor` co-author attribution section.
+- `docs/MCP-GUIDE.md` updated: memory server removed from tiers, `npx` note corrected.
+- Built-in VS Code tools table (usages, rename, Explore subagent) added to `template/workspace/TOOLS.md`.
+- Agent compatibility check added to heartbeat checklist (`template/workspace/HEARTBEAT.md`).
+- Agent plugins and org-level agents added to skill scope hierarchy (`skill-management` skill).
+- Agent plugin strategic roadmap — "Template as an agent plugin" subsection added to `docs/AGENTS-GUIDE.md`; documents why packaging is deferred to v4.0, what a plugin version could look like, and how to preview locally via `chat.plugins.paths`.
+- Claude agent format compatibility section added to `docs/AGENTS-GUIDE.md` — documents format differences (`.agent.md` vs `.claude/agents/*.md`), current decision to defer dual-format stubs, and workaround for cross-tool teams.
+- Organization-level agents section expanded in `docs/AGENTS-GUIDE.md` — actionable setup steps for `.github-private` repository, `agents/` directory convention, `organizationCustomAgents.enabled` setting, file structure diagram, and guidance for publishing template agents at the org level.
+- `v3.2.0` entry added to `MIGRATION.md` with full companion file manifest.
+
+### Changed
+
+- `guard-destructive.sh` (both `.github/hooks/` and `template/hooks/`) — added header comments documenting complementary relationship with VS Code terminal auto-approval.
+- `skill-creator` skill — notes that `/create-skill` is now built-in in VS Code 1.110+; this skill adds Lean/Kaizen guidance.
+- `docs/MCP-GUIDE.md` — "What is MCP?" section updated to note MCP GA status; configuration section expanded to multi-level (workspace, profile, settings, devcontainer).
+- `docs/HOOKS-GUIDE.md` — diagnostics section updated to reference Agent Debug Panel.
 
 ### Fixed
 

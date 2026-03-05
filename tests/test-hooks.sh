@@ -218,9 +218,11 @@ assert_valid_json "valid JSON on active hook"        "$output"
 echo ""
 
 echo "12. No transcript → decision=block"
-output=$(printf '{"stop_hook_active": false}' | bash "$ENFORCE_RETRO" 2>/dev/null)
+TMPDIR_NO_TX=$(mktemp -d)
+output=$(cd "$TMPDIR_NO_TX" && printf '{"stop_hook_active": false}' | bash "$ENFORCE_RETRO" 2>/dev/null)
 assert_contains "no transcript → block" "$output" '"decision": "block"'
 assert_valid_json "valid JSON on block"  "$output"
+rm -rf "$TMPDIR_NO_TX"
 echo ""
 
 echo "13. Transcript with retrospective keyword → passes through"
@@ -250,7 +252,7 @@ echo "16r. Transcript WITHOUT retrospective keyword → still blocks"
 TMPDIR_NO_RETRO=$(mktemp -d)
 TRANSCRIPT_NORETRO="$TMPDIR_NO_RETRO/transcript.txt"
 printf 'The agent coded features and committed changes.\n' > "$TRANSCRIPT_NORETRO"
-output=$(printf '{"stop_hook_active": false, "transcript_path": "%s"}' "$TRANSCRIPT_NORETRO" | bash "$ENFORCE_RETRO" 2>/dev/null)
+output=$(cd "$TMPDIR_NO_RETRO" && printf '{"stop_hook_active": false, "transcript_path": "%s"}' "$TRANSCRIPT_NORETRO" | bash "$ENFORCE_RETRO" 2>/dev/null)
 assert_contains "no retro keyword → block" "$output" '"decision": "block"'
 assert_valid_json "valid JSON when blocking"  "$output"
 rm -rf "$TMPDIR_NO_RETRO"

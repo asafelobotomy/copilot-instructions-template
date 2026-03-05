@@ -22,7 +22,7 @@ MCP enables Copilot to invoke external servers that provide tools, resources, an
 
 | Tier | Default servers | When to enable | Configuration |
 |------|----------------|-----------------|---------------|
-| Always-on | filesystem, memory, git | Every project — core development tools | Enabled by default in `.vscode/mcp.json` |
+| Always-on | filesystem, git | Every project — core development tools | Enabled by default in `.vscode/mcp.json` |
 | Credentials-required | github, fetch | When external API access is needed | Requires `${input:github-token}` or `${env:GITHUB_PERSONAL_ACCESS_TOKEN}` (GitHub) |
 
 ## Available servers
@@ -30,8 +30,9 @@ MCP enables Copilot to invoke external servers that provide tools, resources, an
 | Server | Tier | Command | Purpose |
 |--------|------|---------|--------|
 | `@modelcontextprotocol/server-filesystem` | Always-on | `npx` | File operations beyond the workspace |
-| `@modelcontextprotocol/server-memory` | Always-on | `npx` | Persistent key-value memory across sessions |
 | `mcp-server-git` | Always-on | **`uvx`** (Python — not on npm) | Git history, diffs, and branch operations |
+
+> **Removed (v3.2.0):** `@modelcontextprotocol/server-memory` — replaced by VS Code's built-in memory tool (`/memories/`), which provides persistent storage with three scopes: user (cross-workspace), session (conversation), and repository.
 | `@modelcontextprotocol/server-github` | Credentials | `npx` | GitHub API — issues, PRs, repos, actions |
 | `mcp-server-fetch` | Credentials | **`uvx`** (Python — not on npm) | HTTP fetch for web content and APIs |
 

@@ -117,6 +117,17 @@ When a user says any of the following:
 
 ...follow the Agent Hooks section in **§8** of `.github/copilot-instructions.md`. Hooks are configured in `.github/hooks/copilot-hooks.json` — see `docs/HOOKS-GUIDE.md` for the full guide.
 
+### Plugin operations
+
+When a user says any of the following:
+
+- *"Show plugins"* / *"List agent plugins"*
+- *"Find a plugin for ..."* / *"Search for a plugin that ..."*
+- *"Test as plugin"* / *"Preview template as plugin"*
+- *"Check plugin conflicts"*
+
+...activate the **plugin-management** skill (`.github/skills/plugin-management/SKILL.md`). Follow the discovery tree, apply the quality gate before installing, and check for naming conflicts with workspace agents and skills.
+
 ### Heartbeat operations
 
 When a user says any of the following:
@@ -342,6 +353,7 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `.github/skills/tool-protocol/SKILL.md` | Tool Protocol decision tree and toolbox management |
 | `.github/skills/skill-management/SKILL.md` | Skill discovery, activation, and management |
 | `.github/skills/mcp-management/SKILL.md` | MCP server configuration and management |
+| `.github/skills/plugin-management/SKILL.md` | Agent plugin discovery, evaluation, and management |
 | **Vale styles** | |
 | `.github/vale/styles/README.md` | Vale custom styles documentation |
 | **Template files (copied to consumer project during setup)** | |
@@ -355,6 +367,7 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `template/skills/tool-protocol/SKILL.md` | Starter skill — Tool Protocol decision tree and toolbox management |
 | `template/skills/skill-management/SKILL.md` | Starter skill — Skill discovery, activation, and management |
 | `template/skills/mcp-management/SKILL.md` | Starter skill — MCP server configuration and management |
+| `template/skills/plugin-management/SKILL.md` | Starter skill — agent plugin discovery and management |
 | `template/hooks/copilot-hooks.json` | Agent hooks configuration template |
 | `template/hooks/scripts/session-start.sh` | SessionStart hook — project context injection |
 | `template/hooks/scripts/guard-destructive.sh` | PreToolUse hook — destructive command guard |
@@ -442,3 +455,7 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | List hooks | *"Show hooks"* / *"List agent hooks"* |
 | Add a hook | *"Add a hook"* / *"Create a hook for ..."* |
 | Disable hooks | *"Disable hooks"* / *"Remove hook ..."* |
+| List plugins | *"Show plugins"* / *"List agent plugins"* |
+| Find a plugin | *"Find a plugin for ..."* / *"Search for a plugin that ..."* |
+| Test as plugin | *"Test as plugin"* / *"Preview template as plugin"* |
+| Check plugin conflicts | *"Check plugin conflicts"* |

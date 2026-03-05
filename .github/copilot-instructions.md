@@ -485,7 +485,8 @@ Skills are reusable markdown-based behavioural instructions following the [Agent
 Key rules (always loaded):
 
 - Skills are loaded **on demand** — read `SKILL.md` only when its `description` matches the current task
-- Priority: project (`.github/skills/`) > personal (`~/.copilot/skills/`)
+- Priority: project (`.github/skills/`) > personal (`~/.copilot/skills/`) > agent plugins (`@agentPlugins`)
+- Agent plugins (VS Code 1.110+) distribute skills alongside agents — activate the **plugin-management** skill for discovery and conflict resolution
 - Subagents inherit this protocol; they flag skill creation to the parent agent
 
 ---
@@ -496,8 +497,9 @@ MCP enables Copilot to invoke external servers beyond built-in capabilities. Con
 
 Key rules (always loaded):
 
-- **Always-on** servers: filesystem, memory, git — enabled by default
+- **Always-on** servers: filesystem, git — enabled by default
 - **Credentials-required** servers: github, fetch — need token configuration
+- The MCP `memory` server has been removed — VS Code's built-in memory tool (`/memories/`) provides superior persistent storage with three scopes (user, session, repository)
 - Never hardcode secrets — use `${input:}` or `${env:}` variable syntax
 - Subagents inherit access; they flag new server additions to the parent agent
 

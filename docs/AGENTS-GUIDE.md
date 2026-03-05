@@ -152,3 +152,233 @@ Use this to stop formatting or lint instructions from firing on auto-generated o
 1. Create `src/<area>/AGENTS.md` with a concise set of area-specific rules.
 2. Keep root-level `copilot-instructions.md` as the universal baseline — avoid duplicating area rules there.
 3. Run the Doctor agent after adding any new instruction file to verify Copilot detects and respects it correctly.
+
+---
+
+## Agent plugins (VS Code 1.110+ — experimental)
+
+Agent plugins are a new distribution mechanism that bundles skills, agents, hooks, MCP servers, and custom commands into a single installable package. Plugins are discovered through the Extensions view (`@agentPlugins` filter).
+
+| Concept | Description |
+|---------|-------------|
+| **What they contain** | Pre-packaged bundles of `.agent.md` files, `SKILL.md` files, hook scripts, MCP server configs, and slash commands |
+| **Where to find them** | Extensions view → search `@agentPlugins`, or browse curated marketplaces |
+| **Settings** | `chat.plugins.enabled` (boolean), `chat.plugins.marketplaces` (URLs), `chat.plugins.paths` (local paths for development) |
+| **Relationship to this template** | This template is not yet packaged as a plugin, but could be in a future major version. Agent plugins are complementary — plugins from the marketplace can extend your workspace alongside the template's own agents and skills. |
+
+> **Status**: Agent plugins are in Preview. The API and distribution format may change.
+
+### Template as an agent plugin — strategic outlook
+
+The template's structure (agents, skills, hooks, MCP config) aligns closely with what agent plugins bundle. Packaging the template as an installable plugin would allow one-click adoption instead of the current fetch-and-populate setup flow.
+
+**Why defer to v4.0**:
+
+- The plugin format is still Preview — breaking changes are expected before GA
+- The template's core value is the interactive setup interview that resolves `{{PLACEHOLDER}}` tokens to the consumer's stack, which plugins cannot currently replicate (plugins install static files)
+- Marketplace discovery (`chat.plugins.marketplaces`) uses Git repositories as plugin sources, which conflicts with the template's current role as a _source_ repo rather than a _distribution_ package
+
+**What a v4.0 plugin version could look like**:
+
+| Component | Plugin packaging |
+|-----------|------------------|
+| Six agents | Installed directly into the user's agent dropdown |
+| Ten skills | Available on-demand without copying to `.github/skills/` |
+| Five hooks | Registered via the plugin's hook manifest |
+| Prompt files | Appear as slash commands contributed by the plugin |
+| Setup interview | Remains a separate flow — the plugin would include a `/setup` command that triggers it |
+
+**Current recommendation**: Use the template via the existing setup flow (SETUP.md / Setup agent). Monitor the plugin API for GA status. When plugins support dynamic configuration (placeholder resolution, user interviews), revisit packaging.
+
+**For plugin development/testing today**: Clone the template repo locally and register it via `chat.plugins.paths` in your VS Code settings to preview how its files would appear as plugin-contributed customizations:
+
+```json
+"chat.plugins.paths": {
+    "/path/to/copilot-instructions-template": true
+}
+```
+
+---
+
+## Built-in `/create-*` commands (VS Code 1.110+)
+
+VS Code 1.110 introduced built-in slash commands for scaffolding Copilot customization files:
+
+| Command | Creates | Template equivalent |
+|---------|---------|-------------------|
+| `/create-prompt` | `.github/prompts/<name>.prompt.md` | Manual creation / skill-creator |
+| `/create-instruction` | `.github/instructions/<name>.instructions.md` | Manual creation |
+| `/create-skill` | `.github/skills/<name>/SKILL.md` | `skill-creator` skill |
+| `/create-agent` | `.github/agents/<name>.agent.md` | Manual creation |
+| `/create-hook` | `.github/hooks/scripts/<name>.sh` + JSON config | Manual creation |
+
+These built-in commands generate starter templates. The template's `skill-creator` skill provides additional Lean/Kaizen guidance beyond the basic scaffold (e.g., waste-aware naming, PDCA verification steps, quality gate checks).
+
+---
+
+## Organization-level agents
+
+GitHub supports publishing custom agents at the organization and enterprise level. Org-level agents are available to all members without requiring per-repository setup.
+
+### How it works
+
+1. An organization or enterprise owner creates a **`.github-private`** repository in the organization (this is a special GitHub repository name).
+2. Agent `.agent.md` files are placed in a root-level **`agents/`** directory in that repository — **not** `.github/agents/`, which is the per-repo convention.
+3. The files are committed and merged to the default branch.
+4. Members enable discovery in VS Code via:
+
+   ```json
+   "github.copilot.chat.organizationCustomAgents.enabled": true
+   ```
+
+5. Org-level agents then appear in the Copilot agent dropdown alongside workspace and user-profile agents for all org members.
+
+### File structure
+
+```text
+.github-private/              ← special org-level repository
+└── agents/
+    ├── review.agent.md       ← org-wide review agent
+    ├── security.agent.md     ← org-wide security agent
+    └── onboarding.agent.md   ← org-wide onboarding agent
+```
+
+### Agent format
+
+Org-level agents use the same `.agent.md` format as workspace agents — YAML frontmatter with `name`, `description`, `tools`, `model`, and Markdown body. The `target` property can restrict an agent to `vscode` or `github-copilot` if needed.
+
+### How to identify agent source
+
+When multiple agents share the same name, VS Code shows the source (workspace, user profile, organization, or plugin) in a tooltip. Use **Configure Custom Agents** from the agents dropdown to see all loaded agents and their origins.
+
+### Using this template with org-level agents
+
+Consumer projects using this template can publish shared agents at the org level:
+
+1. **Domain-specific agents**: Create agents with team knowledge baked in (e.g., a Review agent that knows your API conventions, a Security agent that knows your compliance requirements).
+2. **Standardised workflows**: Push the template's six agents to the org `.github-private` repo so all teams get the same Lean/Kaizen workflow without per-repo setup.
+3. **Layered approach**: Use org-level agents for shared conventions and workspace agents for project-specific overrides.
+
+> **Reference**: [Creating custom agents for your organization](https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/create-custom-agents) — GitHub docs.
+
+---
+
+## Claude agent format compatibility
+
+VS Code supports `.md` files in the `.claude/agents/` directory as an alternative agent format, following the [Claude sub-agents specification](https://code.claude.com/docs/en/sub-agents). This enables teams using both VS Code and Claude Code to share agent definitions.
+
+### Format differences
+
+| Property | `.agent.md` (VS Code) | `.claude/agents/*.md` (Claude) |
+|----------|----------------------|-------------------------------|
+| Tools | YAML array: `tools: [editFiles, terminal]` | Comma-separated string: `tools: "Read, Grep, Glob, Bash"` |
+| Tool blocking | Not supported natively | `disallowedTools: "Bash, Edit"` |
+| Model pinning | `model: [Claude Sonnet 4.6, ...]` | Not supported (model chosen externally) |
+| Handoffs | Supported (`handoffs:` frontmatter) | Not supported |
+| Invocation control | `user-invocable`, `disable-model-invocation` | Not supported |
+
+VS Code automatically maps Claude tool names to VS Code equivalents when loading `.claude/agents/` files.
+
+### Should this template provide Claude-format stubs?
+
+**Current decision: Not yet.** The `.agent.md` format in `.github/agents/` is the primary standard — it supports model pinning, handoffs, invocation controls, and the full tool vocabulary. The Claude format is a compatibility layer for teams already invested in Claude Code.
+
+**When to reconsider**: If Claude Code adoption grows significantly, or if VS Code adds bidirectional sync between the two formats, shipping dual-format stubs would reduce friction for cross-tool teams. For now, teams needing Claude compatibility can manually create simplified `.claude/agents/*.md` files that reference the same instructions.
+
+**Workaround for cross-tool teams today**: Create a `.claude/agents/` directory with lightweight stubs that `#include` your main instruction file:
+
+```markdown
+---
+name: Code
+description: Implement features and refactor code
+tools: "Read, Edit, Bash, Grep, Glob"
+---
+
+Follow the project conventions in `.github/copilot-instructions.md`.
+```
+
+---
+
+## Chat Customizations editor (VS Code 1.110+ — Preview)
+
+VS Code 1.110 introduced a centralised **Chat Customizations editor** that provides a single UI to discover and manage all Copilot customization files across your workspace, user profile, and organization.
+
+Open it via: `Copilot: Open Chat Customizations` (Command Palette) or the Copilot menu.
+
+| What it shows | Details |
+|--------------|--------|
+| Instruction files | `.github/copilot-instructions.md`, `.github/instructions/*.instructions.md` |
+| Agent files | `.github/agents/*.agent.md` — workspace, user profile, and org-level |
+| Skill files | `.github/skills/*/SKILL.md` |
+| Prompt files | `.github/prompts/*.prompt.md` |
+| Hook configuration | `.github/hooks/copilot-hooks.json` |
+
+The editor also shows customizations from **user profiles** and **organization-level agents**, making it the best place to understand what Copilot is loading across all sources.
+
+**Relationship to the Doctor agent**: The Doctor agent performs programmatic checks on these same files (structure, attention budget, placeholder leakage). The Chat Customizations editor is the visual counterpart — use the Doctor for automated audits, the editor for manual browsing.
+
+---
+
+## Session management (VS Code 1.110+)
+
+VS Code 1.110 added several features for managing long agent sessions:
+
+### Context compaction (`/compact`)
+
+Type `/compact` to manually trigger context compaction. VS Code summarises the conversation and starts fresh with the summary as context. Automatic compaction happens when the context window fills.
+
+The template's `save-context.sh` PreCompact hook fires before compaction, injecting structured project state to preserve agent awareness. See the [Hooks Guide](HOOKS-GUIDE.md#context-management-commands-vs-code-1110) for details.
+
+### Session forking (`/fork`)
+
+Type `/fork` to create a branching conversation from the current point. The forked session inherits the full conversation history. Use it to explore alternatives without losing the main thread.
+
+### Session memory for plans
+
+The built-in Plan agent persists plans across conversation turns using session memory. Plans survive context compaction — the agent can reference its plan even after `/compact`.
+
+---
+
+## Agent Debug Panel (VS Code 1.110+)
+
+The Agent Debug Panel replaces the previous "Diagnostics" chat action. Open it via `Developer: Open Agent Debug Panel` (Command Palette).
+
+| Feature | Description |
+|---------|-------------|
+| Loaded agents | See which `.agent.md` files are discovered and their frontmatter |
+| Loaded instructions | View which `.instructions.md` files are active for the current file |
+| Active skills | Check which skills matched the current task |
+| Hook status | See loaded hooks and any validation errors |
+| MCP servers | View configured servers and connection status |
+
+**When to use**: If an agent, instruction, or hook isn't firing as expected, the Agent Debug Panel shows exactly what Copilot loaded. The Doctor agent references this panel in its troubleshooting output.
+
+---
+
+## Explore subagent (VS Code 1.110+)
+
+The Explore subagent is a built-in, read-only codebase exploration agent that other agents can delegate to. It performs fast searches across the workspace without modifying files.
+
+**How agents use it**: When an agent needs to understand unfamiliar code before making changes, it can delegate the search to Explore rather than performing multiple sequential file reads in the main conversation.
+
+**In the template**: The Code and Review agents can leverage Explore transparently. It is listed as an available agent in `AGENTS.md` and can be used via subagent invocation.
+
+---
+
+## Custom thinking phrases (VS Code 1.110+)
+
+The `chat.agent.thinking.phrases` setting lets you customise the status messages shown while an agent is processing. Add an array of strings in `.vscode/settings.json` — VS Code cycles through them randomly during agent thinking time.
+
+```json
+"chat.agent.thinking.phrases": [
+    "Applying Lean principles...",
+    "Checking waste categories...",
+    "Running PDCA cycle..."
+]
+```
+
+---
+
+## askQuestions tool (VS Code 1.110+ — core)
+
+The `askQuestions` tool (previously `vscode_askQuestions`) moved from the VS Code extension API to a core built-in tool in v1.110. Agents can use it to present structured questions to the user mid-task. The template's Setup agent relies on this tool for the preference interview — no additional configuration is needed.

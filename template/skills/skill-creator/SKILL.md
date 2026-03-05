@@ -18,6 +18,8 @@ Create a new agent skill that follows the [Agent Skills](https://agentskills.io)
 - A workflow is being repeated manually and would benefit from codification
 - An online skill was found but needs significant adaptation
 
+> **Tip**: VS Code 1.110+ has a built-in `/create-skill` slash command that generates a basic scaffold. This skill provides additional Lean/Kaizen guidance: waste-aware naming, PDCA verification steps, quality gate checks, and BIBLIOGRAPHY/JOURNAL integration.
+
 ## Steps
 
 1. **Clarify scope** — Ask the user: *"What workflow should this skill encode? Describe the trigger and the desired outcome in one sentence."*

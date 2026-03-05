@@ -1,26 +1,108 @@
 ---
 name: webapp-testing
-description: Set up end-to-end browser testing with Playwright — detect framework, install, scaffold tests, write first test, verify, add to CI
-version: "1.0"
+description: Set up browser testing — dual path with built-in browser tools (interactive) or Playwright (CI); detect framework, scaffold, verify
+version: "2.0"
 license: MIT
-tags: [testing, e2e, playwright, browser, ci]
+tags: [testing, e2e, playwright, browser, ci, browser-tools]
 compatibility: ">=2.0"
 allowed-tools: [codebase, editFiles, terminal, runCommands]
 ---
 
-# Web Application Testing with Playwright
+# Web Application Testing
 
-Set up end-to-end (e2e) browser testing for a web application using Playwright. This skill covers the full lifecycle: detecting the web framework, installing Playwright, scaffolding the test directory, writing the first meaningful test, verifying it passes, and adding a CI workflow.
+Set up browser testing for a web application. This skill offers two paths:
+
+- **Path A — Built-in browser tools** (VS Code 1.110+): lightweight, interactive verification using VS Code's agentic browser tools. No dependencies to install. Ideal for development-time checks and exploratory testing.
+- **Path B — Playwright**: full end-to-end testing framework with CI integration. Ideal for automated regression testing in CI/CD pipelines.
+
+## Decision criteria
+
+| Factor | Path A (Browser tools) | Path B (Playwright) |
+|--------|----------------------|---------------------|
+| **Setup effort** | Zero — built-in, no install | Moderate — install + configure |
+| **CI integration** | No — interactive only | Yes — runs headless in CI |
+| **Test persistence** | No — conversational | Yes — test files committed to repo |
+| **Browser coverage** | Chromium only | Chromium + Firefox + WebKit |
+| **Best for** | Quick verification, dev-time checks, debugging | Regression testing, PR gates, cross-browser |
+| **Requires** | `workbench.browser.enableChatTools: true` (Preview) | Node.js + Playwright package |
+
+**Recommendation**: Use Path A for interactive verification during development, Path B for CI. They complement each other — Path A validates quickly, Path B prevents regressions.
 
 ## When to activate
 
-- User says "Set up e2e tests", "Add browser tests", "Add Playwright", or "Test my web app"
+- User says "Set up e2e tests", "Add browser tests", "Add Playwright", "Test my web app", or "Check my web app"
 - A web application exists but has no browser-level tests
 - The §2 Test Coverage Review identifies missing e2e coverage
 
-## Workflow
+---
 
-### 1. Detect the web framework
+## Path A — Built-in Browser Tools
+
+VS Code 1.110+ provides 10 agentic browser tools that allow Copilot to interact with web pages directly. These tools are experimental and require opt-in.
+
+### A1. Enable browser tools
+
+The user must enable the setting:
+
+```json
+{
+  "workbench.browser.enableChatTools": true
+}
+```
+
+> **Note**: This is a Preview feature. It may change or be removed in future VS Code releases.
+
+### A2. Available browser tools
+
+| Tool | Purpose |
+|------|---------|
+| `openBrowserPage` | Open a URL in a managed browser |
+| `navigatePage` | Navigate to a new URL |
+| `readPage` | Read page content (text, links, forms, structure) |
+| `screenshotPage` | Capture a screenshot for visual verification |
+| `clickElement` | Click a button, link, or interactive element |
+| `hoverElement` | Hover over an element |
+| `dragElement` | Drag and drop an element |
+| `typeInPage` | Type text into input fields |
+| `handleDialog` | Accept or dismiss browser dialogs |
+| `runPlaywrightCode` | Run custom Playwright code snippets in the browser context |
+
+### A3. Interactive verification workflow
+
+1. Start the dev server (manually or via terminal)
+2. Use `openBrowserPage` to open the app URL
+3. Use `readPage` to verify page content loads correctly
+4. Use `screenshotPage` for visual verification
+5. Use `clickElement` / `typeInPage` to interact with forms, navigation
+6. Use `readPage` after interactions to verify state changes
+
+### A4. Example verification session
+
+```text
+User: "Check if my login page works"
+Agent:
+  1. openBrowserPage("http://localhost:3000/login")
+  2. readPage() → verify login form elements exist
+  3. typeInPage(selector: "#email", text: "test@example.com")
+  4. typeInPage(selector: "#password", text: "testpass")
+  5. clickElement(selector: "button[type=submit]")
+  6. readPage() → verify redirect or error message
+  7. screenshotPage() → capture visual state
+```
+
+### A5. Limitations
+
+- Chromium only (no Firefox or WebKit)
+- Interactive — results are conversational, not persisted as test files
+- Cannot run in CI/CD pipelines
+- Preview feature — may have stability issues
+- Some dynamic content may not be fully accessible
+
+---
+
+## Path B — Playwright (CI-ready)
+
+### B1. Detect the web framework
 
 Scan the project for framework signals:
 
@@ -38,7 +120,7 @@ Also check `package.json` scripts for `"dev"`, `"start"`, or `"serve"` commands.
 
 If no framework is detected, ask the user how to start the development server.
 
-### 2. Install Playwright
+### B2. Install Playwright
 
 ```bash
 npm init playwright@latest -- --quiet
@@ -63,7 +145,7 @@ yarn create playwright --quiet
 bunx create-playwright --quiet
 ```
 
-### 3. Configure Playwright
+### B3. Configure Playwright
 
 Update `playwright.config.ts` for the detected framework:
 
@@ -98,7 +180,7 @@ export default defineConfig({
 
 Replace `<PORT>` and `<DEV_SERVER_COMMAND>` with the detected values.
 
-### 4. Write the first test
+### B4. Write the first test
 
 Create `tests/e2e/smoke.spec.ts` — a smoke test that verifies the app loads:
 
@@ -123,7 +205,7 @@ test("navigation is functional", async ({ page }) => {
 
 If the project has a login page, authentication flow, or other critical paths identified in Step 1, write targeted tests for those too.
 
-### 5. Verify tests pass
+### B5. Verify tests pass
 
 ```bash
 npx playwright test
@@ -141,7 +223,7 @@ If tests fail:
 - Verify the `baseURL` matches the actual dev server port
 - Ensure selectors match actual page elements
 
-### 6. Add CI workflow
+### B6. Add CI workflow
 
 Create `.github/workflows/playwright.yml`:
 
@@ -174,7 +256,7 @@ jobs:
           retention-days: 30
 ```
 
-### 7. Update project files
+### B7. Update project files
 
 - Add to `.gitignore`:
 

@@ -30,6 +30,7 @@ Run each check; prepend `[!]` to Pulse if any fails:
 - [ ] **MEMORY.md consolidation** — anything from this session to persist?
 - [ ] **METRICS.md freshness** — baseline older than 3 sessions?
 - [ ] **Settings drift** — do §10 overrides still match the codebase?
+- [ ] **Agent compatibility** — do agent files use current frontmatter schema? Any deprecated fields?
 <!-- Add custom checks below this line -->
 
 ## Retrospective

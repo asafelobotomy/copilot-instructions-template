@@ -1,5 +1,6 @@
 ---
 applyTo: "**/*.config.*,**/.*rc,**/.*rc.json,**/.*rc.yml,**/.*rc.js,**/.*rc.ts"
+description: "Conventions for configuration and RC files — secrets management, minimal config, and startup validation"
 ---
 
 # Configuration File Instructions

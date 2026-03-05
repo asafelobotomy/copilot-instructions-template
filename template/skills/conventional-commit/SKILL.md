@@ -92,6 +92,12 @@ Write a well-structured commit message following the [Conventional Commits](http
 
    Confirm the commit was created: `git log --oneline -1`
 
+## Co-author attribution
+
+VS Code 1.110+ supports `git.addAICoAuthor` (enabled by default), which automatically appends a `Co-authored-by: GitHub Copilot` trailer to commits made with AI assistance. If this setting is enabled, the trailer is added automatically — you do not need to include it manually in the commit message.
+
+To check or change the setting: search for `git.addAICoAuthor` in VS Code Settings.
+
 ## Verify
 
 - [ ] Type is one of the standard Conventional Commits types

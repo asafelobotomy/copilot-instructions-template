@@ -1,3 +1,9 @@
+---
+description: Review a file for waste categories, baseline violations, and coding convention issues
+mode: ask
+tools: [codebase]
+---
+
 # Review File
 
 Review the current file using the §2 Review Mode protocol.

@@ -48,6 +48,10 @@ Task requires a workflow
 |----------|----------|-------|
 | 1 (highest) | `.github/skills/<name>/SKILL.md` | Project — checked into version control |
 | 2 | `~/.copilot/skills/<name>/SKILL.md` | Personal — shared across all projects for one user |
+| 3 | Agent plugins (`@agentPlugins`) | Plugin — installed via Extensions view (VS Code 1.110+) |
+| 4 | Organization-level agents | Org — published at GitHub org level for all members |
+
+> **Agent file discovery**: Use the `chat.agentFilesLocations` VS Code setting to add custom directories for skill/agent discovery beyond the default locations.
 
 ## Subagent skill use
 

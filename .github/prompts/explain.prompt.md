@@ -1,3 +1,8 @@
+---
+description: Explain selected code with waste category analysis and baseline checks
+mode: ask
+---
+
 # Explain Code
 
 Explain the selected code. For each significant block:

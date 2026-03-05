@@ -1,3 +1,9 @@
+---
+description: Generate tests following project conventions with arrange/act/assert structure
+mode: agent
+tools: [editFiles, terminal, codebase]
+---
+
 # Generate Tests
 
 Generate tests for the selected code following project conventions.

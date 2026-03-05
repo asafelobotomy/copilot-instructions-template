@@ -49,7 +49,7 @@ Six skills are scaffolded into your project during setup:
 | `lean-pr-review` | Review a PR using Lean waste categories and severity ratings | "Review this PR", "Check my changes" |
 | `conventional-commit` | Write commit messages following Conventional Commits | "Write a commit message" |
 | `mcp-builder` | Build and register MCP servers for external tool integration | "Build an MCP server", "Add an MCP server for..." |
-| `webapp-testing` | Set up Playwright end-to-end browser testing | "Set up e2e tests", "Add browser tests" |
+| `webapp-testing` | Set up browser testing — built-in browser tools (interactive) or Playwright (CI) | "Set up e2e tests", "Add browser tests", "Check my web app" |
 
 ---
 
@@ -105,6 +105,8 @@ Say any of these to the agent:
 
 The `skill-creator` meta-skill guides the agent through the process. The result is a new `SKILL.md` file in `.github/skills/<name>/`.
 
+Alternatively, use the **`/create-skill` slash command** (VS Code 1.110+) to scaffold a new skill from VS Code's built-in template. The built-in command generates the basic structure; the `skill-creator` skill adds Lean/Kaizen guidance (waste-aware naming, PDCA verification, quality gate checks).
+
 ### Manual creation
 
 Create a directory under `.github/skills/` with a `SKILL.md` file following the [anatomy](#skill-anatomy) above. The key rules:
@@ -147,6 +149,14 @@ Community skills are only searched if you've opted in via the A15 preference.
 
 ---
 
+## Built-in skills (VS Code 1.110+)
+
+VS Code ships a built-in **accessibility skill** that teaches the agent to write accessible code (ARIA attributes, semantic HTML, keyboard navigation, colour contrast). This skill is always available — it does not need to be installed or configured.
+
+Built-in skills do not appear in `.github/skills/` — they are part of VS Code itself. They complement project skills: built-in skills provide general best practices, project skills provide project-specific workflows.
+
+---
+
 ## Quality gate for community skills
 
 Before adopting a community-sourced skill, the agent verifies:
@@ -174,3 +184,17 @@ Skills failing two or more checks are rejected. Borderline cases are presented t
 ## Updating the instructions
 
 The skills system is part of §12 in `.github/copilot-instructions.md`. When you update from a newer template version, §12 may receive improvements. Your local skills (in `.github/skills/`) are never overwritten by template updates — they belong to your project.
+
+---
+
+## Agent plugins and skill distribution (VS Code 1.110+ — experimental)
+
+Agent plugins are a new distribution mechanism that bundles skills alongside agents, hooks, and MCP servers into installable packages. Plugins are discovered via the Extensions view (`@agentPlugins` filter).
+
+**How this affects skills**:
+
+- Skills bundled in agent plugins are automatically available — no manual copying to `.github/skills/`
+- Plugin skills use the same `SKILL.md` format and are discovered via the same description-matching mechanism
+- Project-level skills (`.github/skills/`) always take priority over plugin skills with the same name
+
+**Skill search with plugins**: When `{{SKILL_SEARCH_PREFERENCE}}` is set to "Official + community", the agent now also considers skills from installed agent plugins as a discovery source, alongside the official repositories and community sources.

@@ -1,3 +1,9 @@
+---
+description: Write a Conventional Commits message from staged changes
+mode: agent
+tools: [terminal]
+---
+
 # Write Commit Message
 
 Inspect the staged changes (`git diff --cached`) and write a commit message following the Conventional Commits specification.
