@@ -215,7 +215,7 @@ If **all** §1–§9 sections have status `UNCHANGED` or `USER_ONLY` (no instruc
 
 2. If user confirms, write the companion files directly — no section-by-section walkthrough needed.
 3. Update the version file and fingerprints (Post-update step 1).
-4. Append to JOURNAL.md and CHANGELOG.md as normal.
+4. Append to CHANGELOG.md as normal.
 
 If the user declines or picks individually, proceed to the standard Pre-flight Report.
 
@@ -351,8 +351,7 @@ Say to Copilot: *"Restore instructions from backup"*
 
 Copilot will list all available backups in `.github/archive/` and let you
 choose which one to restore. Restoration replaces the current
-`.github/copilot-instructions.md` with the backed-up copy, then writes
-a JOURNAL entry noting the rollback.
+`.github/copilot-instructions.md` with the backed-up copy.
 ```
 
 ### Confirming the backup
@@ -563,23 +562,7 @@ Replace `NEW` with the new version string. Replace each `<fingerprint>` with the
 
 Do **not** run `scripts/sync-version.sh` — that script is template-repo infrastructure and does not exist in consumer projects.
 
-### 2 — Append to JOURNAL.md
-
-```markdown
-## TODAY — Template updated vOLD → vNEW
-
-**Version steps**: <list of intermediate versions traversed>
-**Applied sections**: <comma-separated list of updated/added sections, or "none">
-**Skipped sections**: <comma-separated list, or "none">
-**Customised sections**: <comma-separated list with one-line note per item, or "none">
-**Companion files created**: <list, or "none">
-**Companion files updated**: <list, or "none">
-**Companion files skipped**: <list, or "none">
-**Breaking changes**: <list of breaking versions, or "none">
-**Backup**: `.github/archive/pre-update-TODAY-vOLD/`
-```
-
-### 3 — Append to CHANGELOG.md
+### 2 — Append to CHANGELOG.md
 
 Add under `## [Unreleased]` (or create that section if absent):
 
@@ -591,7 +574,7 @@ Add under `## [Unreleased]` (or create that section if absent):
   Backup at: `.github/archive/pre-update-TODAY-v<OLD>/`
 ```
 
-### 4 — Print the confirmation
+### 3 — Print the confirmation
 
 ```text
 Updated! ✓
@@ -616,7 +599,7 @@ Updated! ✓
   <anomaly list, if any — or omit this block>
   <manual actions, if any — or omit this block>
 
-  JOURNAL.md and CHANGELOG.md updated.
+  CHANGELOG.md updated.
 ```
 
 ---
@@ -694,16 +677,6 @@ Copy `copilot-instructions.md` from the selected backup directory to `.github/co
 
 #### R5 — Record the restoration
 
-Append to `JOURNAL.md`:
-
-```markdown
-## TODAY — Instructions restored from backup
-
-**Restored from**: `.github/archive/pre-update-<DATE>-v<VERSION>/`
-**Pre-restore snapshot**: `.github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/`
-**Reason**: User-initiated rollback.
-```
-
 Append to `CHANGELOG.md` under `## [Unreleased]`:
 
 ```markdown
@@ -721,7 +694,7 @@ Restored! ✓
   Pre-restore snapshot saved at:
     .github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/
 
-  JOURNAL.md and CHANGELOG.md updated.
+  CHANGELOG.md updated.
   (To undo this restore, say "Restore instructions from backup" and
    select the pre-restore snapshot.)
 ```

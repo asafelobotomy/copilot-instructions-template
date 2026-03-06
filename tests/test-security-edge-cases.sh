@@ -131,23 +131,20 @@ TMPDIR_SYNC=$(mktemp -d)
 cleanup_sync() { rm -rf "$TMPDIR_SYNC"; }
 trap cleanup_sync EXIT
 
-# Mirror the three files sync-version.sh operates on
+# Mirror the two files sync-version.sh operates on
 cp "$REPO_ROOT/VERSION.md" "$TMPDIR_SYNC/"
 cp "$REPO_ROOT/.release-please-manifest.json" "$TMPDIR_SYNC/"
-cp "$REPO_ROOT/README.md" "$TMPDIR_SYNC/"
 mkdir -p "$TMPDIR_SYNC/.github"
 cp "$REPO_ROOT/.github/copilot-instructions.md" "$TMPDIR_SYNC/.github/"
 
 # First run — may or may not change files, but must exit 0
 ROOT_DIR="$TMPDIR_SYNC" bash "$SYNC" >/dev/null 2>&1
-SNAP1=$(cat "$TMPDIR_SYNC/README.md" \
-            "$TMPDIR_SYNC/.github/copilot-instructions.md" \
+SNAP1=$(cat "$TMPDIR_SYNC/.github/copilot-instructions.md" \
             "$TMPDIR_SYNC/.release-please-manifest.json" 2>/dev/null)
 
 # Second run — must be an exact no-op relative to the first run
 ROOT_DIR="$TMPDIR_SYNC" bash "$SYNC" >/dev/null 2>&1
-SNAP2=$(cat "$TMPDIR_SYNC/README.md" \
-            "$TMPDIR_SYNC/.github/copilot-instructions.md" \
+SNAP2=$(cat "$TMPDIR_SYNC/.github/copilot-instructions.md" \
             "$TMPDIR_SYNC/.release-please-manifest.json" 2>/dev/null)
 
 if [[ "$SNAP1" == "$SNAP2" ]]; then

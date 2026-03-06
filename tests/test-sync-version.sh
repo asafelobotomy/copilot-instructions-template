@@ -24,11 +24,7 @@ setup_sandbox() {
 > **Template version**: 0.0.0 <!-- x-release-please-version --> | **Applied**: 2025-01-01
 > Living document.
 INST
-  cat > "$SANDBOX/README.md" <<'README'
-# README
 
-[![Version](https://img.shields.io/badge/version-0.0.0-blue)](VERSION.md) <!-- x-release-please-version -->
-README
   printf '{"." : "0.0.0"}\n' > "$SANDBOX/.release-please-manifest.json"
 }
 
@@ -56,14 +52,12 @@ run_script() {
 echo "=== sync-version.sh unit tests ==="
 echo ""
 
-# ── 1. Happy path — updates all three files ────────────────────────────────────
+# ── 1. Happy path — updates both files ─────────────────────────────────────────
 echo "1. Happy path — updates version 0.0.0 → 1.2.3"
 setup_sandbox "1.2.3"
 run_script
 exit_code=$?
 assert_success "exits 0" "$exit_code"
-assert_file_contains "README.md badge updated"      "$SANDBOX/README.md"                    "version-1.2.3-blue"
-assert_file_not_contains "README.md old badge gone" "$SANDBOX/README.md"                    "version-0.0.0-blue"
 assert_file_contains "copilot-instructions updated" "$SANDBOX/.github/copilot-instructions.md" "Template version\*\*: 1.2.3"
 assert_file_not_contains "old version gone"         "$SANDBOX/.github/copilot-instructions.md" "Template version\*\*: 0.0.0"
 assert_file_contains "manifest updated"             "$SANDBOX/.release-please-manifest.json"   '"1.2.3"'
@@ -75,7 +69,6 @@ echo ""
 echo "2. Inline marker preserved after substitution"
 setup_sandbox "2.0.0"
 run_script >/dev/null
-assert_file_contains "marker still in README"      "$SANDBOX/README.md"                    "x-release-please-version"
 assert_file_contains "marker still in instructions" "$SANDBOX/.github/copilot-instructions.md" "x-release-please-version"
 teardown_sandbox
 echo ""
@@ -84,16 +77,11 @@ echo ""
 echo "3. Idempotency — second run is a no-op"
 setup_sandbox "3.1.0"
 run_script >/dev/null
-sha1_readme=$(sha256sum "$SANDBOX/README.md")
 sha1_inst=$(sha256sum "$SANDBOX/.github/copilot-instructions.md")
 sha1_manifest=$(sha256sum "$SANDBOX/.release-please-manifest.json")
 run_script >/dev/null
-sha2_readme=$(sha256sum "$SANDBOX/README.md")
 sha2_inst=$(sha256sum "$SANDBOX/.github/copilot-instructions.md")
 sha2_manifest=$(sha256sum "$SANDBOX/.release-please-manifest.json")
-[[ "$sha1_readme" == "$sha2_readme" ]] \
-  && pass_note "README idempotent" \
-  || fail_note "README changed on second run"
 [[ "$sha1_inst" == "$sha2_inst" ]] \
   && pass_note "copilot-instructions idempotent" \
   || fail_note "copilot-instructions changed on second run"
@@ -107,7 +95,6 @@ echo ""
 echo "4. Multi-digit version (10.21.300)"
 setup_sandbox "10.21.300"
 run_script >/dev/null
-assert_file_contains "README has multi-digit version" "$SANDBOX/README.md" "version-10.21.300-blue"
 assert_file_contains "manifest has multi-digit version" "$SANDBOX/.release-please-manifest.json" '"10.21.300"'
 teardown_sandbox
 echo ""
@@ -145,7 +132,7 @@ echo "8. VERSION.md with surrounding whitespace"
 setup_sandbox
 printf "  4.5.6  \n" > "$SANDBOX/VERSION.md"
 run_script >/dev/null
-assert_file_contains "strips whitespace — README updated" "$SANDBOX/README.md" "version-4.5.6-blue"
+assert_file_contains "strips whitespace — manifest updated" "$SANDBOX/.release-please-manifest.json" '"4.5.6"'
 teardown_sandbox
 echo ""
 

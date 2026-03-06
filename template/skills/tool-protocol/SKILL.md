@@ -64,7 +64,6 @@ Need a tool for task X
                 ├─ ≥ 2 distinct tasks in this project would benefit → SAVE to toolbox
                 │   a. Place file in .copilot/tools/<kebab-name>.<ext>
                 │   b. Add a row to .copilot/tools/INDEX.md (see format below)
-                │   c. Append to JOURNAL.md: `[tool] <name> added to toolbox — <one-line reason>`
                 └─ Single-use / too project-specific → use inline only; do not save
 ```
 
@@ -79,7 +78,7 @@ Files: `INDEX.md` (catalogue) · `*.sh` · `*.py` · `*.js`/`*.ts` · `*.mcp.jso
 | Tool | Lang | What it does | When to use | Output | Risk |
 |------|------|-------------|------------|--------|------|
 | `count-exports.sh` | bash | Count exported symbols per file | API surface audits | symbol counts to stdout | safe |
-| `summarise-metrics.py` | python | Parse METRICS.md and print trends | Kaizen review sessions | trend table to stdout | safe |
+| `summarise-metrics.py` | python | Parse metrics baselines and print trends | Kaizen review sessions | trend table to stdout | safe |
 
 ## Tool quality rules
 

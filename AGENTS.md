@@ -20,37 +20,9 @@ When a user says any of the following in a Copilot chat:
 
 ### Update (already set up)
 
-Canonical sources for full inventory:
+Canonical source for inventory:
 
-- `BIBLIOGRAPHY.md` — exhaustive file-level catalogue with LOC
 - `.copilot/workspace/DOC_INDEX.json` — canonical machine-readable metadata index
-
-High-signal map (machine-relevant and navigation-critical paths):
-
-| Path | Role |
-|------|------|
-| `AGENTS.md` | AI entry point — trigger phrases + remote sequences |
-| `SETUP.md` | Complete setup guide (remote-executable) |
-| `UPDATE.md` | Complete update + restore protocol (remote-executable) |
-| `.github/copilot-instructions.md` | Primary instructions template (§1–§13) |
-| `.github/agents/` | Model-pinned agents |
-| `.github/skills/` | Repo skill library |
-| `template/skills/` | Starter skill stubs scaffolded into consumer projects |
-| `.github/hooks/` | Hook configuration + scripts |
-| `template/hooks/` | Hook templates scaffolded into consumer projects |
-| `.github/instructions/` | Path-specific instruction files |
-| `.github/prompts/` | Slash-command prompt files |
-| `.github/workflows/` | CI/CD workflows |
-| `docs/` | Human-readable guides |
-| `.copilot/workspace/` | Workspace identity files + canonical `DOC_INDEX.json` |
-| `tests/` | Script tests and guardrail checks |
-| `scripts/` | Utility scripts |
-| `MIGRATION.md` | Per-version migration registry |
-| `CHANGELOG.md` | Template release history |
-| `JOURNAL.md` | ADR-style decision log |
-| `METRICS.md` | Kaizen baseline snapshots |
-
-- A Living Update Protocol that authorises Copilot to improve the instructions as patterns emerge.
 
 ---
 
@@ -105,9 +77,6 @@ Setup outputs written to the **user's project**:
 | `.copilot/workspace/BOOTSTRAP.md` | Permanent setup origin record |
 | `.copilot/workspace/HEARTBEAT.md` | Event-driven health check checklist |
 | `CHANGELOG.md` | Keep-a-Changelog stub |
-| `JOURNAL.md` | ADR-style development journal |
-| `BIBLIOGRAPHY.md` | File catalogue |
-| `METRICS.md` | Kaizen baseline snapshot table |
 | `.copilot/tools/INDEX.md` | Toolbox catalogue (created lazily on first tool save — §11) |
 
 ---
@@ -124,7 +93,7 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 
 ### 2 — Follow the update protocol
 
-Follow every step in `UPDATE.md` exactly. The protocol: reads installed version; fetches `VERSION.md`, `MIGRATION.md`, `CHANGELOG.md`, and template (at both installed-version tag and latest); performs a version-walk across all intermediate versions using MIGRATION.md; builds a three-way merge change manifest for §1–§9 sections (§10 always protected); collects companion file changes (agents, skills, hooks, MCP config); flags breaking changes; presents Per-version Pre-flight Report; user chooses **U** (update all) / **S** (skip) / **C** (customise per-section and per-companion-file); backs up instructions + modified companion files to `.github/archive/pre-update-YYYY-MM-DD-vX.Y.Z/`; writes confirmed changes; resolves new placeholders; appends to `JOURNAL.md` and `CHANGELOG.md`.
+Follow every step in `UPDATE.md` exactly. The protocol: reads installed version; fetches `VERSION.md`, `MIGRATION.md`, `CHANGELOG.md`, and template (at both installed-version tag and latest); performs a version-walk across all intermediate versions using MIGRATION.md; builds a three-way merge change manifest for §1–§9 sections (§10 always protected); collects companion file changes (agents, skills, hooks, MCP config); flags breaking changes; presents Per-version Pre-flight Report; user chooses **U** (update all) / **S** (skip) / **C** (customise per-section and per-companion-file); backs up instructions + modified companion files to `.github/archive/pre-update-YYYY-MM-DD-vX.Y.Z/`; writes confirmed changes; resolves new placeholders; appends to `CHANGELOG.md`.
 
 ---
 
@@ -140,58 +109,16 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 
 ### 2 — Follow the Restore sequence
 
-Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/archive/` for `pre-update-*` dirs; lists backups from `BACKUP-MANIFEST.md`; asks user to select; creates a pre-restore snapshot; copies selected backup to `.github/copilot-instructions.md`; appends to `JOURNAL.md` and `CHANGELOG.md`.
+Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/archive/` for `pre-update-*` dirs; lists backups from `BACKUP-MANIFEST.md`; asks user to select; creates a pre-restore snapshot; copies selected backup to `.github/copilot-instructions.md`; appends to `CHANGELOG.md`.
 
-## High-Signal File Map
+## Consumer-Only Files
 
-Use these navigation anchors first. For exhaustive inventory, read `BIBLIOGRAPHY.md` or `.copilot/workspace/DOC_INDEX.json` instead of relying on a duplicated path dump here.
+These files are created in the consumer project during setup, not in this template repo:
 
 | Path | Role |
 |------|------|
-| `AGENTS.md` | This file — trigger phrases and remote sequences |
-| `.github/copilot-instructions.md` | Primary instructions template (§1–§13) |
-| `SETUP.md` | Remote setup protocol |
-| `UPDATE.md` | Remote update and restore protocol |
-| `MIGRATION.md` | Per-version migration registry |
-| `README.md` | Human landing page and feature overview |
-| `llms.txt` | Concise LLM-facing summary |
-| `llms-ctx.txt` | Generated compact LLM context pack |
-| `llms-ctx-full.txt` | Generated expanded LLM context pack |
-| `.github/agents/` | Six model-pinned agents |
-| `.github/skills/` | Thirteen repo skills, including review skills |
-| `template/skills/` | Thirteen template skill stubs scaffolded into consumer projects |
-| `.github/prompts/` | Reusable slash-command prompt files |
-| `.github/instructions/` | Path-specific instruction files |
-| `.github/hooks/` | Hook configuration and scripts |
-| `.github/workflows/` | CI and release workflows |
-| `docs/` | Human-readable guides |
-| `scripts/` | Sync and maintenance scripts |
-| `tests/` | Drift guards and shell test suites |
-| `.copilot/workspace/` | Workspace identity files and canonical metadata index |
-| `.copilot/workspace/TOOLS.md` | Tool usage patterns |
-| `.copilot/workspace/MEMORY.md` | Memory strategy |
-| `.copilot/workspace/BOOTSTRAP.md` | Permanent setup origin record |
-| `.copilot/workspace/HEARTBEAT.md` | Event-driven health check checklist |
-| **Docs** | |
-| `docs/AGENTS-GUIDE.md` | Human-readable guide to model-pinned agents, trigger phrases, and fallback chains |
-| `docs/SETUP-GUIDE.md` | Human-readable walkthrough of the setup interview and output files |
-| `docs/UPDATE-GUIDE.md` | Human-readable guide to the update and restore protocol |
-| `docs/HOOKS-GUIDE.md` | Human-readable guide to agent lifecycle hooks: config, customisation, security |
-| `docs/SKILLS-GUIDE.md` | Human-readable guide to the Agent Skills system |
-| `docs/MCP-GUIDE.md` | Human-readable guide to MCP server configuration and server tiers |
-| `docs/HEARTBEAT-GUIDE.md` | Human-readable guide to the heartbeat protocol and checklist |
-| `docs/EXTENSION-REVIEW-GUIDE.md` | Human-readable guide to the extension review workflow |
-| `docs/TEST-REVIEW-GUIDE.md` | Human-readable guide to the test coverage review workflow |
-| `docs/PATH-INSTRUCTIONS-GUIDE.md` | Human-readable guide to path-specific instruction files |
-| `docs/PROMPTS-GUIDE.md` | Human-readable guide to reusable prompt files and slash commands |
-| `docs/INSTRUCTIONS-GUIDE.md` | Human-readable guide to the copilot-instructions.md structure |
-| `docs/SECURITY-GUIDE.md` | Human-readable guide to CI hardening, SHA-pinning, and Graduated Trust Model |
-| `docs/RELEASE-AUTOMATION-GUIDE.md` | Human-readable guide to release-please and version management |
-| **Examples** | |
-| `examples/valis/README.md` | Reference implementation |
-| **Consumer-only files (created during setup, not in template repo)** | |
-| `.github/copilot-version.md` | Installed template version number (semver) + per-section fingerprints — created in consumer project |
-| `.copilot/tools/INDEX.md` | Toolbox catalogue — created in consumer project on first tool save |
+| `.github/copilot-version.md` | Installed template version number (semver) + per-section fingerprints |
+| `.copilot/tools/INDEX.md` | Toolbox catalogue (created on first tool save) |
 
 ---
 

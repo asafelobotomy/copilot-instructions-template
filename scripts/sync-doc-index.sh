@@ -66,23 +66,6 @@ preferred_ps_hooks = [
     "save-context.ps1",
 ]
 
-preferred_guides = [
-    "AGENTS-GUIDE.md",
-    "SETUP-GUIDE.md",
-    "UPDATE-GUIDE.md",
-    "HOOKS-GUIDE.md",
-    "SKILLS-GUIDE.md",
-    "MCP-GUIDE.md",
-    "HEARTBEAT-GUIDE.md",
-    "INSTRUCTIONS-GUIDE.md",
-    "SECURITY-GUIDE.md",
-    "PROMPTS-GUIDE.md",
-    "PATH-INSTRUCTIONS-GUIDE.md",
-    "EXTENSION-REVIEW-GUIDE.md",
-    "TEST-REVIEW-GUIDE.md",
-    "RELEASE-AUTOMATION-GUIDE.md",
-]
-
 
 def ordered(existing, preferred):
     existing_set = set(existing)
@@ -96,26 +79,23 @@ skills_repo_existing = [p.parent.name for p in (root / ".github/skills").glob("*
 skills_template_existing = [p.parent.name for p in (root / "template/skills").glob("*/SKILL.md")]
 shell_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.sh")]
 ps_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.ps1")]
-guides_existing = [p.name for p in (root / "docs").glob("*.md")]
 
 agents = ordered(agents_existing, preferred_agents)
 skills_repo = ordered(skills_repo_existing, preferred_skills)
 skills_template = ordered(skills_template_existing, preferred_skills)
 shell_hooks = ordered(shell_hooks_existing, preferred_shell_hooks)
 ps_hooks = ordered(ps_hooks_existing, preferred_ps_hooks)
-guides = ordered(guides_existing, preferred_guides)
 
 generated = {
     "schemaVersion": "1.0",
     "updated": datetime.date.today().isoformat(),
-    "purpose": "Canonical machine-readable inventory for repository documentation metadata.",
+    "purpose": "Canonical machine-readable inventory for repository metadata.",
     "counts": {
         "agents": len(agents),
         "skillsRepo": len(skills_repo),
         "skillsTemplate": len(skills_template),
         "hookScriptsShell": len(shell_hooks),
         "hookScriptsPowerShell": len(ps_hooks),
-        "guides": len(guides),
     },
     "agents": agents,
     "skills": {
@@ -126,10 +106,9 @@ generated = {
         "shell": shell_hooks,
         "powershell": ps_hooks,
     },
-    "guides": guides,
     "notes": [
-        "This index is introduced in Phase 2.1 as canonical metadata for drift checks.",
-        "Human-facing docs may reference this file rather than duplicating inventory details.",
+        "This index is the canonical metadata source for drift checks.",
+        "Human-facing docs live on the docs branch.",
     ],
 }
 

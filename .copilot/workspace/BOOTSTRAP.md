@@ -21,8 +21,5 @@ This workspace was scaffolded on **2026-02-27** using the [copilot-instructions-
 - `.github/skills/` — reusable agent skill library (§12)
 - `.copilot/workspace/` — all seven identity files
 - `CHANGELOG.md` — Keep-a-Changelog stub
-- `JOURNAL.md` — ADR journal with setup entry
-- `BIBLIOGRAPHY.md` — file catalogue with initial snapshot
-- `METRICS.md` — baseline snapshot for this date
 
 *(This file is not updated after setup. It is a permanent record of origin.)*

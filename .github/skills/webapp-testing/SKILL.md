@@ -278,8 +278,6 @@ jobs:
   }
   ```
 
-- Log in JOURNAL.md: `[testing] Playwright e2e tests scaffolded — smoke test + CI workflow`
-- Update BIBLIOGRAPHY.md with new test files
 
 ## Verify
 
@@ -289,4 +287,3 @@ jobs:
 - [ ] Path B (Playwright): CI workflow file is valid YAML (`actionlint .github/workflows/playwright.yml`)
 - [ ] Path B (Playwright): `.gitignore` excludes Playwright artifacts
 - [ ] Path B (Playwright): `package.json` has `test:e2e` script
-- [ ] JOURNAL.md has an entry

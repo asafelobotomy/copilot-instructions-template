@@ -57,10 +57,7 @@ patterns. Use `codebase` to read file contents.
 
 ### Project tracking files
 
-- `METRICS.md` *(project root — not inside `.copilot/workspace/`)*
 - `.github/copilot-version.md`
-- `JOURNAL.md`
-- `BIBLIOGRAPHY.md`
 - `AGENTS.md`
 - `CHANGELOG.md`
 
@@ -158,7 +155,7 @@ Flag: `[HIGH]` if absent or malformed.
 
 ### D7 — Workspace memory files
 
-Check each file listed under "Workspace memory files" and `METRICS.md` above:
+Check each file listed under "Workspace memory files" above:
 
 - Does it exist?
 - Is it non-empty?
@@ -166,27 +163,14 @@ Check each file listed under "Workspace memory files" and `METRICS.md` above:
 Flag: `[HIGH]` if `HEARTBEAT.md` or `IDENTITY.md` is missing (critical for heartbeat protocol and agent self-description).
 Flag: `[WARN]` for any other missing workspace file.
 
-### D8 — JOURNAL.md
-
-- Present?
-- Has at least one entry?
-
-Flag: `[WARN]` if absent or empty.
-
-### D9 — BIBLIOGRAPHY.md
-
-- Present?
-
-Flag: `[WARN]` if absent.
-
-### D10 — AGENTS.md
+### D8 — AGENTS.md
 
 - Present?
 - References `.github/copilot-instructions.md`?
 
 Flag: `[WARN]` if absent.
 
-### D11 — Agent plugins
+### D9 — Agent plugins
 
 Check for agent plugin integration:
 
@@ -251,22 +235,12 @@ D7  WORKSPACE MEMORY FILES
   <one row per file with ✓ / MISSING / EMPTY>
 
 ──────────────────────────────────────────────────────────────
-D8  JOURNAL.MD
-──────────────────────────────────────────────────────────────
-  <findings or "Present — N entries">
-
-──────────────────────────────────────────────────────────────
-D9  BIBLIOGRAPHY.MD
+D8  AGENTS.MD
 ──────────────────────────────────────────────────────────────
   <findings or "Present">
 
 ──────────────────────────────────────────────────────────────
-D10 AGENTS.MD
-──────────────────────────────────────────────────────────────
-  <findings or "Present">
-
-──────────────────────────────────────────────────────────────
-D11 AGENT PLUGINS
+D9  AGENT PLUGINS
 ──────────────────────────────────────────────────────────────
   <findings or "No conflicts detected" or "Skipped — no plugin config">
 

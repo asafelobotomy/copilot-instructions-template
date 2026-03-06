@@ -49,6 +49,7 @@ expected = {
     ".github/skills/skill-management/SKILL.md": "template/skills/skill-management/SKILL.md",
     ".github/skills/test-coverage-review/SKILL.md": "template/skills/test-coverage-review/SKILL.md",
     ".github/skills/tool-protocol/SKILL.md": "template/skills/tool-protocol/SKILL.md",
+    ".github/skills/webapp-testing/SKILL.md": "template/skills/webapp-testing/SKILL.md",
 }
 for repo_rel, template_rel in expected.items():
     repo_path = root / repo_rel
@@ -64,7 +65,6 @@ echo "3. Known divergent skills remain intentionally distinct from template copi
 assert_python "intentional skill divergences stay explicit" '
 divergent = {
     ".github/skills/mcp-management/SKILL.md": "template/skills/mcp-management/SKILL.md",
-    ".github/skills/webapp-testing/SKILL.md": "template/skills/webapp-testing/SKILL.md",
 }
 for repo_rel, template_rel in divergent.items():
     repo_path = root / repo_rel

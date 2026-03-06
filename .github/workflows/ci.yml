@@ -36,7 +36,7 @@ jobs:
           if ! git diff --quiet; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add .github/copilot-instructions.md README.md .release-please-manifest.json
+            git add .github/copilot-instructions.md .release-please-manifest.json
             git commit -m "chore: sync version references [skip ci]"
             git push
           fi
@@ -73,23 +73,9 @@ jobs:
             ".github/agents/review.agent.md" \
             ".github/agents/fast.agent.md" \
             "SETUP.md" "UPDATE.md" "MIGRATION.md" "AGENTS.md" "VERSION.md" "CHANGELOG.md" \
-            "LICENSE" "CONTRIBUTING.md" \
             "scripts/sync-version.sh" \
             "scripts/sync-doc-index.sh" \
-            "scripts/report-script-coverage.sh" \
             ".copilot/workspace/DOC_INDEX.json" \
-            "docs/INSTRUCTIONS-GUIDE.md" "docs/SETUP-GUIDE.md" \
-            "docs/UPDATE-GUIDE.md" "docs/AGENTS-GUIDE.md" \
-            "docs/EXTENSION-REVIEW-GUIDE.md" \
-            "docs/TEST-REVIEW-GUIDE.md" \
-            "docs/SKILLS-GUIDE.md" \
-            "docs/PATH-INSTRUCTIONS-GUIDE.md" \
-            "docs/PROMPTS-GUIDE.md" \
-            "docs/SECURITY-GUIDE.md" \
-            "docs/MCP-GUIDE.md" \
-            "docs/RELEASE-AUTOMATION-GUIDE.md" \
-            "docs/HEARTBEAT-GUIDE.md" \
-            "docs/HOOKS-GUIDE.md" \
             "template/copilot-setup-steps.yml" \
             "template/vscode/mcp.json" \
             "template/hooks/copilot-hooks.json" \
@@ -98,8 +84,7 @@ jobs:
             "template/hooks/scripts/post-edit-lint.sh" \
             "template/hooks/scripts/enforce-retrospective.sh" \
             "template/hooks/scripts/save-context.sh" \
-            "template/CHANGELOG.md" "template/JOURNAL.md" \
-            "template/BIBLIOGRAPHY.md" "template/METRICS.md" \
+            "template/CHANGELOG.md" \
             "template/workspace/IDENTITY.md" "template/workspace/SOUL.md" \
             "template/workspace/USER.md" "template/workspace/TOOLS.md" \
             "template/workspace/MEMORY.md" "template/workspace/DOC_INDEX.json" "template/workspace/BOOTSTRAP.md" \
@@ -185,15 +170,6 @@ jobs:
             echo "ℹ️  Some skills are missing the body-level metadata note — consider adding it"
           fi
           echo "✅ Advisory check complete (non-blocking)"
-
-      - name: README docs-table links resolve to real files
-        run: |
-          failed=0
-          while IFS= read -r link; do
-            [[ -f "$link" ]] || { echo "❌ README links to missing file: $link"; failed=1; }
-          done < <(grep -oP '\(docs/[^)]+\)' README.md | tr -d '()')
-          [[ $failed -eq 0 ]] || exit 1
-          echo "✅ All README docs links resolve"
 
       - name: Cross-reference consistency
         run: |
@@ -340,7 +316,6 @@ jobs:
           if has_push .github/workflows/release-please.yml; then please_active=1; fi
           if [[ $manual_active -eq 1 && $please_active -eq 1 ]]; then
             echo "❌ Both release-manual.yml and release-please.yml have active push triggers."
-            echo "   Enable only one release strategy — see docs/RELEASE-AUTOMATION-GUIDE.md."
             exit 1
           fi
           echo "✅ Release workflow mutual exclusion OK"
@@ -387,7 +362,6 @@ jobs:
           globs: |
             **/*.md
             !template/**
-            !examples/**
             !node_modules/**
 
   actionlint:

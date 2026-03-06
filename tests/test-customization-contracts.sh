@@ -65,19 +65,6 @@ for path in (root / ".github/instructions").glob("*.instructions.md"):
 '
 echo ""
 
-echo "3. Human docs still describe the prompt and instruction scaffolds"
-assert_python "guide docs keep customization coverage" '
-checks = {
-    "README.md": [".github/instructions/*.instructions.md", ".github/prompts/*.prompt.md"],
-    "docs/PATH-INSTRUCTIONS-GUIDE.md": ["applyTo:", ".instructions.md"],
-    "docs/PROMPTS-GUIDE.md": ["slash commands", "agent:"],
-}
-for rel_path, markers in checks.items():
-    text = (root / rel_path).read_text(encoding="utf-8")
-    for marker in markers:
-        if marker not in text:
-            raise SystemExit(f"{rel_path}: missing {marker}")
-'
-echo ""
+finish_tests
 
 finish_tests

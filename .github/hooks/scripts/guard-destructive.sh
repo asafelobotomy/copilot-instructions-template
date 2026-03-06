@@ -9,7 +9,7 @@
 # (github.copilot.chat.agent.terminal.allowList / denyList). This hook runs
 # at the PreToolUse level (before command dispatch); auto-approval runs at
 # the terminal level (after dispatch, before execution). Use both for
-# defense-in-depth. See docs/HOOKS-GUIDE.md for details.
+# defense-in-depth.
 set -euo pipefail
 
 # JSON-escape a string for safe embedding in heredoc JSON output

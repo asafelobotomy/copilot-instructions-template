@@ -18,8 +18,7 @@ make_fixture() {
     "$root/template/skills/skill-creator" \
     "$root/template/skills/test-coverage-review" \
     "$root/template/skills/aaa-extra" \
-    "$root/template/hooks/scripts" \
-    "$root/docs"
+    "$root/template/hooks/scripts"
 
   : > "$root/.github/agents/setup.agent.md"
   : > "$root/.github/agents/review.agent.md"
@@ -39,10 +38,6 @@ make_fixture() {
   : > "$root/template/hooks/scripts/session-start.ps1"
   : > "$root/template/hooks/scripts/guard-destructive.ps1"
   : > "$root/template/hooks/scripts/save-context.ps1"
-
-  : > "$root/docs/AGENTS-GUIDE.md"
-  : > "$root/docs/HOOKS-GUIDE.md"
-  : > "$root/docs/ZZZ-GUIDE.md"
 }
 
 echo "=== sync-doc-index.sh direct tests ==="
@@ -85,7 +80,6 @@ assert data['counts']['skillsRepo'] == 3
 assert data['counts']['skillsTemplate'] == 3
 assert data['counts']['hookScriptsShell'] == 3
 assert data['counts']['hookScriptsPowerShell'] == 3
-assert data['counts']['guides'] == 3
 "
 assert_python_in_root "preferred items come first and extras sort after them" "$TMP_WRITE" "
 path = root / '.copilot/workspace/DOC_INDEX.json'
@@ -95,7 +89,6 @@ assert data['skills']['repo'] == ['skill-creator', 'extension-review', 'zzz-extr
 assert data['skills']['template'] == ['skill-creator', 'test-coverage-review', 'aaa-extra']
 assert data['hookScripts']['shell'] == ['session-start.sh', 'guard-destructive.sh', 'save-context.sh']
 assert data['hookScripts']['powershell'] == ['session-start.ps1', 'guard-destructive.ps1', 'save-context.ps1']
-assert data['guides'] == ['AGENTS-GUIDE.md', 'HOOKS-GUIDE.md', 'ZZZ-GUIDE.md']
 "
 echo ""
 

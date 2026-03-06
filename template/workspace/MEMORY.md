@@ -26,7 +26,7 @@ VS Code's **built-in memory tool** (`/memories/`) provides persistent storage ac
 
 ## What to remember
 
-- Hard-won architectural decisions (link to JOURNAL.md entry).
+- Hard-won architectural decisions.
 - Cross-cutting patterns that are not yet in the instructions file.
 - User preferences observed over time (link to USER.md).
 
@@ -38,9 +38,9 @@ VS Code's **built-in memory tool** (`/memories/`) provides persistent storage ac
 
 ## Architectural Decisions
 
-Append rows as decisions are made. Link to the corresponding JOURNAL.md entry.
+Append rows as decisions are made.
 
-| Date | Decision | Rationale | JOURNAL.md link |
+| Date | Decision | Rationale | Notes |
 |------|----------|-----------|-----------------|
 | | | | |
 
@@ -71,6 +71,6 @@ Append rows for non-obvious behaviours, environment quirks, or dependency traps.
 ## Maintenance Protocol
 
 - Review and prune this file quarterly (or when it exceeds 100 rows total).
-- Remove entries that are now captured in the instructions file or JOURNAL.md.
+- Remove entries that are now captured in the instructions file.
 - Archive pruned entries to `.github/archive/memory-pruned-YYYY-MM-DD.md` if historical record is needed.
 - Rules in this file must be falsifiable — remove any entry that no longer improves agent output.

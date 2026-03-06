@@ -53,7 +53,7 @@ echo ""
 echo "4. Version markers remain in release-managed files"
 assert_python "x-release markers remain discoverable" '
 version = (root / "VERSION.md").read_text(encoding="utf-8").strip()
-targets = [root / ".github/copilot-instructions.md", root / "README.md"]
+targets = [root / ".github/copilot-instructions.md"]
 for path in targets:
     text = path.read_text(encoding="utf-8")
     if "x-release-please-version" not in text:

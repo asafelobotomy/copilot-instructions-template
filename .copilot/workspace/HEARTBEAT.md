@@ -25,10 +25,10 @@ Fire a heartbeat when any of these occur:
 Run each check; prepend `[!]` to Pulse if any fails:
 
 - [ ] **Dependency audit** — any outdated or security-advisory deps in TOOLS.md / manifests?
-- [ ] **Test coverage delta** — did coverage drop since last METRICS.md row?
+- [ ] **Test coverage delta** — did coverage drop since last session?
 - [ ] **Waste scan** — any new W1–W16 waste accumulated this session? (§6)
 - [ ] **MEMORY.md consolidation** — anything from this session to persist?
-- [ ] **METRICS.md freshness** — baseline older than 3 sessions?
+- [ ] **Metrics freshness** — has the metrics baseline been reviewed in the last 3 sessions?
 - [ ] **Settings drift** — do §10 overrides still match the codebase?
 - [ ] **Agent compatibility** — do agent files use current frontmatter schema? Any deprecated fields?
 <!-- Add custom checks below this line -->

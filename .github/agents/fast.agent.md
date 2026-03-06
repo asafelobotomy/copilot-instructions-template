@@ -1,7 +1,7 @@
 ---
 name: Fast
 description: Quick questions, syntax lookups, and lightweight single-file edits
-argument-hint: Ask anything quick — e.g. "what does this regex match?", "fix the typo in README.md", "what's the wc -l of copilot-instructions.md?"
+argument-hint: Ask anything quick — e.g. "what does this regex match?", "fix the typo in CHANGELOG.md", "what's the wc -l of copilot-instructions.md?"
 model:
   - Claude Haiku 4.5
   - GPT-5 mini

@@ -66,7 +66,7 @@ Default is **K**.
 
 ### § 0c — Existing documentation stubs
 
-Check for `CHANGELOG.md`, `JOURNAL.md`, `BIBLIOGRAPHY.md`, `METRICS.md` in the project root. Note which exist — skip creating any that already exist (or ask to append an entry if the user prefers).
+Check for `CHANGELOG.md` in the project root. Note if it exists — skip creating it if it already exists (or ask to append an entry if the user prefers).
 
 ### § 0d — User Preference Interview
 
@@ -191,7 +191,7 @@ Files that will be CREATED:
   .github/hooks/copilot-hooks.json    (hook configuration)
   .github/hooks/scripts/*.sh + *.ps1  (hook scripts)
   .copilot/workspace/*.md + DOC_INDEX.json (8 workspace files)
-  CHANGELOG.md / JOURNAL.md / BIBLIOGRAPHY.md / METRICS.md
+  CHANGELOG.md
 
 Files that will be ARCHIVED (if chosen):
   .github/archive/pre-setup-YYYY-MM-DD/
@@ -213,7 +213,6 @@ Read the following files if present (do not error if missing):
 - `Cargo.toml` → extract `[package]` name, version, dependencies
 - `go.mod` → extract module name
 - `Makefile` → infer build and test commands
-- `README.md` → look for language/framework/install/test instructions
 
 From this, determine:
 
@@ -696,46 +695,7 @@ If any fetch fails, **stop immediately** and report the error. Do not proceed wi
 
 ---
 
-## § 4 — Capture a metrics baseline
-
-Append the following row to `METRICS.md` (create the file from the stub below if it doesn't exist):
-
-| Date | Phase | LOC (total) | Files | Tests | Assertions | Type errors | Runtime deps | Deploy Freq | Lead Time | CFR | MTTR | AI Accept Rate | Context Resets |
-|------|-------|-------------|-------|-------|------------|-------------|--------------|-------------|-----------|-----|------|----------------|----------------|
-| {{SETUP_DATE}} | Setup baseline | — | — | — | — | 0 | — | — | — | — | — | — | — |
-
-If you can determine current LOC (via `wc -l` or similar) and file count, fill those in instead of `—`.
-
-**`METRICS.md` stub** (use if file does not exist):
-
-```markdown
-# Metrics — {{PROJECT_NAME}}
-
-Kaizen baseline snapshots. One row is appended each time `{{METRICS_COMMAND}}` is run, or after any session that materially changes LOC, test count, or dependency count.
-
-| Date | Phase | LOC (total) | Files | Tests | Assertions | Type errors | Runtime deps | Deploy Freq | Lead Time | CFR | MTTR | AI Accept Rate | Context Resets |
-|------|-------|-------------|-------|-------|------------|-------------|--------------|-------------|-----------|-----|------|----------------|----------------|
-| {{SETUP_DATE}} | Setup baseline | — | — | — | — | 0 | — | — | — | — | — | — | — |
-
----
-
-## Baseline definitions
-
-| Metric | Green | Warn | High |
-|--------|-------|------|------|
-| LOC per file | < {{LOC_WARN_THRESHOLD}} | {{LOC_WARN_THRESHOLD}}–{{LOC_HIGH_THRESHOLD}} | > {{LOC_HIGH_THRESHOLD}} |
-| Runtime deps | ≤ {{DEP_BUDGET}} | {{DEP_BUDGET_WARN}} | — |
-| Type errors | 0 | — | > 0 |
-| Tests | growing | stable | declining |
-
----
-
-*(Never edit existing rows. Only append new rows. This is an append-only log.)*
-```
-
----
-
-## § 5 — Create documentation stubs
+## § 4 — Create documentation stubs
 
 Create the following files if they do not exist. If they already exist (detected in §0c), skip or append as agreed.
 
@@ -774,97 +734,9 @@ Template for future entries:
 -->
 ```
 
-### `JOURNAL.md`
-
-```markdown
-# Development Journal — {{PROJECT_NAME}}
-
-Architectural decisions and key context are recorded here in ADR (Architectural Decision Record) style. New entries go at the **top**.
-
 ---
 
-## {{SETUP_DATE}} — Project onboarded to copilot-instructions-template
-
-**Context**: This project adopted the generic Lean/Kaizen Copilot instructions template from [asafelobotomy/copilot-instructions-template](https://github.com/asafelobotomy/copilot-instructions-template).
-
-**Decision**: Use `.github/copilot-instructions.md` as the primary agent guidance document. Use `.copilot/workspace/` for session-persistent agent identity state. Apply Lean/Kaizen as the development methodology.
-
-**Consequences**:
-
-- Copilot is authorised to update `.github/copilot-instructions.md` when patterns stabilise (see Living Update Protocol in the instructions).
-- All significant architectural decisions are recorded here.
-- METRICS.md tracks measurable baselines over time.
-
----
-
-<!--
-Template for future ADR entries:
-
-## YYYY-MM-DD — <short title>
-
-**Context**: Why this decision was needed.
-**Decision**: What was decided.
-**Consequences**: What changes as a result. What future options are opened or closed.
--->
-```
-
-### `BIBLIOGRAPHY.md`
-
-```markdown
-# Bibliography — {{PROJECT_NAME}}
-
-Every file in the project is catalogued here. Update this file whenever a file is created, renamed, deleted, or its purpose changes.
-
----
-
-## Meta files
-
-| File | Purpose | LOC |
-|------|---------|-----|
-| `.github/copilot-instructions.md` | AI agent guidance — Lean/Kaizen methodology + project conventions | — |
-| `.github/copilot-version.md` | Installed template version — read by the Update agent | — |
-| `CHANGELOG.md` | Keep-a-Changelog style release notes | — |
-| `JOURNAL.md` | ADR-style architectural decision record | — |
-| `BIBLIOGRAPHY.md` | This file — complete project file map | — |
-| `METRICS.md` | Kaizen baseline snapshot table | — |
-
-## Model-pinned agents
-
-| File | Purpose | LOC |
-|------|---------|-----|
-| `.github/agents/setup.agent.md` | Setup agent — Claude Sonnet 4.6 | — |
-| `.github/agents/coding.agent.md` | Coding agent — GPT-5.3-Codex | — |
-| `.github/agents/review.agent.md` | Review agent — GPT-5.4 | — |
-| `.github/agents/fast.agent.md` | Fast agent — Claude Haiku 4.5 | — |
-| `.github/agents/update.agent.md` | Update agent — Claude Sonnet 4.6 | — |
-| `.github/agents/doctor.agent.md` | Doctor agent — Claude Sonnet 4.6 | — |
-
-## Workspace identity
-
-| File | Purpose | LOC |
-|------|---------|-----|
-| `.copilot/workspace/IDENTITY.md` | Agent self-description | — |
-| `.copilot/workspace/SOUL.md` | Agent values & reasoning patterns | — |
-| `.copilot/workspace/USER.md` | Observed user profile | — |
-| `.copilot/workspace/TOOLS.md` | Effective tool usage patterns | — |
-| `.copilot/workspace/MEMORY.md` | Memory system strategy | — |
-| `.copilot/workspace/BOOTSTRAP.md` | Permanent setup origin record | — |
-| `.copilot/workspace/HEARTBEAT.md` | Event-driven health check checklist | — |
-
-## Source files
-
-| File | Purpose | LOC |
-|------|---------|-----|
-| *(add source files here)* | | |
-
----
-
-*(Maintained by Copilot. Run the Documentation Update Ritual after structural changes.)*
-```
-
----
-
-## § 6 — Self-destruct and final summary
+## § 5 — Self-destruct and final summary
 
 Print the following summary, filling in actual file counts and dates:
 
@@ -882,14 +754,11 @@ SETUP COMPLETE — copilot-instructions-template vX.Y.Z
 ✓ .github/hooks/                    hooks config + 10 scripts (5 sh + 5 ps1)
 ✓ .copilot/workspace/               8 workspace files (7 identity + DOC_INDEX.json)
 ✓ CHANGELOG.md                      [created / already existed]
-✓ JOURNAL.md                        [created / already existed]
-✓ BIBLIOGRAPHY.md                   [created / already existed]
-✓ METRICS.md                        [created + baseline row appended]
 
 Next steps:
   1. Open a Copilot chat and say "Check your heartbeat" to verify setup.
   2. Say "Run health check" to run the Doctor agent.
-  3. Commit the scaffolded files: git add .github .copilot .vscode CHANGELOG.md JOURNAL.md BIBLIOGRAPHY.md METRICS.md
+  3. Commit the scaffolded files: git add .github .copilot .vscode CHANGELOG.md
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```

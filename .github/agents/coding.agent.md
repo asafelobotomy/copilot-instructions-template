@@ -27,4 +27,3 @@ Guidelines:
 - Full PDCA cycle is mandatory for every non-trivial change.
 - Run the three-check ritual before marking any task done.
 - Write or update tests alongside every change — never after.
-- Update `BIBLIOGRAPHY.md` if a file is created, renamed, or deleted.

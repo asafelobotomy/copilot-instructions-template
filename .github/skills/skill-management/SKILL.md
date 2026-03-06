@@ -37,7 +37,6 @@ Task requires a workflow
  │
  └─ 3. CREATE — author a new skill from scratch
        - Save to .github/skills/<kebab-name>/SKILL.md
-       - Append to JOURNAL.md: `[skill] <name> created — <one-line reason>`
 ```
 
 ## Scope hierarchy

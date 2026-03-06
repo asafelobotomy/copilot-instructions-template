@@ -9,7 +9,7 @@ name: Release Please
 # VERSION.md + CHANGELOG.md.
 #
 # Coexists with release-manual.yml — use one or the other, not both.
-# See docs/RELEASE-AUTOMATION-GUIDE.md for trade-offs.
+# Coexists with release-manual.yml — use one or the other, not both.
 
 on:
   push:

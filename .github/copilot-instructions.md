@@ -21,10 +21,9 @@
 > **⚡ Critical Reminders** — every session, every task:
 >
 > 1. **Test** — run `bash tests/run-all.sh` before marking any task done (§3).
-> 2. **BIBLIOGRAPHY** — update on every file create, rename, or delete (§5).
-> 3. **PDCA** — Plan→Do→Check→Act for every non-trivial change (§5).
-> 4. **Read first** — never claim or modify a file not opened this session (§4).
-> 5. **Additive** — never delete existing rules without explicit user instruction (§8).
+> 2. **PDCA** — Plan→Do→Check→Act for every non-trivial change (§5).
+> 3. **Read first** — never claim or modify a file not opened this session (§4).
+> 4. **Additive** — never delete existing rules without explicit user instruction (§8).
 
 ## §1 — Lean Principles
 
@@ -51,7 +50,6 @@ Switch modes explicitly. Default is **Implement**.
 - Plan → implement → test → document in one uninterrupted flow.
 - Full PDCA for every non-trivial change.
 - Three-check ritual before marking a task complete.
-- Update `BIBLIOGRAPHY.md` on every file create/rename/delete.
 
 ### Review Mode
 
@@ -140,13 +138,13 @@ Apply to every non-trivial change.
 **Plan**: State the goal. List the files that will change. Estimate LOC delta.
 **Do**: Implement. Write tests alongside code, not after.
 **Check**: Run `bash tests/run-all.sh`. Review output. Fix before proceeding.
-**Act**: If baseline exceeded, address it now. Update `BIBLIOGRAPHY.md`. Summarise what changed.
+**Act**: If baseline exceeded, address it now. Summarise what changed.
 
 <example>
 **Plan**: Add rate-limiting middleware to `/api/search`. Files: `src/middleware/rate-limit.ts` (new), `src/server.ts` (edit). Estimated delta: +48 LOC.
 **Do**: Implemented token-bucket limiter; unit tests in `tests/rate-limit.test.ts`.
 **Check**: `npm test && npx tsc --noEmit` — 38 tests pass, 0 type errors. LOC delta +52.
-**Act**: Within 400-line hard limit. Updated `BIBLIOGRAPHY.md`. No baselines breached.
+**Act**: Within 400-line hard limit. No baselines breached.
 </example>
 
 ---
@@ -177,8 +175,6 @@ Use in Review Mode to tag findings.
 ---
 
 ## §7 — Metrics
-
-Append a row to `METRICS.md` after any session that changes these values materially.
 
 | Metric | Command | Target |
 |--------|---------|--------|
@@ -224,7 +220,7 @@ Event-triggered health checks that keep the agent aligned with real project stat
 **Procedure**:
 
 1. Read `HEARTBEAT.md` — follow it strictly. Do not infer tasks from prior sessions.
-2. Run every check in the Checks section. Cross-reference: MEMORY.md (consolidation), METRICS.md (freshness), TOOLS.md (dependency audit), SOUL.md (reasoning alignment), §10 (settings drift).
+2. Run every check in the Checks section. Cross-reference: MEMORY.md (consolidation), TOOLS.md (dependency audit), SOUL.md (reasoning alignment), §10 (settings drift).
 3. If the trigger is **task completion** or **explicit**, run the Retrospective section: answer each question internally, persist insights to the indicated workspace files (SOUL.md, USER.md, MEMORY.md), and surface Q4/Q5 to the user if non-empty.
 4. Update Pulse: `HEARTBEAT_OK` if all checks pass; prepend `[!]` with a one-line alert for each failure.
 5. Append a row to History (keep last 5).
@@ -246,7 +242,7 @@ Hook configuration lives in `.github/hooks/copilot-hooks.json`. VS Code supports
 | `Stop` | `enforce-retrospective.sh` | Prevent session end if retrospective has not been run |
 | `PreCompact` | `save-context.sh` | Preserve workspace state (heartbeat, memory, heuristics) before context compaction |
 
-Additional events available: `UserPromptSubmit`, `SubagentStart`, `SubagentStop`. See `docs/HOOKS-GUIDE.md` for the full event reference and customisation instructions.
+Additional events available: `UserPromptSubmit`, `SubagentStart`, `SubagentStop`. See the hook scripts in `.github/hooks/scripts/` for the full implementation.
 
 ---
 

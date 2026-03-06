@@ -16,7 +16,7 @@ Create a new agent skill that follows the [Agent Skills](https://agentskills.io)
 - A workflow is being repeated manually and would benefit from codification
 - An online skill was found but needs significant adaptation
 
-> **Tip**: VS Code 1.110+ has a built-in `/create-skill` slash command that generates a basic scaffold. This skill provides additional Lean/Kaizen guidance: waste-aware naming, PDCA verification steps, quality gate checks, and BIBLIOGRAPHY/JOURNAL integration.
+> **Tip**: VS Code 1.110+ has a built-in `/create-skill` slash command that generates a basic scaffold. This skill provides additional Lean/Kaizen guidance: waste-aware naming, PDCA verification steps, and quality gate checks.
 
 ## Steps
 
@@ -51,13 +51,9 @@ Create a new agent skill that follows the [Agent Skills](https://agentskills.io)
    - Idempotent — running the skill twice produces the same result.
    - Steps, not prose — the agent follows these literally.
 
-6. **Save and log** — Write the file, then append to `JOURNAL.md`:
+6. **Save** — Write the file.
 
-   ```text
-   [skill] <name> created — <one-line reason>
-   ```
-
-7. **Update BIBLIOGRAPHY.md** — Add a row for the new skill file.
+7. **Run tests** — Verify the new skill file passes any applicable test suite checks.
 
 ## Verify
 
@@ -66,4 +62,3 @@ Create a new agent skill that follows the [Agent Skills](https://agentskills.io)
 - [ ] Body has "When to use" and "Steps" sections
 - [ ] Steps are numbered with clear action verbs
 - [ ] Final step is a verification check
-- [ ] JOURNAL.md has a `[skill]` entry for this skill

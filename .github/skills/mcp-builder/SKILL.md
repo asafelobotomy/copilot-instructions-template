@@ -141,7 +141,6 @@ Add the server to the project's MCP configuration:
 ### 7. Document
 
 - Add the server to the §13 Available servers table in `.github/copilot-instructions.md`
-- Log in JOURNAL.md: `[mcp] <server-name> server created — <one-line reason>`
 - If the server is reusable across projects, consider publishing to an MCP registry
 
 ## Verify
@@ -150,4 +149,3 @@ Add the server to the project's MCP configuration:
 - [ ] All tools execute correctly in MCP Inspector
 - [ ] `.vscode/mcp.json` is valid JSON with the new server entry
 - [ ] §13 Available servers table is updated
-- [ ] JOURNAL.md has an entry

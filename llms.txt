@@ -32,17 +32,13 @@ The repo ships 13 skills in `.github/skills/` and `template/skills/`. High-signa
 - `mcp-management`: configure external tool access
 - `plugin-management`: discover and manage agent plugins
 
-Canonical inventory for all skills, guides, and agents lives in `.copilot/workspace/DOC_INDEX.json`.
+Canonical inventory lives in `.copilot/workspace/DOC_INDEX.json`.
 
 ## Validation
 
 - Main suite: `bash tests/run-all.sh`
-- Script coverage: `bash scripts/report-script-coverage.sh coverage`
-- Docs drift: `bash tests/test-doc-discoverability.sh && bash tests/test-doc-platform-contracts.sh`
-- Generated metadata: `bash scripts/sync-doc-index.sh --check && bash scripts/sync-llms-context.sh --check`
+- Metadata sync: `bash scripts/sync-doc-index.sh --check`
 
-## Optional
+## Human documentation
 
-- [llms-ctx.txt](llms-ctx.txt): generated compact LLM context pack
-- [llms-ctx-full.txt](llms-ctx-full.txt): generated expanded LLM context pack
-- [docs/](docs/): detailed human-readable guides
+Human-readable guides, README, and contribution docs live on the `docs` branch.
