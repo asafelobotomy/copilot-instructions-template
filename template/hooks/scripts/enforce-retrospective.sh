@@ -14,7 +14,7 @@ import sys, json
 try:
     data = json.load(sys.stdin)
     print(str(data.get('stop_hook_active', False)).lower())
-except:
+except Exception:
     print('false')
 " 2>/dev/null || echo "false")
 
@@ -30,7 +30,7 @@ import sys, json
 try:
     data = json.load(sys.stdin)
     print(data.get('transcript_path', ''))
-except:
+except Exception:
     print('')
 " 2>/dev/null || echo "")
 

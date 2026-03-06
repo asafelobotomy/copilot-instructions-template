@@ -34,7 +34,7 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<t
 |----------|-----------------|----------------|----------|
 | No | §12, §13 | — | v3.1.0 |
 
-**What changed**: §12 updated to include agent plugin priority hierarchy and plugin-management skill reference. §13 updated to reference MCP GA status. Instruction files gain `description` frontmatter for on-demand loading (VS Code 1.102+). Prompt files gain YAML frontmatter (`description`, `mode`, `tools`). Skills updated to reference `/create-*` built-in commands and agent plugins. Heartbeat adds agent compatibility check and Retrospective section. Guard-destructive scripts document auto-approval complementarity. AGENTS-GUIDE expanded: agent plugin strategic roadmap, Claude agent format compatibility, and actionable org-level agent setup steps. Doctor agent gains D11 plugin health check.
+**What changed**: §12 updated to include agent plugin priority hierarchy and plugin-management skill reference. §13 updated to reference MCP GA status. Instruction files gain `description` frontmatter for on-demand loading (VS Code 1.102+). Prompt files gain YAML frontmatter (`description`, `mode`, `tools`). Skills updated to reference `/create-*` built-in commands and agent plugins. Heartbeat adds agent compatibility check and Retrospective section. Guard-destructive scripts document auto-approval complementarity. AGENTS-GUIDE expanded: agent plugin strategic roadmap, Claude agent format compatibility, and actionable org-level agent setup steps. Doctor agent gains D11 plugin health check. Documentation architecture gains canonical machine-readable index (`.copilot/workspace/DOC_INDEX.json`) with deterministic sync/check script (`scripts/sync-doc-index.sh`) and CI enforcement; `README.md` and `AGENTS.md` inventory-heavy sections are deduplicated to canonical references.
 
 **New placeholders**: —
 
@@ -64,6 +64,12 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<t
 | `.github/skills/conventional-commit/SKILL.md` | `template/skills/conventional-commit/SKILL.md` | Updated (`git.addAICoAuthor` section added) |
 | `.github/skills/plugin-management/SKILL.md` | `template/skills/plugin-management/SKILL.md` | **New** (agent plugin discovery, evaluation, management) |
 | `.github/agents/doctor.agent.md` | `.github/agents/doctor.agent.md` | Updated (D11 agent plugin health check) |
+| `.copilot/workspace/DOC_INDEX.json` | `.copilot/workspace/DOC_INDEX.json` | **New** (canonical machine-readable docs metadata index) |
+| `scripts/sync-doc-index.sh` | `scripts/sync-doc-index.sh` | **New** (sync/check canonical docs index) |
+| `tests/test-doc-consistency.sh` | `tests/test-doc-consistency.sh` | Updated (DOC_INDEX and sync-script checks) |
+| `.github/workflows/ci.yml` | `.github/workflows/ci.yml` | Updated (DOC_INDEX required-file + sync check + docs consistency test) |
+| `README.md` | `README.md` | Updated (repository layout deduplicated to canonical references) |
+| `AGENTS.md` | `AGENTS.md` | Updated (file map deduplicated to canonical references + high-signal map) |
 
 **Manual actions**:
 

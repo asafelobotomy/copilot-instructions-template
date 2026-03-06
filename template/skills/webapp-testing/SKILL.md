@@ -285,8 +285,10 @@ jobs:
 
 ## Verify
 
-- [ ] `npx playwright test` passes on at least Chromium
-- [ ] CI workflow file is valid YAML (`actionlint .github/workflows/playwright.yml`)
-- [ ] `.gitignore` excludes Playwright artifacts
-- [ ] `package.json` has `test:e2e` script
+- [ ] Path A (browser tools): `workbench.browser.enableChatTools` is enabled when using built-in tools
+- [ ] Path A (browser tools): page opens, key action works, and a screenshot is captured
+- [ ] Path B (Playwright): `npx playwright test` passes on at least Chromium
+- [ ] Path B (Playwright): CI workflow file is valid YAML (`actionlint .github/workflows/playwright.yml`)
+- [ ] Path B (Playwright): `.gitignore` excludes Playwright artifacts
+- [ ] Path B (Playwright): `package.json` has `test:e2e` script
 - [ ] JOURNAL.md has an entry

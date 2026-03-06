@@ -75,6 +75,8 @@ jobs:
             "SETUP.md" "UPDATE.md" "MIGRATION.md" "AGENTS.md" "VERSION.md" "CHANGELOG.md" \
             "LICENSE" "CONTRIBUTING.md" \
             "scripts/sync-version.sh" \
+            "scripts/sync-doc-index.sh" \
+            ".copilot/workspace/DOC_INDEX.json" \
             "docs/INSTRUCTIONS-GUIDE.md" "docs/SETUP-GUIDE.md" \
             "docs/UPDATE-GUIDE.md" "docs/AGENTS-GUIDE.md" \
             "docs/EXTENSION-REVIEW-GUIDE.md" \
@@ -99,7 +101,7 @@ jobs:
             "template/BIBLIOGRAPHY.md" "template/METRICS.md" \
             "template/workspace/IDENTITY.md" "template/workspace/SOUL.md" \
             "template/workspace/USER.md" "template/workspace/TOOLS.md" \
-            "template/workspace/MEMORY.md" "template/workspace/BOOTSTRAP.md" \
+            "template/workspace/MEMORY.md" "template/workspace/DOC_INDEX.json" "template/workspace/BOOTSTRAP.md" \
             "template/workspace/HEARTBEAT.md"; do
             if [[ ! -f "$f" ]]; then
               echo "❌ Missing: $f"; missing=1
@@ -139,6 +141,9 @@ jobs:
           fi
           [[ $drift -eq 0 ]] || { echo "Sync the drifted files and commit."; exit 1; }
           echo "✅ All template copies in sync"
+
+      - name: DOC_INDEX.json is in sync
+        run: bash scripts/sync-doc-index.sh --check
 
       - name: "copilot-instructions.md has all sections §1–§13"
         run: |
@@ -437,3 +442,6 @@ jobs:
 
       - name: Test security edge cases
         run: bash tests/test-security-edge-cases.sh
+
+      - name: Test documentation consistency
+        run: bash tests/test-doc-consistency.sh

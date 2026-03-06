@@ -4,7 +4,7 @@ description: Discover, evaluate, install, test, and manage agent plugins for VS 
 version: "1.0"
 license: MIT
 tags: [plugins, agents, extensions, discovery, management]
-compatibility: ">=3.1"
+compatibility: ">=3.2"
 allowed-tools: [codebase, terminal, editFiles]
 ---
 

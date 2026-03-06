@@ -19,161 +19,35 @@ When a user says any of the following in a Copilot chat:
 ...perform the **Remote Bootstrap Sequence** below. No manual file copying is required from the user.
 
 ### Update (already set up)
+Canonical sources for full inventory:
 
-When a user says any of the following in a project that **already has Copilot instructions installed**:
+- `BIBLIOGRAPHY.md` — exhaustive file-level catalogue with LOC
+- `.copilot/workspace/DOC_INDEX.json` — canonical machine-readable metadata index
 
-- *"Update your instructions"*
-- *"Check for instruction updates"*
-- *"Update from copilot-instructions-template"*
-- *"Sync instructions with the template"*
-- *"Check the template for updates"*
-- *"Force check instruction updates"* *(bypasses version equality check)*
+High-signal map (machine-relevant and navigation-critical paths):
 
-> **What "update" means**: Go to the upstream template repository at `https://github.com/asafelobotomy/copilot-instructions-template`, fetch the latest `VERSION.md` to check for a newer release, and — if one exists — run the full update protocol defined in `UPDATE.md`. This is **not** a general-purpose edit command. It specifically means: check the template repo for upstream changes and apply them to the user's local instructions.
-
-...perform the **Remote Update Sequence** below.
-
-### Restore (from backup)
-
-When a user says any of the following:
-
-- *"Restore instructions from backup"*
-- *"Roll back the instructions update"*
-- *"List instruction backups"*
-
-...perform the **Remote Restore Sequence** below.
-
-### Tool operations
-
-When a user says any of the following:
-
-- *"Show me the toolbox"* / *"List available tools"*
-- *"Search for a tool that ..."*
-- *"Build a tool for ..."* / *"Create a tool to ..."*
-- *"Save this to the toolbox"* / *"Add this to the toolbox"*
-- *"Update the tool index"* / *"Rebuild INDEX.md"*
-- *"Deprecate tool <name>"*
-
-...follow the Tool Protocol in **§11** of `.github/copilot-instructions.md`. For search/build/save tasks, apply the full decision tree: Find → Search online → Build → Evaluate reusability → Save.
-
-### Test coverage review
-
-When a user says any of the following:
-
-- *"Review my tests"* / *"Audit my test suite"*
-- *"What tests should I add?"* / *"What tests am I missing?"*
-- *"Check test coverage"* / *"Review test coverage"*
-- *"Repo health review"* / *"Review repo health"*
-- *"What's my coverage?"* / *"Coverage report"*
-- *"Recommend CI tests"* / *"What CI workflows should I add?"*
-
-...switch to **Review Mode** and perform a test coverage audit following the **§2 Test Coverage Review** protocol in `.github/copilot-instructions.md`. Produce a structured report covering: current coverage snapshot, well-covered/partial/untested modules, recommended local tests with priority, and ready-to-use CI workflow YAML snippets. Do not write test files or workflow files until explicitly instructed.
-
-### Extension review
-
-When a user says any of the following:
-
-- *"Review extensions"* / *"Check my extensions"*
-- *"Audit VS Code extensions"*
-- *"What extensions should I install?"*
-- *"Do I have the right extensions?"*
-- *"Check for missing extensions"*
-- *"Recommend extensions for this project"*
-
-...switch to **Review Mode** and perform an extension audit following the **§2 Extension Review** protocol in `.github/copilot-instructions.md`. Present findings in three categories (Missing, Redundant, Unknown) with actionable recommendations. Do not auto-install.
-
-### Skill operations
-
-When a user says any of the following:
-
-- *"Create a skill"* / *"Write a skill"* / *"Add a new skill"*
-- *"Show my skills"* / *"List available skills"*
-- *"Search for a skill that ..."*
-- *"Find a skill for ..."*
-- *"What skills do I have?"*
-
-...follow the Skill Protocol in **§12** of `.github/copilot-instructions.md`. For creation tasks, activate the `skill-creator` skill if present. For search tasks, respect the `{{SKILL_SEARCH_PREFERENCE}}` setting (default: local-only).
-
-### MCP operations
-
-When a user says any of the following:
-
-- *"Configure MCP servers"* / *"Set up MCP"*
-- *"Add an MCP server"* / *"Add an MCP server for ..."*
-- *"Show MCP servers"* / *"List MCP servers"*
-- *"Check MCP configuration"* / *"Verify MCP setup"*
-
-...follow the MCP Protocol in **§13** of `.github/copilot-instructions.md`. Use the decision tree (built-in tool → MCP server → community package → custom tool) and apply the quality gate before adding any new server.
-
-### Hook operations
-
-When a user says any of the following:
-
-- *"Configure hooks"* / *"Set up agent hooks"*
-- *"Show hooks"* / *"List agent hooks"*
-- *"Add a hook"* / *"Create a hook for ..."*
-- *"Disable hooks"* / *"Remove hook ..."*
-- *"Hook diagnostics"* / *"Debug hooks"*
-
-...follow the Agent Hooks section in **§8** of `.github/copilot-instructions.md`. Hooks are configured in `.github/hooks/copilot-hooks.json` — see `docs/HOOKS-GUIDE.md` for the full guide.
-
-### Plugin operations
-
-When a user says any of the following:
-
-- *"Show plugins"* / *"List agent plugins"*
-- *"Find a plugin for ..."* / *"Search for a plugin that ..."*
-- *"Test as plugin"* / *"Preview template as plugin"*
-- *"Check plugin conflicts"*
-
-...activate the **plugin-management** skill (`.github/skills/plugin-management/SKILL.md`). Follow the discovery tree, apply the quality gate before installing, and check for naming conflicts with workspace agents and skills.
-
-### Heartbeat operations
-
-When a user says any of the following:
-
-- *"Check your heartbeat"*
-- *"Run heartbeat checks"*
-- *"Show heartbeat status"*
-- *"Update heartbeat checklist"*
-- *"Clear heartbeat alerts"*
-- *"Heartbeat history"*
-- *"Run retrospective"*
-
-...follow the Heartbeat Protocol in **§8** of `.github/copilot-instructions.md`. Read `.copilot/workspace/HEARTBEAT.md`, run all checks, update Pulse status, and report any alerts. For retrospective triggers, run the Retrospective section and persist insights to the indicated workspace files.
-
-### Doctor health check
-
-When a user says any of the following:
-
-- *"Run health check"*
-- *"Doctor check"*
-- *"Check instruction files"*
-- *"Check attention budget"*
-- *"Check MCP config"*
-- *"Check agent files"*
-- *"Diagnose copilot setup"*
-
-...activate the **Doctor agent** (`.github/agents/doctor.agent.md`). The Doctor performs a read-only audit of all Copilot-facing files: attention budget, section structure, placeholder leakage, agent validity, MCP config, version file, workspace memory files, and project tracking files. It produces a structured health report with CRITICAL / HIGH / WARN ratings and offers handoffs to the Coding or Update agent if issues are found.
-
----
-
-## What this repo is
-
-A generic, **living** GitHub Copilot instructions template grounded in **Lean/Kaizen** methodology. It provides:
-
-> **⚠️ Codex models** (`GPT-5.x-Codex`) run autonomously and **cannot** present interactive prompts. Never use a Codex model for Setup — the interview will be silently skipped. Always use the **Setup agent** (pinned to Claude Sonnet 4.6) or select an interactive model manually.
-
-- A structured `.github/copilot-instructions.md` template (§1–§13) with `{{PLACEHOLDER}}` tokens for project-specific values.
-- A one-time setup process (`SETUP.md`) that Copilot runs to tailor everything to the target project's stack.
-- An update process (`UPDATE.md`) that Copilot runs to fetch and apply improvements from this repo to an already-installed project.
-- A per-version migration registry (`MIGRATION.md`) that drives the version-walk update algorithm — tracking sections changed, companion files, breaking changes, and manual actions at each release.
-- Six model-pinned agent files (`.github/agents/`) for VS Code 1.106+ — Setup, Coding, Review, Fast, Update, and Doctor.
-- Five agent lifecycle hooks (`.github/hooks/`) that deterministically enforce security, formatting, and retrospective rules at session boundaries.
-- A reusable skill library (`.github/skills/`) following the [Agent Skills](https://agentskills.io) open standard — seven starter skills included.
-- Automatic pre-write backups so every update is reversible — stored in `.github/archive/`.
-- Seven workspace identity files that Copilot maintains across sessions (including an event-driven heartbeat checklist).
-- Documentation stubs (CHANGELOG, JOURNAL, BIBLIOGRAPHY, METRICS).
+| Path | Role |
+|------|------|
+| `AGENTS.md` | AI entry point — trigger phrases + remote sequences |
+| `SETUP.md` | Complete setup guide (remote-executable) |
+| `UPDATE.md` | Complete update + restore protocol (remote-executable) |
+| `.github/copilot-instructions.md` | Primary instructions template (§1–§13) |
+| `.github/agents/` | Model-pinned agents |
+| `.github/skills/` | Repo skill library |
+| `template/skills/` | Starter skill stubs scaffolded into consumer projects |
+| `.github/hooks/` | Hook configuration + scripts |
+| `template/hooks/` | Hook templates scaffolded into consumer projects |
+| `.github/instructions/` | Path-specific instruction files |
+| `.github/prompts/` | Slash-command prompt files |
+| `.github/workflows/` | CI/CD workflows |
+| `docs/` | Human-readable guides |
+| `.copilot/workspace/` | Workspace identity files + canonical `DOC_INDEX.json` |
+| `tests/` | Script tests and guardrail checks |
+| `scripts/` | Utility scripts |
+| `MIGRATION.md` | Per-version migration registry |
+| `CHANGELOG.md` | Template release history |
+| `JOURNAL.md` | ADR-style decision log |
+| `METRICS.md` | Kaizen baseline snapshots |
 - A Living Update Protocol that authorises Copilot to improve the instructions as patterns emerge.
 
 ---
@@ -225,6 +99,7 @@ Setup outputs written to the **user's project**:
 | `.copilot/workspace/USER.md` | Observed user profile |
 | `.copilot/workspace/TOOLS.md` | Tool usage patterns |
 | `.copilot/workspace/MEMORY.md` | Memory strategy |
+| `.copilot/workspace/DOC_INDEX.json` | Canonical machine-readable inventory for docs metadata |
 | `.copilot/workspace/BOOTSTRAP.md` | Permanent setup origin record |
 | `.copilot/workspace/HEARTBEAT.md` | Event-driven health check checklist |
 | `CHANGELOG.md` | Keep-a-Changelog stub |
@@ -348,7 +223,7 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `.github/skills/lean-pr-review/SKILL.md` | Lean PR review with waste categories |
 | `.github/skills/conventional-commit/SKILL.md` | Conventional Commits message authoring |
 | `.github/skills/mcp-builder/SKILL.md` | MCP server creation and registration |
-| `.github/skills/webapp-testing/SKILL.md` | Playwright-based web app testing |
+| `.github/skills/webapp-testing/SKILL.md` | Browser-tools + Playwright web app testing |
 | `.github/skills/issue-triage/SKILL.md` | Issue triage with severity classification |
 | `.github/skills/tool-protocol/SKILL.md` | Tool Protocol decision tree and toolbox management |
 | `.github/skills/skill-management/SKILL.md` | Skill discovery, activation, and management |
@@ -362,7 +237,7 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | `template/skills/lean-pr-review/SKILL.md` | Starter skill — Lean PR review with waste categories |
 | `template/skills/conventional-commit/SKILL.md` | Starter skill — Conventional Commits message authoring |
 | `template/skills/mcp-builder/SKILL.md` | Starter skill — MCP server creation and registration |
-| `template/skills/webapp-testing/SKILL.md` | Starter skill — Playwright-based web app testing |
+| `template/skills/webapp-testing/SKILL.md` | Starter skill — browser-tools + Playwright web app testing |
 | `template/skills/issue-triage/SKILL.md` | Starter skill — issue triage with severity classification and structured response |
 | `template/skills/tool-protocol/SKILL.md` | Starter skill — Tool Protocol decision tree and toolbox management |
 | `template/skills/skill-management/SKILL.md` | Starter skill — Skill discovery, activation, and management |

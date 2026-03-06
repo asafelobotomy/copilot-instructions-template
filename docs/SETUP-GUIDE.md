@@ -108,7 +108,7 @@ Six agent files are created in `.github/agents/` for VS Code 1.106+ users. These
 
 ### Step 2.8 — Scaffold skill library
 
-Seven starter skills are scaffolded into `.github/skills/`, following the [Agent Skills](https://agentskills.io) open standard. These teach the agent reusable workflows: authoring new skills, fixing CI failures, Lean PR reviews, Conventional Commits, MCP server creation, Playwright e2e testing, and structured issue triage. See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for details.
+Eleven starter skills are scaffolded into `.github/skills/`, following the [Agent Skills](https://agentskills.io) open standard. These teach the agent reusable workflows: authoring new skills, fixing CI failures, Lean PR reviews, Conventional Commits, MCP server creation, browser/Playwright e2e testing, structured issue triage, Tool Protocol decision tree, skill management, MCP management, and agent plugin management. See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for details.
 
 ---
 
@@ -132,7 +132,7 @@ Copilot generates `.github/workflows/copilot-setup-steps.yml` — an environment
 
 ### Step 2.12 — Configure MCP servers
 
-If you chose **E22 = B** (always-on only) or **E22 = C** (full configuration) during the Expert interview, Copilot creates `.vscode/mcp.json` with pre-configured MCP servers. Always-on servers (filesystem, memory, git) are enabled by default — they need no credentials and are safe for any project. Credentials-required servers (GitHub, fetch) are disabled by default and need API tokens to activate. With full configuration, Copilot also suggests stack-specific servers based on your project's dependencies (e.g., PostgreSQL, Redis, Docker). See [MCP-GUIDE.md](MCP-GUIDE.md) for details.
+If you chose **E22 = B** (always-on only) or **E22 = C** (full configuration) during the Expert interview, Copilot creates `.vscode/mcp.json` with pre-configured MCP servers. Always-on servers (filesystem, git) are enabled by default — they need no credentials and are safe for any project. Credentials-required servers (GitHub, fetch) are disabled by default and need API tokens to activate. With full configuration, Copilot also suggests stack-specific servers based on your project's dependencies (e.g., PostgreSQL, Redis, Docker). See [MCP-GUIDE.md](MCP-GUIDE.md) for details.
 
 If you chose **E22 = A** (none) or used Simple/Advanced setup, this step is skipped entirely.
 
@@ -156,7 +156,7 @@ This step always runs. See [HOOKS-GUIDE.md](HOOKS-GUIDE.md) for customisation, d
 
 ### Step 3 — Scaffold workspace identity files
 
-Seven files are created in `.copilot/workspace/`:
+Eight files are created in `.copilot/workspace/` (seven identity files + `DOC_INDEX.json`):
 
 | File | Purpose |
 |------|---------|
@@ -165,6 +165,7 @@ Seven files are created in `.copilot/workspace/`:
 | `USER.md` | Empty profile — filled as Copilot learns your preferences |
 | `TOOLS.md` | Effective command patterns for this project |
 | `MEMORY.md` | Memory strategy (what to retain vs. always re-read) |
+| `DOC_INDEX.json` | Canonical machine-readable inventory for docs metadata |
 | `BOOTSTRAP.md` | Permanent record of setup date, stack, and files created |
 | `HEARTBEAT.md` | Event-driven health check checklist — runs automatically on trigger events |
 

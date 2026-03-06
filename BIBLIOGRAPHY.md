@@ -5,18 +5,18 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | File | Purpose | LOC |
 |------|---------|-----|
 | **Project root** | | |
-| `AGENTS.md` | AI agent entry point — trigger phrases, bootstrap/update/restore sequences | 461 |
-| `BIBLIOGRAPHY.md` | This file — complete file catalogue | 159 |
-| `CHANGELOG.md` | Keep-a-Changelog version history | 682 |
+| `AGENTS.md` | AI agent entry point — trigger phrases, bootstrap/update/restore sequences | 336 |
+| `BIBLIOGRAPHY.md` | This file — complete file catalogue | 162 |
+| `CHANGELOG.md` | Keep-a-Changelog version history | 697 |
 | `CONTRIBUTING.md` | Contributor guide — workflow, conventions, PR checklist | 83 |
-| `JOURNAL.md` | ADR-style development journal | 57 |
+| `JOURNAL.md` | ADR-style development journal | 73 |
 | `LICENSE` | MIT license | 21 |
 | `llms.txt` | LLM-friendly project summary (llmstxt standard) | 67 |
 | `METRICS.md` | Kaizen baseline snapshot table | 7 |
-| `README.md` | Project landing page and quick-start guide | 347 |
-| `SETUP.md` | Complete setup guide (remote-executable) | 884 |
+| `README.md` | Project landing page and quick-start guide | 253 |
+| `SETUP.md` | Complete setup guide (remote-executable) | 889 |
 | `UPDATE.md` | Complete update + restore protocol (remote-executable) | 761 |
-| `MIGRATION.md` | Per-version migration registry — sections changed, companion files, breaking changes | 267 |
+| `MIGRATION.md` | Per-version migration registry — sections changed, companion files, breaking changes | 273 |
 | `VERSION.md` | Single source of truth for template version (semver) | 1 |
 | `release-please-config.json` | Release-please configuration | 15 |
 | `.release-please-manifest.json` | Release-please version manifest | 3 |
@@ -36,7 +36,7 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | **Path-specific instructions** | | |
 | `.github/instructions/api-routes.instructions.md` | Instructions for API/route/controller files | 14 |
 | `.github/instructions/config.instructions.md` | Instructions for config and rc files | 12 |
-| `.github/instructions/docs.instructions.md` | Instructions for Markdown and docs files | 14 |
+| `.github/instructions/docs.instructions.md` | Instructions for Markdown and docs files | 15 |
 | `.github/instructions/tests.instructions.md` | Instructions for test files | 15 |
 | **Prompt files** | | |
 | `.github/prompts/commit-msg.prompt.md` | Slash command `/commit-msg` — Conventional Commits authoring | 17 |
@@ -69,7 +69,7 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `.github/skills/mcp-management/SKILL.md` | Skill — MCP server configuration and management | 86 |
 | `.github/skills/plugin-management/SKILL.md` | Skill — agent plugin discovery, evaluation, and management | 104 |
 | **CI/CD workflows** | | |
-| `.github/workflows/ci.yml` | Main CI — structure, shellcheck, markdownlint, actionlint, hooks, version sync | 439 |
+| `.github/workflows/ci.yml` | Main CI — structure, shellcheck, markdownlint, actionlint, hooks, version sync | 447 |
 | `.github/workflows/links.yml` | Link checker (lychee) | 33 |
 | `.github/workflows/release-manual.yml` | Manual release workflow | 67 |
 | `.github/workflows/release-please.yml` | Automated release via release-please | 45 |
@@ -90,6 +90,7 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `.copilot/workspace/USER.md` | Observed user profile | 11 |
 | `.copilot/workspace/TOOLS.md` | Effective tool usage patterns | 9 |
 | `.copilot/workspace/MEMORY.md` | Memory system strategy | 12 |
+| `.copilot/workspace/DOC_INDEX.json` | Canonical machine-readable inventory for docs metadata | 85 |
 | `.copilot/workspace/BOOTSTRAP.md` | Permanent setup origin record | 28 |
 | `.copilot/workspace/HEARTBEAT.md` | Event-driven health check checklist | 60 |
 | **VS Code workspace config** | | |
@@ -106,7 +107,7 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `docs/PROMPTS-GUIDE.md` | Guide to reusable prompt files and slash commands | 137 |
 | `docs/RELEASE-AUTOMATION-GUIDE.md` | Guide to release-please and version management | 119 |
 | `docs/SECURITY-GUIDE.md` | Guide to CI hardening, SHA-pinning, Graduated Trust Model | 181 |
-| `docs/SETUP-GUIDE.md` | Walkthrough of the setup interview and output files | 195 |
+| `docs/SETUP-GUIDE.md` | Walkthrough of the setup interview and output files | 196 |
 | `docs/SKILLS-GUIDE.md` | Guide to the Agent Skills system | 200 |
 | `docs/TEST-REVIEW-GUIDE.md` | Guide to the test coverage review workflow | 173 |
 | `docs/UPDATE-GUIDE.md` | Guide to the update and restore protocol | 180 |
@@ -114,11 +115,13 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `examples/valis/README.md` | Reference implementation example | 61 |
 | **Scripts** | | |
 | `scripts/sync-version.sh` | Propagate version from VERSION.md to all marker files | 27 |
+| `scripts/sync-doc-index.sh` | Sync/check canonical DOC_INDEX metadata inventory | 160 |
 | **Tests** | | |
 | `tests/test-hooks.sh` | Hook script functionality tests | 343 |
 | `tests/test-guard-destructive.sh` | Guard-destructive hook security tests | 167 |
 | `tests/test-security-edge-cases.sh` | Security edge case tests (JSON injection, path traversal, etc.) | 203 |
 | `tests/test-sync-version.sh` | Version sync script tests | 190 |
+| `tests/test-doc-consistency.sh` | Documentation drift guardrail tests | 108 |
 | **Template files (copied to consumer project during setup)** | | |
 | `template/BIBLIOGRAPHY.md` | File catalogue stub | 50 |
 | `template/CHANGELOG.md` | Keep-a-Changelog stub (for consumer project) | 30 |
@@ -148,6 +151,7 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `template/skills/mcp-management/SKILL.md` | Starter skill — MCP server configuration | 51 |
 | `template/skills/plugin-management/SKILL.md` | Starter skill — agent plugin discovery and management | 104 |
 | `template/vscode/mcp.json` | MCP server configuration template | 37 |
+| `template/workspace/DOC_INDEX.json` | Canonical machine-readable metadata index stub | 85 |
 | `template/workspace/IDENTITY.md` | Agent self-description stub | 17 |
 | `template/workspace/SOUL.md` | Agent values & reasoning patterns stub | 18 |
 | `template/workspace/USER.md` | User profile stub | 19 |
@@ -156,4 +160,4 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `template/workspace/BOOTSTRAP.md` | Bootstrap record stub | 46 |
 | `template/workspace/HEARTBEAT.md` | Heartbeat checklist stub | 60 |
 
-**Total**: 133 files · 14,500 LOC
+**Total**: 138 files · 14,774 LOC

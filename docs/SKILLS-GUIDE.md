@@ -21,8 +21,9 @@ Skills are stored in directories containing a `SKILL.md` file:
 |----------|-------|----------|
 | `.github/skills/<name>/SKILL.md` | Project-specific — checked into version control | Highest |
 | `~/.copilot/skills/<name>/SKILL.md` | Personal — shared across all your projects | Lower |
+| Agent plugins (`@agentPlugins`) | Distributed alongside agents (VS Code 1.110+) | Lowest |
 
-Project skills always override personal skills with the same name.
+Project skills always override personal and plugin skills with the same name.
 
 ---
 
@@ -40,16 +41,21 @@ This keeps context efficient — only relevant skills consume the agent's contex
 
 ## Starter skills
 
-Six skills are scaffolded into your project during setup:
+Eleven skills are scaffolded into your project during setup:
 
 | Skill | What it does | Trigger examples |
-|-------|-------------|-----------------|
+|-------|-------------|------------------|
 | `skill-creator` | Meta-skill — teaches the agent how to author new skills | "Create a skill", "Write a skill for..." |
 | `fix-ci-failure` | Diagnose and fix failing CI pipelines / GitHub Actions | "Fix CI", "Why is the pipeline red?" |
 | `lean-pr-review` | Review a PR using Lean waste categories and severity ratings | "Review this PR", "Check my changes" |
 | `conventional-commit` | Write commit messages following Conventional Commits | "Write a commit message" |
 | `mcp-builder` | Build and register MCP servers for external tool integration | "Build an MCP server", "Add an MCP server for..." |
 | `webapp-testing` | Set up browser testing — built-in browser tools (interactive) or Playwright (CI) | "Set up e2e tests", "Add browser tests", "Check my web app" |
+| `issue-triage` | Triage a GitHub issue with severity, waste category, and recommended action | "Triage this issue", "Classify this bug" |
+| `tool-protocol` | Follow the Tool Protocol decision tree to find, build, or adapt automation tools | "Build a tool for...", "Show me the toolbox" |
+| `skill-management` | Discover, activate, and manage agent skills following the Skill Protocol | "Show my skills", "Search for a skill that..." |
+| `mcp-management` | Configure and manage MCP servers for external tool access | "Configure MCP", "Add an MCP server for..." |
+| `plugin-management` | Discover, evaluate, install, test, and manage agent plugins for VS Code Copilot | "Show plugins", "Find a plugin for..." |
 
 ---
 

@@ -198,7 +198,7 @@ The protocol has three stages:
 2. **Search** — look online (if enabled via `{{SKILL_SEARCH_PREFERENCE}}`) in official or community repositories.
 3. **Create** — author a new skill from scratch following the authoring rules.
 
-Seven starter skills are scaffolded during setup: `skill-creator` (meta-skill for authoring), `fix-ci-failure` (CI diagnosis), `lean-pr-review` (Lean PR review), `conventional-commit` (commit messages), `mcp-builder` (MCP server creation), `webapp-testing` (Playwright e2e testing), and `issue-triage` (structured issue triage with waste-category mapping).
+Eleven starter skills are scaffolded during setup: `skill-creator` (meta-skill for authoring), `fix-ci-failure` (CI diagnosis), `lean-pr-review` (Lean PR review), `conventional-commit` (commit messages), `mcp-builder` (MCP server creation), `webapp-testing` (browser/Playwright e2e testing), `issue-triage` (structured issue triage with waste-category mapping), `tool-protocol` (Tool Protocol decision tree), `skill-management` (skill discovery and management), `mcp-management` (MCP server configuration), and `plugin-management` (agent plugin discovery and management).
 
 **How to customise**: Create new skills in `.github/skills/<name>/SKILL.md`. Say "Create a skill for ..." to have Copilot author one for you. Change the search preference in §10 (`{{SKILL_SEARCH_PREFERENCE}}`). See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for the full guide.
 
@@ -211,7 +211,7 @@ Seven starter skills are scaffolded during setup: `skill-creator` (meta-skill fo
 The section defines:
 
 1. **Server tiers** — three categories of MCP server:
-   - *Always-on* (filesystem, memory, git) — no credentials, safe to enable by default.
+   - *Always-on* (filesystem, git) — no credentials, safe to enable by default.
    - *Credentials-required* (GitHub, fetch) — need API tokens, disabled by default.
    - *Stack-specific* (PostgreSQL, Redis, Docker, AWS, etc.) — suggested based on your project's dependencies.
 

@@ -93,7 +93,7 @@ Questions you skip always get a sensible default. Every preference is written in
 
 ### 📚 Agent Skills library
 
-Seven starter skills are scaffolded into `.github/skills/` during setup, following the [Agent Skills](https://agentskills.io) open standard. Skills are markdown-based behavioural instructions that teach the agent *how* to perform specific workflows — from authoring new skills to building MCP servers. Optionally search official and community skill repositories for proven workflows.
+Eleven starter skills are scaffolded into `.github/skills/` during setup, following the [Agent Skills](https://agentskills.io) open standard. Skills are markdown-based behavioural instructions that teach the agent *how* to perform specific workflows — from authoring new skills to building MCP servers. Optionally search official and community skill repositories for proven workflows.
 
 ### 📂 Path-specific instructions
 
@@ -109,7 +109,7 @@ All GitHub Actions are SHA-pinned to immutable commit hashes and protected with 
 
 ### 🔌 Model Context Protocol (MCP) integration
 
-§13 governs how Copilot connects to external tools via MCP. During **Full** setup, Copilot scaffolds `.vscode/mcp.json` with three tiers of servers: always-on (filesystem, memory, git), credentials-required (GitHub, fetch), and stack-specific (PostgreSQL, Redis, Docker, AWS — auto-suggested from your dependencies). A quality gate ensures only verified, maintained servers are added.
+§13 governs how Copilot connects to external tools via MCP. During **Full** setup, Copilot scaffolds `.vscode/mcp.json` with three tiers of servers: always-on (filesystem, git), credentials-required (GitHub, fetch), and stack-specific (PostgreSQL, Redis, Docker, AWS — auto-suggested from your dependencies). A quality gate ensures only verified, maintained servers are added.
 
 ### 🔄 Living update protocol
 
@@ -158,7 +158,7 @@ Two built-in review modes surface at the end of any session:
 | `.github/agents/*.agent.md` | Copied from template | Six model-pinned agents |
 | `.github/hooks/copilot-hooks.json` | Copied from template | Agent lifecycle hooks configuration |
 | `.github/hooks/scripts/*.sh` | Copied from template | Five starter hook scripts (security, formatting, retrospective, context) |
-| `.github/skills/*/SKILL.md` | Copied from template | Seven starter skills (Agent Skills standard) |
+| `.github/skills/*/SKILL.md` | Copied from template | Eleven starter skills (Agent Skills standard) |
 | `.github/instructions/*.instructions.md` | Copied from template | Path-specific instruction stubs (tests, API, config, docs) |
 | `.github/prompts/*.prompt.md` | Copied from template | Five reusable slash commands (/explain, /refactor, /test-gen, /review-file, /commit-msg) |
 | `.github/workflows/copilot-setup-steps.yml` | Generated from template | Environment setup for GitHub Copilot coding agent |
@@ -175,6 +175,8 @@ Two built-in review modes surface at the end of any session:
 ## Human-readable guides
 
 Every AI-facing file has a plain-English companion in `docs/`:
+
+Canonical machine-readable inventory for repository metadata lives at `.copilot/workspace/DOC_INDEX.json`.
 
 | Guide | Explains |
 |-------|---------|
@@ -197,124 +199,28 @@ Every AI-facing file has a plain-English companion in `docs/`:
 
 ## Repository layout
 
+High-signal structure (canonical inventories referenced below):
+
 ```text
 copilot-instructions-template/
-├── .github/
-│   ├── copilot-instructions.md         # Primary AI guidance (Lean/Kaizen, §1–§13)
-│   ├── agents/
-│   │   ├── setup.agent.md              # Claude Sonnet 4.6 — onboarding & template ops
-│   │   ├── coding.agent.md             # GPT-5.3-Codex — implementation & refactoring
-│   │   ├── review.agent.md             # Claude Opus 4.6 — architectural review
-│   │   ├── fast.agent.md               # Claude Haiku 4.5 — quick questions
-│   │   ├── update.agent.md             # Claude Sonnet 4.6 — instruction update & restore
-│   │   └── doctor.agent.md             # Claude Sonnet 4.6 — read-only health diagnostics
-│   ├── skills/
-│   │   ├── skill-creator/SKILL.md      # Meta-skill — author new skills
-│   │   ├── fix-ci-failure/SKILL.md     # Diagnose and fix CI failures
-│   │   ├── lean-pr-review/SKILL.md     # Lean waste-categorised PR review
-│   │   ├── conventional-commit/SKILL.md # Conventional Commits messages
-│   │   ├── mcp-builder/SKILL.md        # Build and register MCP servers
-│   │   ├── webapp-testing/SKILL.md     # Playwright-based web app testing
-│   │   └── issue-triage/SKILL.md       # Issue triage with severity scoring
-│   ├── instructions/
-│   │   ├── tests.instructions.md       # Path rules for test files
-│   │   ├── api-routes.instructions.md  # Path rules for API routes
-│   │   ├── config.instructions.md      # Path rules for config files
-│   │   └── docs.instructions.md        # Path rules for documentation
-│   ├── prompts/
-│   │   ├── explain.prompt.md           # /explain — waste-aware code explanation
-│   │   ├── refactor.prompt.md          # /refactor — Lean-principled refactoring
-│   │   ├── test-gen.prompt.md          # /test-gen — convention-following test gen
-│   │   ├── review-file.prompt.md       # /review-file — §2 Review Mode
-│   │   └── commit-msg.prompt.md        # /commit-msg — Conventional Commits
-│   ├── workflows/
-│   │   ├── ci.yml                      # Validates structure, links, and sections on push/PR
-│   │   ├── release-manual.yml          # Manual GitHub release when VERSION.md is bumped
-│   │   ├── release-please.yml          # Automated Conventional Commits release
-│   │   ├── stale.yml                   # Closes stale issues and PRs weekly
-│   │   ├── links.yml                   # Lychee link checker (weekly + PR)
-│   │   ├── vale.yml                    # Vale prose linter (PR)
-│   │   └── scorecard.yml               # OpenSSF Scorecard (weekly + push)
-│   ├── ISSUE_TEMPLATE/
-│   │   ├── bug_report.yml              # Structured bug report form
-│   │   └── feature_request.yml         # Structured feature request form
-│   ├── PULL_REQUEST_TEMPLATE.md        # PR checklist (auto-shown on new PRs)
-│   ├── dependabot.yml                  # Automated dependency updates (weekly, grouped)
-│   └── vale/
-│       └── styles/                     # Vale style packages (downloaded at lint time)
-├── docs/
-│   ├── INSTRUCTIONS-GUIDE.md           # Human guide to copilot-instructions.md
-│   ├── SKILLS-GUIDE.md                 # Human guide to the Agent Skills library
-│   ├── SETUP-GUIDE.md                  # Human guide to the setup process
-│   ├── UPDATE-GUIDE.md                 # Human guide to the update/restore protocol
-│   ├── AGENTS-GUIDE.md                 # Human guide to trigger phrases + model agents
-│   ├── EXTENSION-REVIEW-GUIDE.md       # Human guide to the extension audit feature
-│   ├── TEST-REVIEW-GUIDE.md            # Human guide to the test coverage review feature
-│   ├── PATH-INSTRUCTIONS-GUIDE.md      # Human guide to path-specific instructions
-│   ├── PROMPTS-GUIDE.md                # Human guide to reusable prompt files
-│   ├── SECURITY-GUIDE.md               # Human guide to security hardening
-│   ├── MCP-GUIDE.md                    # Human guide to MCP integration
-│   ├── RELEASE-AUTOMATION-GUIDE.md     # Human guide to release workflows
-│   ├── HEARTBEAT-GUIDE.md              # Human guide to event-driven heartbeat
-│   └── HOOKS-GUIDE.md                  # Human guide to agent lifecycle hooks
-├── template/
-│   ├── CHANGELOG.md                    # Keep-a-Changelog stub (scaffolded into consumer projects)
-│   ├── JOURNAL.md                      # ADR-style journal stub
-│   ├── BIBLIOGRAPHY.md                 # File catalogue stub
-│   ├── METRICS.md                      # Kaizen baseline snapshot stub
-│   ├── copilot-setup-steps.yml         # GitHub Actions workflow for Copilot coding agent
-│   ├── skills/
-│   │   ├── skill-creator/SKILL.md      # Starter skill: meta-skill for authoring
-│   │   ├── fix-ci-failure/SKILL.md     # Starter skill: CI failure diagnosis
-│   │   ├── lean-pr-review/SKILL.md     # Starter skill: Lean PR review
-│   │   ├── conventional-commit/SKILL.md # Starter skill: Conventional Commits
-│   │   ├── mcp-builder/SKILL.md        # Starter skill: MCP server creation
-│   │   ├── webapp-testing/SKILL.md     # Starter skill: Playwright web app testing
-│   │   └── issue-triage/SKILL.md       # Starter skill: Issue triage with severity scoring
-│   ├── vscode/
-│   │   └── mcp.json                    # MCP server configuration template
-│   ├── hooks/
-│   │   ├── copilot-hooks.json          # Agent hooks configuration template
-│   │   └── scripts/
-│   │       ├── session-start.sh / .ps1        # SessionStart — project context injection
-│   │       ├── guard-destructive.sh / .ps1    # PreToolUse — dangerous command guard
-│   │       ├── post-edit-lint.sh / .ps1       # PostToolUse — auto-format after edits
-│   │       ├── enforce-retrospective.sh / .ps1 # Stop — retrospective enforcement
-│   │       └── save-context.sh / .ps1         # PreCompact — context preservation
-│   └── workspace/
-│       ├── IDENTITY.md                 # Agent self-description stub
-│       ├── SOUL.md                     # Values & reasoning patterns stub
-│       ├── USER.md                     # User profile stub
-│       ├── TOOLS.md                    # Tool usage patterns + Extension registry
-│       ├── MEMORY.md                   # Memory strategy stub
-│       ├── BOOTSTRAP.md                # Permanent setup origin record stub
-│       └── HEARTBEAT.md                # Event-driven health check checklist stub
-├── scripts/
-│   └── sync-version.sh                 # CI safety-net: syncs version constants from VERSION.md
-├── tests/
-│   ├── test-sync-version.sh            # Unit tests for sync-version.sh (18 assertions)
-│   ├── test-guard-destructive.sh       # Unit tests for guard-destructive.sh (40 assertions)
-│   ├── test-hooks.sh                   # Unit tests for all five hook scripts (46 assertions)
-│   └── test-security-edge-cases.sh     # Security & contract edge-case tests (29 assertions)
-├── examples/
-│   └── valis/
-│       └── README.md                   # Reference implementation (asafelobotomy/Valis)
-├── AGENTS.md                           # AI entry point — trigger phrases + remote sequences
-├── SETUP.md                            # One-time agentic setup (self-destructs after use)
-├── UPDATE.md                           # Update protocol (run on demand)
-├── MIGRATION.md                        # Per-version migration registry (drives version-walk)
-├── CONTRIBUTING.md                     # Contribution guidelines
-├── VERSION.md                          # Semver — single source of truth for template version
-├── CHANGELOG.md                        # This template's own version history
-├── LICENSE                             # MIT
-├── llms.txt                            # llmstxt.org spec — project overview for LLM indexers
-├── release-please-config.json          # Release Please package config + extra-files
-├── .release-please-manifest.json       # Release Please version manifest
-├── .gitignore                          # Ignored paths
-├── .markdownlint.json                  # Markdownlint rule configuration
-├── .markdownlint-cli2.yaml             # Markdownlint CLI2 options (ignore patterns)
-└── .vale.ini                           # Vale prose linting configuration
+├── .github/           # Copilot instructions, agents, skills, prompts, hooks, workflows
+├── docs/              # Human-readable guides
+├── template/          # Consumer-project scaffolding stubs
+├── tests/             # Shell test suites and guardrail checks
+├── scripts/           # Utility scripts (version sync, etc.)
+├── examples/          # Reference implementation links
+├── AGENTS.md          # AI entry point and trigger phrases
+├── SETUP.md           # Remote setup protocol
+├── UPDATE.md          # Remote update/restore protocol
+├── MIGRATION.md       # Per-version migration registry
+├── README.md          # Project landing page
+└── BIBLIOGRAPHY.md    # Full file catalogue with LOC
 ```
+
+Canonical inventory sources:
+
+- `.copilot/workspace/DOC_INDEX.json` — machine-readable metadata index (agents/skills/hooks/guides + counts)
+- `BIBLIOGRAPHY.md` — exhaustive file catalogue and LOC totals
 
 ---
 

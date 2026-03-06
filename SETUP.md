@@ -170,7 +170,7 @@ Batch these into groups of up to 4 per `ask_questions` call. If `ask_questions` 
   Options: All auto | Sensitive dirs require confirmation | Ask me to define
 
 - **E22 — MCP servers**: Should I configure Model Context Protocol servers?
-  Options: A — None (skip MCP) | B — Always-on only (filesystem, memory, git) | C — Full configuration (all tiers)
+  Options: A — None (skip MCP) | B — Always-on only (filesystem, git) | C — Full configuration (all tiers)
 
 #### § 0e — Pre-flight summary
 
@@ -185,12 +185,12 @@ Files that will be CREATED:
   .github/copilot-instructions.md     (populated from template)
   .github/copilot-version.md          (installed template version)
   .github/agents/*.agent.md           (6 model-pinned agents)
-  .github/skills/*/SKILL.md           (10 starter skills)
+  .github/skills/*/SKILL.md           (11 starter skills)
   .github/instructions/*.md           (path-specific stubs)
   .github/prompts/*.prompt.md         (slash command prompts)
   .github/hooks/copilot-hooks.json    (hook configuration)
   .github/hooks/scripts/*.sh + *.ps1  (hook scripts)
-  .copilot/workspace/*.md             (7 identity files)
+  .copilot/workspace/*.md + DOC_INDEX.json (8 workspace files)
   CHANGELOG.md / JOURNAL.md / BIBLIOGRAPHY.md / METRICS.md
 
 Files that will be ARCHIVED (if chosen):
@@ -389,6 +389,14 @@ Fetch from:
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/mcp-management/SKILL.md
 ```
 
+### `.github/skills/plugin-management/SKILL.md`
+
+Fetch from:
+
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/plugin-management/SKILL.md
+```
+
 ---
 
 ## § 2.7 — Scaffold path-specific instruction files
@@ -513,11 +521,6 @@ If the stack was detected in §1, uncomment and populate the matching runtime se
       "type": "stdio",
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"]
-    },
-    "memory": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"]
     },
     "git": {
       "type": "stdio",
@@ -645,14 +648,15 @@ If the terminal is unavailable, omit the `<!-- section-fingerprints ... -->` blo
 
 ## § 3 — Scaffold workspace identity files
 
-Create `.copilot/workspace/` and write seven identity files from the upstream template.
+Create `.copilot/workspace/` and write eight workspace files from the upstream template.
+This includes seven identity files plus `DOC_INDEX.json` (canonical machine-readable metadata index).
 
 Replace all `{{PLACEHOLDER}}` tokens using values from §1.
 Replace `{{SETUP_DATE}}` with today's date in `YYYY-MM-DD` format.
 
 ### Fetch all workspace stubs
 
-Fetch all seven files in parallel from the template repository:
+Fetch all eight files in parallel from the template repository:
 
 | Target path | Source URL |
 |-------------|-----------|
@@ -661,6 +665,7 @@ Fetch all seven files in parallel from the template repository:
 | `.copilot/workspace/USER.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/workspace/USER.md` |
 | `.copilot/workspace/TOOLS.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/workspace/TOOLS.md` |
 | `.copilot/workspace/MEMORY.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/workspace/MEMORY.md` |
+| `.copilot/workspace/DOC_INDEX.json` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/workspace/DOC_INDEX.json` |
 | `.copilot/workspace/BOOTSTRAP.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/workspace/BOOTSTRAP.md` |
 | `.copilot/workspace/HEARTBEAT.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/workspace/HEARTBEAT.md` |
 
@@ -855,11 +860,11 @@ SETUP COMPLETE — copilot-instructions-template vX.Y.Z
 ✓ .github/copilot-instructions.md   populated
 ✓ .github/copilot-version.md        written (vX.Y.Z)
 ✓ .github/agents/                   6 model-pinned agents
-✓ .github/skills/                   10 starter skills
+✓ .github/skills/                   11 starter skills
 ✓ .github/instructions/             N path-specific stubs
 ✓ .github/prompts/                  5 slash-command prompts
 ✓ .github/hooks/                    hooks config + 10 scripts (5 sh + 5 ps1)
-✓ .copilot/workspace/               7 identity files
+✓ .copilot/workspace/               8 workspace files (7 identity + DOC_INDEX.json)
 ✓ CHANGELOG.md                      [created / already existed]
 ✓ JOURNAL.md                        [created / already existed]
 ✓ BIBLIOGRAPHY.md                   [created / already existed]

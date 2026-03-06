@@ -63,3 +63,11 @@ Architectural decisions and context are recorded here in ADR style.
 **Context**: Agent plugins (VS Code 1.110+, Preview) bundle agents, skills, hooks, and MCP servers into installable packages. The template referenced plugins in docs but lacked operational integration — no skill, no Doctor check, no trigger phrases, no §12 reference.
 **Decision**: Create `plugin-management` skill (discovery, quality gate, conflict resolution, testing-as-plugin workflow). Add D11 health check to Doctor agent for naming conflicts and settings validation. Update §12 Skill Protocol with plugin priority tier. Add trigger phrases to AGENTS.md. Sync repo HEARTBEAT.md with template (missing Retrospective section).
 **Consequences**: Plugins are now discoverable and manageable through the same skill/trigger infrastructure as other template features. Doctor agent validates plugin/workspace conflicts. §12 scope hierarchy now has 4 tiers (project > personal > plugin > org).
+
+---
+
+## 2026-03-05 — Canonical documentation index and dedupe guardrails
+
+**Context**: Documentation inventory content had become duplicated across `README.md`, `AGENTS.md`, and other files, increasing drift risk (skills/counts/descriptions diverging between sources).
+**Decision**: Introduce `.copilot/workspace/DOC_INDEX.json` as canonical machine-readable metadata inventory, add `scripts/sync-doc-index.sh` for deterministic sync/check, and deduplicate large inventory blocks in `README.md`/`AGENTS.md` to canonical references plus a high-signal map.
+**Consequences**: Drift detection moved from manual review to CI enforcement (`tests/test-doc-consistency.sh` + `sync-doc-index.sh --check`). Human-facing docs are shorter and less repetitive, while machine-critical trigger/setup/update semantics remain unchanged.

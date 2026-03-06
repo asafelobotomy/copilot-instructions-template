@@ -29,7 +29,7 @@ try:
                 print(v)
         elif val:
             print(val)
-except:
+except Exception:
     pass
 " 2>/dev/null || echo "")
 

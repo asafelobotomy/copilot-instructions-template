@@ -32,15 +32,18 @@
 | `fix-ci-failure` | Diagnose and fix a failing CI run |
 | `skill-creator` | Author a new SKILL.md skill file |
 | `mcp-builder` | Build or configure a new MCP server |
-| `webapp-testing` | Write and run web application tests |
+| `webapp-testing` | Set up browser testing (built-in browser tools or Playwright) |
 | `issue-triage` | Triage a GitHub issue with severity, waste category, and recommended action |
+| `tool-protocol` | Find, build, or adapt automation tools following the Tool Protocol decision tree |
+| `skill-management` | Discover, activate, and manage agent skills following the Skill Protocol |
+| `mcp-management` | Configure and manage Model Context Protocol servers for external tool access |
+| `plugin-management` | Discover, evaluate, install, test, and manage agent plugins for VS Code Copilot |
 
 ## MCP servers (`.vscode/mcp.json` after install)
 
 | Server | Purpose |
 |--------|---------|
 | `@modelcontextprotocol/server-filesystem` | File operations beyond the workspace |
-| `@modelcontextprotocol/server-memory` | Ephemeral session-scoped knowledge graph |
 | `mcp-server-git` | Git history, diffs, and branch operations |
 | `@modelcontextprotocol/server-github` | GitHub API — issues, PRs, repos, actions |
 | `mcp-server-fetch` | HTTP fetch for web content and APIs |

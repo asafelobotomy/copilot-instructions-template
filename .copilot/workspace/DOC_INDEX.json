@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0",
+  "updated": "2026-03-05",
+  "purpose": "Canonical machine-readable inventory for repository documentation metadata.",
+  "counts": {
+    "agents": 6,
+    "skillsRepo": 11,
+    "skillsTemplate": 11,
+    "hookScriptsShell": 5,
+    "hookScriptsPowerShell": 5,
+    "guides": 14
+  },
+  "agents": [
+    "setup.agent.md",
+    "coding.agent.md",
+    "review.agent.md",
+    "fast.agent.md",
+    "update.agent.md",
+    "doctor.agent.md"
+  ],
+  "skills": {
+    "repo": [
+      "skill-creator",
+      "fix-ci-failure",
+      "lean-pr-review",
+      "conventional-commit",
+      "mcp-builder",
+      "webapp-testing",
+      "issue-triage",
+      "tool-protocol",
+      "skill-management",
+      "mcp-management",
+      "plugin-management"
+    ],
+    "template": [
+      "skill-creator",
+      "fix-ci-failure",
+      "lean-pr-review",
+      "conventional-commit",
+      "mcp-builder",
+      "webapp-testing",
+      "issue-triage",
+      "tool-protocol",
+      "skill-management",
+      "mcp-management",
+      "plugin-management"
+    ]
+  },
+  "hookScripts": {
+    "shell": [
+      "session-start.sh",
+      "guard-destructive.sh",
+      "post-edit-lint.sh",
+      "enforce-retrospective.sh",
+      "save-context.sh"
+    ],
+    "powershell": [
+      "session-start.ps1",
+      "guard-destructive.ps1",
+      "post-edit-lint.ps1",
+      "enforce-retrospective.ps1",
+      "save-context.ps1"
+    ]
+  },
+  "guides": [
+    "AGENTS-GUIDE.md",
+    "SETUP-GUIDE.md",
+    "UPDATE-GUIDE.md",
+    "HOOKS-GUIDE.md",
+    "SKILLS-GUIDE.md",
+    "MCP-GUIDE.md",
+    "HEARTBEAT-GUIDE.md",
+    "INSTRUCTIONS-GUIDE.md",
+    "SECURITY-GUIDE.md",
+    "PROMPTS-GUIDE.md",
+    "PATH-INSTRUCTIONS-GUIDE.md",
+    "EXTENSION-REVIEW-GUIDE.md",
+    "TEST-REVIEW-GUIDE.md",
+    "RELEASE-AUTOMATION-GUIDE.md"
+  ],
+  "notes": [
+    "This index is introduced in Phase 2.1 as canonical metadata for drift checks.",
+    "Human-facing docs may reference this file rather than duplicating inventory details."
+  ]
+}

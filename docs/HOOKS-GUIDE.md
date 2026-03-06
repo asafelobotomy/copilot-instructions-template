@@ -239,7 +239,7 @@ exit 0
 |-----------------|-----------------|
 | **Heartbeat Protocol (§8)** | `SessionStart` injects heartbeat pulse. `Stop` enforces retrospective. `PreCompact` saves heartbeat state. |
 | **Security (§5)** | `PreToolUse` provides deterministic enforcement of §5's "Secure by default" principle. |
-| **Waste Elimination (§6)** | `PostToolUse` auto-formats to prevent W9 (manual repetition of formatting). |
+| **Waste Elimination (§6)** | `PostToolUse` auto-formats to prevent W8 (missing automation / repetitive manual steps). |
 | **Workspace identity files** | `PreCompact` preserves MEMORY.md, SOUL.md state across context compaction. |
 | **Subagent Protocol (§9)** | `SubagentStart`/`SubagentStop` hooks (not yet configured) can enforce context passing and result validation. |
 | **Graduated Trust (§10)** | The `PreToolUse` guard reinforces Guarded-tier protections for config files and secrets. |
@@ -354,7 +354,7 @@ The built-in Plan agent persists plans across conversation turns using session m
       },
       {
         "type": "command",
-        "command": "bash -c 'INPUT=$(cat); TOOL=$(echo \"$INPUT\" | grep -o '\"tool_name\"[^\"]*\"[^\"]*\"' | head -1); if echo \"$TOOL\" | grep -qi \"database\\|sql\\|prisma\"; then echo \"{\\\"hookSpecificOutput\\\":{\\\"hookEventName\\\":\\\"PreToolUse\\\",\\\"permissionDecision\\\":\\\"ask\\\",\\\"permissionDecisionReason\\\":\\\"Database tool detected — requires confirmation\\\"}}\"; else echo \"{\\\"continue\\\": true}\"; fi'",
+        "command": "./.github/hooks/scripts/ask-database-tools.sh",
         "timeout": 5
       }
     ]

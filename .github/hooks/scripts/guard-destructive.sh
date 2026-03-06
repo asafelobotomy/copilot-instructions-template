@@ -32,7 +32,7 @@ try:
     data = json.load(sys.stdin)
     ti = data.get('tool_input', {})
     print(ti.get('command', ti.get('input', '')))
-except:
+except Exception:
     print('')
 " 2>/dev/null || echo "")
 

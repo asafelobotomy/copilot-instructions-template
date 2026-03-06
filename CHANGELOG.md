@@ -64,6 +64,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - Claude agent format compatibility section added to `docs/AGENTS-GUIDE.md` — documents format differences (`.agent.md` vs `.claude/agents/*.md`), current decision to defer dual-format stubs, and workaround for cross-tool teams.
 - Organization-level agents section expanded in `docs/AGENTS-GUIDE.md` — actionable setup steps for `.github-private` repository, `agents/` directory convention, `organizationCustomAgents.enabled` setting, file structure diagram, and guidance for publishing template agents at the org level.
 - `v3.2.0` entry added to `MIGRATION.md` with full companion file manifest.
+- `.copilot/workspace/DOC_INDEX.json` added as canonical machine-readable documentation metadata index.
+- `scripts/sync-doc-index.sh` added to generate/check `DOC_INDEX.json` (`--write` / `--check`).
+- `tests/test-doc-consistency.sh` extended with canonical index validation and sync-script check.
 
 ### Changed
 
@@ -71,6 +74,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `skill-creator` skill — notes that `/create-skill` is now built-in in VS Code 1.110+; this skill adds Lean/Kaizen guidance.
 - `docs/MCP-GUIDE.md` — "What is MCP?" section updated to note MCP GA status; configuration section expanded to multi-level (workspace, profile, settings, devcontainer).
 - `docs/HOOKS-GUIDE.md` — diagnostics section updated to reference Agent Debug Panel.
+- `README.md` — repository layout section deduplicated to a high-signal structure with canonical inventory references (`DOC_INDEX.json`, `BIBLIOGRAPHY.md`).
+- `AGENTS.md` — exhaustive file map deduplicated to canonical-source references plus high-signal machine-relevant path map.
 
 ### Fixed
 
@@ -98,6 +103,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 ### CI
 
 - Added `Test security edge cases` step to `script-tests` job in `ci.yml`.
+- Added `Test documentation consistency` step to `script-tests` job in `ci.yml`.
+- Added `DOC_INDEX.json is in sync` validation step to `validate` job in `ci.yml`.
+- Added required-file checks for `scripts/sync-doc-index.sh` and `.copilot/workspace/DOC_INDEX.json`.
 
 ---
 
