@@ -198,7 +198,7 @@ The protocol has three stages:
 2. **Search** — look online (if enabled via `{{SKILL_SEARCH_PREFERENCE}}`) in official or community repositories.
 3. **Create** — author a new skill from scratch following the authoring rules.
 
-Eleven starter skills are scaffolded during setup: `skill-creator` (meta-skill for authoring), `fix-ci-failure` (CI diagnosis), `lean-pr-review` (Lean PR review), `conventional-commit` (commit messages), `mcp-builder` (MCP server creation), `webapp-testing` (browser/Playwright e2e testing), `issue-triage` (structured issue triage with waste-category mapping), `tool-protocol` (Tool Protocol decision tree), `skill-management` (skill discovery and management), `mcp-management` (MCP server configuration), and `plugin-management` (agent plugin discovery and management).
+Thirteen starter skills are scaffolded during setup: `skill-creator` (meta-skill for authoring), `fix-ci-failure` (CI diagnosis), `lean-pr-review` (Lean PR review), `conventional-commit` (commit messages), `mcp-builder` (MCP server creation), `webapp-testing` (browser/Playwright e2e testing), `issue-triage` (structured issue triage with waste-category mapping), `tool-protocol` (Tool Protocol decision tree), `skill-management` (skill discovery and management), `mcp-management` (MCP server configuration), `plugin-management` (agent plugin discovery and management), `extension-review` (VS Code extension audits), and `test-coverage-review` (coverage-gap audits with CI recommendations).
 
 **How to customise**: Create new skills in `.github/skills/<name>/SKILL.md`. Say "Create a skill for ..." to have Copilot author one for you. Change the search preference in §10 (`{{SKILL_SEARCH_PREFERENCE}}`). See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for the full guide.
 

@@ -5,16 +5,18 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | File | Purpose | LOC |
 |------|---------|-----|
 | **Project root** | | |
-| `AGENTS.md` | AI agent entry point — trigger phrases, bootstrap/update/restore sequences | 336 |
-| `BIBLIOGRAPHY.md` | This file — complete file catalogue | 162 |
-| `CHANGELOG.md` | Keep-a-Changelog version history | 697 |
+| `AGENTS.md` | AI agent entry point — trigger phrases, bootstrap/update/restore sequences | 230 |
+| `BIBLIOGRAPHY.md` | This file — complete file catalogue | 170 |
+| `CHANGELOG.md` | Keep-a-Changelog version history | 725 |
 | `CONTRIBUTING.md` | Contributor guide — workflow, conventions, PR checklist | 83 |
-| `JOURNAL.md` | ADR-style development journal | 73 |
+| `JOURNAL.md` | ADR-style development journal | 97 |
 | `LICENSE` | MIT license | 21 |
-| `llms.txt` | LLM-friendly project summary (llmstxt standard) | 67 |
-| `METRICS.md` | Kaizen baseline snapshot table | 7 |
+| `llms.txt` | LLM-friendly project summary (llmstxt standard) | 47 |
+| `llms-ctx.txt` | Generated compact LLM context pack | 34 |
+| `llms-ctx-full.txt` | Generated expanded LLM context pack | 66 |
+| `METRICS.md` | Kaizen baseline snapshot table | 9 |
 | `README.md` | Project landing page and quick-start guide | 253 |
-| `SETUP.md` | Complete setup guide (remote-executable) | 889 |
+| `SETUP.md` | Complete setup guide (remote-executable) | 905 |
 | `UPDATE.md` | Complete update + restore protocol (remote-executable) | 761 |
 | `MIGRATION.md` | Per-version migration registry — sections changed, companion files, breaking changes | 273 |
 | `VERSION.md` | Single source of truth for template version (semver) | 1 |
@@ -25,7 +27,7 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `.markdownlint-cli2.yaml` | Markdownlint CLI v2 configuration | 4 |
 | `.vale.ini` | Vale prose linting configuration | 15 |
 | **Copilot instructions** | | |
-| `.github/copilot-instructions.md` | AI agent guidance (Lean/Kaizen methodology + project conventions) | 508 |
+| `.github/copilot-instructions.md` | AI agent guidance (Lean/Kaizen methodology + project conventions) | 390 |
 | **Agent files** | | |
 | `.github/agents/setup.agent.md` | Model-pinned Setup agent — Claude Sonnet 4.6 | 37 |
 | `.github/agents/coding.agent.md` | Model-pinned Coding agent — GPT-5.3-Codex | 30 |
@@ -58,16 +60,18 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `.github/hooks/scripts/save-context.ps1` | PreCompact hook — Windows PowerShell counterpart | 53 |
 | **Skills (repo's own)** | | |
 | `.github/skills/conventional-commit/SKILL.md` | Skill — Conventional Commits message authoring | 108 |
+| `.github/skills/extension-review/SKILL.md` | Skill — VS Code extension audit workflow | 72 |
 | `.github/skills/fix-ci-failure/SKILL.md` | Skill — CI failure diagnosis and resolution | 64 |
 | `.github/skills/issue-triage/SKILL.md` | Skill — issue triage with severity classification | 83 |
 | `.github/skills/lean-pr-review/SKILL.md` | Skill — Lean PR review with waste categories | 102 |
 | `.github/skills/mcp-builder/SKILL.md` | Skill — MCP server creation and registration | 155 |
-| `.github/skills/skill-creator/SKILL.md` | Skill — meta-skill for authoring new skills | 70 |
-| `.github/skills/webapp-testing/SKILL.md` | Skill — dual-path web app testing (browser tools + Playwright) | 292 |
-| `.github/skills/tool-protocol/SKILL.md` | Skill — Tool Protocol decision tree and toolbox management | 105 |
-| `.github/skills/skill-management/SKILL.md` | Skill — skill discovery, activation, and management | 58 |
-| `.github/skills/mcp-management/SKILL.md` | Skill — MCP server configuration and management | 86 |
 | `.github/skills/plugin-management/SKILL.md` | Skill — agent plugin discovery, evaluation, and management | 104 |
+| `.github/skills/skill-creator/SKILL.md` | Skill — meta-skill for authoring new skills | 70 |
+| `.github/skills/skill-management/SKILL.md` | Skill — skill discovery, activation, and management | 58 |
+| `.github/skills/test-coverage-review/SKILL.md` | Skill — coverage-gap audit and CI recommendation workflow | 90 |
+| `.github/skills/tool-protocol/SKILL.md` | Skill — Tool Protocol decision tree and toolbox management | 105 |
+| `.github/skills/mcp-management/SKILL.md` | Skill — MCP server configuration and management | 86 |
+| `.github/skills/webapp-testing/SKILL.md` | Skill — dual-path web app testing (browser tools + Playwright) | 292 |
 | **CI/CD workflows** | | |
 | `.github/workflows/ci.yml` | Main CI — structure, shellcheck, markdownlint, actionlint, hooks, version sync | 447 |
 | `.github/workflows/links.yml` | Link checker (lychee) | 33 |
@@ -90,14 +94,14 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `.copilot/workspace/USER.md` | Observed user profile | 11 |
 | `.copilot/workspace/TOOLS.md` | Effective tool usage patterns | 9 |
 | `.copilot/workspace/MEMORY.md` | Memory system strategy | 12 |
-| `.copilot/workspace/DOC_INDEX.json` | Canonical machine-readable inventory for docs metadata | 85 |
+| `.copilot/workspace/DOC_INDEX.json` | Canonical machine-readable inventory for docs metadata | 89 |
 | `.copilot/workspace/BOOTSTRAP.md` | Permanent setup origin record | 28 |
 | `.copilot/workspace/HEARTBEAT.md` | Event-driven health check checklist | 60 |
 | **VS Code workspace config** | | |
 | `.vscode/mcp.json` | MCP server configuration (this repo) | 35 |
 | `.vscode/settings.json` | VS Code workspace settings | 139 |
 | **Docs** | | |
-| `docs/AGENTS-GUIDE.md` | Guide to model-pinned agents, trigger phrases, fallback chains | 364 |
+| `docs/AGENTS-GUIDE.md` | Guide to model-pinned agents, trigger phrases, fallback chains | 384 |
 | `docs/EXTENSION-REVIEW-GUIDE.md` | Guide to the extension review workflow | 120 |
 | `docs/HEARTBEAT-GUIDE.md` | Guide to the heartbeat protocol and checklist | 217 |
 | `docs/HOOKS-GUIDE.md` | Guide to agent lifecycle hooks: config, customisation, security | 392 |
@@ -108,20 +112,21 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `docs/RELEASE-AUTOMATION-GUIDE.md` | Guide to release-please and version management | 119 |
 | `docs/SECURITY-GUIDE.md` | Guide to CI hardening, SHA-pinning, Graduated Trust Model | 181 |
 | `docs/SETUP-GUIDE.md` | Walkthrough of the setup interview and output files | 196 |
-| `docs/SKILLS-GUIDE.md` | Guide to the Agent Skills system | 200 |
+| `docs/SKILLS-GUIDE.md` | Guide to the Agent Skills system | 205 |
 | `docs/TEST-REVIEW-GUIDE.md` | Guide to the test coverage review workflow | 173 |
 | `docs/UPDATE-GUIDE.md` | Guide to the update and restore protocol | 180 |
 | **Examples** | | |
 | `examples/valis/README.md` | Reference implementation example | 61 |
 | **Scripts** | | |
 | `scripts/sync-version.sh` | Propagate version from VERSION.md to all marker files | 27 |
-| `scripts/sync-doc-index.sh` | Sync/check canonical DOC_INDEX metadata inventory | 160 |
+| `scripts/sync-doc-index.sh` | Sync/check canonical DOC_INDEX metadata inventory | 162 |
+| `scripts/sync-llms-context.sh` | Sync/check generated llms context packs | 165 |
 | **Tests** | | |
 | `tests/test-hooks.sh` | Hook script functionality tests | 343 |
 | `tests/test-guard-destructive.sh` | Guard-destructive hook security tests | 167 |
 | `tests/test-security-edge-cases.sh` | Security edge case tests (JSON injection, path traversal, etc.) | 203 |
 | `tests/test-sync-version.sh` | Version sync script tests | 190 |
-| `tests/test-doc-consistency.sh` | Documentation drift guardrail tests | 108 |
+| `tests/test-doc-consistency.sh` | Documentation drift guardrail tests | 137 |
 | **Template files (copied to consumer project during setup)** | | |
 | `template/BIBLIOGRAPHY.md` | File catalogue stub | 50 |
 | `template/CHANGELOG.md` | Keep-a-Changelog stub (for consumer project) | 30 |
@@ -140,18 +145,20 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `template/hooks/scripts/save-context.sh` | PreCompact hook template | 58 |
 | `template/hooks/scripts/save-context.ps1` | PreCompact hook template (Windows) | 53 |
 | `template/skills/conventional-commit/SKILL.md` | Starter skill — Conventional Commits | 108 |
+| `template/skills/extension-review/SKILL.md` | Starter skill — VS Code extension audit workflow | 72 |
 | `template/skills/fix-ci-failure/SKILL.md` | Starter skill — CI failure diagnosis | 64 |
 | `template/skills/issue-triage/SKILL.md` | Starter skill — issue triage | 83 |
 | `template/skills/lean-pr-review/SKILL.md` | Starter skill — Lean PR review | 102 |
 | `template/skills/mcp-builder/SKILL.md` | Starter skill — MCP server creation | 155 |
-| `template/skills/skill-creator/SKILL.md` | Starter skill — skill authoring meta-skill | 70 |
-| `template/skills/webapp-testing/SKILL.md` | Starter skill — dual-path web app testing | 292 |
-| `template/skills/tool-protocol/SKILL.md` | Starter skill — Tool Protocol decision tree | 105 |
-| `template/skills/skill-management/SKILL.md` | Starter skill — skill discovery and management | 58 |
-| `template/skills/mcp-management/SKILL.md` | Starter skill — MCP server configuration | 51 |
 | `template/skills/plugin-management/SKILL.md` | Starter skill — agent plugin discovery and management | 104 |
+| `template/skills/skill-creator/SKILL.md` | Starter skill — skill authoring meta-skill | 70 |
+| `template/skills/skill-management/SKILL.md` | Starter skill — skill discovery and management | 58 |
+| `template/skills/test-coverage-review/SKILL.md` | Starter skill — coverage-gap audit and CI recommendation workflow | 90 |
+| `template/skills/tool-protocol/SKILL.md` | Starter skill — Tool Protocol decision tree | 105 |
+| `template/skills/mcp-management/SKILL.md` | Starter skill — MCP server configuration | 51 |
+| `template/skills/webapp-testing/SKILL.md` | Starter skill — dual-path web app testing | 292 |
 | `template/vscode/mcp.json` | MCP server configuration template | 37 |
-| `template/workspace/DOC_INDEX.json` | Canonical machine-readable metadata index stub | 85 |
+| `template/workspace/DOC_INDEX.json` | Canonical machine-readable metadata index stub | 89 |
 | `template/workspace/IDENTITY.md` | Agent self-description stub | 17 |
 | `template/workspace/SOUL.md` | Agent values & reasoning patterns stub | 18 |
 | `template/workspace/USER.md` | User profile stub | 19 |
@@ -160,4 +167,4 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | `template/workspace/BOOTSTRAP.md` | Bootstrap record stub | 46 |
 | `template/workspace/HEARTBEAT.md` | Heartbeat checklist stub | 60 |
 
-**Total**: 138 files · 14,774 LOC
+**Total**: 138 files · 14,616 LOC

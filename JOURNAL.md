@@ -82,6 +82,14 @@ Architectural decisions and context are recorded here in ADR style.
 
 ---
 
+## 2026-03-06 — LLM-facing surfaces slimmed and generated context packs added
+
+**Context**: The repository's machine-facing surfaces had started to drift. `llms.txt` still contained stale review-model guidance, `.github/copilot-instructions.md` kept two heavy review workflows in the always-loaded prompt, and AGENTS.md duplicated a large file map that was already represented canonically in `BIBLIOGRAPHY.md` and `.copilot/workspace/DOC_INDEX.json`.
+**Decision**: Move the extension-review and test-coverage-review workflows into dedicated on-demand skills, replace the embedded §2 procedures with concise activation guidance, add generated `llms-ctx.txt` and `llms-ctx-full.txt` artifacts with a sync script, and shrink `AGENTS.md` to a high-signal machine map that points back to canonical inventories.
+**Consequences**: The always-loaded core prompt dropped materially in size, AI-facing summaries now have explicit drift checks, the setup flow now scaffolds 13 skills instead of 11, and both human-facing and machine-facing inventories stay aligned through deterministic sync scripts and tests.
+
+---
+
 ## 2026-03-06 — Prompt and skill schemas aligned to current VS Code validation
 
 **Context**: After the terminology sweep, the remaining repo-health warnings came from VS Code schema drift: prompt files still used deprecated `mode:` frontmatter, and skill files still stored rich metadata as top-level frontmatter keys that VS Code no longer validates.

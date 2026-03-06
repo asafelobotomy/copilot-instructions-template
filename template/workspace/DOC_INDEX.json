@@ -4,8 +4,8 @@
   "purpose": "Canonical machine-readable inventory for repository documentation metadata.",
   "counts": {
     "agents": 6,
-    "skillsRepo": 11,
-    "skillsTemplate": 11,
+    "skillsRepo": 13,
+    "skillsTemplate": 13,
     "hookScriptsShell": 5,
     "hookScriptsPowerShell": 5,
     "guides": 14
@@ -30,7 +30,9 @@
       "tool-protocol",
       "skill-management",
       "mcp-management",
-      "plugin-management"
+      "plugin-management",
+      "extension-review",
+      "test-coverage-review"
     ],
     "template": [
       "skill-creator",
@@ -43,7 +45,9 @@
       "tool-protocol",
       "skill-management",
       "mcp-management",
-      "plugin-management"
+      "plugin-management",
+      "extension-review",
+      "test-coverage-review"
     ]
   },
   "hookScripts": {

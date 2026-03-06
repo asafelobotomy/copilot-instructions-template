@@ -93,7 +93,7 @@ Questions you skip always get a sensible default. Every preference is written in
 
 ### 📚 Agent Skills library
 
-Eleven starter skills are scaffolded into `.github/skills/` during setup, following the [Agent Skills](https://agentskills.io) open standard. Skills are markdown-based behavioural instructions that teach the agent *how* to perform specific workflows — from authoring new skills to building MCP servers. Optionally search official and community skill repositories for proven workflows.
+Thirteen starter skills are scaffolded into `.github/skills/` during setup, following the [Agent Skills](https://agentskills.io) open standard. Skills are markdown-based behavioural instructions that teach the agent *how* to perform specific workflows — from authoring new skills to building MCP servers, extension audits, and test-coverage reviews. Optionally search official and community skill repositories for proven workflows.
 
 ### 📂 Path-specific instructions
 
@@ -141,9 +141,9 @@ At setup completion Copilot captures a baseline snapshot (file count, LOC, depen
 
 Five deterministic shell scripts run at key agent lifecycle points — enforcing rules that soft instructions cannot guarantee. Hooks auto-inject project context at session start, block dangerous commands before they execute, auto-format edited files, enforce the retrospective before session end, and preserve workspace state before context compaction. Configure in `.github/hooks/copilot-hooks.json`.
 
-### 🔍 Extension and test-coverage review
+### 🔍 On-demand review skills
 
-Two built-in review modes surface at the end of any session:
+Two dedicated skills handle heavier repo-health audits on demand:
 
 - **Extension Review** — audits your installed VS Code extensions against the project's needs, flags redundancies and gaps, and proposes a curated list.
 - **Test Coverage Review** — categorises every module by test maturity, identifies untested critical paths, and recommends a prioritised CI/CD action plan.
@@ -158,7 +158,7 @@ Two built-in review modes surface at the end of any session:
 | `.github/agents/*.agent.md` | Copied from template | Six model-pinned agents |
 | `.github/hooks/copilot-hooks.json` | Copied from template | Agent lifecycle hooks configuration |
 | `.github/hooks/scripts/*.sh` | Copied from template | Five starter hook scripts (security, formatting, retrospective, context) |
-| `.github/skills/*/SKILL.md` | Copied from template | Eleven starter skills (Agent Skills standard) |
+| `.github/skills/*/SKILL.md` | Copied from template | Thirteen starter skills (Agent Skills standard) |
 | `.github/instructions/*.instructions.md` | Copied from template | Path-specific instruction stubs (tests, API, config, docs) |
 | `.github/prompts/*.prompt.md` | Copied from template | Five reusable slash commands (/explain, /refactor, /test-gen, /review-file, /commit-msg) |
 | `.github/workflows/copilot-setup-steps.yml` | Generated from template | Environment setup for GitHub Copilot coding agent |

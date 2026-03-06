@@ -67,137 +67,19 @@ Switch modes explicitly. Default is **Implement**.
   `[minor] | [src/utils/format.ts:18] | [W4 Over-processing] | One-liner wrapped in a function with no added value — consider inlining`
   </examples>
 
-#### Extension Review
+#### On-Demand Review Skills
 
-When asked to review or recommend VS Code extensions:
+When review requests need more than a lightweight findings pass, activate a matching skill instead of expanding the always-loaded prompt:
 
-0. **Get installed extensions** — ask user to run and paste (Copilot cannot enumerate installed extensions directly):
+- **Extension audits** — use `extension-review` (`.github/skills/extension-review/SKILL.md`) for VS Code extension recommendations, stack detection, keep/add/remove reporting, and extension-registry updates.
+- **Test coverage audits** — use `test-coverage-review` (`.github/skills/test-coverage-review/SKILL.md`) for coverage-gap analysis, local test recommendations, and CI workflow suggestions.
 
-   ```shell
-   code --list-extensions | sort
-   ```
+Skill activation rules:
 
-   Also read `.vscode/extensions.json` and `.vscode/settings.json` if they exist.
-
-1. **Audit current state**:
-   - Cross-reference the installed list from step 0 against workspace recommendations.
-   - Scan for linter/formatter config files: `.eslintrc.*`, `.prettierrc.*`, `oxlint.json`, `biome.json`, `.stylelintrc.*`, `ruff.toml`, `pyproject.toml`, `rustfmt.toml`, etc.
-   - Check `package.json` scripts and `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh` for tooling references.
-
-2. **Match to stack** — use the detection table below; also check `Markdown / Shell` / `bash` / `bash (custom shell test scripts)` / `N/A` placeholders:
-
-   | Stack signals | Recommended extensions |
-   |--------------|------------------------|
-   | `*.sh`, `*.bash`, `#!/bin/bash` shebang | `timonwong.shellcheck` · `foxundermoon.shell-format` |
-   | `*.js`, `*.ts`, `package.json` + ESLint config | `dbaeumer.vscode-eslint` · `esbenp.prettier-vscode` |
-   | `*.js`, `*.ts`, `oxlint.json` or `oxlint` in scripts | `oxc.oxc-vscode` *(covers oxlint + oxfmt — one extension)* |
-   | `*.js`, `*.ts`, `biome.json` | `biomejs.biome` |
-   | `*.py`, `requirements.txt`, `pyproject.toml` | `ms-python.python` · `charliermarsh.ruff` |
-   | `*.rs`, `Cargo.toml` | `rust-lang.rust-analyzer` · `tamasfe.even-better-toml` |
-   | `*.go`, `go.mod` | `golang.go` |
-   | `*.cs`, `*.csproj`, `*.sln` | `ms-dotnettools.csharp` |
-   | `*.java`, `pom.xml`, `build.gradle` | `vscjava.vscode-java-pack` |
-   | `Dockerfile`, `docker-compose.yml` | `ms-azuretools.vscode-docker` |
-   | `*.vue`, `vue.config.*` | `Vue.volar` |
-   | `*.svelte`, `svelte.config.*` | `svelte.svelte-vscode` |
-   | `*.md`, `*.mdx` (doc-heavy project) | `yzhang.markdown-all-in-one` |
-   | `*.css`, `*.scss`, `*.less` + stylelint config | `stylelint.vscode-stylelint` |
-   | `*.yaml`, `*.yml` (Kubernetes, Actions, schemas) | `redhat.vscode-yaml` |
-   | `*.toml` (non-Rust project) | `tamasfe.even-better-toml` |
-
-3. **Recommend additions** — suggest extensions only if:
-   - A linter, formatter, or language server is configured but its extension is absent
-   - A core language feature is unrepresented
-   - Priority order: language server → linter → formatter → test runner → debugger
-
-4. **Flag for removal** — mark extensions that:
-   - Duplicate functionality provided by another installed extension
-   - Target a language/framework not used in this project
-   - Are deprecated, unmaintained (>2 years no update), or superseded
-
-5. **Unknown stacks** — if you detect a language, framework, or tool not in the table above:
-   a. Search the VS Code Marketplace for relevant extensions
-   b. Qualify by: install count > 100 k · rating ≥ 4.0 · updated within 12 months
-   c. Add qualifying finds to the report under **➕ Recommended additions**
-   d. Append the new mapping to `.copilot/workspace/TOOLS.md` under **"Extension registry"**
-
-6. **Present in chat**:
-
-   ```markdown
-   ## Extension Review — copilot-instructions-template
-
-   ### ✅ Keep (N extensions)
-   - `publisher.extension-id` — reason to keep
-
-   ### ➕ Recommended additions (N extensions)
-   - `publisher.extension-id` — what it provides | why needed
-     Install: Ctrl+P → `ext install publisher.extension-id`
-
-   ### ❌ Consider removing (N extensions)
-   - `publisher.extension-id` — why flagged (duplicate / unused lang / deprecated)
-
-   ### ℹ️ Notes
-   - (stack-specific context, unknown stacks discovered, extension registry updates made)
-   ```
-
-7. **Wait** — do not modify `.vscode/extensions.json` or install/uninstall extensions until user says *"Apply these changes"* or *"Write the updated extensions.json"*.
-
-#### Test Coverage Review
-
-When asked to review test coverage, recommend tests, or audit the test suite:
-
-0. **Discover test stack** — scan for test config files and runner signals:
-
-   | Stack signals | Test runner | Coverage command |
-   |--------------|-------------|-----------------|
-   | `jest.config.*`, `"jest"` in `package.json` | Jest | `npx jest --coverage` |
-   | `vitest.config.*`, `"vitest"` in `package.json` | Vitest | `npx vitest run --coverage` |
-   | `mocha`, `.mocharc.*` in project | Mocha + nyc | `npx nyc mocha` |
-   | `pytest.ini`, `pyproject.toml` [pytest], `conftest.py` | pytest | `pytest --cov=. --cov-report=term-missing` |
-   | `go.mod` | go test | `go test ./... -coverprofile=coverage.out && go tool cover -func=coverage.out` |
-   | `Cargo.toml` | cargo test | `cargo tarpaulin --out Lcov` · `cargo llvm-cov` |
-   | `*.csproj`, `*.sln` | dotnet test | `dotnet test --collect:"XPlat Code Coverage"` |
-   | `pom.xml` (Maven) | JUnit + JaCoCo | `mvn test jacoco:report` |
-   | `build.gradle` (Gradle) | JUnit + JaCoCo | `./gradlew test jacocoTestReport` |
-   | `*.spec.rb`, `Gemfile` + rspec | RSpec + SimpleCov | `bundle exec rspec --format progress` |
-
-   Also read `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh`, `bash (custom shell test scripts)`, and `.github/workflows/` for configured test steps.
-
-1. **Get coverage data** — cannot run commands directly. Ask user to run the step-0 command and paste output. If no tooling exists, note it and proceed with step 2 (static analysis).
-
-2. **Scan test files statically**:
-   - Count test files (`*.test.*`, `*.spec.*`, `*_test.*`, `test_*.py`, `*Test.java`, `*_test.go`, etc.)
-   - List source files that have no corresponding test file
-   - Note which modules are imported the most — high-import modules with no tests are highest priority
-
-3. **Identify gaps** from coverage data (or static scan if no coverage data):
-   - **Zero coverage** — files/modules with 0% (or no test file at all)
-   - **Low coverage** — files with < 50% line coverage
-   - **Missing test types** — no integration tests, no edge-case tests, untested error paths
-   - **Unchecked invariants** — functions that take user input, do I/O, or mutate state without assertions
-
-4. **Recommend local tests** — for each gap, recommend:
-   - **What to test**: specific function, class, or behaviour
-   - **Test type**: unit · integration · end-to-end · property-based · snapshot
-   - **Priority**: `critical` (security/data path) · `high` (core logic) · `medium` (utilities) · `low` (pure formatting)
-   - **Suggested approach**: brief description of the test case incl. edge inputs
-
-5. **Recommend CI workflows** — propose GitHub Actions to add or improve:
-
-   | Workflow | What it does | Action / Tool |
-   |----------|-------------|--------------|
-   | Coverage gate | Fail PR if overall coverage drops below threshold | `codecov/codecov-action@v4` with `fail_ci_if_error: true` |
-   | Coverage diff comment | Post per-PR coverage change as a PR comment | `davelosert/vitest-coverage-report-action` (Vitest) · `MishaKav/jest-coverage-comment` (Jest) · `py-cov-action/python-coverage-comment-action` (Python) |
-   | Nightly coverage report | Full run on schedule for slower suites | `schedule: cron` trigger |
-   | Test matrix | Run against multiple runtime versions | `strategy.matrix` with version array |
-   | Mutation testing | Verify test quality, not just line coverage | Stryker (`stryker-mutator/action`) (JS/TS) · mutmut (Python) · `cargo-mutants` (Rust) |
-   | Contract / API tests | Validate API contracts don't break consumers | `pactflow/pact-stub-server` · Schemathesis |
-
-   For each recommendation: include a ready-to-use YAML snippet the user can copy directly into `.github/workflows/`.
-
-6. **Present in chat**: *(use the Test Coverage Review template from §2)*
-
-7. **Wait** — do not write test files, workflow files, or config until user explicitly asks.
+- Ask the user for pasted command output when the skill requires information Copilot cannot inspect directly, such as `code --list-extensions | sort` or external coverage reports.
+- Tie every recommendation to real repository signals before suggesting changes.
+- Present the report first and wait for explicit approval before writing config, test, or workflow files.
+- Keep the always-loaded instructions concise; workflow detail belongs in the skill body, not in §2.
 
 ### Refactor Mode
 

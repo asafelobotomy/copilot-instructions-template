@@ -185,7 +185,7 @@ Files that will be CREATED:
   .github/copilot-instructions.md     (populated from template)
   .github/copilot-version.md          (installed template version)
   .github/agents/*.agent.md           (6 model-pinned agents)
-  .github/skills/*/SKILL.md           (11 starter skills)
+  .github/skills/*/SKILL.md           (13 starter skills)
   .github/instructions/*.md           (path-specific stubs)
   .github/prompts/*.prompt.md         (slash command prompts)
   .github/hooks/copilot-hooks.json    (hook configuration)
@@ -395,6 +395,22 @@ Fetch from:
 
 ```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/plugin-management/SKILL.md
+```
+
+### `.github/skills/extension-review/SKILL.md`
+
+Fetch from:
+
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/extension-review/SKILL.md
+```
+
+### `.github/skills/test-coverage-review/SKILL.md`
+
+Fetch from:
+
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/test-coverage-review/SKILL.md
 ```
 
 ---
@@ -860,7 +876,7 @@ SETUP COMPLETE — copilot-instructions-template vX.Y.Z
 ✓ .github/copilot-instructions.md   populated
 ✓ .github/copilot-version.md        written (vX.Y.Z)
 ✓ .github/agents/                   6 model-pinned agents
-✓ .github/skills/                   11 starter skills
+✓ .github/skills/                   13 starter skills
 ✓ .github/instructions/             N path-specific stubs
 ✓ .github/prompts/                  5 slash-command prompts
 ✓ .github/hooks/                    hooks config + 10 scripts (5 sh + 5 ps1)

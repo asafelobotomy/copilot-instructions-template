@@ -1,0 +1,66 @@
+# copilot-instructions-template Expanded LLM Context Pack
+
+Version: 3.2.0
+Purpose: Expanded AI-facing summary for agents and tools that need more than llms.txt but less than the full repo.
+
+## Repository role
+This repository is a GitHub Copilot customization template. It scaffolds model-pinned agents, instruction files, hook scripts, prompt files, workspace identity files, MCP config, and reusable skills into a user's project.
+
+## Operating model
+- The main instructions live in .github/copilot-instructions.md and follow a thirteen-section structure.
+- Heavy workflows should move into on-demand skills instead of bloating the always-loaded prompt.
+- AGENTS.md is the machine entry point for setup, update, restore, and trigger phrases.
+- DOC_INDEX.json is the canonical machine-readable inventory; BIBLIOGRAPHY.md is the exhaustive human-readable catalogue.
+
+## Recommended model assignments
+- setup.agent.md: Claude Sonnet 4.6
+- coding.agent.md: GPT-5.3-Codex
+- review.agent.md: GPT-5.4
+- fast.agent.md: Claude Haiku 4.5
+- update.agent.md: Claude Sonnet 4.6
+- doctor.agent.md: Claude Sonnet 4.6
+
+## Repo surfaces worth reading first
+- README.md: human overview and feature summary
+- llms.txt: concise public summary
+- AGENTS.md: machine trigger map and remote sequences
+- SETUP.md: remote bootstrap protocol
+- UPDATE.md: remote update and restore protocol
+- MIGRATION.md: per-version change registry
+- .github/copilot-instructions.md: core instruction file
+- docs/AGENTS-GUIDE.md: human guide to models, triggers, and handoffs
+- docs/SKILLS-GUIDE.md: human guide to skills and discovery
+
+## Skill inventory
+The repo ships 13 skills. High-signal examples:
+- skill-creator: author new skills
+- lean-pr-review: structured Lean review workflow
+- tool-protocol: search before building automation
+- mcp-management: configure external tool access
+- extension-review: audit VS Code extensions against the detected stack
+- test-coverage-review: audit test coverage and recommend CI workflows
+- webapp-testing: choose browser tools or Playwright
+
+## Generated and canonical files
+- .copilot/workspace/DOC_INDEX.json: source of truth for counts and guide/skill listings
+- llms-ctx.txt and llms-ctx-full.txt: generated AI context packs kept in sync by scripts/sync-llms-context.sh
+- VERSION.md: source of truth for current template version
+- CHANGELOG.md and JOURNAL.md: historical change record
+
+## Core triggers
+- Setup from asafelobotomy/copilot-instructions-template
+- Update your instructions
+- Restore instructions from backup
+- Review extensions
+- Review my tests
+- Check your heartbeat
+- Run health check
+
+## Validation commands
+- bash tests/test-hooks.sh
+- bash tests/test-guard-destructive.sh
+- bash tests/test-sync-version.sh
+- bash tests/test-security-edge-cases.sh
+- bash tests/test-doc-consistency.sh
+- bash scripts/sync-doc-index.sh --check
+- bash scripts/sync-llms-context.sh --check

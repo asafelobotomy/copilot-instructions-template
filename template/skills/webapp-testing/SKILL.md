@@ -30,7 +30,7 @@ Set up browser testing for a web application. This skill offers two paths:
 
 - User says "Set up e2e tests", "Add browser tests", "Add Playwright", "Test my web app", or "Check my web app"
 - A web application exists but has no browser-level tests
-- The §2 Test Coverage Review identifies missing e2e coverage
+- The `test-coverage-review` skill identifies missing e2e coverage
 
 ---
 

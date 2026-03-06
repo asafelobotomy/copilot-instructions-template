@@ -46,6 +46,8 @@ preferred_skills = [
     "skill-management",
     "mcp-management",
     "plugin-management",
+    "extension-review",
+    "test-coverage-review",
 ]
 
 preferred_shell_hooks = [

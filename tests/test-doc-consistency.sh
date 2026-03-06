@@ -47,18 +47,18 @@ echo ""
 echo "1. Skill inventory counts"
 actual_repo_skills=$(find "$REPO_ROOT/.github/skills" -mindepth 2 -maxdepth 2 -name SKILL.md | wc -l | tr -d ' ')
 actual_template_skills=$(find "$REPO_ROOT/template/skills" -mindepth 2 -maxdepth 2 -name SKILL.md | wc -l | tr -d ' ')
-assert_eq "repo skill file count" "$actual_repo_skills" "11"
-assert_eq "template skill file count" "$actual_template_skills" "11"
-assert_true "README says eleven starter skills" "grep -q 'Eleven starter skills' '$REPO_ROOT/README.md'"
-assert_true "SETUP-GUIDE says eleven starter skills" "grep -q 'Eleven starter skills' '$REPO_ROOT/docs/SETUP-GUIDE.md'"
-assert_true "SKILLS-GUIDE says eleven skills" "grep -q 'Eleven skills are scaffolded' '$REPO_ROOT/docs/SKILLS-GUIDE.md'"
-assert_true "AGENTS says eleven starter skills" "grep -q '11 starter skills' '$REPO_ROOT/AGENTS.md'"
+assert_eq "repo skill file count" "$actual_repo_skills" "13"
+assert_eq "template skill file count" "$actual_template_skills" "13"
+assert_true "README says thirteen starter skills" "grep -q 'Thirteen starter skills' '$REPO_ROOT/README.md'"
+assert_true "SETUP-GUIDE says thirteen starter skills" "grep -q 'Thirteen starter skills' '$REPO_ROOT/docs/SETUP-GUIDE.md'"
+assert_true "SKILLS-GUIDE says thirteen skills" "grep -q 'Thirteen skills are scaffolded' '$REPO_ROOT/docs/SKILLS-GUIDE.md'"
+assert_true "AGENTS says thirteen starter skills" "grep -q '13 starter skills' '$REPO_ROOT/AGENTS.md'"
 echo ""
 
 # 2) Known stale phrase should not return in core docs.
 echo "2. Stale phrase prevention"
 assert_absent "AGENTS.md no Playwright-only webapp-testing description" "$REPO_ROOT/AGENTS.md" "Playwright-based web app testing"
-assert_true "AGENTS.md uses dual-path webapp-testing wording" "grep -q 'Browser-tools + Playwright web app testing' '$REPO_ROOT/AGENTS.md'"
+assert_true "AGENTS.md advertises thirteen repo skills" "grep -q 'Thirteen repo skills' '$REPO_ROOT/AGENTS.md'"
 echo ""
 
 # 3) Memory server removal consistency in always-on lists.
@@ -80,7 +80,7 @@ echo ""
 
 # 5) Newly added skills should be discoverable in summary docs.
 echo "5. Skill discoverability in summary docs"
-for skill in tool-protocol skill-management mcp-management plugin-management; do
+for skill in tool-protocol skill-management mcp-management plugin-management extension-review test-coverage-review; do
   assert_true "llms lists $skill" "grep -q '$skill' '$REPO_ROOT/llms.txt'"
   assert_true "DOC_INDEX lists $skill" "python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); s=set(d[\"skills\"][\"repo\"]); sys.exit(0 if sys.argv[2] in s else 1)' '$REPO_ROOT/.copilot/workspace/DOC_INDEX.json' '$skill'"
 done
@@ -97,16 +97,26 @@ assert_true "DOC_INDEX counts match skill reality" "python3 -c 'import json,sys,
 assert_true "DOC_INDEX sync script check passes" "bash '$REPO_ROOT/scripts/sync-doc-index.sh' --check"
 echo ""
 
-# 7) Setup flow scaffolds canonical index for consumer projects.
-echo "7. Setup scaffolds DOC_INDEX"
+# 7) LLM-facing summary files must stay aligned.
+echo "7. LLM context consistency"
+assert_true "llms review model says GPT-5.4" "grep -Fq 'review.agent.md' '$REPO_ROOT/llms.txt' && grep -Fq 'GPT-5.4' '$REPO_ROOT/llms.txt'"
+assert_true "llms links compact context pack" "grep -q 'llms-ctx.txt' '$REPO_ROOT/llms.txt'"
+assert_true "llms links expanded context pack" "grep -q 'llms-ctx-full.txt' '$REPO_ROOT/llms.txt'"
+assert_true "compact llms context exists" "test -f '$REPO_ROOT/llms-ctx.txt'"
+assert_true "expanded llms context exists" "test -f '$REPO_ROOT/llms-ctx-full.txt'"
+assert_true "llms context sync script check passes" "bash '$REPO_ROOT/scripts/sync-llms-context.sh' --check"
+echo ""
+
+# 8) Setup flow scaffolds canonical index for consumer projects.
+echo "8. Setup scaffolds DOC_INDEX"
 assert_true "template workspace DOC_INDEX stub exists" "test -f '$REPO_ROOT/template/workspace/DOC_INDEX.json'"
 assert_true "SETUP workspace summary includes DOC_INDEX" "grep -q 'DOC_INDEX.json' '$REPO_ROOT/SETUP.md'"
 assert_true "SETUP fetch table includes workspace DOC_INDEX source" "grep -q 'template/workspace/DOC_INDEX.json' '$REPO_ROOT/SETUP.md'"
 assert_true "SETUP-GUIDE Step 3 includes DOC_INDEX" "grep -q 'DOC_INDEX.json' '$REPO_ROOT/docs/SETUP-GUIDE.md'"
 echo ""
 
-# 8) Preference interview docs must reflect derived global autonomy.
-echo "8. Preference interview consistency"
+# 9) Preference interview docs must reflect derived global autonomy.
+echo "9. Preference interview consistency"
 assert_true "README says 5-23 questions" "grep -q '5-23 questions' '$REPO_ROOT/README.md'"
 assert_true "README Full tier says 23" "grep -Fq '| **Full** | 23 |' '$REPO_ROOT/README.md'"
 assert_true "SETUP-GUIDE Full tier says 23 questions" "grep -q '23 questions' '$REPO_ROOT/docs/SETUP-GUIDE.md'"
@@ -115,8 +125,8 @@ assert_true "SETUP-GUIDE explains derived global autonomy" "grep -q 'Global auto
 assert_absent "SECURITY-GUIDE no stale E19 reference" "$REPO_ROOT/docs/SECURITY-GUIDE.md" 'E19'
 echo ""
 
-# 9) Metrics and MCP settings should match the current template contract.
-echo "9. Metrics and MCP settings consistency"
+# 10) Metrics and MCP settings should match the current template contract.
+echo "10. Metrics and MCP settings consistency"
 assert_true "METRICS has extended header" "grep -q 'AI Accept Rate' '$REPO_ROOT/METRICS.md'"
 assert_true "INSTRUCTIONS-GUIDE mentions DORA and AI fields" "grep -q 'DORA and AI-operational fields' '$REPO_ROOT/docs/INSTRUCTIONS-GUIDE.md'"
 assert_absent "settings no removed MCP memory server" "$REPO_ROOT/.vscode/settings.json" 'mcp.json: memory'

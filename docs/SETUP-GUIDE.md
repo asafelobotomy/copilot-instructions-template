@@ -108,7 +108,7 @@ Six agent files are created in `.github/agents/` for VS Code 1.106+ users. These
 
 ### Step 2.8 — Scaffold skill library
 
-Eleven starter skills are scaffolded into `.github/skills/`, following the [Agent Skills](https://agentskills.io) open standard. These teach the agent reusable workflows: authoring new skills, fixing CI failures, Lean PR reviews, Conventional Commits, MCP server creation, browser/Playwright e2e testing, structured issue triage, Tool Protocol decision tree, skill management, MCP management, and agent plugin management. See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for details.
+Thirteen starter skills are scaffolded into `.github/skills/`, following the [Agent Skills](https://agentskills.io) open standard. These teach the agent reusable workflows: authoring new skills, fixing CI failures, Lean PR reviews, Conventional Commits, MCP server creation, browser/Playwright e2e testing, structured issue triage, Tool Protocol decision tree, skill management, MCP management, agent plugin management, VS Code extension audits, and test-coverage reviews. See [SKILLS-GUIDE.md](SKILLS-GUIDE.md) for details.
 
 ---
 

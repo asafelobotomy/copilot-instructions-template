@@ -183,7 +183,7 @@ The template's structure (agents, skills, hooks, MCP config) aligns closely with
 | Component | Plugin packaging |
 |-----------|------------------|
 | Six agents | Installed directly into the user's agent dropdown |
-| Eleven skills | Available on-demand without copying to `.github/skills/` |
+| Thirteen skills | Available on-demand without copying to `.github/skills/` |
 | Five hooks | Registered via the plugin's hook manifest |
 | Prompt files | Appear as slash commands contributed by the plugin |
 | Setup interview | Remains a separate flow — the plugin would include a `/setup` command that triggers it |

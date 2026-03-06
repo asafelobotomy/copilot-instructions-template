@@ -41,7 +41,7 @@ This keeps context efficient — only relevant skills consume the agent's contex
 
 ## Starter skills
 
-Eleven skills are scaffolded into your project during setup:
+Thirteen skills are scaffolded into your project during setup:
 
 | Skill | What it does | Trigger examples |
 |-------|-------------|------------------|
@@ -56,6 +56,8 @@ Eleven skills are scaffolded into your project during setup:
 | `skill-management` | Discover, activate, and manage agent skills following the Skill Protocol | "Show my skills", "Search for a skill that..." |
 | `mcp-management` | Configure and manage MCP servers for external tool access | "Configure MCP", "Add an MCP server for..." |
 | `plugin-management` | Discover, evaluate, install, test, and manage agent plugins for VS Code Copilot | "Show plugins", "Find a plugin for..." |
+| `extension-review` | Audit VS Code extensions against the detected project stack | "Review extensions", "Check my extensions" |
+| `test-coverage-review` | Audit test coverage, recommend local tests, and suggest CI workflows | "Review my tests", "Check test coverage" |
 
 ---
 

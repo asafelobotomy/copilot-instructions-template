@@ -1,6 +1,6 @@
 # Test Coverage Review — Human Guide
 
-> **What is it?** A structured code-health audit that Copilot performs on demand —
+> **What is it?** A structured code-health audit that the `test-coverage-review` skill performs on demand —
 > scanning your repository for test gaps, measuring current coverage, and
 > recommending both local tests to write and GitHub Actions workflows to add.
 

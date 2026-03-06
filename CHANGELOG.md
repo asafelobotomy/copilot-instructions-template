@@ -31,6 +31,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ### Added
 
+- `extension-review` skill added in both `.github/skills/` and `template/skills/` for on-demand VS Code extension audits tied to detected stack signals.
+- `test-coverage-review` skill added in both `.github/skills/` and `template/skills/` for on-demand coverage-gap analysis, local test recommendations, and CI workflow suggestions.
+- `llms-ctx.txt` and `llms-ctx-full.txt` added as generated AI-facing context packs.
+- `scripts/sync-llms-context.sh` added to generate and check the `llms-ctx*.txt` artifacts.
 - `tests/test-security-edge-cases.sh` — 29-assertion security and contract edge-case suite for `guard-destructive.sh` and `sync-version.sh`. Covers six gap categories identified by online research (OWASP Command Injection cheat sheet, BATS testing best practices): exit-code contract (hook must always exit 0), JSON output validity (every response parseable), `tool_input.input` field alias support, OWASP-sourced chained/embedded command detection (`;`, `&&`, `||`, subshell), SQL keyword case-insensitivity, and `sync-version.sh` idempotency.
 - Copilot instructions scaffolded from [copilot-instructions-template](https://github.com/asafelobotomy/copilot-instructions-template) — populated `.github/copilot-instructions.md`, workspace identity files, skills, hooks, MCP config, and documentation stubs.
 - `description` field added to all 4 path-specific instruction files (`.github/instructions/*.instructions.md`) for VS Code 1.102+ on-demand loading.
@@ -77,6 +81,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ### Changed
 
+- `.github/copilot-instructions.md` §2 slimmed by replacing long embedded extension-review and test-coverage-review procedures with concise on-demand skill activation guidance.
+- `AGENTS.md` reduced to a high-signal machine map and canonical references instead of maintaining an exhaustive duplicated file inventory.
+- `llms.txt` refreshed to current GPT-5.4 review guidance, current skill inventory, and links to generated compact and expanded context packs.
+- Setup and documentation surfaces updated from 11 to 13 starter skills, including `SETUP.md`, `README.md`, `docs/*`, `template/workspace/BOOTSTRAP.md`, and `template/workspace/DOC_INDEX.json`.
+- `tests/test-doc-consistency.sh` extended to guard `llms.txt`, `llms-ctx.txt`, `llms-ctx-full.txt`, and the new review skills against drift.
 - `guard-destructive.sh` (both `.github/hooks/` and `template/hooks/`) — added header comments documenting complementary relationship with VS Code terminal auto-approval.
 - `skill-creator` skill — notes that `/create-skill` is now built-in in VS Code 1.110+; this skill adds Lean/Kaizen guidance.
 - `docs/MCP-GUIDE.md` — "What is MCP?" section updated to note MCP GA status; configuration section expanded to multi-level (workspace, profile, settings, devcontainer).

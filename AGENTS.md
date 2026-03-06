@@ -94,7 +94,7 @@ Setup outputs written to the **user's project**:
 | `.github/agents/doctor.agent.md` | Model-pinned Doctor agent (Claude Sonnet 4.6) |
 | `.github/hooks/copilot-hooks.json` | Agent lifecycle hooks configuration |
 | `.github/hooks/scripts/*.sh` | Five starter hook scripts (security, formatting, retrospective, context) |
-| `.github/skills/*/SKILL.md` | Reusable skill library (11 starter skills from template) |
+| `.github/skills/*/SKILL.md` | Reusable skill library (13 starter skills from template) |
 | `.vscode/mcp.json` | MCP server configuration (created if E22 ≠ None) |
 | `.copilot/workspace/IDENTITY.md` | Agent self-description |
 | `.copilot/workspace/SOUL.md` | Agent values & reasoning patterns |
@@ -142,140 +142,32 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 
 Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/archive/` for `pre-update-*` dirs; lists backups from `BACKUP-MANIFEST.md`; asks user to select; creates a pre-restore snapshot; copies selected backup to `.github/copilot-instructions.md`; appends to `JOURNAL.md` and `CHANGELOG.md`.
 
----
+## High-Signal File Map
 
-## File map
+Use these navigation anchors first. For exhaustive inventory, read `BIBLIOGRAPHY.md` or `.copilot/workspace/DOC_INDEX.json` instead of relying on a duplicated path dump here.
 
-| File | Role |
+| Path | Role |
 |------|------|
-| **Project root** | |
-| `AGENTS.md` | This file — AI agent entry point |
-| `SETUP.md` | Complete setup guide (remote-executable) |
-| `UPDATE.md` | Complete update + restore protocol (remote-executable) |
-| `MIGRATION.md` | Per-version migration registry — sections changed, companion files, breaking changes, manual actions |
-| `VERSION.md` | Single source of truth for template version number (semver) |
-| `CHANGELOG.md` | Template version history |
-| `README.md` | Project landing page and quick-start guide |
-| `CONTRIBUTING.md` | Contributor guide — workflow, conventions, PR checklist |
-| `LICENSE` | MIT license |
-| `llms.txt` | LLM-friendly project summary (llmstxt standard) |
-| `BIBLIOGRAPHY.md` | File catalogue |
-| `JOURNAL.md` | ADR-style development journal |
-| `METRICS.md` | Kaizen baseline snapshot table |
-| `release-please-config.json` | Release-please configuration |
-| `.release-please-manifest.json` | Release-please version manifest |
-| `.gitignore` | Git ignore rules |
-| `.markdownlint.json` | Markdownlint configuration |
-| `.markdownlint-cli2.yaml` | Markdownlint CLI v2 configuration |
-| `.vale.ini` | Vale prose linting configuration |
-| **Scripts** | |
-| `scripts/sync-version.sh` | Propagate version from `VERSION.md` to all `x-release-please-version` marker files |
-| **Tests** | |
-| `tests/test-hooks.sh` | Hook script functionality tests |
-| `tests/test-guard-destructive.sh` | Guard-destructive hook security tests |
-| `tests/test-security-edge-cases.sh` | Security edge case tests (JSON injection, path traversal, etc.) |
-| `tests/test-sync-version.sh` | Version sync script tests |
-| **GitHub configuration** | |
-| `.github/copilot-instructions.md` | Generic instructions template with `{{PLACEHOLDER}}` tokens |
-| `.github/dependabot.yml` | Dependabot dependency update configuration |
-| `.github/ISSUE_TEMPLATE/bug_report.yml` | Bug report issue template |
-| `.github/ISSUE_TEMPLATE/feature_request.yml` | Feature request issue template |
-| `.github/PULL_REQUEST_TEMPLATE.md` | Pull request template |
-| **CI/CD workflows** | |
-| `.github/workflows/ci.yml` | Main CI pipeline — structure, shellcheck, markdownlint, actionlint, hook tests, version sync |
-| `.github/workflows/links.yml` | Link checker (lychee) |
-| `.github/workflows/release-manual.yml` | Manual release workflow |
-| `.github/workflows/release-please.yml` | Automated release via release-please |
-| `.github/workflows/scorecard.yml` | OpenSSF Scorecard security analysis |
-| `.github/workflows/stale.yml` | Stale issue/PR management |
-| `.github/workflows/vale.yml` | Prose linting CI |
-| **Agent files** | |
-| `.github/agents/setup.agent.md` | Model-pinned Setup agent stub (Claude Sonnet 4.6) |
-| `.github/agents/coding.agent.md` | Model-pinned Coding agent stub (GPT-5.3-Codex) |
-| `.github/agents/review.agent.md` | Model-pinned Review agent stub (GPT-5.4) |
-| `.github/agents/fast.agent.md` | Model-pinned Fast agent stub (Claude Haiku 4.5) |
-| `.github/agents/update.agent.md` | Model-pinned Update agent stub (Claude Sonnet 4.6) |
-| `.github/agents/doctor.agent.md` | Model-pinned Doctor agent stub (Claude Sonnet 4.6) |
-| **Path-specific instructions** | |
-| `.github/instructions/tests.instructions.md` | Path-specific instructions for test files (`*.test.*`, `*.spec.*`, `tests/**`) |
-| `.github/instructions/api-routes.instructions.md` | Path-specific instructions for API/route/controller files |
-| `.github/instructions/config.instructions.md` | Path-specific instructions for config and rc files |
-| `.github/instructions/docs.instructions.md` | Path-specific instructions for Markdown and docs files |
-| **Prompt files** | |
-| `.github/prompts/explain.prompt.md` | Slash command `/explain` — waste-aware code explanation |
-| `.github/prompts/refactor.prompt.md` | Slash command `/refactor` — PDCA-driven refactoring workflow |
-| `.github/prompts/test-gen.prompt.md` | Slash command `/test-gen` — convention-following test generation |
-| `.github/prompts/review-file.prompt.md` | Slash command `/review-file` — structured Lean file review |
-| `.github/prompts/commit-msg.prompt.md` | Slash command `/commit-msg` — Conventional Commits message authoring |
-| **Agent hooks (repo's own)** | |
-| `.github/hooks/copilot-hooks.json` | Agent lifecycle hooks configuration |
-| `.github/hooks/scripts/session-start.sh` | SessionStart hook — project context injection |
-| `.github/hooks/scripts/guard-destructive.sh` | PreToolUse hook — destructive command guard |
-| `.github/hooks/scripts/post-edit-lint.sh` | PostToolUse hook — auto-format after edits |
-| `.github/hooks/scripts/enforce-retrospective.sh` | Stop hook — retrospective enforcement |
-| `.github/hooks/scripts/save-context.sh` | PreCompact hook — context preservation |
-| `.github/hooks/scripts/session-start.ps1` | SessionStart hook — Windows PowerShell counterpart |
-| `.github/hooks/scripts/guard-destructive.ps1` | PreToolUse hook — Windows PowerShell counterpart |
-| `.github/hooks/scripts/post-edit-lint.ps1` | PostToolUse hook — Windows PowerShell counterpart |
-| `.github/hooks/scripts/enforce-retrospective.ps1` | Stop hook — Windows PowerShell counterpart |
-| `.github/hooks/scripts/save-context.ps1` | PreCompact hook — Windows PowerShell counterpart |
-| **Scaffolded skills (repo's own)** | |
-| `.github/skills/skill-creator/SKILL.md` | Meta-skill for authoring new skills |
-| `.github/skills/fix-ci-failure/SKILL.md` | CI failure diagnosis and resolution |
-| `.github/skills/lean-pr-review/SKILL.md` | Lean PR review with waste categories |
-| `.github/skills/conventional-commit/SKILL.md` | Conventional Commits message authoring |
-| `.github/skills/mcp-builder/SKILL.md` | MCP server creation and registration |
-| `.github/skills/webapp-testing/SKILL.md` | Browser-tools + Playwright web app testing |
-| `.github/skills/issue-triage/SKILL.md` | Issue triage with severity classification |
-| `.github/skills/tool-protocol/SKILL.md` | Tool Protocol decision tree and toolbox management |
-| `.github/skills/skill-management/SKILL.md` | Skill discovery, activation, and management |
-| `.github/skills/mcp-management/SKILL.md` | MCP server configuration and management |
-| `.github/skills/plugin-management/SKILL.md` | Agent plugin discovery, evaluation, and management |
-| **Vale styles** | |
-| `.github/vale/styles/README.md` | Vale custom styles documentation |
-| **Template files (copied to consumer project during setup)** | |
-| `template/skills/skill-creator/SKILL.md` | Starter skill — meta-skill for authoring new skills |
-| `template/skills/fix-ci-failure/SKILL.md` | Starter skill — CI failure diagnosis and resolution |
-| `template/skills/lean-pr-review/SKILL.md` | Starter skill — Lean PR review with waste categories |
-| `template/skills/conventional-commit/SKILL.md` | Starter skill — Conventional Commits message authoring |
-| `template/skills/mcp-builder/SKILL.md` | Starter skill — MCP server creation and registration |
-| `template/skills/webapp-testing/SKILL.md` | Starter skill — browser-tools + Playwright web app testing |
-| `template/skills/issue-triage/SKILL.md` | Starter skill — issue triage with severity classification and structured response |
-| `template/skills/tool-protocol/SKILL.md` | Starter skill — Tool Protocol decision tree and toolbox management |
-| `template/skills/skill-management/SKILL.md` | Starter skill — Skill discovery, activation, and management |
-| `template/skills/mcp-management/SKILL.md` | Starter skill — MCP server configuration and management |
-| `template/skills/plugin-management/SKILL.md` | Starter skill — agent plugin discovery and management |
-| `template/hooks/copilot-hooks.json` | Agent hooks configuration template |
-| `template/hooks/scripts/session-start.sh` | SessionStart hook — project context injection |
-| `template/hooks/scripts/guard-destructive.sh` | PreToolUse hook — destructive command guard |
-| `template/hooks/scripts/post-edit-lint.sh` | PostToolUse hook — auto-format after edits |
-| `template/hooks/scripts/enforce-retrospective.sh` | Stop hook — retrospective enforcement |
-| `template/hooks/scripts/save-context.sh` | PreCompact hook — context preservation |
-| `template/hooks/scripts/session-start.ps1` | SessionStart hook — Windows PowerShell counterpart |
-| `template/hooks/scripts/guard-destructive.ps1` | PreToolUse hook — Windows PowerShell counterpart |
-| `template/hooks/scripts/post-edit-lint.ps1` | PostToolUse hook — Windows PowerShell counterpart |
-| `template/hooks/scripts/enforce-retrospective.ps1` | Stop hook — Windows PowerShell counterpart |
-| `template/hooks/scripts/save-context.ps1` | PreCompact hook — Windows PowerShell counterpart |
-| `template/vscode/mcp.json` | MCP server configuration template |
-| `template/workspace/IDENTITY.md` | Agent self-description stub |
-| `template/workspace/SOUL.md` | Agent values & reasoning patterns stub |
-| `template/workspace/USER.md` | User profile stub |
-| `template/workspace/TOOLS.md` | Tool usage patterns stub |
-| `template/workspace/MEMORY.md` | Memory strategy stub |
-| `template/workspace/BOOTSTRAP.md` | Bootstrap record stub |
-| `template/workspace/HEARTBEAT.md` | Heartbeat checklist stub |
-| `template/CHANGELOG.md` | Keep-a-Changelog stub (for consumer project) |
-| `template/JOURNAL.md` | ADR journal stub |
-| `template/BIBLIOGRAPHY.md` | File catalogue stub |
-| `template/METRICS.md` | Metrics baseline table stub |
-| `template/copilot-setup-steps.yml` | GitHub Copilot coding agent environment setup workflow stub |
-| **VS Code workspace config** | |
-| `.vscode/mcp.json` | MCP server configuration (this repo) |
-| `.vscode/settings.json` | VS Code workspace settings |
-| **Workspace identity (this repo's own)** | |
-| `.copilot/workspace/IDENTITY.md` | Agent self-description |
-| `.copilot/workspace/SOUL.md` | Agent values & reasoning patterns |
-| `.copilot/workspace/USER.md` | Observed user profile |
+| `AGENTS.md` | This file — trigger phrases and remote sequences |
+| `.github/copilot-instructions.md` | Primary instructions template (§1–§13) |
+| `SETUP.md` | Remote setup protocol |
+| `UPDATE.md` | Remote update and restore protocol |
+| `MIGRATION.md` | Per-version migration registry |
+| `README.md` | Human landing page and feature overview |
+| `llms.txt` | Concise LLM-facing summary |
+| `llms-ctx.txt` | Generated compact LLM context pack |
+| `llms-ctx-full.txt` | Generated expanded LLM context pack |
+| `.github/agents/` | Six model-pinned agents |
+| `.github/skills/` | Thirteen repo skills, including review skills |
+| `template/skills/` | Thirteen template skill stubs scaffolded into consumer projects |
+| `.github/prompts/` | Reusable slash-command prompt files |
+| `.github/instructions/` | Path-specific instruction files |
+| `.github/hooks/` | Hook configuration and scripts |
+| `.github/workflows/` | CI and release workflows |
+| `docs/` | Human-readable guides |
+| `scripts/` | Sync and maintenance scripts |
+| `tests/` | Drift guards and shell test suites |
+| `.copilot/workspace/` | Workspace identity files and canonical metadata index |
 | `.copilot/workspace/TOOLS.md` | Tool usage patterns |
 | `.copilot/workspace/MEMORY.md` | Memory strategy |
 | `.copilot/workspace/BOOTSTRAP.md` | Permanent setup origin record |

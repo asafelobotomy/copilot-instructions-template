@@ -1,70 +1,47 @@
 # copilot-instructions-template
 
-> A Lean/Kaizen-inspired GitHub Copilot instructions template that installs a structured, self-updating AI agent workflow into any VS Code project. Covers operating modes, PDCA cycle, waste classification, heartbeat health checks, model-pinned agents, hooks, MCP servers, tools, and skills.
+> Lean/Kaizen GitHub Copilot template for VS Code projects. It scaffolds model-pinned agents, reusable skills, hooks, MCP config, workspace identity files, and update protocols into a user's repository.
 
-## Key files
+## Start here
 
-- [.github/copilot-instructions.md](.github/copilot-instructions.md): Main always-loaded system prompt (§1–§13). Start here.
-- [AGENTS.md](AGENTS.md): Machine-readable entry point for AI agents — trigger phrases, bootstrap sequence, update protocol.
-- [UPDATE.md](UPDATE.md): Protocol for fetching and applying upstream template updates (version-walk, three-way merge, companion files).
-- [MIGRATION.md](MIGRATION.md): Per-version migration registry — drives the version-walk update algorithm.
-- [SETUP.md](SETUP.md): Human-readable first-time setup guide.
-- [docs/AGENTS-GUIDE.md](docs/AGENTS-GUIDE.md): Human reference for agents, model assignments, fallback chains, handoffs, and sub-directory instruction scoping.
-- [docs/HOOKS-GUIDE.md](docs/HOOKS-GUIDE.md): Hook configuration format, available events, security considerations.
+- [.github/copilot-instructions.md](.github/copilot-instructions.md): Main always-loaded instruction file. Core methodology and guardrails.
+- [AGENTS.md](AGENTS.md): Machine entry point. Trigger phrases, setup, update, and restore sequences.
+- [SETUP.md](SETUP.md): Remote bootstrap protocol for consumer projects.
+- [UPDATE.md](UPDATE.md): Remote update and restore protocol.
+- [MIGRATION.md](MIGRATION.md): Per-version migration registry.
 
-## Agents (`.github/agents/`)
+## Model strategy
 
-| File | Model | Purpose |
-|------|-------|---------|
-| `setup.agent.md` | Claude Sonnet 4.6 | First-time setup and onboarding |
-| `coding.agent.md` | GPT-5.3-Codex | Implementation, refactoring, multi-step tasks |
-| `review.agent.md` | Claude Opus 4.6 | Lean/Kaizen code review |
-| `fast.agent.md` | Claude Haiku 4.5 | Quick questions and lightweight edits |
-| `update.agent.md` | Claude Sonnet 4.6 | Upstream instruction update workflow |
-| `doctor.agent.md` | Claude Sonnet 4.6 | Read-only health check on all config files |
+| Surface | Recommended model | Role |
+|---------|-------------------|------|
+| `setup.agent.md` | Claude Sonnet 4.6 | Interactive setup and onboarding |
+| `coding.agent.md` | GPT-5.3-Codex | Implementation, refactoring, multi-step coding |
+| `review.agent.md` | GPT-5.4 | Deep review, debugging, architectural analysis |
+| `fast.agent.md` | Claude Haiku 4.5 | Quick lookups and lightweight edits |
+| `update.agent.md` | Claude Sonnet 4.6 | Upstream instruction updates |
+| `doctor.agent.md` | Claude Sonnet 4.6 | Read-only health checks |
 
-## Skills (`.github/skills/` after install, `template/skills/` in this repo)
+## Skills
 
-| Skill | Description |
-|-------|-------------|
-| `conventional-commit` | Author a Conventional Commits-compliant commit message |
-| `lean-pr-review` | Review a pull request using Lean waste categories |
-| `fix-ci-failure` | Diagnose and fix a failing CI run |
-| `skill-creator` | Author a new SKILL.md skill file |
-| `mcp-builder` | Build or configure a new MCP server |
-| `webapp-testing` | Set up browser testing (built-in browser tools or Playwright) |
-| `issue-triage` | Triage a GitHub issue with severity, waste category, and recommended action |
-| `tool-protocol` | Find, build, or adapt automation tools following the Tool Protocol decision tree |
-| `skill-management` | Discover, activate, and manage agent skills following the Skill Protocol |
-| `mcp-management` | Configure and manage Model Context Protocol servers for external tool access |
-| `plugin-management` | Discover, evaluate, install, test, and manage agent plugins for VS Code Copilot |
+The repo ships 13 skills in `.github/skills/` and `template/skills/`. High-signal examples:
 
-## MCP servers (`.vscode/mcp.json` after install)
+- `extension-review`: audit VS Code extensions against detected stack signals
+- `test-coverage-review`: audit test coverage and recommend local tests plus CI workflows
+- `tool-protocol`: search before building automation
+- `skill-management`: discover and manage skills on demand
+- `mcp-management`: configure external tool access
+- `plugin-management`: discover and manage agent plugins
 
-| Server | Purpose |
-|--------|---------|
-| `@modelcontextprotocol/server-filesystem` | File operations beyond the workspace |
-| `mcp-server-git` | Git history, diffs, and branch operations |
-| `@modelcontextprotocol/server-github` | GitHub API — issues, PRs, repos, actions |
-| `mcp-server-fetch` | HTTP fetch for web content and APIs |
+Canonical inventory for all skills, guides, and agents lives in `.copilot/workspace/DOC_INDEX.json`.
 
-## Workspace identity files (`.copilot/workspace/` after install)
+## Validation
 
-- `HEARTBEAT.md` — health check checklist and pulse history
-- `MEMORY.md` — architectural decisions, error patterns, team conventions
-- `SOUL.md` — agent reasoning alignment and heuristics
-- `USER.md` — user preferences observed over time
-- `IDENTITY.md` — agent self-description
-- `TOOLS.md` — effective tool usage patterns
-- `BOOTSTRAP.md` — permanent setup origin record
+- Main suite: `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh`
+- Docs drift: `bash tests/test-doc-consistency.sh`
+- Generated metadata: `bash scripts/sync-doc-index.sh --check && bash scripts/sync-llms-context.sh --check`
 
-## Project tracking files (project root after install)
+## Optional
 
-- `JOURNAL.md` — chronological log of significant decisions and events
-- `BIBLIOGRAPHY.md` — complete catalogue of all project files
-- `METRICS.md` — LOC baselines, test coverage, deployment frequency
-
-## Optional: full docs
-
-- [docs/](docs/): Detailed guides for hooks, agents, MCP, skills, and setup.
-- [.github/hooks/](template/hooks/): Lifecycle hook scripts (session-start, guard-destructive, post-edit-lint, enforce-retrospective, save-context).
+- [llms-ctx.txt](llms-ctx.txt): generated compact LLM context pack
+- [llms-ctx-full.txt](llms-ctx-full.txt): generated expanded LLM context pack
+- [docs/](docs/): detailed human-readable guides

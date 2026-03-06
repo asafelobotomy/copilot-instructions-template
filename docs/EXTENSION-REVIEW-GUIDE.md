@@ -1,13 +1,13 @@
 # Extension Review Guide
 
-> **Audience**: humans. This explains the Extension Review feature in `.github/copilot-instructions.md §2` in plain English.
-> For the machine-readable protocol, see [§2 — Operating Modes → Extension Review](../.github/copilot-instructions.md).
+> **Audience**: humans. This explains the `extension-review` skill in plain English.
+> For the machine-readable workflow, see [`.github/skills/extension-review/SKILL.md`](../.github/skills/extension-review/SKILL.md).
 
 ---
 
 ## What is Extension Review?
 
-Extension Review is a capability built into the Lean/Kaizen template that lets Copilot audit your VS Code extensions for a specific project — recommending what to add, what to remove, and researching anything it doesn't recognise — without auto-installing anything.
+Extension Review is an on-demand skill in the Lean/Kaizen template that lets Copilot audit your VS Code extensions for a specific project — recommending what to add, what to remove, and researching anything it doesn't recognise — without auto-installing anything.
 
 Think of it as a code review, but for your extension list.
 
