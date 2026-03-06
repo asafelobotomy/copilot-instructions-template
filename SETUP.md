@@ -306,111 +306,25 @@ Write each file verbatim to the target path. If any fetch fails, **stop immediat
 
 ## § 2.6 — Scaffold skill library
 
-Create `.github/skills/` and write the following skill files. Each skill goes in its own subdirectory.
+Create `.github/skills/` and write the following skill files. Each skill goes in its own subdirectory. Fetch each from the template repository and write verbatim. If any fetch fails, **stop immediately**.
 
-### `.github/skills/skill-creator/SKILL.md`
+Base URL: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/`
 
-Fetch from:
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/skill-creator/SKILL.md
-```
-
-### `.github/skills/fix-ci-failure/SKILL.md`
-
-Fetch from:
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/fix-ci-failure/SKILL.md
-```
-
-### `.github/skills/lean-pr-review/SKILL.md`
-
-Fetch from:
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/lean-pr-review/SKILL.md
-```
-
-### `.github/skills/conventional-commit/SKILL.md`
-
-Fetch from:
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/conventional-commit/SKILL.md
-```
-
-### `.github/skills/mcp-builder/SKILL.md`
-
-Fetch from:
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/mcp-builder/SKILL.md
-```
-
-### `.github/skills/webapp-testing/SKILL.md`
-
-Fetch from:
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/webapp-testing/SKILL.md
-```
-
-### `.github/skills/issue-triage/SKILL.md`
-
-Fetch from:
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/issue-triage/SKILL.md
-```
-
-### `.github/skills/tool-protocol/SKILL.md`
-
-Fetch from:
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/tool-protocol/SKILL.md
-```
-
-### `.github/skills/skill-management/SKILL.md`
-
-Fetch from:
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/skill-management/SKILL.md
-```
-
-### `.github/skills/mcp-management/SKILL.md`
-
-Fetch from:
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/mcp-management/SKILL.md
-```
-
-### `.github/skills/plugin-management/SKILL.md`
-
-Fetch from:
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/plugin-management/SKILL.md
-```
-
-### `.github/skills/extension-review/SKILL.md`
-
-Fetch from:
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/extension-review/SKILL.md
-```
-
-### `.github/skills/test-coverage-review/SKILL.md`
-
-Fetch from:
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/test-coverage-review/SKILL.md
-```
+| Target path | Fetch suffix |
+|-------------|-------------|
+| `.github/skills/skill-creator/SKILL.md` | `skill-creator/SKILL.md` |
+| `.github/skills/fix-ci-failure/SKILL.md` | `fix-ci-failure/SKILL.md` |
+| `.github/skills/lean-pr-review/SKILL.md` | `lean-pr-review/SKILL.md` |
+| `.github/skills/conventional-commit/SKILL.md` | `conventional-commit/SKILL.md` |
+| `.github/skills/mcp-builder/SKILL.md` | `mcp-builder/SKILL.md` |
+| `.github/skills/webapp-testing/SKILL.md` | `webapp-testing/SKILL.md` |
+| `.github/skills/issue-triage/SKILL.md` | `issue-triage/SKILL.md` |
+| `.github/skills/tool-protocol/SKILL.md` | `tool-protocol/SKILL.md` |
+| `.github/skills/skill-management/SKILL.md` | `skill-management/SKILL.md` |
+| `.github/skills/mcp-management/SKILL.md` | `mcp-management/SKILL.md` |
+| `.github/skills/plugin-management/SKILL.md` | `plugin-management/SKILL.md` |
+| `.github/skills/extension-review/SKILL.md` | `extension-review/SKILL.md` |
+| `.github/skills/test-coverage-review/SKILL.md` | `test-coverage-review/SKILL.md` |
 
 ---
 

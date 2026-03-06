@@ -225,70 +225,19 @@ If the user declines or picks individually, proceed to the standard Pre-flight R
 
 After completing U1–U5, present this report. Do not write anything yet.
 
-```text
-INSTRUCTION UPDATE REPORT
+Structure the report as plain text with these sections in order:
 
-Installed version: X.Y.Z (applied: YYYY-MM-DD)
-Latest version:    X.Y.Z
-Version steps:     X versions traversed (v1 → v2 → ... → vN)
-Status:            <N> section change(s) + <M> companion file(s) available
-
-⚠ BREAKING CHANGES
-<list each breaking version with one-line description — or "None.">
-
-WHAT'S NEW (per version, from CHANGELOG)
-<grouped by version, newest first — one bullet per notable change>
-
-SECTION-BY-SECTION DIFF
-| Status | Section                        | Result        | Changed in   |
-|--------|--------------------------------|---------------|--------------|
-|        | §1 Lean Principles             | UNCHANGED     |              |
-|   ⚠    | §2 Operating Modes             | BREAKING      | v3.0.0       |
-|   ✓    | §3 Standardised Work Baselines | UPDATED       | v2.1.0       |
-|   !    | §4 Coding Conventions          | USER_MODIFIED | v3.0.0       |
-|        | §5 PDCA Cycle                  | UNCHANGED     |              |
-|        | §6 Waste Catalogue             | UNCHANGED     |              |
-|        | §7 Metrics                     | UNCHANGED     |              |
-|   ✓    | §8 Living Update Protocol      | UPDATED       | v2.1.0,v3.0.0|
-|        | §9 Subagent Protocol           | UNCHANGED     |              |
-|  [§10] | Project-Specific Overrides     | PROTECTED     |              |
-(✓ = update | ! = user-modified | ⚠ = breaking | [§10] = protected)
-
-COMPANION FILES
-| Status | File                                | Action   | Since   |
-|--------|-------------------------------------|----------|---------|
-|   +    | .github/agents/update.agent.md      | NEW      | v3.0.0  |
-|   ↑    | .github/hooks/scripts/session-start… | UPDATABLE| v3.0.4  |
-|   ~    | .github/skills/lean-pr-review/…     | CUSTOM   | v1.1.0  |
-(+ = new file | ↑ = update available | ~ = user-customised)
-
-NEW PLACEHOLDERS (need resolution in §10)
-<list {{PLACEHOLDER}} tokens introduced — or "None.">
-
-USER-MODIFIED SECTIONS (require your explicit decision)
-<list USER_MODIFIED sections with one-line description — or "None detected.">
-
-MANUAL ACTIONS REQUIRED
-<accumulated from MIGRATION.md across all intermediate versions — or "None.">
-
-GUARDRAIL CHECK
-§10 Project-Specific Overrides: PROTECTED (never modified)
-User Preferences block:         PROTECTED (never modified)
-Migrated / user-added content:  PROTECTED (never modified)
-Resolved placeholder values:    PROTECTED (never reverted)
-
-BACKUP
-Backup created automatically in .github/archive/pre-update-YYYY-MM-DD-vX.Y.Z/
-before any writes. Restore anytime: "Restore instructions from backup".
-
-HOW DO YOU WANT TO PROCEED?
-U — Update all    Apply all section changes + companion file updates at once.
-S — Skip          Do nothing. Keep everything unchanged.
-C — Customise     Review and decide on each section change and companion
-                  file individually.
-
-Type U, S, or C:
-```
+1. **Header** — installed version, latest version, version steps traversed, status summary
+2. **Breaking changes** — list each breaking version with one-line description, or "None."
+3. **What's new** — grouped by version (newest first) from CHANGELOG, one bullet per notable change
+4. **Section-by-section diff** — table with columns: Status, Section (§1–§10), Result (UNCHANGED/UPDATED/BREAKING/USER_MODIFIED/PROTECTED), Changed in (version). Status icons: ✓ update, ! user-modified, ⚠ breaking, [§10] protected
+5. **Companion files** — table with columns: Status, File, Action (NEW/UPDATABLE/CUSTOM), Since. Icons: + new, ↑ update available, ~ user-customised
+6. **New placeholders** — list `{{PLACEHOLDER}}` tokens introduced, or "None."
+7. **User-modified sections** — list with one-line description, or "None detected."
+8. **Manual actions required** — accumulated from MIGRATION.md across all intermediate versions, or "None."
+9. **Guardrail check** — confirm §10, User Preferences block, migrated/user-added content, and resolved placeholder values are all PROTECTED
+10. **Backup** — note that backup will be created automatically before any writes
+11. **Prompt** — `U` (update all) / `S` (skip) / `C` (customise per-section and per-companion-file)
 
 Wait for the user's response before proceeding.
 
@@ -308,61 +257,12 @@ For companion files with status `NEW`, no backup is needed (the file does not ex
 
 ### Where to store it
 
-Create the directory:
+Create directory `.github/archive/pre-update-<TODAY>-v<INSTALLED_VERSION>/` (append counter `-2`, `-3` if exists). Inside, create:
 
-```text
-.github/archive/pre-update-<TODAY>-v<INSTALLED_VERSION>/
-```
+1. **`copilot-instructions.md`** — exact copy of current `.github/copilot-instructions.md`
+2. **`BACKUP-MANIFEST.md`** — table with: backup date, installed version, target version, trigger, files backed up. Include list of changed sections and restore instructions (*"Restore instructions from backup"*).
 
-Where:
-
-- `<TODAY>` is today's date in `YYYY-MM-DD` format.
-- `<INSTALLED_VERSION>` is the version extracted in U1 (or `unknown` if `.github/copilot-version.md` was absent/invalid).
-
-If that directory already exists (e.g., the user ran an update twice on the same day from the same version), append a counter: `-2`, `-3`, etc.
-
-Inside that directory, create two files:
-
-#### `copilot-instructions.md`
-
-An exact byte-for-byte copy of the current `.github/copilot-instructions.md`.
-
-#### `BACKUP-MANIFEST.md`
-
-```markdown
-# Backup Manifest
-
-| Field | Value |
-|-------|-------|
-| Backup created | <TODAY> |
-| Installed version at backup | <INSTALLED_VERSION> |
-| Update target version | <NEW_VERSION> |
-| Trigger | User ran "Update your instructions" |
-| Files backed up | `.github/copilot-instructions.md`<br>+ any companion files with UPDATABLE or USER_CUSTOMISED status |
-
-## Sections that were changed in this update
-
-<list of sections with UPDATED / NEW_SECTION / USER_MODIFIED status
- from the change manifest — or "none (update was skipped)">
-
-## How to restore
-
-Say to Copilot: *"Restore instructions from backup"*
-
-Copilot will list all available backups in `.github/archive/` and let you
-choose which one to restore. Restoration replaces the current
-`.github/copilot-instructions.md` with the backed-up copy.
-```
-
-### Confirming the backup
-
-After the backup directory and files are created, print a single line before proceeding with writes:
-
-```text
-Backup created at .github/archive/pre-update-<TODAY>-v<INSTALLED_VERSION>/
-```
-
-Then immediately continue with the write phase — no user interaction required.
+Print `Backup created at .github/archive/pre-update-<TODAY>-v<INSTALLED_VERSION>/` then continue with writes — no user interaction required.
 
 ---
 

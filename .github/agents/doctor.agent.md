@@ -186,84 +186,11 @@ Skip this check silently if no plugin settings or paths are configured.
 
 ## Report format
 
-After all checks, print the full health report:
-
-```text
-╔══════════════════════════════════════════════════════════════╗
-║              COPILOT HEALTH REPORT                          ║
-╚══════════════════════════════════════════════════════════════╝
-
-Checked: <DATE>
-Project: <working directory>
-Instructions version: <from .github/copilot-version.md, or "unknown">
-
-──────────────────────────────────────────────────────────────
-D1  ATTENTION BUDGET
-──────────────────────────────────────────────────────────────
-  Total lines:   <N> / 800   <OK | WARN | CRITICAL>
-  §2:            <N> / 210   <OK | WARN | CRITICAL>
-  <one row per section>
-
-──────────────────────────────────────────────────────────────
-D2  SECTION STRUCTURE
-──────────────────────────────────────────────────────────────
-  <section list with ✓ or ✗>
-
-──────────────────────────────────────────────────────────────
-D3  PLACEHOLDER LEAKAGE
-──────────────────────────────────────────────────────────────
-  <findings or "None detected — all placeholders resolved">
-
-──────────────────────────────────────────────────────────────
-D4  AGENT FILE VALIDITY
-──────────────────────────────────────────────────────────────
-  <one row per agent file with issues or "All agents valid">
-
-──────────────────────────────────────────────────────────────
-D5  MCP CONFIGURATION
-──────────────────────────────────────────────────────────────
-  <findings or "No issues detected">
-
-──────────────────────────────────────────────────────────────
-D6  VERSION FILE
-──────────────────────────────────────────────────────────────
-  <findings or ".github/copilot-version.md present — vX.Y.Z">
-
-──────────────────────────────────────────────────────────────
-D7  WORKSPACE MEMORY FILES
-──────────────────────────────────────────────────────────────
-  <one row per file with ✓ / MISSING / EMPTY>
-
-──────────────────────────────────────────────────────────────
-D8  AGENTS.MD
-──────────────────────────────────────────────────────────────
-  <findings or "Present">
-
-──────────────────────────────────────────────────────────────
-D9  AGENT PLUGINS
-──────────────────────────────────────────────────────────────
-  <findings or "No conflicts detected" or "Skipped — no plugin config">
-
-══════════════════════════════════════════════════════════════
-SUMMARY
-══════════════════════════════════════════════════════════════
-  CRITICAL : <N>
-  HIGH     : <N>
-  WARN     : <N>
-  OK       : <N> checks passed
-
-  Overall status: <HEALTHY | DEGRADED | CRITICAL>
-══════════════════════════════════════════════════════════════
-```
-
-After the report:
+After all checks, print a structured health report with sections for each check (D1–D9), showing findings or "OK". End with a summary counting CRITICAL/HIGH/WARN/OK and an overall status (HEALTHY / DEGRADED / CRITICAL).
 
 - If **HEALTHY**: print `All checks passed. No action needed.`
-- If **DEGRADED** (WARN only): print
-  `Minor issues found. Use "Apply fixes" to address them, or resolve manually.`
-- If **CRITICAL** or **HIGH** items exist: use the "Apply fixes" handoff if
-  they are file-content issues, or the "Update instructions" handoff if the
-  instructions are behind the template version.
+- If **DEGRADED** (WARN only): suggest using "Apply fixes" handoff or manual resolution.
+- If **CRITICAL** or **HIGH**: use "Apply fixes" handoff for file issues, or "Update instructions" handoff if behind template version.
 
 > **This agent is read-only.** Do not modify any files. Surface findings
 > only — let the Code agent or Update agent make changes.
