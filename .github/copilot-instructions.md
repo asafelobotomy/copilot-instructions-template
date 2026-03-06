@@ -1,6 +1,6 @@
 # Copilot Instructions — copilot-instructions-template
 
-> **Template version**: 3.2.0 <!-- x-release-please-version --> | **Applied**: 2026-02-27
+> **Template version**: 3.3.0 <!-- x-release-please-version --> | **Applied**: 2026-02-27
 > Living document — self-edit rules in §8.
 >
 > **Model Quick Reference** — select model in Copilot picker before starting each task, or use `.github/agents/` (VS Code 1.106+). [Why these models?](https://docs.github.com/en/copilot/reference/ai-models/model-comparison)
