@@ -9,6 +9,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [3.3.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.2.0...v3.3.0) (2026-03-06)
+
+
+### Features
+
+* **template:** add review skills and llms context packs ([fc8c660](https://github.com/asafelobotomy/copilot-instructions-template/commit/fc8c6601bf24d6a6c28f6e32893fa90c757afb34))
+
 ## [3.2.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.1.0...v3.2.0) (2026-03-06)
 
 
