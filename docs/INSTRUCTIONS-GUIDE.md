@@ -95,7 +95,7 @@ Example finding: `[major] | [src/api/handler.ts:42] | [W7 Defects] | Unhandled p
 
 **What it does**: Tells Copilot what to track and where to record it.
 
-After any session that meaningfully changes your codebase, Copilot appends a row to `METRICS.md` with: date, total LOC, file count, test count, type error count, and runtime dep count. This gives you a historical view of whether the codebase is growing, shrinking, improving, or regressing.
+After any session that meaningfully changes your codebase, Copilot appends a row to `METRICS.md` with core delivery metrics (date, LOC, files, tests, assertions, type errors, runtime deps) plus DORA and AI-operational fields (deploy frequency, lead time, change failure rate, MTTR, AI accept rate, context resets). This gives you a historical view of whether the codebase is growing, shrinking, improving, or regressing.
 
 **How to customise**: Add a custom metric row in §10 (the `{{EXTRA_METRIC_NAME}}` placeholder). For example: "API response time p95 — measured via k6".
 

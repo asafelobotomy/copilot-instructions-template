@@ -10,7 +10,7 @@ tools: [fetch, editFiles, codebase]
 disable-model-invocation: true
 handoffs:
   - label: Run health check
-    agent: doctor
+    agent: Doctor
     prompt: Run a full Doctor health check now that the instructions have been updated. Report any remaining issues.
     send: true
 ---

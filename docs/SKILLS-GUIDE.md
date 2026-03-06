@@ -61,27 +61,24 @@ Eleven skills are scaffolded into your project during setup:
 
 ## Skill anatomy
 
-Every skill is a `SKILL.md` file with YAML frontmatter:
+Every skill is a `SKILL.md` file with a small YAML frontmatter block that sticks to the keys VS Code currently validates, followed by the richer metadata in the body:
 
-```yaml
+```markdown
 ---
 name: fix-ci-failure
 description: Diagnose and fix a failing CI pipeline or GitHub Actions workflow
-version: "1.0"
-license: MIT
-tags: [ci, github-actions, debugging]
 ---
 
 # Fix CI Failure
+
+> Skill metadata: version "1.0"; license MIT; tags [ci, github-actions, debugging]; compatibility ">=3.0"; recommended tools [codebase, editFiles, runCommands].
 
 <step-by-step workflow instructions>
 ```
 
 - **`name`** (required) — kebab-case identifier; matches the directory name
 - **`description`** (required) — one-sentence summary; this is how the agent *discovers* the skill
-- **`version`** — semver tracking for the skill
-- **`license`** — permissive license (MIT, Apache 2.0)
-- **`tags`** — 2–5 keywords for discovery matching
+- **`Skill metadata` note** — body-level note that preserves versioning, compatibility, tool-scope, and discovery tags without triggering frontmatter schema warnings
 
 The body contains numbered steps with clear action verbs, ending with a "Verify" section.
 

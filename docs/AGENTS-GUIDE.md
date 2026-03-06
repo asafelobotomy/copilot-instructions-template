@@ -37,7 +37,7 @@ The template creates six agent files in `.github/agents/`. These appear in the C
 |-------|-------|----------|
 | **Setup** | Claude Sonnet 4.6 | First-time setup, onboarding, template operations |
 | **Code** | GPT-5.3-Codex | Implementation, refactoring, multi-step coding tasks |
-| **Review** | Claude Opus 4.6 | Deep code review, architectural analysis, Lean/Kaizen critique |
+| **Review** | GPT-5.4 | Deep code review, architectural analysis, Lean/Kaizen critique |
 | **Fast** | Claude Haiku 4.5 | Quick questions, syntax lookups, single-file lightweight edits |
 | **Update** | Claude Sonnet 4.6 | Fetch and apply upstream instruction updates from the template repo |
 | **Doctor** | Claude Sonnet 4.6 | Read-only health check on all Copilot instruction and config files |
@@ -50,9 +50,9 @@ Each agent has a fallback chain so it degrades gracefully if a model is unavaila
 
 | Model | Reason chosen |
 |-------|--------------|
-| **Claude Sonnet 4.6** (Setup, Update) | Strong instruction-following; handles the 3-tier preference interview (5–24 questions) and complex conditional logic in setup well. Also used for Update: reliable at fetch → compare → apply workflows |
+| **Claude Sonnet 4.6** (Setup, Update) | Strong instruction-following; handles the 3-tier preference interview (5-23 questions) and complex conditional logic in setup well. Also used for Update: reliable at fetch → compare → apply workflows |
 | **GPT-5.3-Codex** (Code) | GitHub's latest agentic coding model (GA Feb 9 2026); ~25% faster than its predecessor; supports real-time mid-task steering. Stays in the Codex lineage for clean fallbacks |
-| **Claude Opus 4.6** (Review) | Agent Teams capability — delegates sub-tasks to specialised virtual agents in parallel, making it ideal for systematic Lean/Kaizen architectural review. 3× multiplier cost; reserve for genuine deep reviews |
+| **GPT-5.4** (Review) | GitHub Copilot now recommends GPT-5.4 for deep reasoning and debugging. It gives the review agent stronger code analysis at a 1x multiplier while preserving GPT-style reasoning continuity with the coding agent. |
 | **Claude Haiku 4.5** (Fast) | 0.33× cost multiplier; fastest response time. Right-sized for questions that don't warrant a premium model |
 | **Claude Sonnet 4.6** (Doctor) | Primary model for mechanical checks (line counts, grep patterns, file presence). 1× cost; fast and accurate for all D1–D10 checks. Opus 4.6 is the fallback if a subtle semantic issue requires deeper reasoning |
 
@@ -66,7 +66,7 @@ If a model is unavailable on your plan, the agent falls back in order:
 |-------|---------------|
 | Setup | Claude Sonnet 4.6 → Claude Sonnet 4.5 → GPT-5.1 → GPT-5 mini |
 | Code | GPT-5.3-Codex → GPT-5.2-Codex → GPT-5.1-Codex → GPT-5.1 → GPT-5 mini |
-| Review | Claude Opus 4.6 → Claude Opus 4.5 → Claude Sonnet 4.6 → GPT-5.1 |
+| Review | GPT-5.4 → Claude Opus 4.6 → Claude Sonnet 4.6 → GPT-5.1 |
 | Fast | Claude Haiku 4.5 → GPT-5 mini → GPT-4.1 |
 | Update | Claude Sonnet 4.6 → Claude Sonnet 4.5 → GPT-5.1 |
 | Doctor | Claude Sonnet 4.6 → Claude Opus 4.6 → Claude Opus 4.5 |
@@ -111,7 +111,7 @@ Two frontmatter properties control how agents are discovered and invoked:
 
 The template sets `disable-model-invocation: true` on **Setup** and **Update** because both run interactive processes (interviews, pre-flight reports) unsuitable for autonomous subagent invocation.
 
-> **Important**: The `agent:` value in a handoff must match the **filename stem** of the target `.agent.md` file, not the `name:` frontmatter field. For example, `coding.agent.md` is referenced as `agent: coding`, not `agent: Code`.
+> **Important**: The `agent:` value in a handoff must match the target agent's `name:` frontmatter field exactly. For example, `coding.agent.md` is referenced as `agent: Code` because the file declares `name: Code`.
 
 ---
 
@@ -176,7 +176,7 @@ The template's structure (agents, skills, hooks, MCP config) aligns closely with
 
 - The plugin format is still Preview — breaking changes are expected before GA
 - The template's core value is the interactive setup interview that resolves `{{PLACEHOLDER}}` tokens to the consumer's stack, which plugins cannot currently replicate (plugins install static files)
-- Marketplace discovery (`chat.plugins.marketplaces`) uses Git repositories as plugin sources, which conflicts with the template's current role as a _source_ repo rather than a _distribution_ package
+- Marketplace discovery (`chat.plugins.marketplaces`) uses Git repositories as plugin sources, which conflicts with the template's current role as a *source* repo rather than a *distribution* package
 
 **What a v4.0 plugin version could look like**:
 
@@ -271,7 +271,7 @@ VS Code supports `.md` files in the `.claude/agents/` directory as an alternativ
 
 | Property | `.agent.md` (VS Code) | `.claude/agents/*.md` (Claude) |
 |----------|----------------------|-------------------------------|
-| Tools | YAML array: `tools: [editFiles, terminal]` | Comma-separated string: `tools: "Read, Grep, Glob, Bash"` |
+| Tools | YAML array: `tools: [editFiles, runCommands]` | Comma-separated string: `tools: "Read, Grep, Glob, Bash"` |
 | Tool blocking | Not supported natively | `disallowedTools: "Bash, Edit"` |
 | Model pinning | `model: [Claude Sonnet 4.6, ...]` | Not supported (model chosen externally) |
 | Handoffs | Supported (`handoffs:` frontmatter) | Not supported |

@@ -8,10 +8,10 @@ model:
   - GPT-5.1-Codex
   - GPT-5.1
   - GPT-5 mini
-tools: [editFiles, terminal, codebase, githubRepo, runCommands]
+tools: [editFiles, runCommands, codebase, githubRepo]
 handoffs:
   - label: Review changes
-    agent: review
+    agent: Review
     prompt: Review the changes just made for quality, correctness, and Lean/Kaizen alignment. Tag all findings with waste categories.
     send: true
 ---

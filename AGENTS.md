@@ -19,6 +19,7 @@ When a user says any of the following in a Copilot chat:
 ...perform the **Remote Bootstrap Sequence** below. No manual file copying is required from the user.
 
 ### Update (already set up)
+
 Canonical sources for full inventory:
 
 - `BIBLIOGRAPHY.md` — exhaustive file-level catalogue with LOC
@@ -48,6 +49,7 @@ High-signal map (machine-relevant and navigation-critical paths):
 | `CHANGELOG.md` | Template release history |
 | `JOURNAL.md` | ADR-style decision log |
 | `METRICS.md` | Kaizen baseline snapshots |
+
 - A Living Update Protocol that authorises Copilot to improve the instructions as patterns emerge.
 
 ---
@@ -86,13 +88,13 @@ Setup outputs written to the **user's project**:
 | `.github/copilot-instructions.md` | Populated instructions (from the template fetched above) |
 | `.github/agents/setup.agent.md` | Model-pinned Setup agent (Claude Sonnet 4.6) |
 | `.github/agents/coding.agent.md` | Model-pinned Coding agent (GPT-5.3-Codex) |
-| `.github/agents/review.agent.md` | Model-pinned Review agent (Claude Opus 4.6) |
+| `.github/agents/review.agent.md` | Model-pinned Review agent (GPT-5.4) |
 | `.github/agents/fast.agent.md` | Model-pinned Fast agent (Claude Haiku 4.5) |
 | `.github/agents/update.agent.md` | Model-pinned Update agent (Claude Sonnet 4.6) |
 | `.github/agents/doctor.agent.md` | Model-pinned Doctor agent (Claude Sonnet 4.6) |
 | `.github/hooks/copilot-hooks.json` | Agent lifecycle hooks configuration |
 | `.github/hooks/scripts/*.sh` | Five starter hook scripts (security, formatting, retrospective, context) |
-| `.github/skills/*/SKILL.md` | Reusable skill library (10 starter skills from template) |
+| `.github/skills/*/SKILL.md` | Reusable skill library (11 starter skills from template) |
 | `.vscode/mcp.json` | MCP server configuration (created if E22 ≠ None) |
 | `.copilot/workspace/IDENTITY.md` | Agent self-description |
 | `.copilot/workspace/SOUL.md` | Agent values & reasoning patterns |
@@ -190,7 +192,7 @@ Locate **"## Restore from backup"** in UPDATE.md and follow it: scans `.github/a
 | **Agent files** | |
 | `.github/agents/setup.agent.md` | Model-pinned Setup agent stub (Claude Sonnet 4.6) |
 | `.github/agents/coding.agent.md` | Model-pinned Coding agent stub (GPT-5.3-Codex) |
-| `.github/agents/review.agent.md` | Model-pinned Review agent stub (Claude Opus 4.6) |
+| `.github/agents/review.agent.md` | Model-pinned Review agent stub (GPT-5.4) |
 | `.github/agents/fast.agent.md` | Model-pinned Fast agent stub (Claude Haiku 4.5) |
 | `.github/agents/update.agent.md` | Model-pinned Update agent stub (Claude Sonnet 4.6) |
 | `.github/agents/doctor.agent.md` | Model-pinned Doctor agent stub (Claude Sonnet 4.6) |

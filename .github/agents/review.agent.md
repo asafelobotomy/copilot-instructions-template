@@ -3,14 +3,14 @@ name: Review
 description: Deep code review and architectural analysis with Lean/Kaizen critique
 argument-hint: Describe what to review — e.g. "review my latest changes", "architectural review of the auth module", "review PR #42"
 model:
+  - GPT-5.4
   - Claude Opus 4.6
-  - Claude Opus 4.5
   - Claude Sonnet 4.6
   - GPT-5.1
 tools: [codebase, githubRepo]
 handoffs:
   - label: Implement fixes
-    agent: coding
+    agent: Code
     prompt: Implement the fixes and improvements identified in the review. Address critical and major findings first.
     send: false
 ---

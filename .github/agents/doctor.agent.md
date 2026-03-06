@@ -6,14 +6,14 @@ model:
   - Claude Sonnet 4.6
   - Claude Opus 4.6
   - Claude Opus 4.5
-tools: [codebase, terminal]
+tools: [codebase, runCommands]
 handoffs:
   - label: Apply fixes
-    agent: coding
+    agent: Code
     prompt: The Doctor has identified issues with the Copilot instruction files. Apply the fixes listed in the health report. Start with CRITICAL items, then HIGH.
     send: false
   - label: Update instructions
-    agent: update
+    agent: Update
     prompt: The Doctor identified that the installed instructions are behind the template. Run the instruction update protocol now.
     send: true
 ---
@@ -34,7 +34,7 @@ Doctor agent — running health check…
 
 ## Files to inspect
 
-Run every check below. Use the `terminal` tool to count lines and grep for
+Run every check below. Use the `runCommands` tool to count lines and grep for
 patterns. Use `codebase` to read file contents.
 
 ### Core instructions
@@ -94,7 +94,7 @@ Expected limits (from §8):
 | §10 | No limit |
 | §11, §12, §13 (each) | ≤ 150 |
 
-Use the terminal to count: `wc -l .github/copilot-instructions.md` and
+Use `runCommands` to count: `wc -l .github/copilot-instructions.md` and
 `grep -n "^## §" .github/copilot-instructions.md` to find section boundaries.
 
 Flag: `[CRITICAL]` if any section exceeds its limit.
@@ -125,9 +125,9 @@ For each `.agent.md` file in `.github/agents/`:
 
 1. **Frontmatter present**: Does it have YAML frontmatter delimited by `---`?
 2. **name field**: Is `name:` set?
-3. **Handoff agent: identifiers**: For each `agent:` value in a `handoffs:` block,
-   does a file named `<value>.agent.md` exist in `.github/agents/`?
-   - e.g. `agent: coding` requires `coding.agent.md` to exist.
+3. **Handoff agent identifiers**: For each `agent:` value in a `handoffs:` block,
+   does it match a declared agent `name:` in `.github/agents/`?
+   - e.g. `agent: Code` requires an agent file whose frontmatter declares `name: Code`.
 4. **Referenced agents reachable**: Check that handoff targets exist bidirectionally.
 5. **model field**: Is at least one model listed?
 

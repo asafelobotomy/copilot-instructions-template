@@ -1,14 +1,12 @@
 ---
 name: conventional-commit
 description: Write a commit message following the Conventional Commits specification with scope and body
-version: "1.1"
-license: MIT
-tags: [git, commit, conventional-commits, changelog, versioning]
-compatibility: ">=1.4"
-allowed-tools: [codebase, terminal]
 ---
 
 # Conventional Commit
+
+> Skill metadata: version "1.1"; license MIT; tags [git, commit, conventional-commits, changelog, versioning]; compatibility ">=1.4"; recommended tools [codebase, runCommands].
+
 
 Write a well-structured commit message following the [Conventional Commits](https://www.conventionalcommits.org/) specification.
 

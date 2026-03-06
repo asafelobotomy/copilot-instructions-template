@@ -22,7 +22,7 @@ Maintenance rule: run `{{LOC_COMMAND}}` and compare outputs to this table. Any f
 |------|---------|-----|
 | `.github/agents/setup.agent.md` | Setup agent — Claude Sonnet 4.6 (onboarding & template operations) | — |
 | `.github/agents/coding.agent.md` | Coding agent — GPT-5.3-Codex (implementation & refactoring) | — |
-| `.github/agents/review.agent.md` | Review agent — Claude Opus 4.6 (code review & architectural analysis) | — |
+| `.github/agents/review.agent.md` | Review agent — GPT-5.4 (code review & architectural analysis) | — |
 | `.github/agents/fast.agent.md` | Fast agent — Claude Haiku 4.5 (quick questions & lightweight edits) | — |
 | `.github/agents/update.agent.md` | Update agent — Claude Sonnet 4.6 (instruction update & restore) | — |
 | `.github/agents/doctor.agent.md` | Doctor agent — Claude Sonnet 4.6 (read-only health diagnostics) | — |
@@ -36,8 +36,10 @@ Maintenance rule: run `{{LOC_COMMAND}}` and compare outputs to this table. Any f
 | `.copilot/workspace/USER.md` | Observed user profile | — |
 | `.copilot/workspace/TOOLS.md` | Effective tool usage patterns | — |
 | `.copilot/workspace/MEMORY.md` | Memory system strategy | — |
+| `.copilot/workspace/DOC_INDEX.json` | Canonical machine-readable inventory for docs metadata | — |
 | `.copilot/workspace/BOOTSTRAP.md` | Permanent setup origin record | — |
 | `.copilot/workspace/HEARTBEAT.md` | Event-driven health check checklist | — |
+| `.github/copilot-version.md` | Installed template version and section fingerprints | — |
 
 ## Source files
 

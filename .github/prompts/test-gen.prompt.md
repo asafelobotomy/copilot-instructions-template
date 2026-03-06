@@ -1,7 +1,7 @@
 ---
 description: Generate tests following project conventions with arrange/act/assert structure
-mode: agent
-tools: [editFiles, terminal, codebase]
+agent: agent
+tools: [editFiles, runCommands, codebase]
 ---
 
 # Generate Tests

@@ -1,14 +1,12 @@
 ---
 name: plugin-management
 description: Discover, evaluate, install, test, and manage agent plugins for VS Code Copilot
-version: "1.0"
-license: MIT
-tags: [plugins, agents, extensions, discovery, management]
-compatibility: ">=3.2"
-allowed-tools: [codebase, terminal, editFiles]
 ---
 
 # Plugin Management
+
+> Skill metadata: version "1.0"; license MIT; tags [plugins, agents, extensions, discovery, management]; compatibility ">=3.2"; recommended tools [codebase, runCommands, editFiles].
+
 
 Agent plugins (VS Code 1.110+, Preview) are installable packages that bundle agents, skills, hooks, MCP servers, and slash commands. This skill covers discovering, evaluating, installing, testing, and managing plugins alongside the template's own customization files.
 
@@ -48,7 +46,7 @@ Before recommending or installing a plugin, verify:
 - [ ] **Maintenance** — updated within 12 months; no abandoned or archived repo
 - [ ] **No credential exposure** — plugin does not require secrets beyond standard VS Code secret storage
 - [ ] **Conflict check** — no naming collisions with existing workspace agents, skills, or hooks
-- [ ] **Scope review** — plugin requests only the tools it needs (check `allowed-tools` in contributed agents)
+- [ ] **Scope review** — plugin only requests the minimum capability it needs (check the contributed agent and skill metadata for unnecessary tool access)
 
 Plugins failing two or more checks are rejected.
 

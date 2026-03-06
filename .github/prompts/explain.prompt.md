@@ -1,6 +1,6 @@
 ---
 description: Explain selected code with waste category analysis and baseline checks
-mode: ask
+agent: ask
 ---
 
 # Explain Code

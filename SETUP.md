@@ -818,7 +818,7 @@ Every file in the project is catalogued here. Update this file whenever a file i
 |------|---------|-----|
 | `.github/agents/setup.agent.md` | Setup agent — Claude Sonnet 4.6 | — |
 | `.github/agents/coding.agent.md` | Coding agent — GPT-5.3-Codex | — |
-| `.github/agents/review.agent.md` | Review agent — Claude Opus 4.6 | — |
+| `.github/agents/review.agent.md` | Review agent — GPT-5.4 | — |
 | `.github/agents/fast.agent.md` | Fast agent — Claude Haiku 4.5 | — |
 | `.github/agents/update.agent.md` | Update agent — Claude Sonnet 4.6 | — |
 | `.github/agents/doctor.agent.md` | Doctor agent — Claude Sonnet 4.6 | — |

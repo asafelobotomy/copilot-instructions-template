@@ -29,7 +29,7 @@ Every file in the project is catalogued here. Update this file whenever a file i
 | **Agent files** | | |
 | `.github/agents/setup.agent.md` | Model-pinned Setup agent — Claude Sonnet 4.6 | 37 |
 | `.github/agents/coding.agent.md` | Model-pinned Coding agent — GPT-5.3-Codex | 30 |
-| `.github/agents/review.agent.md` | Model-pinned Review agent — Claude Opus 4.6 | 35 |
+| `.github/agents/review.agent.md` | Model-pinned Review agent — GPT-5.4 | 35 |
 | `.github/agents/fast.agent.md` | Model-pinned Fast agent — Claude Haiku 4.5 | 30 |
 | `.github/agents/update.agent.md` | Model-pinned Update agent — Claude Sonnet 4.6 | 75 |
 | `.github/agents/doctor.agent.md` | Model-pinned Doctor agent — Claude Sonnet 4.6 | 295 |

@@ -11,7 +11,7 @@ tools: [editFiles, fetch, githubRepo, codebase]
 disable-model-invocation: true
 handoffs:
   - label: Run health check
-    agent: doctor
+    agent: Doctor
     prompt: Setup is complete. Run a full Doctor health check to verify all instruction files are well-formed, within budget, and have no placeholder leakage.
     send: true
 ---

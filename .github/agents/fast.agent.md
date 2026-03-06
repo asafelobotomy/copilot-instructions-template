@@ -6,10 +6,10 @@ model:
   - Claude Haiku 4.5
   - GPT-5 mini
   - GPT-4.1
-tools: [codebase, editFiles, terminal]
+tools: [codebase, editFiles, runCommands]
 handoffs:
   - label: Hand off to Code
-    agent: coding
+    agent: Code
     prompt: This task is larger than a single-file edit. Continue implementing from where the Fast agent left off.
     send: false
 ---
@@ -27,4 +27,4 @@ Guidelines:
   suggest switching to the Code agent using the handoff button.
 - Do not run the full PDCA cycle for simple edits — just make the change and
   summarise in one line.
-- Use `terminal` for quick lookups (`wc -l`, `grep`, `ls`) before opening files.
+- Use `runCommands` for quick lookups (`wc -l`, `grep`, `ls`) before opening files.

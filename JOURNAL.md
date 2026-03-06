@@ -71,3 +71,19 @@ Architectural decisions and context are recorded here in ADR style.
 **Context**: Documentation inventory content had become duplicated across `README.md`, `AGENTS.md`, and other files, increasing drift risk (skills/counts/descriptions diverging between sources).
 **Decision**: Introduce `.copilot/workspace/DOC_INDEX.json` as canonical machine-readable metadata inventory, add `scripts/sync-doc-index.sh` for deterministic sync/check, and deduplicate large inventory blocks in `README.md`/`AGENTS.md` to canonical references plus a high-signal map.
 **Consequences**: Drift detection moved from manual review to CI enforcement (`tests/test-doc-consistency.sh` + `sync-doc-index.sh --check`). Human-facing docs are shorter and less repetitive, while machine-critical trigger/setup/update semantics remain unchanged.
+
+---
+
+## 2026-03-06 — Terminology normalized around GPT-5.4 and runCommands
+
+**Context**: A full repository review found that the repo had drifted in two directions: model guidance still mixed older review defaults with the newer GPT-5.4 recommendation, and customization manifests mixed `terminal` and `runCommands` terminology across agents, prompts, skills, and docs. Several human-facing docs also still described the removed E19 question and the old direct-question count.
+**Decision**: Standardize current-state documentation and manifests around three rules: `GPT-5.4` is the primary deep-review/debugging model, `GPT-5.3-Codex` remains the coding/agentic implementation model, and `runCommands` is the command-execution identifier used in agent/prompt/skill metadata and related examples. Update setup/security/prompt guides, inventory stubs, MCP sampling settings, and doc-consistency tests to enforce the new terminology.
+**Consequences**: The repo now presents one consistent model-selection story, one consistent command-execution term in customization metadata, and stronger drift tests for interview semantics, metrics schema, and MCP settings. Historical changelog entries remain untouched as release history.
+
+---
+
+## 2026-03-06 — Prompt and skill schemas aligned to current VS Code validation
+
+**Context**: After the terminology sweep, the remaining repo-health warnings came from VS Code schema drift: prompt files still used deprecated `mode:` frontmatter, and skill files still stored rich metadata as top-level frontmatter keys that VS Code no longer validates.
+**Decision**: Migrate prompt files to `agent:` frontmatter, keep skill frontmatter minimal (`name` and `description`), and preserve skill version/license/tags/compatibility/tool-scope information in a body-level `Skill metadata` note. Update the skill authoring guide, security guide, prompt guide, and CI advisory checks to match the new contract.
+**Consequences**: Prompt and skill files now validate cleanly in the editor, the repo keeps the richer metadata it relies on, and the documented authoring pattern matches current VS Code behavior instead of the superseded schema.

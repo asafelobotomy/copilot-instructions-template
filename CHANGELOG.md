@@ -83,6 +83,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `docs/HOOKS-GUIDE.md` — diagnostics section updated to reference Agent Debug Panel.
 - `README.md` — repository layout section deduplicated to a high-signal structure with canonical inventory references (`DOC_INDEX.json`, `BIBLIOGRAPHY.md`).
 - `AGENTS.md` — exhaustive file map deduplicated to canonical-source references plus high-signal machine-relevant path map.
+- Model-selection guidance refreshed across instructions, agents, setup outputs, and guides: `GPT-5.4` is now the primary deep review/debugging model, while `GPT-5.3-Codex` remains the coding/agentic implementation model.
+- Command-execution terminology normalized across agents, prompts, skills, and shared docs: `runCommands` is now the canonical metadata identifier, replacing mixed `terminal` usage in frontmatter examples and allowlists.
+- `docs/PROMPTS-GUIDE.md` now reflects the repo's current practice: starter prompt files include optional YAML frontmatter metadata rather than being documented as frontmatter-free.
+- Root `METRICS.md` aligned with the template's extended schema so repo docs, setup output, and the live metrics file describe the same columns.
+- `.vscode/settings.json` MCP sampling list aligned with the current server roster and model set: stale `memory` sampling entry removed and `GPT-5.4` added to active server allowlists.
+- Prompt files and prompt docs now use the current VS Code `agent:` frontmatter key instead of deprecated `mode:`.
+- Skill files now keep VS Code-compatible minimal frontmatter and move richer metadata into a body-level `Skill metadata` note, preserving compatibility/tooling context without schema warnings.
 
 ### Fixed
 
@@ -91,6 +98,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `docs/AGENTS-GUIDE.md` — "four agent files" prose corrected to "six agent files"; Doctor agent model column corrected from Claude Opus 4.6 to Claude Sonnet 4.6 (primary model; Opus 4.6 is the fallback).
 - `docs/SETUP-GUIDE.md` — "Four agent files" prose in Step 2.5 corrected to "Six agent files".
 - `AGENTS.md` — file map expanded with 15 missing entries: `VERSION.md`, `scripts/sync-version.sh`, `.github/instructions/*.instructions.md` (4 files), `.github/prompts/*.prompt.md` (5 files), `template/skills/issue-triage/SKILL.md`, `template/hooks/scripts/*.ps1` (5 Windows counterparts), `template/copilot-setup-steps.yml`, and all 15 `docs/*.md` human-readable guides.
+- `README.md`, `docs/SETUP-GUIDE.md`, and `docs/SECURITY-GUIDE.md` — stale setup-interview references corrected after the E19 removal: Full tier is 23 direct questions, and Global autonomy is now derived from S5 instead of being asked as a separate question.
+- `AGENTS.md`, `template/BIBLIOGRAPHY.md`, `template/workspace/BOOTSTRAP.md`, and `BIBLIOGRAPHY.md` — inventory records corrected to match the current review model and the actual scaffolded file set.
+- `tests/test-doc-consistency.sh` — expanded to catch the terminology and contract drift found in review: skill-count mismatch, stale interview counts, stale E19 references, metrics-schema mismatch, and stale MCP `memory` sampling configuration.
+- Agent handoff metadata updated to match the currently validated agent names (`Code`, `Review`, `Doctor`, `Update`) instead of lower-case filename stems.
+- `.github/workflows/ci.yml`, `docs/SKILLS-GUIDE.md`, `docs/SECURITY-GUIDE.md`, and `skill-creator` now match the new skill schema contract instead of teaching deprecated top-level skill metadata fields.
 
 ### Update protocol
 

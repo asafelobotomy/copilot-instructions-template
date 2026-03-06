@@ -171,19 +171,17 @@ jobs:
           [[ $failed -eq 0 ]] || exit 1
           echo "✅ All template skills valid"
 
-      - name: Template skills have recommended fields (advisory)
+      - name: Template skills document metadata note (advisory)
         run: |
           warned=0
           for skill_dir in template/skills/*/; do
             skill="$skill_dir/SKILL.md"
             [[ -f "$skill" ]] || continue
-            grep -q '^compatibility:' "$skill" \
-              || { echo "⚠️  $skill missing optional 'compatibility' field"; warned=1; }
-            grep -q '^allowed-tools:' "$skill" \
-              || { echo "⚠️  $skill missing optional 'allowed-tools' field"; warned=1; }
+            grep -q '^> Skill metadata:' "$skill" \
+              || { echo "⚠️  $skill missing 'Skill metadata' note"; warned=1; }
           done
           if [[ $warned -eq 1 ]]; then
-            echo "ℹ️  Some skills are missing optional fields — consider adding them"
+            echo "ℹ️  Some skills are missing the body-level metadata note — consider adding it"
           fi
           echo "✅ Advisory check complete (non-blocking)"
 

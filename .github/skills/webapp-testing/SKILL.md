@@ -1,14 +1,12 @@
 ---
 name: webapp-testing
 description: Set up browser testing — dual path with built-in browser tools (interactive) or Playwright (CI); detect framework, scaffold, verify
-version: "2.0"
-license: MIT
-tags: [testing, e2e, playwright, browser, ci, browser-tools]
-compatibility: ">=2.0"
-allowed-tools: [codebase, editFiles, terminal, runCommands]
 ---
 
 # Web Application Testing
+
+> Skill metadata: version "2.0"; license MIT; tags [testing, e2e, playwright, browser, ci, browser-tools]; compatibility ">=2.0"; recommended tools [codebase, editFiles, runCommands].
+
 
 Set up browser testing for a web application. This skill offers two paths:
 

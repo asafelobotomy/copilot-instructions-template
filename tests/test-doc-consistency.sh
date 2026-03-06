@@ -52,6 +52,7 @@ assert_eq "template skill file count" "$actual_template_skills" "11"
 assert_true "README says eleven starter skills" "grep -q 'Eleven starter skills' '$REPO_ROOT/README.md'"
 assert_true "SETUP-GUIDE says eleven starter skills" "grep -q 'Eleven starter skills' '$REPO_ROOT/docs/SETUP-GUIDE.md'"
 assert_true "SKILLS-GUIDE says eleven skills" "grep -q 'Eleven skills are scaffolded' '$REPO_ROOT/docs/SKILLS-GUIDE.md'"
+assert_true "AGENTS says eleven starter skills" "grep -q '11 starter skills' '$REPO_ROOT/AGENTS.md'"
 echo ""
 
 # 2) Known stale phrase should not return in core docs.
@@ -102,6 +103,24 @@ assert_true "template workspace DOC_INDEX stub exists" "test -f '$REPO_ROOT/temp
 assert_true "SETUP workspace summary includes DOC_INDEX" "grep -q 'DOC_INDEX.json' '$REPO_ROOT/SETUP.md'"
 assert_true "SETUP fetch table includes workspace DOC_INDEX source" "grep -q 'template/workspace/DOC_INDEX.json' '$REPO_ROOT/SETUP.md'"
 assert_true "SETUP-GUIDE Step 3 includes DOC_INDEX" "grep -q 'DOC_INDEX.json' '$REPO_ROOT/docs/SETUP-GUIDE.md'"
+echo ""
+
+# 8) Preference interview docs must reflect derived global autonomy.
+echo "8. Preference interview consistency"
+assert_true "README says 5-23 questions" "grep -q '5-23 questions' '$REPO_ROOT/README.md'"
+assert_true "README Full tier says 23" "grep -Fq '| **Full** | 23 |' '$REPO_ROOT/README.md'"
+assert_true "SETUP-GUIDE Full tier says 23 questions" "grep -q '23 questions' '$REPO_ROOT/docs/SETUP-GUIDE.md'"
+assert_absent "SETUP-GUIDE no E19 autonomy ceiling row" "$REPO_ROOT/docs/SETUP-GUIDE.md" 'E19 — Autonomy ceiling'
+assert_true "SETUP-GUIDE explains derived global autonomy" "grep -q 'Global autonomy row from S5' '$REPO_ROOT/docs/SETUP-GUIDE.md'"
+assert_absent "SECURITY-GUIDE no stale E19 reference" "$REPO_ROOT/docs/SECURITY-GUIDE.md" 'E19'
+echo ""
+
+# 9) Metrics and MCP settings should match the current template contract.
+echo "9. Metrics and MCP settings consistency"
+assert_true "METRICS has extended header" "grep -q 'AI Accept Rate' '$REPO_ROOT/METRICS.md'"
+assert_true "INSTRUCTIONS-GUIDE mentions DORA and AI fields" "grep -q 'DORA and AI-operational fields' '$REPO_ROOT/docs/INSTRUCTIONS-GUIDE.md'"
+assert_absent "settings no removed MCP memory server" "$REPO_ROOT/.vscode/settings.json" 'mcp.json: memory'
+assert_true "settings allow GPT-5.4 for MCP sampling" "grep -q 'copilot/gpt-5.4' '$REPO_ROOT/.vscode/settings.json'"
 echo ""
 
 echo "Results: $PASS passed, $FAIL failed"

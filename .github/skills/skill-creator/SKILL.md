@@ -1,14 +1,12 @@
 ---
 name: skill-creator
 description: Create a new agent skill following the Agent Skills open standard
-version: "1.1"
-license: MIT
-tags: [meta, authoring, skill, scaffold]
-compatibility: ">=1.4"
-allowed-tools: [codebase, editFiles, terminal]
 ---
 
 # Skill Creator
+
+> Skill metadata: version "1.1"; license MIT; tags [meta, authoring, skill, scaffold]; compatibility ">=1.4"; recommended tools [codebase, editFiles, runCommands].
+
 
 Create a new agent skill that follows the [Agent Skills](https://agentskills.io) open standard and the project's §12 Skill Protocol.
 
@@ -26,18 +24,19 @@ Create a new agent skill that follows the [Agent Skills](https://agentskills.io)
 
 2. **Choose a name** — Use a verb-noun kebab phrase describing the workflow (e.g., `review-dependencies`, `scaffold-api-route`). The name becomes the directory name under `.github/skills/`.
 
-3. **Write the frontmatter** — Create `.github/skills/<name>/SKILL.md` with:
+3. **Write the frontmatter** — Create `.github/skills/<name>/SKILL.md` with the minimal VS Code-compatible header, then record the richer metadata directly under the title:
 
    ```yaml
    ---
    name: <kebab-name>
-   description: <one precise sentence — this is how the agent discovers the skill>
-   version: "1.0"
-   license: MIT
-   tags: [<2-5 keywords matching common task descriptions>]
-   compatibility: ">=<current template version>"  # e.g. ">=3.0"
-   allowed-tools: [codebase, editFiles]  # restrict to tools the skill actually uses
+   description: <one precise sentence - this is how the agent discovers the skill>
    ---
+   ```
+
+   Then add a note immediately after the `# <Name>` heading:
+
+   ```markdown
+   > Skill metadata: version "1.0"; license MIT; tags [<2-5 keywords matching common task descriptions>]; compatibility ">=<current template version>"; recommended tools [codebase, editFiles].
    ```
 
 4. **Write the body** — Structure as:

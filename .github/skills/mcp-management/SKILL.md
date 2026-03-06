@@ -1,14 +1,12 @@
 ---
 name: mcp-management
 description: Configure and manage Model Context Protocol servers for external tool access
-version: "1.0"
-license: MIT
-tags: [mcp, servers, configuration, integration]
-compatibility: ">=1.4"
-allowed-tools: [codebase, editFiles, fetch]
 ---
 
 # MCP Management
+
+> Skill metadata: version "1.0"; license MIT; tags [mcp, servers, configuration, integration]; compatibility ">=1.4"; recommended tools [codebase, editFiles, fetch].
+
 
 MCP (Model Context Protocol) is GA in VS Code as of v1.102. MCP servers provide tools, resources, and prompts beyond built-in capabilities. Configuration lives in `.vscode/mcp.json` (workspace-scoped) or profile-level `mcp.json` (user-scoped).
 

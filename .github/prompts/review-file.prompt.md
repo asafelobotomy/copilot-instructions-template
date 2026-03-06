@@ -1,6 +1,6 @@
 ---
 description: Review a file for waste categories, baseline violations, and coding convention issues
-mode: ask
+agent: ask
 tools: [codebase]
 ---
 

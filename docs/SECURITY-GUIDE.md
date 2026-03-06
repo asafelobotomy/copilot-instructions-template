@@ -113,32 +113,32 @@ Rules:
 The trust model works alongside — not in place of — other autonomy controls:
 
 - **S5 (Autonomy level)** — sets the general behaviour (ask first / act then summarise / ask only for risky)
-- **E19 (Global autonomy)** — hard ceiling that caps all autonomy settings
-- **Graduated Trust** — path-specific refinement within the S5/E19 envelope
+- **Global autonomy** — derived from S5 and stored as a separate preference row that caps all autonomy settings
+- **Graduated Trust** — path-specific refinement within the S5/global-autonomy envelope
 
-The most restrictive setting always wins. If E19 is set to "Full lockdown" (level 1), the trust model has no effect — everything requires approval regardless.
+The most restrictive setting always wins. If S5 is set to "Ask first," the derived Global autonomy row stays low and the trust model becomes correspondingly conservative.
 
 ---
 
-## Skill security fields
+## Skill security metadata
 
-Starting in v1.4.0, the skill spec (§12) recommends two additional frontmatter fields:
+Starting in v1.4.0, the skill spec (§12) recommends documenting two additional pieces of skill metadata. Keep them in the body-level `> Skill metadata:` note near the top of the file so the skill stays compatible with VS Code's stricter frontmatter validator.
 
 ### `compatibility`
 
-```yaml
-compatibility: ">=1.4"
+```markdown
+> Skill metadata: version "1.0"; license MIT; tags [security, review]; compatibility ">=1.4"; recommended tools [codebase, editFiles, runCommands].
 ```
 
 Semver range indicating which template versions this skill was designed for. Agents warn if the current template version falls outside the range. This prevents running outdated skills that may reference removed sections or changed conventions.
 
-### `allowed-tools`
+### `recommended tools`
 
-```yaml
-allowed-tools: [codebase, editFiles, terminal]
+```markdown
+> Skill metadata: version "1.0"; license MIT; tags [security, review]; compatibility ">=1.4"; recommended tools [codebase, editFiles, runCommands].
 ```
 
-Array of tool identifiers the skill is permitted to use. When executing a skill, agents should restrict tool access to this list. This implements the principle of least privilege — a review skill that only needs read access should not have write or terminal access.
+Array of tool identifiers the skill is expected to use. When executing a skill, agents should still restrict tool access to the smallest safe set. This implements the principle of least privilege: a review skill that only needs read access should not have write or command-execution access.
 
 ### Tool identifiers
 
@@ -148,8 +148,7 @@ Common tool identifiers used in skills:
 |------|------------|
 | `codebase` | Read-only access to search and read files |
 | `editFiles` | Create, modify, or delete files |
-| `terminal` | Execute shell commands |
-| `runCommands` | Run predefined commands (build, test, lint) |
+| `runCommands` | Execute shell and workspace commands |
 | `githubRepo` | Access GitHub API (issues, PRs, releases) |
 | `fetch` | Make HTTP requests to external URLs |
 
@@ -177,5 +176,5 @@ When reviewing PRs that touch security-sensitive areas:
 - [ ] No secrets are hardcoded (use `${{ secrets.* }}` or environment variables)
 - [ ] No `pull_request_target` with checkout of PR code (script injection risk)
 - [ ] Permissions follow the principle of least privilege
-- [ ] New skills include `compatibility` and `allowed-tools` fields
+- [ ] New skills document compatibility and recommended tools in the `Skill metadata` note
 - [ ] Trust tier assignments match the sensitivity of the changed paths

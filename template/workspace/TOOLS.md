@@ -35,11 +35,10 @@ These tools are available natively in VS Code and do not require MCP servers:
 | `usages` | Find all references/usages of a symbol | Replaces grep-based usage search |
 | `rename` | Rename a symbol across the workspace | Language-server powered, safe refactoring |
 | `editFiles` | Create, edit, or delete files | Core file editing capability |
-| `terminal` | Run shell commands | Subject to auto-approval and guard-destructive |
 | `codebase` | Semantic code search | Workspace-wide semantic search |
 | `fetch` | Fetch web content | Requires network access |
 | `githubRepo` | GitHub repository operations | Requires GitHub token |
-| `runCommands` | Run VS Code commands | Extension and editor commands |
+| `runCommands` | Run shell and workspace commands | Subject to auto-approval and guard-destructive for shell execution |
 | `Explore` (subagent) | Read-only codebase exploration | Delegated search without modifying files |
 
 ### Agentic browser tools (v1.110+, Preview)

@@ -1,7 +1,7 @@
 ---
 description: Refactor selected code using PDCA cycle and Lean waste elimination
-mode: agent
-tools: [editFiles, terminal, codebase]
+agent: agent
+tools: [editFiles, runCommands, codebase]
 ---
 
 # Refactor Code

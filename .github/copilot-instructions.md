@@ -9,9 +9,9 @@
 > |------|------------------|----------------------|
 > | Setup / onboarding | Claude Sonnet 4.6 | GPT-5 mini |
 > | Coding & agentic tasks | GPT-5.3-Codex | GPT-5.1-Codex → GPT-5 mini |
-> | Code review — PR / diff | GPT-5.2-Codex | GPT-5.1-Codex → GPT-4.1 |
-> | Code review — deep / architecture | Claude Opus 4.6 *(3×)* → Claude Sonnet 4.6 *(1×)* | GPT-5 mini |
-> | Complex debugging & reasoning | Claude Opus 4.6 *(3×)* → Claude Sonnet 4.6 *(1×)* | GPT-5 mini |
+> | Code review — PR / diff | GPT-5.4 | GPT-5.3-Codex → GPT-4.1 |
+> | Code review — deep / architecture | GPT-5.4 | Claude Sonnet 4.6 → GPT-5 mini |
+> | Complex debugging & reasoning | GPT-5.4 | Claude Sonnet 4.6 → GPT-5 mini |
 > | Quick questions / lightweight | Claude Haiku 4.5 *(0.33×)* | GPT-5 mini |
 >
 > **⚠️ Codex models** (`GPT-5.x-Codex`) are designed for **autonomous, headless execution** and **cannot** present interactive prompts. Never use a Codex model for Setup/onboarding — the interview will be silently skipped. The Setup agent pins Claude Sonnet 4.6 for this reason.
@@ -457,7 +457,7 @@ The Graduated Trust Model assigns verification behaviour based on path patterns.
 | Global autonomy | 4 — High autonomy | Global autonomy: 4 (High autonomy). Act independently on all routine tasks including file creation and modification. Pause only before: deleting files, overwriting large sections, changing config files, or making architectural decisions. |
 | Mood lightener | A — Never (default) | Never use humour, emoji, or casual language. Strictly professional tone at all times. |
 | Verification trust | A — Use defaults (default) | Use the default graduated trust model: tests/docs auto-approve, source code review, config files pause for approval. |
-| MCP servers | C — Full configuration | MCP integration: Full configuration. `.vscode/mcp.json` is configured with all five default servers. Suggest stack-specific MCP servers when relevant. Proactively recommend new servers from the MCP registry when a task would benefit from external tool access. |
+| MCP servers | C — Full configuration | MCP integration: Full configuration. `.vscode/mcp.json` is configured with all four default servers. Suggest stack-specific MCP servers when relevant. Proactively recommend new servers from the MCP registry when a task would benefit from external tool access. |
 
 ---
 

@@ -18,7 +18,7 @@ This workspace was scaffolded on **{{SETUP_DATE}}** using the [copilot-instructi
 | `.github/copilot-instructions.md` | Created from template + placeholders filled |
 | `.github/agents/setup.agent.md` | Created — model-pinned Setup agent (Claude Sonnet 4.6) |
 | `.github/agents/coding.agent.md` | Created — model-pinned Coding agent (GPT-5.3-Codex) |
-| `.github/agents/review.agent.md` | Created — model-pinned Review agent (Claude Opus 4.6) |
+| `.github/agents/review.agent.md` | Created — model-pinned Review agent (GPT-5.4) |
 | `.github/agents/fast.agent.md` | Created — model-pinned Fast agent (Claude Haiku 4.5) |
 | `.github/agents/update.agent.md` | Created — model-pinned Update agent (Claude Sonnet 4.6) |
 | `.github/agents/doctor.agent.md` | Created — model-pinned Doctor agent (Claude Sonnet 4.6) |

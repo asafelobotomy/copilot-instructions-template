@@ -47,7 +47,7 @@ This is the most interactive part. Copilot first asks which setup level you want
 |-------------|-----------|------|
 | **Q — Quick** | S1–S5 (5 questions) | ~3 min |
 | **S — Standard** | S1–S5 + A6–A17 (17 questions) | ~6 min |
-| **F — Full** | S1–S5 + A6–A17 + E16–E22 (24 questions) | ~10 min |
+| **F — Full** | S1–S5 + A6–A17 + E16–E18 + E20–E22 (23 questions) | ~10 min |
 
 You can also type "skip" to use all defaults and proceed immediately.
 
@@ -73,12 +73,12 @@ You can also type "skip" to use all defaults and proceed immediately.
 | E16 — Tool availability | What to do when a required tool isn't installed |
 | E17 — Agent persona | Personality / tone (Professional, Mentor, Pair-programmer, etc.) |
 | E18 — VS Code settings | Whether Copilot may modify `.vscode/settings.json` |
-| E19 — Autonomy ceiling | Master 1–5 failsafe that caps all autonomy settings |
+| Global autonomy | Derived from S5 and written into its own preference row |
 | E20 — Mood lightener | Whether Copilot drops occasional humour |
 | E21 — Verification trust | Which directories get auto-approve, review, or pause-and-confirm |
 | E22 — MCP servers | Whether to configure MCP servers and which tiers to enable |
 
-All answers are written into §10 of your instructions file as a 24-row User Preferences table. Questions you didn't answer (because you chose a lower tier) use sensible defaults. You can change preferences any time by editing that section or triggering an update interview.
+All answers are written into §10 of your instructions file as a 24-row User Preferences table. Setup now asks 23 questions directly, then derives the separate Global autonomy row from S5. Questions you didn't answer (because you chose a lower tier) use sensible defaults. You can change preferences any time by editing that section or triggering an update interview.
 
 **0e — Pre-flight summary**
 

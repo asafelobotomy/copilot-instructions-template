@@ -1,7 +1,7 @@
 ---
 description: Write a Conventional Commits message from staged changes
-mode: agent
-tools: [terminal]
+agent: agent
+tools: [runCommands]
 ---
 
 # Write Commit Message

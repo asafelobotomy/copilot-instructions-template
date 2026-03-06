@@ -50,9 +50,16 @@ The setup process scaffolds five starter prompt files:
 
 ## Anatomy of a prompt file
 
-A prompt file is plain Markdown with a `#` title and numbered instructions:
+Prompt files are plain Markdown. In this template, the starter prompts also include small YAML frontmatter blocks for metadata such as `description`, tool access, and agent selection.
+
+Example:
 
 ```markdown
+---
+description: Explain selected code with waste category analysis and baseline checks
+agent: ask
+---
+
 # Explain Code
 
 Explain the selected code. For each significant block:
@@ -68,7 +75,7 @@ Keep the explanation concise. Use bullet points.
 ### Key rules
 
 - **Title**: The `#` heading is the prompt's display name in the command palette.
-- **No front matter required**: Unlike instruction files, prompt files don't need YAML front matter.
+- **Frontmatter is optional**: VS Code can load prompt files without YAML frontmatter, but this template includes metadata in the starter prompts for richer integration.
 - **Placeholder tokens**: Use `{{PLACEHOLDER}}` tokens that were resolved during setup (e.g., `{{TEST_FRAMEWORK}}`, `{{TEST_COMMAND}}`).
 - **Section references**: Reference `§N` sections from the main instructions file — Copilot will apply them.
 
