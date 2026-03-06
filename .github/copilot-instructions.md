@@ -20,13 +20,11 @@
 >
 > **⚡ Critical Reminders** — every session, every task:
 >
-> 1. **Test** — run `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh` before marking any task done (§3).
+> 1. **Test** — run `bash tests/run-all.sh` before marking any task done (§3).
 > 2. **BIBLIOGRAPHY** — update on every file create, rename, or delete (§5).
 > 3. **PDCA** — Plan→Do→Check→Act for every non-trivial change (§5).
 > 4. **Read first** — never claim or modify a file not opened this session (§4).
 > 5. **Additive** — never delete existing rules without explicit user instruction (§8).
-
----
 
 ## §1 — Lean Principles
 
@@ -101,9 +99,9 @@ Skill activation rules:
 | File LOC (hard) | 400 lines | Refuse to extend; decompose first |
 | Dependency budget | 6 runtime deps | Propose removal before adding |
 | Dependency budget (warn) | 8 runtime deps | Flag for review |
-| Test command | `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh` | Must pass before task is done |
+| Test command | `bash tests/run-all.sh` | Must pass before task is done |
 | Type check | `echo "no type check configured"` | Must pass before task is done |
-| Three-check ritual | `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh` | Run before marking complete |
+| Three-check ritual | `bash tests/run-all.sh` | Run before marking complete |
 | Integration test gate | INTEGRATION_TESTS=1 | Set to run integration tests |
 | Max subagent depth | 3 | Stop and report to user |
 
@@ -141,7 +139,7 @@ Apply to every non-trivial change.
 
 **Plan**: State the goal. List the files that will change. Estimate LOC delta.
 **Do**: Implement. Write tests alongside code, not after.
-**Check**: Run `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh`. Review output. Fix before proceeding.
+**Check**: Run `bash tests/run-all.sh`. Review output. Fix before proceeding.
 **Act**: If baseline exceeded, address it now. Update `BIBLIOGRAPHY.md`. Summarise what changed.
 
 <example>
@@ -185,7 +183,7 @@ Append a row to `METRICS.md` after any session that changes these values materia
 | Metric | Command | Target |
 |--------|---------|--------|
 | Total LOC | `find . \( -name '*.sh' -o -name '*.md' \) -not -path './node_modules/*' \| xargs wc -l \| tail -1` | Trending down or flat |
-| Test count | `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh` | Trending up |
+| Test count | `bash tests/run-all.sh` | Trending up |
 | Type errors | `echo "no type check configured"` (or `get_errors` built-in) | Zero |
 | Runtime deps | count from manifest | ≤ 6 |
 
@@ -276,9 +274,9 @@ Resolved values and project-specific overrides. Populated during setup; updated 
 | `{{LANGUAGE}}` | Markdown / Shell |
 | `{{RUNTIME}}` | bash |
 | `{{PACKAGE_MANAGER}}` | N/A |
-| `{{TEST_COMMAND}}` | `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh` |
+| `{{TEST_COMMAND}}` | `bash tests/run-all.sh` |
 | `{{TYPE_CHECK_COMMAND}}` | `echo "no type check configured"` |
-| `{{THREE_CHECK_COMMAND}}` | `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh` |
+| `{{THREE_CHECK_COMMAND}}` | `bash tests/run-all.sh` |
 | `{{LOC_COMMAND}}` | `find . \( -name '*.sh' -o -name '*.md' \) -not -path './node_modules/*' \| xargs wc -l \| tail -1` |
 | `{{METRICS_COMMAND}}` | *(same as LOC_COMMAND)* |
 | `{{TEST_FRAMEWORK}}` | bash (custom shell test scripts) |

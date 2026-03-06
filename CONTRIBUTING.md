@@ -20,7 +20,7 @@ Use the [GitHub issue templates](https://github.com/asafelobotomy/copilot-instru
 3. Run all tests locally before pushing:
 
    ```bash
-   bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh
+   bash tests/run-all.sh
    ```
 
 4. If you changed `VERSION.md`, run the version sync script to propagate the version to all `x-release-please-version` markers:

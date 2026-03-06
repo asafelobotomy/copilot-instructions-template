@@ -35,6 +35,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `test-coverage-review` skill added in both `.github/skills/` and `template/skills/` for on-demand coverage-gap analysis, local test recommendations, and CI workflow suggestions.
 - `llms-ctx.txt` and `llms-ctx-full.txt` added as generated AI-facing context packs.
 - `scripts/sync-llms-context.sh` added to generate and check the `llms-ctx*.txt` artifacts.
+- `tests/run-all.sh` added as the canonical local test entrypoint for the template repository.
+- `tests/test-sync-doc-index.sh` added to cover `scripts/sync-doc-index.sh` argument validation, write mode, ordering, missing-file recovery, and drift detection.
+- `tests/test-sync-llms-context.sh` added to cover `scripts/sync-llms-context.sh` argument validation, deterministic generation, missing outputs, and drift detection.
+- `tests/test-hooks-powershell.sh` and `tests/test-guard-destructive-powershell.sh` added to cover the PowerShell hook counterparts on Linux via `pwsh`, closing the largest remaining executable coverage gap.
+- `scripts/report-script-coverage.sh`, `tests/coverage/bash-prelude.sh`, `tests/coverage/invoke-powershell-with-coverage.ps1`, and `tests/coverage/run-powershell-coverage.sh` added to collect runtime bash and PowerShell coverage, emit JSON/Markdown summaries, and make script coverage measurable in CI.
+- `tests/test-inventory-files.sh` added to turn bibliography and metrics drift into executable checks by comparing `BIBLIOGRAPHY.md` against the actual workspace file set, current LOC values, summary totals, and the latest `METRICS.md` row.
+- `tests/test-markdown-contracts.sh` added to validate local Markdown links, core `CHANGELOG.md` sections, ADR structure in `JOURNAL.md`, and high-signal navigation sections in `README.md` and `AGENTS.md`.
+- `tests/test-release-contracts.sh` added to validate `VERSION.md`, release-please manifest/config alignment, current-version coverage in `CHANGELOG.md` and `MIGRATION.md`, and retained release markers in managed files.
+- `tests/test-customization-contracts.sh` added to validate prompt frontmatter, instruction frontmatter, and the human docs that describe those customization surfaces.
+- `tests/test-agent-skill-contracts.sh` added to validate the expected agent and skill inventories, required frontmatter fields, body metadata markers, and the guide documents that advertise those Copilot customization surfaces.
+- `tests/test-template-parity.sh` added to enforce exact parity for the repo/template hook mirrors and the stable mirrored skills, while keeping the intentionally divergent `mcp-management` and `webapp-testing` skills explicit.
+- `tests/lib/test-helpers.sh` added to centralize common shell-test counters, string assertions, JSON validation, and embedded Python execution helpers for the growing contract-test layer.
+- `tests/test-hook-session-start.sh`, `tests/test-hook-post-edit-lint.sh`, `tests/test-hook-enforce-retrospective.sh`, and `tests/test-hook-save-context.sh` added to split the former monolithic bash hook suite into per-hook files with finer-grained ownership and reporting.
+- `tests/test-doc-discoverability.sh` and `tests/test-doc-platform-contracts.sh` added to replace the old all-in-one documentation drift suite with smaller checks for summary discoverability versus generated-context/platform contracts.
+- `tests/test-report-script-coverage.sh` added to validate `scripts/report-script-coverage.sh --list-bash-tests`, so the coverage harness's test discovery has a direct contract of its own.
 - `tests/test-security-edge-cases.sh` — 29-assertion security and contract edge-case suite for `guard-destructive.sh` and `sync-version.sh`. Covers six gap categories identified by online research (OWASP Command Injection cheat sheet, BATS testing best practices): exit-code contract (hook must always exit 0), JSON output validity (every response parseable), `tool_input.input` field alias support, OWASP-sourced chained/embedded command detection (`;`, `&&`, `||`, subshell), SQL keyword case-insensitivity, and `sync-version.sh` idempotency.
 - Copilot instructions scaffolded from [copilot-instructions-template](https://github.com/asafelobotomy/copilot-instructions-template) — populated `.github/copilot-instructions.md`, workspace identity files, skills, hooks, MCP config, and documentation stubs.
 - `description` field added to all 4 path-specific instruction files (`.github/instructions/*.instructions.md`) for VS Code 1.102+ on-demand loading.
@@ -84,8 +99,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `.github/copilot-instructions.md` §2 slimmed by replacing long embedded extension-review and test-coverage-review procedures with concise on-demand skill activation guidance.
 - `AGENTS.md` reduced to a high-signal machine map and canonical references instead of maintaining an exhaustive duplicated file inventory.
 - `llms.txt` refreshed to current GPT-5.4 review guidance, current skill inventory, and links to generated compact and expanded context packs.
+- The canonical local test command is now `bash tests/run-all.sh`, and the main repo instructions, contributor guide, workspace tool notes, and LLM context surfaces now point to that single entrypoint.
+- `llms.txt`, `llms-ctx.txt`, and `llms-ctx-full.txt` now advertise the runtime coverage report command alongside the canonical local test suite.
 - Setup and documentation surfaces updated from 11 to 13 starter skills, including `SETUP.md`, `README.md`, `docs/*`, `template/workspace/BOOTSTRAP.md`, and `template/workspace/DOC_INDEX.json`.
 - `tests/test-doc-consistency.sh` extended to guard `llms.txt`, `llms-ctx.txt`, `llms-ctx-full.txt`, and the new review skills against drift.
+- `tests/run-all.sh` and `.github/workflows/ci.yml` now run `tests/test-inventory-files.sh`, extending executable coverage from scripts into Markdown inventory artifacts.
+- `tests/run-all.sh` and `.github/workflows/ci.yml` now run `tests/test-markdown-contracts.sh`, extending executable coverage from inventory files into structural Markdown contracts.
+- `tests/run-all.sh` and `.github/workflows/ci.yml` now run `tests/test-release-contracts.sh` and `tests/test-customization-contracts.sh`, extending executable coverage into release metadata and Copilot customization-file contracts.
+- `tests/run-all.sh` and `.github/workflows/ci.yml` now also run `tests/test-agent-skill-contracts.sh` and `tests/test-template-parity.sh`, extending executable coverage into agent/skill manifests and repo/template mirror guarantees.
+- The newer contract and direct-script tests now share `tests/lib/test-helpers.sh` instead of carrying repeated assertion boilerplate, making the test layer easier to extend and audit.
+- The older legacy suites (`test-hooks.sh`, `test-guard-destructive.sh`, `test-sync-version.sh`, and `test-security-edge-cases.sh`) now also use the shared helper layer, and `tests/run-all.sh` is grouped into labeled phases so local runs are easier to scan.
+- The former `tests/test-hooks.sh` suite is now split into four per-hook files, `tests/run-all.sh` reflects that split in its Hook Behavior phase, and the CI `script-tests` job names now use the same Hook/Script/Docs phase vocabulary as the local runner.
+- The former `tests/test-doc-consistency.sh` suite is now split into `tests/test-doc-discoverability.sh` and `tests/test-doc-platform-contracts.sh`, keeping the docs phase narrower without losing any coverage of canonical indexes, llms packs, or setup scaffolds.
+- `scripts/report-script-coverage.sh` now discovers its bash test inputs from repo naming conventions instead of a hard-coded list and exposes `--list-bash-tests` so that discovery contract can be tested directly.
+- `.github/workflows/ci.yml` script-tests job now runs the new sync-script and PowerShell hook suites, making those coverage gains part of the standard CI contract.
+- `.github/workflows/ci.yml` now also runs a dedicated `script-coverage` job that enforces initial 60% bash, PowerShell, and overall coverage thresholds and publishes the Markdown summary to the GitHub Actions job summary.
 - `guard-destructive.sh` (both `.github/hooks/` and `template/hooks/`) — added header comments documenting complementary relationship with VS Code terminal auto-approval.
 - `skill-creator` skill — notes that `/create-skill` is now built-in in VS Code 1.110+; this skill adds Lean/Kaizen guidance.
 - `docs/MCP-GUIDE.md` — "What is MCP?" section updated to note MCP GA status; configuration section expanded to multi-level (workspace, profile, settings, devcontainer).
@@ -103,12 +131,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 ### Fixed
 
 - `README.md` — badge URL missing `-blue` Shields.io color parameter (discovered during idempotency test run).
+- `guard-destructive.ps1` (both repo and template copies) now matches the shell hook's `rm -rf .` policy precisely: only the current directory target is hard-denied, while relative subpaths like `./tmp` require confirmation.
 - `README.md` — "Four model-pinned agents" heading and table updated to reflect all six agents (setup, coding, review, fast, update, doctor); added `update.agent.md` and `doctor.agent.md` rows; scaffolding table row updated to "Six model-pinned agents".
 - `docs/AGENTS-GUIDE.md` — "four agent files" prose corrected to "six agent files"; Doctor agent model column corrected from Claude Opus 4.6 to Claude Sonnet 4.6 (primary model; Opus 4.6 is the fallback).
 - `docs/SETUP-GUIDE.md` — "Four agent files" prose in Step 2.5 corrected to "Six agent files".
 - `AGENTS.md` — file map expanded with 15 missing entries: `VERSION.md`, `scripts/sync-version.sh`, `.github/instructions/*.instructions.md` (4 files), `.github/prompts/*.prompt.md` (5 files), `template/skills/issue-triage/SKILL.md`, `template/hooks/scripts/*.ps1` (5 Windows counterparts), `template/copilot-setup-steps.yml`, and all 15 `docs/*.md` human-readable guides.
 - `README.md`, `docs/SETUP-GUIDE.md`, and `docs/SECURITY-GUIDE.md` — stale setup-interview references corrected after the E19 removal: Full tier is 23 direct questions, and Global autonomy is now derived from S5 instead of being asked as a separate question.
 - `AGENTS.md`, `template/BIBLIOGRAPHY.md`, `template/workspace/BOOTSTRAP.md`, and `BIBLIOGRAPHY.md` — inventory records corrected to match the current review model and the actual scaffolded file set.
+- `MIGRATION.md` — available-tags list refreshed to include `v3.2.0`, keeping the release registry aligned with the current template version.
 - `tests/test-doc-consistency.sh` — expanded to catch the terminology and contract drift found in review: skill-count mismatch, stale interview counts, stale E19 references, metrics-schema mismatch, and stale MCP `memory` sampling configuration.
 - Agent handoff metadata updated to match the currently validated agent names (`Code`, `Review`, `Doctor`, `Update`) instead of lower-case filename stems.
 - `.github/workflows/ci.yml`, `docs/SKILLS-GUIDE.md`, `docs/SECURITY-GUIDE.md`, and `skill-creator` now match the new skill schema contract instead of teaching deprecated top-level skill metadata fields.

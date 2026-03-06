@@ -57,10 +57,8 @@ The repo ships 13 skills. High-signal examples:
 - Run health check
 
 ## Validation commands
-- bash tests/test-hooks.sh
-- bash tests/test-guard-destructive.sh
-- bash tests/test-sync-version.sh
-- bash tests/test-security-edge-cases.sh
-- bash tests/test-doc-consistency.sh
+- bash tests/run-all.sh
+- bash scripts/report-script-coverage.sh coverage
+- bash tests/test-doc-discoverability.sh && bash tests/test-doc-platform-contracts.sh
 - bash scripts/sync-doc-index.sh --check
 - bash scripts/sync-llms-context.sh --check

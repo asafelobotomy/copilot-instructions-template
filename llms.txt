@@ -36,8 +36,9 @@ Canonical inventory for all skills, guides, and agents lives in `.copilot/worksp
 
 ## Validation
 
-- Main suite: `bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh`
-- Docs drift: `bash tests/test-doc-consistency.sh`
+- Main suite: `bash tests/run-all.sh`
+- Script coverage: `bash scripts/report-script-coverage.sh coverage`
+- Docs drift: `bash tests/test-doc-discoverability.sh && bash tests/test-doc-platform-contracts.sh`
 - Generated metadata: `bash scripts/sync-doc-index.sh --check && bash scripts/sync-llms-context.sh --check`
 
 ## Optional

@@ -27,7 +27,7 @@ $command = $ti.command ?? $ti.input ?? ''
 $blockedPatterns = @(
     'rm\s+-rf\s+/',
     'rm\s+-rf\s+~',
-    'rm\s+-rf\s+\.',
+    'rm\s+-rf\s+\.($|\s)',
     'DROP\s+TABLE',
     'DROP\s+DATABASE',
     'TRUNCATE\s+TABLE',
