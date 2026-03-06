@@ -4,10 +4,10 @@
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
 
-PASS=0; FAIL=0
+source "$(dirname "$0")/lib/test-helpers.sh"
+init_test_context "$0"
 
 # Path to the script under test (relative to repo root)
-REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 SCRIPT="$REPO_ROOT/scripts/sync-version.sh"
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
@@ -36,47 +36,12 @@ teardown_sandbox() {
   [[ -n "${SANDBOX:-}" ]] && rm -rf "$SANDBOX"
 }
 
-assert_pass() {
-  local desc="$1" actual_exit="$2"
-  if [[ "$actual_exit" -eq 0 ]]; then
-    echo "  ✅ PASS: $desc"
-    ((PASS++))
-  else
-    echo "  ❌ FAIL: $desc (expected exit 0, got $actual_exit)"
-    ((FAIL++))
-  fi
-}
-
 assert_fail() {
   local desc="$1" actual_exit="$2"
   if [[ "$actual_exit" -ne 0 ]]; then
-    echo "  ✅ PASS: $desc"
-    ((PASS++))
+    pass_note "$desc"
   else
-    echo "  ❌ FAIL: $desc (expected non-zero exit, got 0)"
-    ((FAIL++))
-  fi
-}
-
-assert_contains() {
-  local desc="$1" file="$2" pattern="$3"
-  if grep -q "$pattern" "$file" 2>/dev/null; then
-    echo "  ✅ PASS: $desc"
-    ((PASS++))
-  else
-    echo "  ❌ FAIL: $desc — '$pattern' not found in $file"
-    ((FAIL++))
-  fi
-}
-
-assert_not_contains() {
-  local desc="$1" file="$2" pattern="$3"
-  if ! grep -q "$pattern" "$file" 2>/dev/null; then
-    echo "  ✅ PASS: $desc"
-    ((PASS++))
-  else
-    echo "  ❌ FAIL: $desc — '$pattern' unexpectedly found in $file"
-    ((FAIL++))
+    fail_note "$desc" "     expected non-zero exit, got 0"
   fi
 }
 
@@ -96,13 +61,13 @@ echo "1. Happy path — updates version 0.0.0 → 1.2.3"
 setup_sandbox "1.2.3"
 run_script
 exit_code=$?
-assert_pass "exits 0" "$exit_code"
-assert_contains "README.md badge updated"      "$SANDBOX/README.md"                    "version-1.2.3-blue"
-assert_not_contains "README.md old badge gone" "$SANDBOX/README.md"                    "version-0.0.0-blue"
-assert_contains "copilot-instructions updated" "$SANDBOX/.github/copilot-instructions.md" "Template version\*\*: 1.2.3"
-assert_not_contains "old version gone"         "$SANDBOX/.github/copilot-instructions.md" "Template version\*\*: 0.0.0"
-assert_contains "manifest updated"             "$SANDBOX/.release-please-manifest.json"   '"1.2.3"'
-assert_not_contains "old manifest gone"        "$SANDBOX/.release-please-manifest.json"   '"0.0.0"'
+assert_success "exits 0" "$exit_code"
+assert_file_contains "README.md badge updated"      "$SANDBOX/README.md"                    "version-1.2.3-blue"
+assert_file_not_contains "README.md old badge gone" "$SANDBOX/README.md"                    "version-0.0.0-blue"
+assert_file_contains "copilot-instructions updated" "$SANDBOX/.github/copilot-instructions.md" "Template version\*\*: 1.2.3"
+assert_file_not_contains "old version gone"         "$SANDBOX/.github/copilot-instructions.md" "Template version\*\*: 0.0.0"
+assert_file_contains "manifest updated"             "$SANDBOX/.release-please-manifest.json"   '"1.2.3"'
+assert_file_not_contains "old manifest gone"        "$SANDBOX/.release-please-manifest.json"   '"0.0.0"'
 teardown_sandbox
 echo ""
 
@@ -110,8 +75,8 @@ echo ""
 echo "2. Inline marker preserved after substitution"
 setup_sandbox "2.0.0"
 run_script >/dev/null
-assert_contains "marker still in README"      "$SANDBOX/README.md"                    "x-release-please-version"
-assert_contains "marker still in instructions" "$SANDBOX/.github/copilot-instructions.md" "x-release-please-version"
+assert_file_contains "marker still in README"      "$SANDBOX/README.md"                    "x-release-please-version"
+assert_file_contains "marker still in instructions" "$SANDBOX/.github/copilot-instructions.md" "x-release-please-version"
 teardown_sandbox
 echo ""
 
@@ -127,14 +92,14 @@ sha2_readme=$(sha256sum "$SANDBOX/README.md")
 sha2_inst=$(sha256sum "$SANDBOX/.github/copilot-instructions.md")
 sha2_manifest=$(sha256sum "$SANDBOX/.release-please-manifest.json")
 [[ "$sha1_readme" == "$sha2_readme" ]] \
-  && { echo "  ✅ PASS: README idempotent"; ((PASS++)); } \
-  || { echo "  ❌ FAIL: README changed on second run"; ((FAIL++)); }
+  && pass_note "README idempotent" \
+  || fail_note "README changed on second run"
 [[ "$sha1_inst" == "$sha2_inst" ]] \
-  && { echo "  ✅ PASS: copilot-instructions idempotent"; ((PASS++)); } \
-  || { echo "  ❌ FAIL: copilot-instructions changed on second run"; ((FAIL++)); }
+  && pass_note "copilot-instructions idempotent" \
+  || fail_note "copilot-instructions changed on second run"
 [[ "$sha1_manifest" == "$sha2_manifest" ]] \
-  && { echo "  ✅ PASS: manifest idempotent"; ((PASS++)); } \
-  || { echo "  ❌ FAIL: manifest changed on second run"; ((FAIL++)); }
+  && pass_note "manifest idempotent" \
+  || fail_note "manifest changed on second run"
 teardown_sandbox
 echo ""
 
@@ -142,8 +107,8 @@ echo ""
 echo "4. Multi-digit version (10.21.300)"
 setup_sandbox "10.21.300"
 run_script >/dev/null
-assert_contains "README has multi-digit version" "$SANDBOX/README.md" "version-10.21.300-blue"
-assert_contains "manifest has multi-digit version" "$SANDBOX/.release-please-manifest.json" '"10.21.300"'
+assert_file_contains "README has multi-digit version" "$SANDBOX/README.md" "version-10.21.300-blue"
+assert_file_contains "manifest has multi-digit version" "$SANDBOX/.release-please-manifest.json" '"10.21.300"'
 teardown_sandbox
 echo ""
 
@@ -180,11 +145,9 @@ echo "8. VERSION.md with surrounding whitespace"
 setup_sandbox
 printf "  4.5.6  \n" > "$SANDBOX/VERSION.md"
 run_script >/dev/null
-assert_contains "strips whitespace — README updated" "$SANDBOX/README.md" "version-4.5.6-blue"
+assert_file_contains "strips whitespace — README updated" "$SANDBOX/README.md" "version-4.5.6-blue"
 teardown_sandbox
 echo ""
 
 # ── Summary ───────────────────────────────────────────────────────────────────
-echo ""
-echo "Results: $PASS passed, $FAIL failed"
-[[ $FAIL -eq 0 ]] && exit 0 || exit 1
+finish_tests

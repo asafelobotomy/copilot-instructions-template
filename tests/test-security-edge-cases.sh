@@ -13,9 +13,8 @@
 # Exit 0: all tests passed.  Exit 1: one or more failures.
 set -uo pipefail
 
-PASS=0; FAIL=0
-
-REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
+source "$(dirname "$0")/lib/test-helpers.sh"
+init_test_context "$0"
 GUARD="$REPO_ROOT/template/hooks/scripts/guard-destructive.sh"
 SYNC="$REPO_ROOT/scripts/sync-version.sh"
 
@@ -41,45 +40,15 @@ run_guard_exitcode() {
   echo "$?"
 }
 
-assert_exit0() {
-  local desc="$1" input="$2"
-  echo "$input" | bash "$GUARD" >/dev/null 2>&1
-  local code=$?
-  if [[ "$code" -eq 0 ]]; then
-    echo "  ✅ PASS: $desc (exit 0)"
-    ((PASS++))
-  else
-    echo "  ❌ FAIL: $desc — exited with code $code (expected 0)"
-    ((FAIL++))
-  fi
-}
-
-assert_valid_json() {
-  local desc="$1" input="$2"
-  local output
-  output=$(run_guard "$input")
-  if echo "$output" | python3 -c "import sys,json; json.load(sys.stdin)" 2>/dev/null; then
-    echo "  ✅ PASS: $desc (valid JSON)"
-    ((PASS++))
-  else
-    echo "  ❌ FAIL: $desc — output is not valid JSON"
-    echo "     got: $output"
-    ((FAIL++))
-  fi
-}
-
 assert_decision() {
   local desc="$1" input="$2" expected_decision="$3"
   local output
   output=$(run_guard "$input")
-  if echo "$output" | grep -q "\"permissionDecision\": \"$expected_decision\""; then
-    echo "  ✅ PASS: $desc"
-    ((PASS++))
+  if grep -q "\"permissionDecision\": \"$expected_decision\"" <<< "$output"; then
+    pass_note "$desc"
   else
-    echo "  ❌ FAIL: $desc"
-    echo "     expected permissionDecision=$expected_decision"
-    echo "     got: $output"
-    ((FAIL++))
+    fail_note "$desc" "     expected permissionDecision=$expected_decision
+     got: $output"
   fi
 }
 
@@ -87,14 +56,7 @@ assert_continue() {
   local desc="$1" input="$2"
   local output
   output=$(run_guard "$input")
-  if echo "$output" | grep -q '"continue": true'; then
-    echo "  ✅ PASS: $desc"
-    ((PASS++))
-  else
-    echo "  ❌ FAIL: $desc (expected continue:true)"
-    echo "     got: $output"
-    ((FAIL++))
-  fi
+  assert_matches "$desc" "$output" '"continue": true'
 }
 
 # ── 1. Exit-code contract ─────────────────────────────────────────────────────
@@ -103,23 +65,23 @@ assert_continue() {
 echo "=== guard-destructive edge-case and security tests ==="
 echo ""
 echo "1. Exit-code contract — script must exit 0 for every decision path"
-assert_exit0 "deny path exits 0"        "$(make_input 'bash' 'rm -rf /')"
-assert_exit0 "ask path exits 0"         "$(make_input 'bash' 'rm -rf ./tmp')"
-assert_exit0 "continue path exits 0"    "$(make_input 'bash' 'ls -la')"
-assert_exit0 "passthrough path exits 0" "$(make_input 'read_file' 'ls')"
-assert_exit0 "empty input exits 0"      ''
-assert_exit0 "malformed JSON exits 0"   'not-json-at-all'
+echo "$(make_input 'bash' 'rm -rf /')" | bash "$GUARD" >/dev/null 2>&1; assert_success "deny path exits 0" $?
+echo "$(make_input 'bash' 'rm -rf ./tmp')" | bash "$GUARD" >/dev/null 2>&1; assert_success "ask path exits 0" $?
+echo "$(make_input 'bash' 'ls -la')" | bash "$GUARD" >/dev/null 2>&1; assert_success "continue path exits 0" $?
+echo "$(make_input 'read_file' 'ls')" | bash "$GUARD" >/dev/null 2>&1; assert_success "passthrough path exits 0" $?
+echo '' | bash "$GUARD" >/dev/null 2>&1; assert_success "empty input exits 0" $?
+echo 'not-json-at-all' | bash "$GUARD" >/dev/null 2>&1; assert_success "malformed JSON exits 0" $?
 echo ""
 
 # ── 2. JSON output validity ───────────────────────────────────────────────────
 # Every byte written to stdout must be valid JSON so Claude Code can parse the
 # hook response without choking.
 echo "2. Every response is valid JSON (parseable by python3 json.load)"
-assert_valid_json "deny response is JSON"        "$(make_input 'bash' 'rm -rf /')"
-assert_valid_json "ask response is JSON"         "$(make_input 'bash' 'git push --force')"
-assert_valid_json "continue response is JSON"    "$(make_input 'bash' 'ls -la')"
-assert_valid_json "passthrough response is JSON" "$(make_input 'read_file' 'anything')"
-assert_valid_json "empty-input response is JSON" ''
+assert_valid_json "deny response is JSON"        "$(run_guard "$(make_input 'bash' 'rm -rf /')")"
+assert_valid_json "ask response is JSON"         "$(run_guard "$(make_input 'bash' 'git push --force')")"
+assert_valid_json "continue response is JSON"    "$(run_guard "$(make_input 'bash' 'ls -la')")"
+assert_valid_json "passthrough response is JSON" "$(run_guard "$(make_input 'read_file' 'anything')")"
+assert_valid_json "empty-input response is JSON" "$(run_guard '')"
 echo ""
 
 # ── 3. `input` field alias ────────────────────────────────────────────────────
@@ -189,15 +151,11 @@ SNAP2=$(cat "$TMPDIR_SYNC/README.md" \
             "$TMPDIR_SYNC/.release-please-manifest.json" 2>/dev/null)
 
 if [[ "$SNAP1" == "$SNAP2" ]]; then
-  echo "  ✅ PASS: sync-version.sh is idempotent (second run produces no changes)"
-  ((PASS++))
+  pass_note "sync-version.sh is idempotent (second run produces no changes)"
 else
-  echo "  ❌ FAIL: sync-version.sh is NOT idempotent — files changed on second run"
-  diff <(echo "$SNAP1") <(echo "$SNAP2") | head -20
-  ((FAIL++))
+  fail_note "sync-version.sh is NOT idempotent — files changed on second run" "$(diff <(echo "$SNAP1") <(echo "$SNAP2") | head -20)"
 fi
 echo ""
 
 # ── Summary ───────────────────────────────────────────────────────────────────
-echo "Results: $PASS passed, $FAIL failed"
-[[ $FAIL -eq 0 ]] && exit 0 || exit 1
+finish_tests

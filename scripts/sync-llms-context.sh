@@ -64,8 +64,9 @@ Purpose: Compact AI-facing orientation for the template repo.
 - Health checks: use doctor.agent.md plus heartbeat files in .copilot/workspace/
 
 ## Validation commands
-- Main checks: bash tests/test-hooks.sh && bash tests/test-guard-destructive.sh && bash tests/test-sync-version.sh && bash tests/test-security-edge-cases.sh
-- Docs drift: bash tests/test-doc-consistency.sh
+- Main checks: bash tests/run-all.sh
+- Script coverage: bash scripts/report-script-coverage.sh coverage
+- Docs drift: bash tests/test-doc-discoverability.sh && bash tests/test-doc-platform-contracts.sh
 - Metadata sync: bash scripts/sync-doc-index.sh --check && bash scripts/sync-llms-context.sh --check
 EOF
 )
@@ -130,11 +131,9 @@ The repo ships $SKILL_COUNT skills. High-signal examples:
 - Run health check
 
 ## Validation commands
-- bash tests/test-hooks.sh
-- bash tests/test-guard-destructive.sh
-- bash tests/test-sync-version.sh
-- bash tests/test-security-edge-cases.sh
-- bash tests/test-doc-consistency.sh
+- bash tests/run-all.sh
+- bash scripts/report-script-coverage.sh coverage
+- bash tests/test-doc-discoverability.sh && bash tests/test-doc-platform-contracts.sh
 - bash scripts/sync-doc-index.sh --check
 - bash scripts/sync-llms-context.sh --check
 EOF

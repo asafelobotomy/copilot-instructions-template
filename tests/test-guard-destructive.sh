@@ -4,9 +4,8 @@
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
 
-PASS=0; FAIL=0
-
-REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
+source "$(dirname "$0")/lib/test-helpers.sh"
+init_test_context "$0"
 SCRIPT="$REPO_ROOT/template/hooks/scripts/guard-destructive.sh"
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
@@ -29,14 +28,11 @@ assert_decision() {
   local desc="$1" input="$2" expected_decision="$3"
   local output
   output=$(run_guard "$input")
-  if echo "$output" | grep -q "\"permissionDecision\": \"$expected_decision\""; then
-    echo "  ✅ PASS: $desc"
-    ((PASS++))
+  if grep -q "\"permissionDecision\": \"$expected_decision\"" <<< "$output"; then
+    pass_note "$desc"
   else
-    echo "  ❌ FAIL: $desc"
-    echo "     expected permissionDecision=$expected_decision"
-    echo "     got: $output"
-    ((FAIL++))
+    fail_note "$desc" "     expected permissionDecision=$expected_decision
+     got: $output"
   fi
 }
 
@@ -44,14 +40,7 @@ assert_continue() {
   local desc="$1" input="$2"
   local output
   output=$(run_guard "$input")
-  if echo "$output" | grep -q '"continue": true'; then
-    echo "  ✅ PASS: $desc"
-    ((PASS++))
-  else
-    echo "  ❌ FAIL: $desc (expected continue:true)"
-    echo "     got: $output"
-    ((FAIL++))
-  fi
+  assert_matches "$desc" "$output" '"continue": true'
 }
 
 assert_no_crash() {
@@ -59,28 +48,7 @@ assert_no_crash() {
   run_guard "$input" >/dev/null 2>&1
   local exit_code=$?
   # Script should always produce output and exit 0 (denials are not crashes)
-  if [[ "$exit_code" -eq 0 ]]; then
-    echo "  ✅ PASS: $desc"
-    ((PASS++))
-  else
-    echo "  ❌ FAIL: $desc (script crashed with exit $exit_code)"
-    ((FAIL++))
-  fi
-}
-
-assert_contains() {
-  local desc="$1" input="$2" needle="$3"
-  local output
-  output=$(run_guard "$input")
-  if echo "$output" | grep -qF "$needle"; then
-    echo "  ✅ PASS: $desc"
-    ((PASS++))
-  else
-    echo "  ❌ FAIL: $desc"
-    echo "     expected to find: $needle"
-    echo "     got: $output"
-    ((FAIL++))
-  fi
+  assert_success "$desc" "$exit_code"
 }
 
 echo "=== guard-destructive.sh unit tests ==="
@@ -144,10 +112,10 @@ echo ""
 
 # ── 7. permissionDecisionReason field is informative ─────────────────────────
 echo "7. permissionDecisionReason field is informative"
-assert_contains "deny reason field present"      "$(make_input 'bash' 'rm -rf /')"         "permissionDecisionReason"
-assert_contains "deny reason mentions pattern"   "$(make_input 'bash' 'rm -rf /')"         "rm -rf"
-assert_contains "caution reason field present"   "$(make_input 'bash' 'git push --force')" "permissionDecisionReason"
-assert_contains "caution reason is descriptive"  "$(make_input 'bash' 'git push --force')" "Potentially destructive"
+assert_contains "deny reason field present"      "$(run_guard "$(make_input 'bash' 'rm -rf /')")"         "permissionDecisionReason"
+assert_contains "deny reason mentions pattern"   "$(run_guard "$(make_input 'bash' 'rm -rf /')")"         "rm -rf"
+assert_contains "caution reason field present"   "$(run_guard "$(make_input 'bash' 'git push --force')")" "permissionDecisionReason"
+assert_contains "caution reason is descriptive"  "$(run_guard "$(make_input 'bash' 'git push --force')")" "Potentially destructive"
 echo ""
 
 # ── 8. Additional blocked patterns ───────────────────────────────────────────
@@ -163,5 +131,4 @@ assert_decision "pip install -- caution"   "$(make_input 'bash' 'pip install --u
 echo ""
 
 # ── Summary ───────────────────────────────────────────────────────────────────
-echo "Results: $PASS passed, $FAIL failed"
-[[ $FAIL -eq 0 ]] && exit 0 || exit 1
+finish_tests
