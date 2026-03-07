@@ -9,6 +9,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [3.3.1](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.3.0...v3.3.1) (2026-03-07)
+
+
+### Bug Fixes
+
+* **ci:** align local and workflow test gates ([585bd28](https://github.com/asafelobotomy/copilot-instructions-template/commit/585bd285674ef3fe5b1782ed3787473dcfc1ab2a))
+
 ## [3.3.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.2.0...v3.3.0) (2026-03-06)
 
 
