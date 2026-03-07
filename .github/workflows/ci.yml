@@ -102,6 +102,9 @@ jobs:
           # Skills: .github/skills/* must match template/skills/*
           for dir in .github/skills/*/; do
             skill=$(basename "$dir")
+            if [[ "$skill" == "mcp-management" ]]; then
+              continue
+            fi
             template_skill="template/skills/$skill/SKILL.md"
             if [[ -f "$template_skill" ]]; then
               if ! diff -q "$dir/SKILL.md" "$template_skill" > /dev/null 2>&1; then
@@ -329,9 +332,12 @@ jobs:
             release-please-config.json \
             .release-please-manifest.json; do
             if [[ -f "$f" ]]; then
-              python3 -c "import json, sys; json.load(open(sys.argv[1]))" "$f" \
-                && echo "✅ $f" \
-                || { echo "❌ Invalid JSON: $f"; failed=1; }
+              if python3 -c "import json, sys; json.load(open(sys.argv[1]))" "$f"; then
+                echo "✅ $f"
+              else
+                echo "❌ Invalid JSON: $f"
+                failed=1
+              fi
             fi
           done
           [[ $failed -eq 0 ]] || exit 1

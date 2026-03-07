@@ -7,7 +7,6 @@ description: Discover, evaluate, install, test, and manage agent plugins for VS 
 
 > Skill metadata: version "1.0"; license MIT; tags [plugins, agents, extensions, discovery, management]; compatibility ">=3.2"; recommended tools [codebase, runCommands, editFiles].
 
-
 Agent plugins (VS Code 1.110+, Preview) are installable packages that bundle agents, skills, hooks, MCP servers, and slash commands. This skill covers discovering, evaluating, installing, testing, and managing plugins alongside the template's own customization files.
 
 ## When to use

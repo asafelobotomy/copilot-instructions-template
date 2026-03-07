@@ -4,6 +4,7 @@
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
 
+# shellcheck source=tests/lib/test-helpers.sh
 source "$(dirname "$0")/lib/test-helpers.sh"
 init_test_context "$0"
 SCRIPT="$REPO_ROOT/template/hooks/scripts/guard-destructive.ps1"

@@ -7,7 +7,6 @@ description: Discover, activate, and manage agent skills following the Skill Pro
 
 > Skill metadata: version "1.0"; license MIT; tags [skills, workflow, discovery, management]; compatibility ">=1.4"; recommended tools [codebase, editFiles, fetch].
 
-
 Skills are reusable markdown-based **behavioural instructions** that teach the agent *how* to perform a specific workflow. Unlike tools (§11) which are executable scripts, skills are declarative — they shape the agent's approach rather than running code.
 
 Skills follow the [Agent Skills](https://agentskills.io) open standard. Each skill is a `SKILL.md` file with minimal YAML frontmatter (`name`, `description`) plus a markdown body that includes a `Skill metadata` note and step-by-step workflow instructions.

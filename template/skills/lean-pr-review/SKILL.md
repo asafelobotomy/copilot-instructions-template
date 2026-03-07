@@ -7,7 +7,6 @@ description: Review a pull request using Lean waste categories and structured se
 
 > Skill metadata: version "1.1"; license MIT; tags [review, pull-request, lean, kaizen, code-review]; compatibility ">=1.4"; recommended tools [codebase, githubRepo].
 
-
 Perform a structured pull request review using §2 Review Mode conventions and §6 waste categories.
 
 ## When to use

@@ -7,7 +7,6 @@ description: Create a new agent skill following the Agent Skills open standard
 
 > Skill metadata: version "1.1"; license MIT; tags [meta, authoring, skill, scaffold]; compatibility ">=1.4"; recommended tools [codebase, editFiles, runCommands].
 
-
 Create a new agent skill that follows the [Agent Skills](https://agentskills.io) open standard and the project's §12 Skill Protocol.
 
 ## When to use

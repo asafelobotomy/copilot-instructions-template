@@ -7,7 +7,6 @@ description: Triage a GitHub issue by classifying severity, labelling waste cate
 
 > Skill metadata: version "1.1"; license MIT; tags [triage, issues, github, lean, kaizen, bug, feature-request]; compatibility ">=1.4"; recommended tools [codebase, githubRepo, runCommands].
 
-
 Systematically triage a GitHub issue using Lean waste categories, severity classification, and structured output — producing an actionable recommendation and a ready-to-post comment.
 
 ## When to use

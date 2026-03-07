@@ -7,7 +7,6 @@ description: Find, build, or adapt automation tools following the Tool Protocol 
 
 > Skill metadata: version "1.0"; license MIT; tags [tools, automation, scripting, toolbox]; compatibility ">=1.4"; recommended tools [codebase, editFiles, runCommands, fetch].
 
-
 When a task requires automation, a scripted command sequence, or a repeatable utility, follow this decision tree before writing anything ad-hoc.
 
 ## When to use

@@ -4,6 +4,7 @@
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
 
+# shellcheck source=tests/lib/test-helpers.sh
 source "$(dirname "$0")/lib/test-helpers.sh"
 init_test_context "$0"
 
@@ -82,12 +83,16 @@ sha1_manifest=$(sha256sum "$SANDBOX/.release-please-manifest.json")
 run_script >/dev/null
 sha2_inst=$(sha256sum "$SANDBOX/.github/copilot-instructions.md")
 sha2_manifest=$(sha256sum "$SANDBOX/.release-please-manifest.json")
-[[ "$sha1_inst" == "$sha2_inst" ]] \
-  && pass_note "copilot-instructions idempotent" \
-  || fail_note "copilot-instructions changed on second run"
-[[ "$sha1_manifest" == "$sha2_manifest" ]] \
-  && pass_note "manifest idempotent" \
-  || fail_note "manifest changed on second run"
+if [[ "$sha1_inst" == "$sha2_inst" ]]; then
+  pass_note "copilot-instructions idempotent"
+else
+  fail_note "copilot-instructions changed on second run"
+fi
+if [[ "$sha1_manifest" == "$sha2_manifest" ]]; then
+  pass_note "manifest idempotent"
+else
+  fail_note "manifest changed on second run"
+fi
 teardown_sandbox
 echo ""
 

@@ -7,7 +7,6 @@ description: Diagnose and fix a failing CI pipeline or GitHub Actions workflow
 
 > Skill metadata: version "1.0"; license MIT; tags [ci, github-actions, debugging, pipeline, workflow]; compatibility ">=1.4"; recommended tools [codebase, editFiles, runCommands].
 
-
 Systematically diagnose and resolve a failing CI pipeline or GitHub Actions workflow.
 
 ## When to use

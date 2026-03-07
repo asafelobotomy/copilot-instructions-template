@@ -4,6 +4,7 @@
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
 
+# shellcheck source=tests/lib/test-helpers.sh
 source "$(dirname "$0")/lib/test-helpers.sh"
 init_test_context "$0"
 SCRIPT="$REPO_ROOT/template/hooks/scripts/save-context.sh"
@@ -33,7 +34,7 @@ echo ""
 echo "4. No workspace files does not crash"
 TMPDIR_EMPTY=$(mktemp -d)
 (
-  cd "$TMPDIR_EMPTY"
+  cd "$TMPDIR_EMPTY" || exit
   echo '{}' | bash "$SCRIPT" 2>/dev/null
 )
 assert_success "no workspace files" $?

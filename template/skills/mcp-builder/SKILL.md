@@ -7,7 +7,6 @@ description: Create a new MCP server — clarify purpose, choose transport, scaf
 
 > Skill metadata: version "1.1"; license MIT; tags [mcp, server, tool, integration, scaffold]; compatibility ">=2.0"; recommended tools [codebase, editFiles, runCommands].
 
-
 Build a new Model Context Protocol (MCP) server from scratch. This skill walks through the full lifecycle: clarifying the server's purpose, choosing transport, scaffolding, implementing tools/resources, testing, and registering the server in `.vscode/mcp.json`.
 
 ## When to activate

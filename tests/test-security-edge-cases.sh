@@ -13,6 +13,7 @@
 # Exit 0: all tests passed.  Exit 1: one or more failures.
 set -uo pipefail
 
+# shellcheck source=tests/lib/test-helpers.sh
 source "$(dirname "$0")/lib/test-helpers.sh"
 init_test_context "$0"
 GUARD="$REPO_ROOT/template/hooks/scripts/guard-destructive.sh"
@@ -65,10 +66,10 @@ assert_continue() {
 echo "=== guard-destructive edge-case and security tests ==="
 echo ""
 echo "1. Exit-code contract — script must exit 0 for every decision path"
-echo "$(make_input 'bash' 'rm -rf /')" | bash "$GUARD" >/dev/null 2>&1; assert_success "deny path exits 0" $?
-echo "$(make_input 'bash' 'rm -rf ./tmp')" | bash "$GUARD" >/dev/null 2>&1; assert_success "ask path exits 0" $?
-echo "$(make_input 'bash' 'ls -la')" | bash "$GUARD" >/dev/null 2>&1; assert_success "continue path exits 0" $?
-echo "$(make_input 'read_file' 'ls')" | bash "$GUARD" >/dev/null 2>&1; assert_success "passthrough path exits 0" $?
+make_input 'bash' 'rm -rf /' | bash "$GUARD" >/dev/null 2>&1; assert_success "deny path exits 0" $?
+make_input 'bash' 'rm -rf ./tmp' | bash "$GUARD" >/dev/null 2>&1; assert_success "ask path exits 0" $?
+make_input 'bash' 'ls -la' | bash "$GUARD" >/dev/null 2>&1; assert_success "continue path exits 0" $?
+make_input 'read_file' 'ls' | bash "$GUARD" >/dev/null 2>&1; assert_success "passthrough path exits 0" $?
 echo '' | bash "$GUARD" >/dev/null 2>&1; assert_success "empty input exits 0" $?
 echo 'not-json-at-all' | bash "$GUARD" >/dev/null 2>&1; assert_success "malformed JSON exits 0" $?
 echo ""
@@ -104,6 +105,7 @@ echo "4. Dangerous pattern embedded in a longer command string"
 assert_decision "semicolon chain: rm -rf /"   "$(make_input 'bash' 'echo hello; rm -rf /')"            "deny"
 assert_decision "&& chain: rm -rf /"          "$(make_input 'bash' 'ls && rm -rf /')"                   "deny"
 assert_decision "|| chain: rm -rf /"          "$(make_input 'bash' 'true || rm -rf /')"                 "deny"
+# shellcheck disable=SC2016
 assert_decision "subshell: rm -rf /"          "$(make_input 'bash' 'echo $(rm -rf /)')"                 "deny"
 assert_decision "semicolon chain: DROP TABLE" "$(make_input 'terminal' 'SELECT 1; DROP TABLE users')"   "deny"
 assert_decision "caution embedded mid-string" "$(make_input 'bash' 'cd /tmp && rm -rf ./build && ls')"  "ask"
