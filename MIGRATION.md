@@ -24,7 +24,31 @@ the next tagged version (listed in **Includes**).
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<tag>/<template-source-path>
 ```
 
-**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0, v3.2.0, v3.3.0
+**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0, v3.2.0, v3.3.0, v3.3.1
+
+---
+
+## v3.3.1
+
+| Breaking | Sections changed | Sections added | Includes |
+|----------|-----------------|----------------|----------|
+| No | — | — | — |
+
+**What changed**: This release aligns the local test entrypoint and CI workflow inventory, adds the `v3.3.0` migration entry required by release metadata contracts, and cleans up lint-only issues in workflow shell blocks, mirrored skill Markdown, and shell test harness scripts.
+
+**New placeholders**: —
+
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `tests/run-all.sh` | `tests/run-all.sh` | Updated (skip PowerShell parity locally when `pwsh` is unavailable) |
+| `.github/workflows/ci.yml` | `.github/workflows/ci.yml` | Updated (remove stale steps, exempt intentional `mcp-management` divergence, fix shell lint pattern) |
+| `MIGRATION.md` | `MIGRATION.md` | Updated (add `v3.3.0` and `v3.3.1` registry entries) |
+| `.github/skills/*/SKILL.md` | `template/skills/*/SKILL.md` | Updated (remove duplicate blank lines in mirrored skills) |
+| `tests/*.sh` | `tests/*.sh` | Updated (address ShellCheck findings in test harness scripts) |
+
+**Manual actions**: None
 
 ---
 

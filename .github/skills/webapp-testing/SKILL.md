@@ -7,7 +7,6 @@ description: Set up browser testing — dual path with built-in browser tools (i
 
 > Skill metadata: version "2.0"; license MIT; tags [testing, e2e, playwright, browser, ci, browser-tools]; compatibility ">=2.0"; recommended tools [codebase, editFiles, runCommands].
 
-
 Set up browser testing for a web application. This skill offers two paths:
 
 - **Path A — Built-in browser tools** (VS Code 1.110+): lightweight, interactive verification using VS Code's agentic browser tools. No dependencies to install. Ideal for development-time checks and exploratory testing.
@@ -277,7 +276,6 @@ jobs:
     }
   }
   ```
-
 
 ## Verify
 
