@@ -9,6 +9,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [3.3.2](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.3.1...v3.3.2) (2026-03-07)
+
+
+### Bug Fixes
+
+* **ci:** close remaining metadata gaps ([3769c9a](https://github.com/asafelobotomy/copilot-instructions-template/commit/3769c9afaca950ff34fa08a67b23501b00b015c4))
+* **ci:** resolve CI lint failures ([25fe77a](https://github.com/asafelobotomy/copilot-instructions-template/commit/25fe77a3eddd6d34c6bacb86edc307c4c1dc5e18))
+* **ci:** tolerate disabled release auto-merge ([6a0e30c](https://github.com/asafelobotomy/copilot-instructions-template/commit/6a0e30c9769692169c9572dfc9cf75a16faf8223))
+
 ## [3.3.1](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.3.0...v3.3.1) (2026-03-07)
 
 
