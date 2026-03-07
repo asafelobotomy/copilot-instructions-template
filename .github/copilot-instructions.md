@@ -1,6 +1,6 @@
 # Copilot Instructions — copilot-instructions-template
 
-> **Template version**: 3.3.1 <!-- x-release-please-version --> | **Applied**: 2026-02-27
+> **Template version**: 3.3.2 <!-- x-release-please-version --> | **Applied**: 2026-02-27
 > Living document — self-edit rules in §8.
 >
 > **Models**: each `.github/agents/*.agent.md` pins its model. Codex models are headless-only (no interactive prompts). See [model comparison](https://docs.github.com/en/copilot/reference/ai-models/model-comparison).
