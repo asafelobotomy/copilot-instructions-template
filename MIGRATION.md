@@ -24,7 +24,30 @@ the next tagged version (listed in **Includes**).
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<tag>/<template-source-path>
 ```
 
-**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0, v3.2.0
+**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0, v3.2.0, v3.3.0
+
+---
+
+## v3.3.0
+
+| Breaking | Sections changed | Sections added | Includes |
+|----------|-----------------|----------------|----------|
+| No | §2, §10 | — | — |
+
+**What changed**: §2 now routes extension and test audits through dedicated on-demand review skills instead of embedding the full procedures inline. §10 records new repo-level review surfaces, the canonical local test entrypoint, and the current model guidance surfaced through `llms.txt`.
+
+**New placeholders**: —
+
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/skills/extension-review/SKILL.md` | `template/skills/extension-review/SKILL.md` | **New** (VS Code extension audit workflow) |
+| `.github/skills/test-coverage-review/SKILL.md` | `template/skills/test-coverage-review/SKILL.md` | **New** (coverage-gap audit workflow) |
+| `llms.txt` | `llms.txt` | Updated (model guidance and review-skill inventory) |
+| `CHANGELOG.md` | `CHANGELOG.md` | Updated (v3.3.0 release entry) |
+
+**Manual actions**: None
 
 ---
 
