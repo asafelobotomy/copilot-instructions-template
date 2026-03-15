@@ -12,6 +12,9 @@
 
 ## Model strategy
 
+> **Single source of truth**: [MODELS.md](MODELS.md) — edit there, then run
+> `bash scripts/sync-models.sh --write` to propagate to agent files.
+
 | Surface | Recommended model | Role |
 |---------|-------------------|------|
 | `setup.agent.md` | Claude Sonnet 4.6 | Interactive setup and onboarding |
@@ -23,7 +26,7 @@
 
 ## Skills
 
-The repo ships 13 skills in `.github/skills/` and `template/skills/`. High-signal examples:
+The repo ships 14 skills in `.github/skills/` and `template/skills/`. High-signal examples:
 
 - `extension-review`: audit VS Code extensions against detected stack signals
 - `test-coverage-review`: audit test coverage and recommend local tests plus CI workflows
@@ -72,6 +75,7 @@ Max subagent depth is 3 (configurable via `{{SUBAGENT_MAX_DEPTH}}`).
 
 - Main suite: `bash tests/run-all.sh`
 - Metadata sync: `bash scripts/sync-doc-index.sh --check`
+- Model registry sync: `bash scripts/sync-models.sh --check`
 
 ## Human documentation
 

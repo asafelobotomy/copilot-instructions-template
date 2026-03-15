@@ -157,12 +157,17 @@ Flag: `[HIGH]` for any `@modelcontextprotocol/server-git` or `@modelcontextproto
 
 ### D6 — Version file
 
-Check `.github/copilot-version.md`:
+First determine the repo context:
 
-- Present?
-- Contains a valid semver string (`X.Y.Z`)?
+```bash
+grep -q '{{' .github/copilot-instructions.md && echo CONSUMER || echo DEVELOPER
+```
 
-Flag: `[HIGH]` if absent or malformed.
+- **Developer repo** (zero `{{` tokens in `.github/copilot-instructions.md`): skip this check — `.github/copilot-version.md` is consumer-only and is created during setup by the consumer. Mark D6 as `N/A (developer repo)`.
+- **Consumer repo**: Check `.github/copilot-version.md`:
+  - Present?
+  - Contains a valid semver string (`X.Y.Z`)?
+  - Flag: `[HIGH]` if absent or malformed.
 
 ### D7 — Workspace memory files
 
@@ -185,9 +190,12 @@ Flag: `[WARN]` if absent.
 
 Check for agent plugin integration:
 
-1. **Naming conflicts** — do any `.github/agents/*.agent.md` files share a `name:` with a plugin-contributed agent? Use the Agent Debug Panel or scan `chat.plugins.paths` in `.vscode/settings.json`.
-2. **Skill collisions** — do any `.github/skills/*/SKILL.md` files share a `name:` with a plugin-contributed skill?
-3. **Plugin settings** — is `chat.plugins.enabled` set in `.vscode/settings.json`? If plugins paths are configured, are the paths valid?
+1. **Plugin settings** — read `.vscode/settings.json` and check:
+   - Is `chat.plugins.enabled` present and `true`?
+   - Does `chat.plugins.paths` exist? If so, does each listed path resolve to a file on disk?
+   - Skip this check silently if neither key is present.
+2. **Naming conflicts** — if plugins are configured, do any `.github/agents/*.agent.md` files share a `name:` with a plugin-contributed agent? Scan `chat.plugins.paths` entries for name fields. (The VS Code Agent Debug Panel can also show conflicts interactively, but it is not tool-accessible.)
+3. **Skill collisions** — do any `.github/skills/*/SKILL.md` files share a `name:` with a plugin-contributed skill?
 
 Flag: `[WARN]` if naming conflicts detected.
 Flag: `[WARN]` if `chat.plugins.paths` contains non-existent paths.
