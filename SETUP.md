@@ -289,6 +289,12 @@ Do not proceed with unresolved `{{...}}` tokens in the instructions file.
 
 ## § 2.5 — Write model-pinned agent files
 
+> **Architecture note**: Agent files are fetched directly from `.github/agents/` in the template
+> repository. Unlike skills and hooks, there is no `template/agents/` mirror — agents contain
+> no `{{PLACEHOLDER}}` tokens and are delivered verbatim. This is a deliberate exception to the
+> `template/` staging pattern; it avoids maintaining a redundant mirror for files that require
+> no token substitution and change infrequently.
+
 Create `.github/agents/` and write six agent files. Fetch each from the template repository:
 
 | Target path | Source URL |

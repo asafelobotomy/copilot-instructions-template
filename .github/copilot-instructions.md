@@ -27,9 +27,11 @@ This repo has two distinct layers that must never be mixed:
 | **Developer instruction files** | `.github/instructions/` | Resolved path-stubs for this repo — no `{{}}` tokens. |
 | **Developer prompts** | `.github/prompts/` | Resolved prompts for this repo — no `{{}}` tokens. |
 | **Template artefacts** | `template/skills/`, `template/hooks/`, `template/workspace/` | Delivered verbatim; must stay in parity with `.github/skills/`, `.github/hooks/`. |
+| **Model-pinned agents** | `.github/agents/` | Fetched directly by `SETUP.md` §2.5. No `template/agents/` mirror exists — deliberate exception. Agents contain no `{{}}` tokens and change rarely; maintaining a separate mirror would add CI overhead with no practical benefit. |
 
 **Invariant**: `.github/instructions/` and `.github/prompts/` must never contain `{{PLACEHOLDER}}` tokens.
 **Invariant**: `template/` files must never contain resolved project-specific values.
+**Note**: `.github/agents/` is the only verbatim-delivered artefact that lacks a `template/` mirror. This is intentional — see Architecture table above.
 
 ## Key Commands
 
