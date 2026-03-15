@@ -7,7 +7,7 @@ model:
   - Claude Opus 4.6
   - Claude Sonnet 4.6
   - GPT-5.1
-tools: [codebase, githubRepo]
+tools: [codebase, githubRepo, runCommands]
 handoffs:
   - label: Implement fixes
     agent: Code

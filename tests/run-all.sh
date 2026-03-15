@@ -25,6 +25,11 @@ run_optional_phase() {
     echo "Skipping $label: missing $requirement_label"
     return
   fi
+  # Functional probe: the binary must actually execute without crashing.
+  if ! "$requirement_cmd" -NoProfile -NonInteractive -Command 'exit 0' >/dev/null 2>&1; then
+    echo "Skipping $label: $requirement_label is installed but non-functional (runtime error)"
+    return
+  fi
 
   for test_script in "$@"; do
     echo "==> $test_script"

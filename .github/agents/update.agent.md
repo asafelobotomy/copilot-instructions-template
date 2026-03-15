@@ -6,7 +6,7 @@ model:
   - Claude Sonnet 4.6
   - Claude Sonnet 4.5
   - GPT-5.1
-tools: [fetch, editFiles, codebase]
+tools: [fetch, editFiles, codebase, runCommands]
 disable-model-invocation: true
 handoffs:
   - label: Run health check

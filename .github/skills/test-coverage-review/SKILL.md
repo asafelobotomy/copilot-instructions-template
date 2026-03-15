@@ -5,7 +5,7 @@ description: Audit test coverage, identify gaps, and recommend local tests plus 
 
 # Test Coverage Review
 
-> Skill metadata: version "1.0"; license MIT; tags [tests, coverage, ci, review, quality]; compatibility ">=3.2"; recommended tools [codebase, terminal, github].
+> Skill metadata: version "1.0"; license MIT; tags [tests, coverage, ci, review, quality]; compatibility ">=3.2"; recommended tools [codebase, runCommands, githubRepo].
 
 Review the current project's test coverage posture and recommend what to test next, what coverage tooling is missing, and which CI workflows would add the most value.
 
