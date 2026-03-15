@@ -31,7 +31,7 @@ Canonical source for inventory:
 > All writes go to the **user's current project**. Never modify `asafelobotomy/copilot-instructions-template`.
 
 1. Fetch `SETUP.md`: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/SETUP.md`
-2. Fetch the instructions template: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/copilot-instructions.md`
+2. Fetch the instructions template: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/copilot-instructions.md`
 3. Follow `SETUP.md` exactly. It fetches all companion files (agents, skills, hooks, prompts, instructions) from upstream. If any fetch fails, stop. The template from step 2 gets populated with `{{PLACEHOLDER}}` values and written to `.github/copilot-instructions.md`. See `SETUP.md` for the full output file list.
 
 ---

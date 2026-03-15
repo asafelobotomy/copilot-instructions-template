@@ -54,13 +54,31 @@ echo ""
 echo "4. Version markers remain in release-managed files"
 assert_python "x-release markers remain discoverable" '
 version = (root / "VERSION.md").read_text(encoding="utf-8").strip()
-targets = [root / ".github/copilot-instructions.md"]
+targets = [root / "template/copilot-instructions.md", root / "README.md"]
 for path in targets:
     text = path.read_text(encoding="utf-8")
     if "x-release-please-version" not in text:
         raise SystemExit(f"missing marker in {path.relative_to(root)}")
     if version not in text:
         raise SystemExit(f"missing version {version} in {path.relative_to(root)}")
+'
+echo ""
+
+echo "5. release-please.yml workflow_run name matches CI workflow name"
+assert_python "workflow_run trigger name matches CI name" '
+import re
+ci_text = (root / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+rp_text = (root / ".github/workflows/release-please.yml").read_text(encoding="utf-8")
+ci_name_m = re.search(r"^name:\s*(.+)", ci_text, re.MULTILINE)
+rp_name_m = re.search(r"workflows:\s*\[\"(.+?)\"\]", rp_text)
+if not ci_name_m:
+    raise SystemExit("could not find name: in ci.yml")
+if not rp_name_m:
+    raise SystemExit("could not find workflows: trigger in release-please.yml")
+ci_name = ci_name_m.group(1).strip()
+rp_name = rp_name_m.group(1).strip()
+if ci_name != rp_name:
+    raise SystemExit("MISMATCH ci=" + repr(ci_name) + " rp=" + repr(rp_name))
 '
 echo ""
 

@@ -77,4 +77,38 @@ for repo_rel, template_rel in divergent.items():
 '
 echo ""
 
+echo "4. Verbatim instruction and prompt stubs stay in exact sync"
+assert_python "verbatim instruction and prompt mirrors remain exact" '
+exact = {
+    ".github/instructions/api-routes.instructions.md": "template/instructions/api-routes.instructions.md",
+    ".github/instructions/config.instructions.md": "template/instructions/config.instructions.md",
+    ".github/instructions/docs.instructions.md": "template/instructions/docs.instructions.md",
+    ".github/prompts/commit-msg.prompt.md": "template/prompts/commit-msg.prompt.md",
+    ".github/prompts/explain.prompt.md": "template/prompts/explain.prompt.md",
+    ".github/prompts/review-file.prompt.md": "template/prompts/review-file.prompt.md",
+}
+for repo_rel, template_rel in exact.items():
+    repo_path = root / repo_rel
+    template_path = root / template_rel
+    if not repo_path.exists() or not template_path.exists():
+        raise SystemExit(f"missing pair {repo_rel} {template_rel}")
+    if not filecmp.cmp(repo_path, template_path, shallow=False):
+        raise SystemExit(f"mismatch {repo_rel} {template_rel}")
+'
+echo ""
+
+echo "5. Every developer instruction and prompt has a template counterpart"
+assert_python "instruction and prompt template stubs exist" '
+for kind, folder in [("instructions", "*.instructions.md"), ("prompts", "*.prompt.md")]:
+    dev_dir = root / ".github" / kind
+    tpl_dir = root / "template" / kind
+    if not dev_dir.exists():
+        continue
+    for dev_file in sorted(dev_dir.glob(folder)):
+        tpl_file = tpl_dir / dev_file.name
+        if not tpl_file.exists():
+            raise SystemExit(f"template/{kind}/{dev_file.name} missing (developer copy exists)")
+'
+echo ""
+
 finish_tests

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "updated": "2026-03-06",
+  "updated": "2026-03-15",
   "purpose": "Canonical machine-readable inventory for repository metadata.",
   "counts": {
     "agents": 6,
@@ -67,6 +67,8 @@
   },
   "notes": [
     "This index is the canonical metadata source for drift checks.",
-    "Human-facing docs live on the docs branch."
+    "Human-facing docs live on the docs branch.",
+    "Consumer template: template/copilot-instructions.md (with {{PLACEHOLDER}} tokens).",
+    "Developer instructions: .github/copilot-instructions.md (zero placeholder tokens, developer-only)."
   ]
 }

@@ -24,7 +24,29 @@ the next tagged version (listed in **Includes**).
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<tag>/<template-source-path>
 ```
 
-**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0, v3.2.0, v3.3.0, v3.3.1
+**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0, v3.2.0, v3.3.0, v3.3.1, v3.3.2
+
+---
+
+## v3.3.2
+
+**Includes**: v3.3.2
+
+**Sections changed**: none (structural repo change only)
+
+**Companion files added**:
+
+- `template/copilot-instructions.md` — consumer instructions template (new canonical location)
+- `template/instructions/tests.instructions.md` — consumer test instruction stub
+- `template/prompts/refactor.prompt.md` — consumer prompt with placeholder tokens
+- `template/prompts/test-gen.prompt.md` — consumer prompt with placeholder tokens
+
+**New placeholders**: none
+
+**Manual actions**:
+
+- If updating AGENTS.md: step 2 now fetches `template/copilot-instructions.md` instead of `.github/copilot-instructions.md`.
+- Developer `.github/copilot-instructions.md` is now the repo-specific developer guide; the consumer template lives in `template/copilot-instructions.md`.
 
 ---
 
@@ -75,6 +97,12 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<t
 
 ---
 
+## v3.1.0
+
+See **v3.2.0** — this release is bundled into v3.2.0 via its `Includes` field.
+
+---
+
 ## v3.2.0
 
 | Breaking | Sections changed | Sections added | Includes |
@@ -89,15 +117,15 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<t
 
 | Destination | Template source | Action |
 |-------------|----------------|--------|
-| `.github/instructions/tests.instructions.md` | `.github/instructions/tests.instructions.md` | Updated (`description` field added) |
-| `.github/instructions/api-routes.instructions.md` | `.github/instructions/api-routes.instructions.md` | Updated (`description` field added) |
-| `.github/instructions/config.instructions.md` | `.github/instructions/config.instructions.md` | Updated (`description` field added) |
-| `.github/instructions/docs.instructions.md` | `.github/instructions/docs.instructions.md` | Updated (`description` field added) |
-| `.github/prompts/explain.prompt.md` | `.github/prompts/explain.prompt.md` | Updated (YAML frontmatter added) |
-| `.github/prompts/refactor.prompt.md` | `.github/prompts/refactor.prompt.md` | Updated (YAML frontmatter added) |
-| `.github/prompts/test-gen.prompt.md` | `.github/prompts/test-gen.prompt.md` | Updated (YAML frontmatter added) |
-| `.github/prompts/review-file.prompt.md` | `.github/prompts/review-file.prompt.md` | Updated (YAML frontmatter added) |
-| `.github/prompts/commit-msg.prompt.md` | `.github/prompts/commit-msg.prompt.md` | Updated (YAML frontmatter added) |
+| `.github/instructions/tests.instructions.md` | `template/instructions/tests.instructions.md` | Updated (`description` field added) |
+| `.github/instructions/api-routes.instructions.md` | `template/instructions/api-routes.instructions.md` | Updated (`description` field added) |
+| `.github/instructions/config.instructions.md` | `template/instructions/config.instructions.md` | Updated (`description` field added) |
+| `.github/instructions/docs.instructions.md` | `template/instructions/docs.instructions.md` | Updated (`description` field added) |
+| `.github/prompts/explain.prompt.md` | `template/prompts/explain.prompt.md` | Updated (YAML frontmatter added) |
+| `.github/prompts/refactor.prompt.md` | `template/prompts/refactor.prompt.md` | Updated (YAML frontmatter added) |
+| `.github/prompts/test-gen.prompt.md` | `template/prompts/test-gen.prompt.md` | Updated (YAML frontmatter added) |
+| `.github/prompts/review-file.prompt.md` | `template/prompts/review-file.prompt.md` | Updated (YAML frontmatter added) |
+| `.github/prompts/commit-msg.prompt.md` | `template/prompts/commit-msg.prompt.md` | Updated (YAML frontmatter added) |
 | `.github/skills/skill-creator/SKILL.md` | `template/skills/skill-creator/SKILL.md` | Updated (`/create-skill` reference) |
 | `.github/skills/skill-management/SKILL.md` | `template/skills/skill-management/SKILL.md` | Updated (agent plugins, org agents) |
 | `.github/skills/mcp-management/SKILL.md` | `template/skills/mcp-management/SKILL.md` | Updated (MCP GA, capabilities, discovery) |
@@ -121,6 +149,24 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<t
 **Manual actions**:
 
 1. If you rely on the MCP `memory` server, re-add it manually to `.vscode/mcp.json` after updating. VS Code's built-in memory tool (`/memories/`) is the recommended replacement.
+
+---
+
+## v3.0.3
+
+See **v3.0.4** — this release is bundled into v3.0.4 via its `Includes` field.
+
+---
+
+## v3.0.2
+
+See **v3.0.4** — this release is bundled into v3.0.4 via its `Includes` field.
+
+---
+
+## v3.0.1
+
+See **v3.0.4** — this release is bundled into v3.0.4 via its `Includes` field.
 
 ---
 

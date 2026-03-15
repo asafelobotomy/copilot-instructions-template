@@ -165,6 +165,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `tests/test-doc-consistency.sh` — expanded to catch the terminology and contract drift found in review: skill-count mismatch, stale interview counts, stale E19 references, metrics-schema mismatch, and stale MCP `memory` sampling configuration.
 - Agent handoff metadata updated to match the currently validated agent names (`Code`, `Review`, `Doctor`, `Update`) instead of lower-case filename stems.
 - `.github/workflows/ci.yml`, `docs/SKILLS-GUIDE.md`, `docs/SECURITY-GUIDE.md`, and `skill-creator` now match the new skill schema contract instead of teaching deprecated top-level skill metadata fields.
+- `llms.txt` — stale `docs` branch reference removed; now points to `README.md`.
+- `UPDATE.md` — U4 fetch URLs corrected from `.github/copilot-instructions.md` to `template/copilot-instructions.md` after the architectural split.
+- `.github/agents/update.agent.md` — pre-flight URLs 5 and 6 corrected from `.github/copilot-instructions.md` to `template/copilot-instructions.md`.
+- `SETUP.md` — step 2 description corrected to reference `template/copilot-instructions.md` instead of `.github/copilot-instructions.md`.
+- `README.md` — version string now carries the `<!-- x-release-please-version -->` marker so release-please keeps it in sync automatically.
 
 ### Update protocol
 
@@ -187,6 +192,11 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - Added `Test documentation consistency` step to `script-tests` job in `ci.yml`.
 - Added `DOC_INDEX.json is in sync` validation step to `validate` job in `ci.yml`.
 - Added required-file checks for `scripts/sync-doc-index.sh` and `.copilot/workspace/DOC_INDEX.json`.
+- `.github/workflows/ci.yml` — "Developer instructions have no placeholder tokens" step now strips inline backtick spans before counting `{{` tokens, eliminating 13 false-positive matches from documentation code examples.
+- `.github/workflows/ci.yml` — auto-commit step now stages `README.md` alongside `template/copilot-instructions.md` and `.release-please-manifest.json`.
+- `.github/workflows/release-please.yml` — workflow_run trigger name was stored as a Unicode escape sequence instead of a literal em dash, causing the release job to silently never fire; corrected to the literal character.
+- `release-please-config.json` — `README.md` added to `extra-files` so release-please keeps the version badge in sync on every release.
+- `tests/test-release-contracts.sh` — test 5 added to verify the `release-please.yml` workflow_run trigger name matches the CI workflow `name:` field exactly, preventing recurrence of encoding bugs.
 
 ---
 

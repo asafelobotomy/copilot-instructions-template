@@ -41,4 +41,4 @@ Canonical inventory lives in `.copilot/workspace/DOC_INDEX.json`.
 
 ## Human documentation
 
-Human-readable guides, README, and contribution docs live on the `docs` branch.
+See [`README.md`](README.md) for a human-readable overview and quick-start links.

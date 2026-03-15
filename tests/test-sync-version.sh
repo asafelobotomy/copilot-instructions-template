@@ -17,16 +17,19 @@ setup_sandbox() {
   local ver="${1:-1.2.3}"
   SANDBOX=$(mktemp -d)
   # Minimal tree matching the paths the script targets
-  mkdir -p "$SANDBOX/.github"
+  mkdir -p "$SANDBOX/template"
   echo "$ver" > "$SANDBOX/VERSION.md"
-  cat > "$SANDBOX/.github/copilot-instructions.md" <<'INST'
-# Copilot Instructions — TestProject
+  cat > "$SANDBOX/template/copilot-instructions.md" <<'INST'
+# Copilot Instructions Template
 
 > **Template version**: 0.0.0 <!-- x-release-please-version --> | **Applied**: 2025-01-01
 > Living document.
 INST
 
   printf '{"." : "0.0.0"}\n' > "$SANDBOX/.release-please-manifest.json"
+
+  printf 'Current template version: **0.0.0** <!-- x-release-please-version --> — see CHANGELOG.md.\n' \
+    > "$SANDBOX/README.md"
 }
 
 teardown_sandbox() {
@@ -59,8 +62,10 @@ setup_sandbox "1.2.3"
 run_script
 exit_code=$?
 assert_success "exits 0" "$exit_code"
-assert_file_contains "copilot-instructions updated" "$SANDBOX/.github/copilot-instructions.md" "Template version\*\*: 1.2.3"
-assert_file_not_contains "old version gone"         "$SANDBOX/.github/copilot-instructions.md" "Template version\*\*: 0.0.0"
+assert_file_contains "copilot-instructions updated" "$SANDBOX/template/copilot-instructions.md" "Template version\*\*: 1.2.3"
+assert_file_not_contains "old version gone"         "$SANDBOX/template/copilot-instructions.md" "Template version\*\*: 0.0.0"
+assert_file_contains "readme updated"              "$SANDBOX/README.md"                         "\*\*1.2.3\*\*"
+assert_file_not_contains "readme old version gone" "$SANDBOX/README.md"                         "\*\*0.0.0\*\*"
 assert_file_contains "manifest updated"             "$SANDBOX/.release-please-manifest.json"   '"1.2.3"'
 assert_file_not_contains "old manifest gone"        "$SANDBOX/.release-please-manifest.json"   '"0.0.0"'
 teardown_sandbox
@@ -70,7 +75,7 @@ echo ""
 echo "2. Inline marker preserved after substitution"
 setup_sandbox "2.0.0"
 run_script >/dev/null
-assert_file_contains "marker still in instructions" "$SANDBOX/.github/copilot-instructions.md" "x-release-please-version"
+assert_file_contains "marker still in instructions" "$SANDBOX/template/copilot-instructions.md" "x-release-please-version"
 teardown_sandbox
 echo ""
 
@@ -78,11 +83,13 @@ echo ""
 echo "3. Idempotency — second run is a no-op"
 setup_sandbox "3.1.0"
 run_script >/dev/null
-sha1_inst=$(sha256sum "$SANDBOX/.github/copilot-instructions.md")
+sha1_inst=$(sha256sum "$SANDBOX/template/copilot-instructions.md")
 sha1_manifest=$(sha256sum "$SANDBOX/.release-please-manifest.json")
+sha1_readme=$(sha256sum "$SANDBOX/README.md")
 run_script >/dev/null
-sha2_inst=$(sha256sum "$SANDBOX/.github/copilot-instructions.md")
+sha2_inst=$(sha256sum "$SANDBOX/template/copilot-instructions.md")
 sha2_manifest=$(sha256sum "$SANDBOX/.release-please-manifest.json")
+sha2_readme=$(sha256sum "$SANDBOX/README.md")
 if [[ "$sha1_inst" == "$sha2_inst" ]]; then
   pass_note "copilot-instructions idempotent"
 else
@@ -92,6 +99,11 @@ if [[ "$sha1_manifest" == "$sha2_manifest" ]]; then
   pass_note "manifest idempotent"
 else
   fail_note "manifest changed on second run"
+fi
+if [[ "$sha1_readme" == "$sha2_readme" ]]; then
+  pass_note "readme idempotent"
+else
+  fail_note "readme changed on second run"
 fi
 teardown_sandbox
 echo ""

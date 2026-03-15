@@ -11,7 +11,7 @@
 Before running any step, verify:
 
 - You are operating inside the **user's project**, not the template repository.
-- You fetched `.github/copilot-instructions.md` from the template repo and are holding it in memory (see `AGENTS.md` step 2).
+- You fetched `template/copilot-instructions.md` from the template repo and are holding it in memory (see `AGENTS.md` step 2).
 - You have `editFiles` tool access.
 
 > **Remote fetches**: In addition to the two URLs in `AGENTS.md`, this guide fetches
@@ -241,7 +241,7 @@ Any value that cannot be determined is left as `{{PLACEHOLDER}}` with a `<!-- TO
 
 ## § 2 — Populate the instructions file
 
-Take the `.github/copilot-instructions.md` template held in memory. Replace every `{{PLACEHOLDER}}` token with the value detected in §1.
+Take the `template/copilot-instructions.md` template held in memory (fetched in `AGENTS.md` step 2). Replace every `{{PLACEHOLDER}}` token with the value detected in §1.
 
 Add the User Preferences table to `## § 10 — Project-Specific Overrides` using this format:
 
@@ -345,10 +345,10 @@ Copy default stubs verbatim (fetch URLs below). The `applyTo:` glob in each file
 
 | Stub | URL |
 |------|-----|
-| `tests.instructions.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/instructions/tests.instructions.md` |
-| `api-routes.instructions.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/instructions/api-routes.instructions.md` |
-| `config.instructions.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/instructions/config.instructions.md` |
-| `docs.instructions.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/instructions/docs.instructions.md` |
+| `tests.instructions.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/instructions/tests.instructions.md` |
+| `api-routes.instructions.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/instructions/api-routes.instructions.md` |
+| `config.instructions.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/instructions/config.instructions.md` |
+| `docs.instructions.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/instructions/docs.instructions.md` |
 
 Write files to `.github/instructions/<name>` in the user's project.
 
@@ -366,11 +366,11 @@ Write the following five files to `.github/prompts/` (fetch and write verbatim):
 
 | File | URL |
 |------|-----|
-| `explain.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/prompts/explain.prompt.md` |
-| `refactor.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/prompts/refactor.prompt.md` |
-| `test-gen.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/prompts/test-gen.prompt.md` |
-| `review-file.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/prompts/review-file.prompt.md` |
-| `commit-msg.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/prompts/commit-msg.prompt.md` |
+| `explain.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/prompts/explain.prompt.md` |
+| `refactor.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/prompts/refactor.prompt.md` |
+| `test-gen.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/prompts/test-gen.prompt.md` |
+| `review-file.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/prompts/review-file.prompt.md` |
+| `commit-msg.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/prompts/commit-msg.prompt.md` |
 
 After writing, replace `{{THREE_CHECK_COMMAND}}`, `{{TEST_FRAMEWORK}}`, and `{{TEST_COMMAND}}` tokens using values from §1.
 

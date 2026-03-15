@@ -4,15 +4,17 @@ name: Release Please
 # Creates a "release PR" that accumulates Conventional Commits, bumps version,
 # and updates CHANGELOG.md. Merging the PR triggers a GitHub release.
 #
-# Auto-merge is enabled so release PRs land without manual intervention.
-# The underlying commits already pass CI on main — the PR only bumps
-# VERSION.md + CHANGELOG.md.
+# Triggered by workflow_run so it only fires AFTER all CI jobs pass on main.
+# The release PR only bumps VERSION.md + CHANGELOG.md — no new code risk —
+# so it is merged immediately without waiting for a second CI run.
+# If branch protection blocks a direct merge, the step falls back to --auto.
 #
-# Coexists with release-manual.yml — use one or the other, not both.
 # Coexists with release-manual.yml — use one or the other, not both.
 
 on:
-  push:
+  workflow_run:
+    workflows: ["CI — Validate template"]
+    types: [completed]
     branches: [main]
 
 permissions:
@@ -23,6 +25,7 @@ jobs:
   release-please:
     name: Release Please
     runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Harden runner
         uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2
@@ -34,7 +37,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Auto-merge release PR
+      - name: Merge release PR
         if: steps.release.outputs.pr && !steps.release.outputs.release_created
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -42,13 +45,20 @@ jobs:
           pr_number=${{ fromJSON(steps.release.outputs.pr).number }}
           if output=$(gh pr merge "$pr_number" \
             --repo ${{ github.repository }} \
-            --squash \
-            --auto 2>&1); then
+            --squash 2>&1); then
             echo "$output"
           else
             echo "$output"
+            # Branch protection requires CI on the PR itself — fall back to auto-merge.
             if grep -Fq 'Auto merge is not allowed for this repository' <<< "$output"; then
-              echo '::notice::Release PR was created, but repository auto-merge is disabled. Merge the release PR manually or enable auto-merge in repository settings.'
+              echo '::warning::Repository auto-merge is disabled. Enable it in Settings → General or merge the release PR manually.'
+            elif grep -qiE 'required status|protected branch|branch protection' <<< "$output"; then
+              echo '::notice::Branch protection active. Falling back to --auto; PR will merge once PR checks pass.'
+              gh pr merge "$pr_number" \
+                --repo ${{ github.repository }} \
+                --squash \
+                --auto \
+                || echo '::warning::Auto-merge failed. Merge the release PR manually.'
             else
               exit 1
             fi

@@ -90,7 +90,7 @@ Fetch **two** copies of the template:
 **A — Old baseline** (template at the installed version):
 
 ```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/v<INSTALLED_VERSION>/.github/copilot-instructions.md
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/v<INSTALLED_VERSION>/template/copilot-instructions.md
 ```
 
 If the installed version has no tag (no `v<INSTALLED_VERSION>` tag exists), or the fetch fails, set `OLD_BASELINE = null`. The protocol will fall back to a two-way diff (new template vs installed file).
@@ -98,7 +98,7 @@ If the installed version has no tag (no `v<INSTALLED_VERSION>` tag exists), or t
 **B — New template** (latest):
 
 ```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/copilot-instructions.md
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/copilot-instructions.md
 ```
 
 ### U5 — Build the change manifest (version-walk)

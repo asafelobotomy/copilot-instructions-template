@@ -8,7 +8,7 @@ tools: [editFiles, runCommands, codebase]
 
 Generate tests for the selected code following project conventions.
 
-1. Use the project test framework: `bash (custom shell test scripts)`.
+1. Use the project test framework: `{{TEST_FRAMEWORK}}`.
 2. Mirror the source file path in the test directory.
 3. Cover:
    - The main success path
@@ -17,6 +17,6 @@ Generate tests for the selected code following project conventions.
 4. Follow the arrange/act/assert pattern.
 5. Use descriptive test names: `"should <expected behaviour> when <condition>"`.
 6. Mock external dependencies but not the module under test.
-7. Run `bash tests/run-all.sh` after generating to verify tests pass.
+7. Run `{{TEST_COMMAND}}` after generating to verify tests pass.
 
 Do not modify the source code — only create or update test files.

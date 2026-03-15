@@ -39,7 +39,8 @@ patterns. Use `codebase` to read file contents.
 
 ### Core instructions
 
-- `.github/copilot-instructions.md`
+- `.github/copilot-instructions.md` — developer instructions for this repo (must have zero `{{` tokens)
+- `template/copilot-instructions.md` — consumer template (must retain `{{PLACEHOLDER}}` tokens)
 
 ### Agent files
 
@@ -77,11 +78,11 @@ patterns. Use `codebase` to read file contents.
 
 ## Checks to run
 
-### D1 — Attention Budget (copilot-instructions.md)
+### D1 — Attention Budget (template/copilot-instructions.md)
 
 Count total lines. Then for each section, count its lines.
 
-Expected limits (from §8):
+Expected limits (from §8 of the consumer template):
 
 | Scope | Limit |
 |-------|-------|
@@ -91,13 +92,13 @@ Expected limits (from §8):
 | §10 | No limit |
 | §11, §12, §13 (each) | ≤ 150 |
 
-Use `runCommands` to count: `wc -l .github/copilot-instructions.md` and
-`grep -n "^## §" .github/copilot-instructions.md` to find section boundaries.
+Use `runCommands` to count: `wc -l template/copilot-instructions.md` and
+`grep -n "^## §" template/copilot-instructions.md` to find section boundaries.
 
 Flag: `[CRITICAL]` if any section exceeds its limit.
 Flag: `[WARN]` if any section is within 10 lines of its limit.
 
-### D2 — Section structure (copilot-instructions.md)
+### D2 — Section structure (template/copilot-instructions.md)
 
 Verify all expected sections are present and in order:
 §0 (if present), §1, §2, §3, §4, §5, §6, §7, §8, §9, §10, §11, §12, §13.
@@ -105,16 +106,25 @@ Verify all expected sections are present and in order:
 Flag: `[CRITICAL]` if any section is missing.
 Flag: `[WARN]` if sections are out of order.
 
-### D3 — Placeholder leakage
+### D3 — Placeholder separation
 
-Search for unresolved `{{PLACEHOLDER}}` tokens in §1–§9.
+Two checks:
+
+1. **Developer file must have zero `{{` tokens**:
 
 ```bash
-grep -n "{{" .github/copilot-instructions.md
+grep -n '{{' .github/copilot-instructions.md
 ```
 
-Flag: `[HIGH]` for every unresolved token found. Tokens in §10's placeholder
-table are expected — only flag tokens appearing in §1–§9 body text.
+Flag: `[CRITICAL]` if any are found — the developer file must be fully resolved.
+
+2. **Consumer template must retain `{{` tokens**:
+
+```bash
+grep -c '{{' template/copilot-instructions.md
+```
+
+Flag: `[HIGH]` if fewer than 3 are found — the consumer template may have been accidentally resolved.
 
 ### D4 — Agent file validity
 

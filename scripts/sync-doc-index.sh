@@ -109,6 +109,8 @@ generated = {
     "notes": [
         "This index is the canonical metadata source for drift checks.",
         "Human-facing docs live on the docs branch.",
+        "Consumer template: template/copilot-instructions.md (with {{PLACEHOLDER}} tokens).",
+        "Developer instructions: .github/copilot-instructions.md (zero placeholder tokens, developer-only).",
     ],
 }
 

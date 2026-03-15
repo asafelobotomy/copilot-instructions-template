@@ -66,8 +66,8 @@ walk the user through applying changes to their project — exactly as defined i
 2. Template version: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/VERSION.md`
 3. Migration registry: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/MIGRATION.md`
 4. Template changelog: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/CHANGELOG.md`
-5. New template file: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/copilot-instructions.md`
-6. Old baseline template (at installed version tag): `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/v<INSTALLED_VERSION>/.github/copilot-instructions.md`
+5. New template file: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/copilot-instructions.md`
+6. Old baseline template (at installed version tag): `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/v<INSTALLED_VERSION>/template/copilot-instructions.md`
 
 ## After a successful update
 

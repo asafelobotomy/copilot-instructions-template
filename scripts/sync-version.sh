@@ -21,8 +21,8 @@ if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   exit 1
 fi
 
-perl -0777 -i -pe 's#(> \*\*Template version\*\*: )[0-9]+\.[0-9]+\.[0-9]+( [^|]*\| \*\*Applied\*\*:)#${1}'"$VERSION"'${2}#g' "$ROOT_DIR/.github/copilot-instructions.md"
-
+perl -0777 -i -pe 's#(> \*\*Template version\*\*: )[0-9]+\.[0-9]+\.[0-9]+( [^|]*\| \*\*Applied\*\*:)#${1}'"$VERSION"'${2}#g' "$ROOT_DIR/template/copilot-instructions.md"
+perl -0777 -i -pe 's#(\*\*)[0-9]+\.[0-9]+\.[0-9]+(\*\* <!-- x-release-please-version -->)#${1}'"$VERSION"'${2}#g' "$ROOT_DIR/README.md"
 perl -0777 -i -pe 's#("\."\s*:\s*")[0-9]+\.[0-9]+\.[0-9]+(")#${1}'"$VERSION"'${2}#g' "$ROOT_DIR/.release-please-manifest.json"
 
 echo "✅ Synced version references from VERSION.md ($VERSION)"

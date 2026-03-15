@@ -6,7 +6,8 @@
       "version-file": "VERSION.md",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
-        ".github/copilot-instructions.md",
+        "template/copilot-instructions.md",
+        "README.md",
         ".release-please-manifest.json"
       ]
     }

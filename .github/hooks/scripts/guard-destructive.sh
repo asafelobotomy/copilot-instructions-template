@@ -26,6 +26,21 @@ if [[ "$TOOL_NAME" != *"terminal"* && "$TOOL_NAME" != *"command"* && "$TOOL_NAME
   exit 0
 fi
 
+# python3 is required to parse tool_input JSON reliably.
+# Without it, TOOL_INPUT would be empty and all patterns would pass unchecked.
+if ! command -v python3 >/dev/null 2>&1; then
+  cat <<'EOF'
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "ask",
+    "permissionDecisionReason": "python3 not found — guard-destructive hook cannot parse command. Falling back to manual confirmation."
+  }
+}
+EOF
+  exit 0
+fi
+
 TOOL_INPUT=$(echo "$INPUT" | python3 -c "
 import sys, json
 try:

@@ -5,8 +5,8 @@ description: "Conventions for test and spec files — naming, structure, mocking
 
 # Test File Instructions
 
-- Testing framework: bash (custom shell test scripts)
-- Run tests: `bash tests/run-all.sh`
+- Testing framework: {{TEST_FRAMEWORK}}
+- Run tests: `{{TEST_COMMAND}}`
 - Name test files to mirror the source file they cover (e.g. `utils.ts` → `utils.test.ts`).
 - Each test should have a clear arrange/act/assert structure.
 - Prefer testing behaviour over implementation details — avoid asserting internal state.

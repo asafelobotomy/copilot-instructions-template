@@ -36,7 +36,7 @@ jobs:
           if ! git diff --quiet; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add .github/copilot-instructions.md .release-please-manifest.json
+            git add template/copilot-instructions.md README.md .release-please-manifest.json
             git commit -m "chore: sync version references [skip ci]"
             git push
           fi
@@ -76,6 +76,10 @@ jobs:
             "scripts/sync-version.sh" \
             "scripts/sync-doc-index.sh" \
             ".copilot/workspace/DOC_INDEX.json" \
+            "template/copilot-instructions.md" \
+            "template/instructions/tests.instructions.md" \
+            "template/prompts/refactor.prompt.md" \
+            "template/prompts/test-gen.prompt.md" \
             "template/copilot-setup-steps.yml" \
             "template/vscode/mcp.json" \
             "template/hooks/copilot-hooks.json" \
@@ -134,15 +138,28 @@ jobs:
       - name: DOC_INDEX.json is in sync
         run: bash scripts/sync-doc-index.sh --check
 
-      - name: "copilot-instructions.md has all sections §1–§13"
+      - name: "template/copilot-instructions.md has all sections §1\u2013§13"
         run: |
           missing=0
           for s in "§1" "§2" "§3" "§4" "§5" "§6" "§7" "§8" "§9" "§10" "§11" "§12" "§13"; do
-            grep -q "$s" .github/copilot-instructions.md \
-              || { echo "❌ Missing $s"; missing=1; }
+            grep -q "$s" template/copilot-instructions.md \
+              || { echo "\u274c Missing $s"; missing=1; }
           done
           [[ $missing -eq 0 ]] || exit 1
-          echo "✅ All sections §1–§13 present"
+          echo "\u2705 All sections §1\u2013§13 present"
+
+      - name: "Developer instructions have no placeholder tokens"
+        run: |
+          # Strip inline backtick spans before searching: `{{...}}` mentions are
+          # documentation about the template syntax, not unresolved tokens.
+          unquoted=$(perl -pe 's/`[^`]*`//g' .github/copilot-instructions.md)
+          count=$(echo "$unquoted" | grep -c '{{' 2>/dev/null || echo 0)
+          if [[ "$count" -gt 0 ]]; then
+            echo "\u274c Found $count unresolved {{PLACEHOLDER}} tokens (outside backtick spans) in .github/copilot-instructions.md:"
+            echo "$unquoted" | grep -n '{{'
+            exit 1
+          fi
+          echo "\u2705 Developer instructions are placeholder-free"
 
       - name: Template skills have valid SKILL.md
         run: |
@@ -179,7 +196,7 @@ jobs:
           failed=0
 
           # Derive expected section count from copilot-instructions.md
-          SECTION_MAX=$(grep -oP '§\K[0-9]+' .github/copilot-instructions.md | sort -n | tail -1)
+          SECTION_MAX=$(grep -oP '§\K[0-9]+' template/copilot-instructions.md | sort -n | tail -1)
           echo "ℹ️  Highest section: §$SECTION_MAX"
 
           # Derive expected question count from SETUP.md (highest E-number)
@@ -238,18 +255,18 @@ jobs:
           fi
           echo "✅ Clean"
 
-      - name: Template placeholders present in copilot-instructions.md
+      - name: Template placeholders present in template/copilot-instructions.md
         run: |
-          count=$(grep -c '{{' .github/copilot-instructions.md 2>/dev/null || echo 0)
+          count=$(grep -c '{{' template/copilot-instructions.md 2>/dev/null || echo 0)
           if [[ "$count" -lt 3 ]]; then
-            echo "❌ Only $count {{PLACEHOLDER}} tokens found — template may have been resolved upstream"
+            echo "\u274c Only $count {{PLACEHOLDER}} tokens found in template/copilot-instructions.md — template may have been resolved"
             exit 1
           fi
           echo "✅ $count placeholder tokens present"
 
       - name: "Attention budget — copilot-instructions.md line limits"
         run: |
-          FILE=".github/copilot-instructions.md"
+          FILE="template/copilot-instructions.md"
           TOTAL=$(wc -l < "$FILE")
           MAX_TOTAL=800
           MAX_SECTION=120

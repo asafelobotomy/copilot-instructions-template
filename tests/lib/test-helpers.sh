@@ -10,13 +10,13 @@ init_test_context() {
 
 pass_note() {
   local desc="$1"
-  echo "  PASS: $desc"
+  echo "  PASS: ${desc}"
   ((PASS++))
 }
 
 fail_note() {
   local desc="$1" details="${2:-}"
-  echo "  FAIL: $desc"
+  echo "  FAIL: ${desc}"
   if [[ -n "$details" ]]; then
     printf '%s\n' "$details"
   fi
