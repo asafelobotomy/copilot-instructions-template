@@ -1,4 +1,5 @@
 ---
+name: Test Files
 applyTo: "**/*.test.*,**/*.spec.*,**/tests/**,**/test/**,**/__tests__/**"
 description: "Conventions for test and spec files — naming, structure, mocking, and the arrange/act/assert pattern"
 ---

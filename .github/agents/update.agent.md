@@ -8,6 +8,7 @@ model:
   - GPT-5.1
 tools: [fetch, editFiles, codebase, runCommands]
 disable-model-invocation: true
+agents: ['Doctor']
 handoffs:
   - label: Run health check
     agent: Doctor

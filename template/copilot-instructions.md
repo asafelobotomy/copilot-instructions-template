@@ -184,7 +184,7 @@ Event-triggered health checks that keep the agent aligned with real project stat
 
 Hooks are deterministic shell commands that VS Code executes at specific lifecycle points during an agent session. Unlike instructions (soft guidance), hooks run your code with guaranteed outcomes — they enforce rules that the agent would otherwise follow probabilistically.
 
-Hook configuration lives in `.github/hooks/copilot-hooks.json`. VS Code supports eight lifecycle events. The template ships five starter hooks:
+Hook configuration lives in `.github/hooks/copilot-hooks.json`. VS Code supports eight lifecycle events. The template ships seven starter hooks:
 
 | Event | Script | Purpose |
 |-------|--------|---------|
@@ -193,6 +193,8 @@ Hook configuration lives in `.github/hooks/copilot-hooks.json`. VS Code supports
 | `PostToolUse` | `post-edit-lint.sh` | Auto-format edited files using the project's formatter |
 | `Stop` | `enforce-retrospective.sh` | Prevent session end if retrospective has not been run |
 | `PreCompact` | `save-context.sh` | Preserve workspace state (heartbeat, memory, heuristics) before context compaction |
+| `SubagentStart` | `subagent-start.sh` | Inject governance context (depth limit, inherited protocols) when a subagent spawns |
+| `SubagentStop` | `subagent-stop.sh` | Log subagent completion and prompt result review |
 
 ---
 
@@ -200,11 +202,16 @@ Hook configuration lives in `.github/hooks/copilot-hooks.json`. VS Code supports
 
 When spawning subagents:
 
+- Each `.github/agents/*.agent.md` declares an `agents:` allow-list restricting which subagents it may invoke. Respect these boundaries.
 - Pass the full contents of this file as system context.
 - Set `max_depth = {{SUBAGENT_MAX_DEPTH}}`. Stop and surface to user if reached.
 - Each subagent must run the three-check ritual before reporting done.
 - Each subagent inherits the full Tool Protocol (§11), Skill Protocol (§12), and MCP Protocol (§13) — check the toolbox before building, search before coding, and flag any proposed toolbox saves to the parent.
 - Subagent output must include: files changed, LOC delta, test result, any baseline breaches.
+
+### Organization-Level Agents
+
+GitHub organizations can publish shared agents via a `.github-private` repository with an `agents/` directory. These run alongside project-level agents. When both exist, project-level agents take precedence for same-name conflicts. The `organizationCustomAgents.enabled` VS Code setting must be on for org agents to load. See the **skill-management** skill for the full scope hierarchy.
 
 ---
 

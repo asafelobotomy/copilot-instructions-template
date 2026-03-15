@@ -39,6 +39,22 @@
         "windows": "powershell -File .github\\hooks\\scripts\\save-context.ps1",
         "timeout": 10
       }
+    ],
+    "SubagentStart": [
+      {
+        "type": "command",
+        "command": "./.github/hooks/scripts/subagent-start.sh",
+        "windows": "powershell -File .github\\hooks\\scripts\\subagent-start.ps1",
+        "timeout": 5
+      }
+    ],
+    "SubagentStop": [
+      {
+        "type": "command",
+        "command": "./.github/hooks/scripts/subagent-stop.sh",
+        "windows": "powershell -File .github\\hooks\\scripts\\subagent-stop.ps1",
+        "timeout": 5
+      }
     ]
   }
 }

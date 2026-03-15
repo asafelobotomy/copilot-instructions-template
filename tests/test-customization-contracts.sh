@@ -66,6 +66,19 @@ for path in (root / ".github/instructions").glob("*.instructions.md"):
 '
 echo ""
 
-finish_tests
+echo "3. Developer instruction and prompt stubs have no placeholder tokens"
+assert_python "no {{ tokens in .github/instructions/ or .github/prompts/" '
+for kind in ("instructions", "prompts"):
+    d = root / ".github" / kind
+    if not d.exists():
+        continue
+    for path in sorted(d.iterdir()):
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8")
+        if "{{" in text:
+            raise SystemExit(f"unresolved {{{{}} token in .github/{kind}/{path.name}")
+'
+echo ""
 
 finish_tests

@@ -1,6 +1,7 @@
 ---
 name: issue-triage
 description: Triage a GitHub issue by classifying severity, labelling waste category, proposing next action, and drafting a structured response
+compatibility: ">=1.4"
 ---
 
 # Issue Triage

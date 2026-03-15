@@ -7,6 +7,7 @@ model:
   - Claude Opus 4.6
   - Claude Opus 4.5
 tools: [codebase, runCommands]
+agents: ['Code', 'Update']
 handoffs:
   - label: Apply fixes
     agent: Code

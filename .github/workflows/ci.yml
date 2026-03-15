@@ -82,13 +82,17 @@ jobs:
             "template/prompts/test-gen.prompt.md" \
             "template/copilot-setup-steps.yml" \
             "template/vscode/mcp.json" \
+            "template/vscode/settings.json" \
             "template/hooks/copilot-hooks.json" \
             "template/hooks/scripts/session-start.sh" \
             "template/hooks/scripts/guard-destructive.sh" \
             "template/hooks/scripts/post-edit-lint.sh" \
             "template/hooks/scripts/enforce-retrospective.sh" \
             "template/hooks/scripts/save-context.sh" \
+            "template/hooks/scripts/subagent-start.sh" \
+            "template/hooks/scripts/subagent-stop.sh" \
             "template/CHANGELOG.md" \
+            "template/CLAUDE.md" \
             "template/workspace/IDENTITY.md" "template/workspace/SOUL.md" \
             "template/workspace/USER.md" "template/workspace/TOOLS.md" \
             "template/workspace/MEMORY.md" "template/workspace/DOC_INDEX.json" "template/workspace/BOOTSTRAP.md" \
@@ -160,6 +164,26 @@ jobs:
             exit 1
           fi
           echo "\u2705 Developer instructions are placeholder-free"
+
+      - name: "Developer instruction and prompt stubs have no placeholder tokens"
+        run: |
+          # .github/instructions/ and .github/prompts/ must be fully resolved —
+          # they are path-scoped rules delivered to agents already populated with
+          # project-specific values, not stubs awaiting consumer setup.
+          failed=0
+          for dir in .github/instructions .github/prompts; do
+            [[ -d "$dir" ]] || continue
+            while IFS= read -r -d '' f; do
+              count=$(grep -c '{{' "$f" 2>/dev/null || echo 0)
+              if [[ "$count" -gt 0 ]]; then
+                echo "\u274c $f contains $count unresolved {{PLACEHOLDER}} token(s):"
+                grep -n '{{' "$f"
+                failed=1
+              fi
+            done < <(find "$dir" -type f \( -name '*.md' \) -print0)
+          done
+          [[ $failed -eq 0 ]] || exit 1
+          echo "\u2705 Developer instruction and prompt stubs are placeholder-free"
 
       - name: Template skills have valid SKILL.md
         run: |

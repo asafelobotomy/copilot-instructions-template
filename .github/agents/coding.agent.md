@@ -10,6 +10,7 @@ model:
   - GPT-5.2-Codex
   - GPT-5.1-Codex
 tools: [editFiles, runCommands, codebase, githubRepo]
+agents: ['Review', 'Doctor', 'Fast']
 handoffs:
   - label: Review changes
     agent: Review

@@ -1,6 +1,7 @@
 ---
 name: skill-management
 description: Discover, activate, and manage agent skills following the Skill Protocol
+compatibility: ">=1.4"
 ---
 
 # Skill Management

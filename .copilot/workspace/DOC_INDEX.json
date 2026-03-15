@@ -4,10 +4,10 @@
   "purpose": "Canonical machine-readable inventory for repository metadata.",
   "counts": {
     "agents": 6,
-    "skillsRepo": 13,
-    "skillsTemplate": 13,
-    "hookScriptsShell": 5,
-    "hookScriptsPowerShell": 5
+    "skillsRepo": 14,
+    "skillsTemplate": 14,
+    "hookScriptsShell": 7,
+    "hookScriptsPowerShell": 7
   },
   "agents": [
     "setup.agent.md",
@@ -31,7 +31,8 @@
       "mcp-management",
       "plugin-management",
       "extension-review",
-      "test-coverage-review"
+      "test-coverage-review",
+      "agentic-workflows"
     ],
     "template": [
       "skill-creator",
@@ -46,7 +47,8 @@
       "mcp-management",
       "plugin-management",
       "extension-review",
-      "test-coverage-review"
+      "test-coverage-review",
+      "agentic-workflows"
     ]
   },
   "hookScripts": {
@@ -55,14 +57,18 @@
       "guard-destructive.sh",
       "post-edit-lint.sh",
       "enforce-retrospective.sh",
-      "save-context.sh"
+      "save-context.sh",
+      "subagent-start.sh",
+      "subagent-stop.sh"
     ],
     "powershell": [
       "session-start.ps1",
       "guard-destructive.ps1",
       "post-edit-lint.ps1",
       "enforce-retrospective.ps1",
-      "save-context.ps1"
+      "save-context.ps1",
+      "subagent-start.ps1",
+      "subagent-stop.ps1"
     ]
   },
   "notes": [

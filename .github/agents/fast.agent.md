@@ -7,6 +7,7 @@ model:
   - GPT-5 mini
   - GPT-4.1
 tools: [codebase, editFiles, runCommands]
+agents: ['Code']
 handoffs:
   - label: Hand off to Code
     agent: Code

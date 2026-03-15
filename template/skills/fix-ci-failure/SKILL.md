@@ -1,6 +1,7 @@
 ---
 name: fix-ci-failure
 description: Diagnose and fix a failing CI pipeline or GitHub Actions workflow
+compatibility: ">=1.4"
 ---
 
 # Fix CI Failure

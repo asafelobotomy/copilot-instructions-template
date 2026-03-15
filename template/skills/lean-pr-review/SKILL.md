@@ -1,6 +1,7 @@
 ---
 name: lean-pr-review
 description: Review a pull request using Lean waste categories and structured severity ratings
+compatibility: ">=1.4"
 ---
 
 # Lean PR Review

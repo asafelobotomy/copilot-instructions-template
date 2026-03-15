@@ -16,7 +16,7 @@ Before running any step, verify:
 
 > **Remote fetches**: In addition to the two URLs in `AGENTS.md`, this guide fetches
 > agent files, skill files, prompt files, path instruction files, and hook scripts from
-> upstream during §2.5–§2.12. If any fetch fails, **stop immediately** and report the
+> upstream during §2.5–§2.14. If any fetch fails, **stop immediately** and report the
 > error to the user. Do not proceed with partial writes.
 
 ---
@@ -281,7 +281,7 @@ If any are found, present them to the user:
 Substitute the user's answers and re-write the file before continuing to §2.5.
 Do not proceed with unresolved `{{...}}` tokens in the instructions file.
 
-> **Parallelization hint**: Steps §2.5 through §2.12 are independent file-creation tasks.
+> **Parallelization hint**: Steps §2.5 through §2.14 are independent file-creation tasks.
 > Fetch all URLs in parallel where your runtime supports it (e.g., batch `fetch_webpage` calls).
 > Write each file group as soon as its fetch completes — do not wait for all groups.
 
@@ -479,7 +479,36 @@ If the stack was detected in §1, uncomment and populate the matching runtime se
 
 ---
 
-## § 2.11 — Scaffold agent lifecycle hooks
+## § 2.11 — Configure VS Code settings (E18 only)
+
+**If E18 = No**: skip this step entirely.
+
+**If E18 = Yes or Ask each time**: merge the following recommended settings into `.vscode/settings.json`.
+If the file already exists, merge keys — do not overwrite existing values.
+
+Fetch the settings template:
+
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/vscode/settings.json
+```
+
+The template contains these recommended defaults:
+
+```json
+{
+  "chat.useAgentsMdFile": true,
+  "chat.useNestedAgentsMdFiles": true,
+  "chat.useCustomAgentHooks": true,
+  "chat.promptFilesRecommendations": true,
+  "chat.plugins.enabled": true
+}
+```
+
+Merge these into the project's `.vscode/settings.json`. If the file does not exist, create it with these contents. If it exists, add only the keys that are not already present.
+
+---
+
+## § 2.12 — Scaffold agent lifecycle hooks
 
 > **Conditional (A16)**: If the user answered A16 = "No", skip this section entirely.
 > If A16 = "Ask about each", present each hook script by name and purpose before
@@ -503,6 +532,8 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 | `post-edit-lint.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/post-edit-lint.sh` |
 | `enforce-retrospective.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/enforce-retrospective.sh` |
 | `save-context.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/save-context.sh` |
+| `subagent-start.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/subagent-start.sh` |
+| `subagent-stop.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/subagent-stop.sh` |
 
 **PowerShell scripts** (Windows) — fetch each to `.github/hooks/scripts/`:
 
@@ -513,6 +544,8 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 | `post-edit-lint.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/post-edit-lint.ps1` |
 | `enforce-retrospective.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/enforce-retrospective.ps1` |
 | `save-context.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/save-context.ps1` |
+| `subagent-start.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/subagent-start.ps1` |
+| `subagent-stop.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/subagent-stop.ps1` |
 
 After writing the `.sh` files, make them executable:
 
@@ -524,7 +557,7 @@ chmod +x .github/hooks/scripts/*.sh
 
 ---
 
-## § 2.12 — Write version file and section fingerprints
+## § 2.13 — Write version file and section fingerprints
 
 Write the installed template version to `.github/copilot-version.md` in the user's project.
 
@@ -572,6 +605,26 @@ X.Y.Z
 Replace `X.Y.Z` with the fetched version string. Replace each `<fingerprint>` with the computed value from the shell command above.
 
 If the terminal is unavailable, omit the `<!-- section-fingerprints ... -->` block — the Update agent will fall back to heuristic comparison.
+
+---
+
+## § 2.14 — Generate Claude compatibility file (optional)
+
+Ask the user: *"Generate a `CLAUDE.md` for Claude Code compatibility?"*
+
+**If Yes**: fetch and write `CLAUDE.md` to the project root:
+
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/CLAUDE.md
+```
+
+Replace all `{{PLACEHOLDER}}` tokens with values resolved in §1.
+
+**If No**: skip this step.
+
+This file is auto-detected by Claude Code and by VS Code when using Claude models.
+It provides a lightweight mirror of the core project rules so teams using both tools
+get consistent behaviour without maintaining two full instruction sets.
 
 ---
 

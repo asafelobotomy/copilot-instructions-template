@@ -1,5 +1,6 @@
 ---
 description: Write a Conventional Commits message from staged changes
+argument-hint: Leave blank to auto-detect from staged changes
 agent: agent
 tools: [runCommands]
 ---

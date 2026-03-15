@@ -1,5 +1,6 @@
 ---
 description: Review a file for waste categories, baseline violations, and coding convention issues
+argument-hint: Open the file to review, or name it here
 agent: ask
 tools: [codebase]
 ---

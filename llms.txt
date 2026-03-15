@@ -15,7 +15,7 @@
 | Surface | Recommended model | Role |
 |---------|-------------------|------|
 | `setup.agent.md` | Claude Sonnet 4.6 | Interactive setup and onboarding |
-| `coding.agent.md` | GPT-5.3-Codex | Implementation, refactoring, multi-step coding |
+| `coding.agent.md` | GPT-5.1 | Implementation, refactoring, multi-step coding |
 | `review.agent.md` | GPT-5.4 | Deep review, debugging, architectural analysis |
 | `fast.agent.md` | Claude Haiku 4.5 | Quick lookups and lightweight edits |
 | `update.agent.md` | Claude Sonnet 4.6 | Upstream instruction updates |
@@ -33,6 +33,40 @@ The repo ships 13 skills in `.github/skills/` and `template/skills/`. High-signa
 - `plugin-management`: discover and manage agent plugins
 
 Canonical inventory lives in `.copilot/workspace/DOC_INDEX.json`.
+
+## Hooks
+
+Seven lifecycle hooks in `.github/hooks/scripts/` (bash + PowerShell pairs):
+
+| Event | Script | Purpose |
+|-------|--------|---------|
+| SessionStart | `session-start` | Inject project context into new sessions |
+| PreToolUse | `guard-destructive` | Block dangerous terminal commands |
+| PostToolUse | `post-edit-lint` | Lint after file edits |
+| Stop | `enforce-retrospective` | Prompt retrospective at session end |
+| PreCompact | `save-context` | Save workspace state before compaction |
+| SubagentStart | `subagent-start` | Inject governance context for subagents |
+| SubagentStop | `subagent-stop` | Log subagent completion |
+
+## Subagent orchestration
+
+Each agent declares an `agents:` allow-list restricting which subagents it may invoke.
+Max subagent depth is 3 (configurable via `{{SUBAGENT_MAX_DEPTH}}`).
+
+| Agent | May invoke |
+|-------|-----------|
+| Code | Review, Doctor, Fast |
+| Review | Code, Fast |
+| Doctor | Code, Update |
+| Fast | Code |
+| Setup | Doctor |
+| Update | Doctor |
+
+## Cross-tool compatibility
+
+- `CLAUDE.md` template stub for Claude Code compatibility
+- VS Code settings template at `template/vscode/settings.json`
+- Agent plugins enabled via `chat.plugins.enabled`
 
 ## Validation
 

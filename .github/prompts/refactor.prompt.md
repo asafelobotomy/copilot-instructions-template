@@ -1,5 +1,6 @@
 ---
 description: Refactor selected code using PDCA cycle and Lean waste elimination
+argument-hint: Select code first, or name the file and waste category to target
 agent: agent
 tools: [editFiles, runCommands, codebase]
 ---

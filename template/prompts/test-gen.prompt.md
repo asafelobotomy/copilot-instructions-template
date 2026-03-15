@@ -1,5 +1,6 @@
 ---
 description: Generate tests following project conventions with arrange/act/assert structure
+argument-hint: Select code or name the module to test
 agent: agent
 tools: [editFiles, runCommands, codebase]
 ---

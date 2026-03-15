@@ -20,11 +20,15 @@ expected = {
     ".github/hooks/scripts/post-edit-lint.sh": "template/hooks/scripts/post-edit-lint.sh",
     ".github/hooks/scripts/save-context.sh": "template/hooks/scripts/save-context.sh",
     ".github/hooks/scripts/session-start.sh": "template/hooks/scripts/session-start.sh",
+    ".github/hooks/scripts/subagent-start.sh": "template/hooks/scripts/subagent-start.sh",
+    ".github/hooks/scripts/subagent-stop.sh": "template/hooks/scripts/subagent-stop.sh",
     ".github/hooks/scripts/enforce-retrospective.ps1": "template/hooks/scripts/enforce-retrospective.ps1",
     ".github/hooks/scripts/guard-destructive.ps1": "template/hooks/scripts/guard-destructive.ps1",
     ".github/hooks/scripts/post-edit-lint.ps1": "template/hooks/scripts/post-edit-lint.ps1",
     ".github/hooks/scripts/save-context.ps1": "template/hooks/scripts/save-context.ps1",
     ".github/hooks/scripts/session-start.ps1": "template/hooks/scripts/session-start.ps1",
+    ".github/hooks/scripts/subagent-start.ps1": "template/hooks/scripts/subagent-start.ps1",
+    ".github/hooks/scripts/subagent-stop.ps1": "template/hooks/scripts/subagent-stop.ps1",
 }
 for repo_rel, template_rel in expected.items():
     repo_path = root / repo_rel
@@ -40,6 +44,7 @@ echo "2. Mirrorable skills stay in exact sync with their template copies"
 assert_python "skill mirrors remain exact" '
 expected = {
     ".github/skills/conventional-commit/SKILL.md": "template/skills/conventional-commit/SKILL.md",
+    ".github/skills/agentic-workflows/SKILL.md": "template/skills/agentic-workflows/SKILL.md",
     ".github/skills/extension-review/SKILL.md": "template/skills/extension-review/SKILL.md",
     ".github/skills/fix-ci-failure/SKILL.md": "template/skills/fix-ci-failure/SKILL.md",
     ".github/skills/issue-triage/SKILL.md": "template/skills/issue-triage/SKILL.md",

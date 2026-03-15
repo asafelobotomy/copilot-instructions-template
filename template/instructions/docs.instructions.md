@@ -1,4 +1,5 @@
 ---
+name: Documentation
 applyTo: "**/*.md,!.copilot/**,!**/HEARTBEAT.md,!**/MEMORY.md,!**/SOUL.md,!**/USER.md,!**/TOOLS.md"
 description: "Conventions for Markdown and documentation files — active voice, code fences, link integrity, and accessible writing"
 ---
