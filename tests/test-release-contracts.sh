@@ -54,10 +54,11 @@ echo ""
 echo "4. Version markers remain in release-managed files"
 assert_python "x-release markers remain discoverable" '
 version = (root / "VERSION.md").read_text(encoding="utf-8").strip()
-targets = [root / "template/copilot-instructions.md", root / "README.md"]
+config = json.loads((root / "release-please-config.json").read_text(encoding="utf-8"))
+targets = [root / rel for rel in config["packages"]["."].get("extra-files", [])]
 for path in targets:
     text = path.read_text(encoding="utf-8")
-    if "x-release-please-version" not in text:
+    if path.suffix == ".md" and "x-release-please-version" not in text:
         raise SystemExit(f"missing marker in {path.relative_to(root)}")
     if version not in text:
         raise SystemExit(f"missing version {version} in {path.relative_to(root)}")

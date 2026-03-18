@@ -80,5 +80,4 @@ for kind in ("instructions", "prompts"):
             raise SystemExit(f"unresolved {{{{}} token in .github/{kind}/{path.name}")
 '
 echo ""
-
 finish_tests
