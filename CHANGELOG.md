@@ -9,6 +9,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ---
 
+## [Unreleased]
+
 ## [4.0.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.4.1...v4.0.0) (2026-03-19)
 
 
@@ -114,8 +116,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 ### Performance Improvements
 
 * lossless compression — copilot-instructions.md + AGENTS.md (7.6% token reduction) ([61b8d1e](https://github.com/asafelobotomy/copilot-instructions-template/commit/61b8d1e0f5e8cdd17c7df4dc3647611f70eb0a95))
-
-## [Unreleased]
 
 ## [3.4.1](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.4.0...v3.4.1) (2026-03-19)
 

@@ -24,7 +24,32 @@ the next tagged version (listed in **Includes**).
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<tag>/<template-source-path>
 ```
 
-**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0, v3.2.0, v3.3.0, v3.3.1, v3.3.2, v3.4.0, v3.4.1
+**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0, v3.2.0, v3.3.0, v3.3.1, v3.3.2, v3.4.0, v3.4.1, v4.0.0
+
+---
+
+## v4.0.0
+
+| Breaking | Sections changed | Sections added | Includes |
+|----------|-----------------|----------------|----------|
+| Yes | §2, §13 | §13 | v3.4.1 |
+
+**What changed**: Adds §13 MCP Protocol (section count 12 → 13); §2 gains Test Coverage Review with local recommendations and CI workflow generation; Setup interview expands to 22 questions (E22 Expert tier). Includes all v3.4.x CI-fix patches.
+
+**Breaking**: §13 is a new section — consumers upgrading from v3.x will not have it and must add it manually or re-run setup.
+
+**New placeholders**: none
+
+**Companion files added**: none
+
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/copilot-instructions.md` | `template/copilot-instructions.md` | Updated (§2 + new §13) |
+| `SETUP.md` | `SETUP.md` | Updated (E22, §2.12 MCP scaffold step) |
+
+**Manual actions**: Add `## §13 — MCP Protocol` section to your `.github/copilot-instructions.md` if upgrading from v3.x without re-running setup.
 
 ---
 
