@@ -168,7 +168,7 @@ scan_file() {
   fi
 
   case "$filepath" in
-    *.lock|package-lock.json|yarn.lock|pnpm-lock.yaml|Cargo.lock|go.sum|*.sum)
+    *.lock|package-lock.json|pnpm-lock.yaml|go.sum|*.sum)
       return 0 ;;
   esac
 

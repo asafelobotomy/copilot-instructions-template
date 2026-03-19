@@ -119,7 +119,7 @@ grep -n '{{' .github/copilot-instructions.md
 
 Flag: `[CRITICAL]` if any are found — the developer file must be fully resolved.
 
-2. **Consumer template must retain `{{` tokens**:
+1. **Consumer template must retain `{{` tokens**:
 
 ```bash
 grep -c '{{' template/copilot-instructions.md

@@ -6,7 +6,7 @@ description: "Idiomatic Rust conventions — ownership, naming, module structure
 
 # Rust Conventions
 
-- Follow Rust API Guidelines (https://rust-lang.github.io/api-guidelines/) for public API design.
+- Follow Rust API Guidelines (<https://rust-lang.github.io/api-guidelines/>) for public API design.
 - Use `snake_case` for functions, methods, variables, and modules. Use `PascalCase` for types, traits, and enum variants. Use `SCREAMING_SNAKE_CASE` for constants and statics.
 - Prefer borrowing (`&T`, `&mut T`) over ownership transfer unless the function needs to consume the value.
 - Use `impl Trait` in argument position for simple generic bounds. Use named generics for complex bounds.

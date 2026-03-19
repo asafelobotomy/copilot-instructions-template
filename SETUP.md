@@ -562,6 +562,7 @@ Merge these into the project's `.vscode/settings.json`. If the file does not exi
 Starter kits are VS Code agent plugins that add stack-specific skills, instructions, and
 prompts. They are installed automatically based on the stack detected in §1.
 
+<!-- markdownlint-disable MD007 MD029 -->
 1. **Fetch the registry**:
 
 ```text
@@ -619,6 +620,7 @@ Installed starter kits:
   ✓ python  — 2 skills, 2 instructions, 1 prompt
   ✓ docker  — 1 skill, 1 instruction, 1 prompt
 ```
+<!-- markdownlint-enable MD007 MD029 -->
 
 > **No matching kits?** If §1 detected a stack but no kit matches, or if the consumer
 > chose "skip", print: "No starter kits installed. You can install one later by saying

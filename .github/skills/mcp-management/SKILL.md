@@ -49,7 +49,7 @@ MCP (Model Context Protocol) is GA in VS Code as of v1.102. MCP servers provide 
 | `@upstash/context7-mcp` | Documentation | **HTTP remote** (`https://mcp.context7.com/mcp`) | Live, version-specific library documentation — prevents hallucinated or outdated APIs |
 
 > **Removed (v3.2.0):** `@modelcontextprotocol/server-memory` — replaced by VS Code's built-in memory tool (`/memories/`), which provides persistent storage with three scopes: user (cross-workspace), session (conversation), and repository.
-
+>
 > **Archived (deprecated):** `@modelcontextprotocol/server-github` (npm) — replaced by `github/github-mcp-server` remote HTTP server. Do not add new configurations using the archived npm package.
 
 ## Stack-specific servers
@@ -72,6 +72,7 @@ Discover servers: `code.visualstudio.com/mcp` (gallery) · `registry.modelcontex
 `@modelcontextprotocol/server-sequential-thinking` (`npx`) — adds a structured step-by-step reasoning tool. Useful for complex planning or debugging sessions that benefit from explicit thought chains. Not project-specific; consider adding to your **user-level** `mcp.json` rather than the workspace config.
 
 Configuration:
+
 ```json
 "sequentialThinking": {
   "type": "stdio",
