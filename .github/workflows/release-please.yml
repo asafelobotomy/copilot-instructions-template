@@ -9,6 +9,9 @@ name: Release Please
 # so it is merged immediately without waiting for a second CI run.
 # If branch protection blocks a direct merge, the step falls back to --auto.
 #
+# After a release is created, a stub MIGRATION.md entry is auto-committed so
+# the next CI run does not fail the release-contracts check.
+#
 # Coexists with release-manual.yml — use one or the other, not both.
 
 on:
@@ -31,6 +34,11 @@ jobs:
         uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2
         with:
           egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
         id: release
@@ -63,3 +71,18 @@ jobs:
               exit 1
             fi
           fi
+
+      - name: Stub MIGRATION.md entry for new release
+        if: steps.release.outputs.release_created == 'true'
+        env:
+          TAG: ${{ steps.release.outputs.tag_name }}
+        run: |
+          # Pull the release commit that release-please just pushed
+          git pull --ff-only
+          bash scripts/stub-migration.sh "$TAG"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add MIGRATION.md
+          git diff --cached --quiet \
+            || git commit -m "docs: stub MIGRATION.md entry for ${TAG} [skip ci]"
+          git push

@@ -7,9 +7,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
----
-
 ## [Unreleased]
+
+---
 
 ## [4.0.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.4.1...v4.0.0) (2026-03-19)
 
