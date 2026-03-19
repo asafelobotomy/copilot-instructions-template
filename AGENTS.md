@@ -79,3 +79,4 @@ These files are created in the consumer project during setup, not in this templa
 | Hooks (configure/list/add) | *"Configure hooks"* / *"Show hooks"* |
 | Starter kits (install/list/remove) | *"Install a starter kit"* / *"Show starter kits"* / *"What starter kits are available?"* |
 | Plugins (list/find/test) | *"Show plugins"* / *"Find a plugin for ..."* |
+| Research (find/report/track) | *"Research [topic]"* / *"Find documentation for [topic]"* / *"Build a research report on [topic]"* / *"Update the URL tracker"* |

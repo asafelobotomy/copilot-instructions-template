@@ -3,7 +3,7 @@
   "updated": "2026-03-15",
   "purpose": "Canonical machine-readable inventory for repository metadata.",
   "counts": {
-    "agents": 6,
+    "agents": 8,
     "skillsRepo": 14,
     "skillsTemplate": 14,
     "hookScriptsShell": 7,
@@ -16,7 +16,9 @@
     "review.agent.md",
     "fast.agent.md",
     "update.agent.md",
-    "doctor.agent.md"
+    "doctor.agent.md",
+    "researcher.agent.md",
+    "explore.agent.md"
   ],
   "skills": {
     "repo": [

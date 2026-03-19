@@ -95,7 +95,7 @@ Every non-trivial change:
 | `template/workspace/` | Consumer workspace identity stubs |
 | `template/instructions/` | Consumer path-instruction stubs (with `{{}}` tokens) |
 | `template/prompts/` | Consumer prompt stubs (with `{{}}` tokens) |
-| `.github/agents/` | Model-pinned VS Code agents |
+| `.github/agents/` | Model-pinned VS Code agents (Code, Review, Fast, Doctor, Setup, Update, Researcher, Explore) |
 | `.github/skills/` | Skill library (repo-live copies, mirrors template) |
 | `.github/hooks/` | Hook scripts (repo-live copies, mirrors template) |
 | `.github/instructions/` | Developer path-instructions (resolved, no `{{}}`) |
@@ -107,7 +107,7 @@ Every non-trivial change:
 | `tests/` | Test suite — `bash tests/run-all.sh` |
 | `scripts/` | Utility scripts (sync-version, sync-doc-index) |
 | `starter-kits/` | VS Code agent plugin starter kits per language/stack |
-| `.copilot/workspace/` | Developer workspace identity files |
+| `.copilot/workspace/` | Developer workspace identity files (incl. `RESEARCH.md` URL tracker) |
 
 ## Operating Modes
 

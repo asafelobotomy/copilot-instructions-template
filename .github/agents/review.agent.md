@@ -8,7 +8,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5.1
 tools: [codebase, githubRepo, runCommands]
-agents: ['Code', 'Fast']
+agents: ['Code', 'Fast', 'Researcher']
 handoffs:
   - label: Implement fixes
     agent: Code

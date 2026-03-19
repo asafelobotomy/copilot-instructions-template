@@ -92,4 +92,28 @@ if m:
     raise SystemExit("unresolved placeholder in .github/copilot-instructions.md: " + m.group())
 '
 echo ""
+
+echo "5. Researcher and Explore agent files are well-formed"
+assert_python "researcher and explore agents have required frontmatter and tools" '
+for agent_name, required_tool in (("researcher", "fetch"), ("explore", "codebase")):
+    path = root / ".github/agents" / (agent_name + ".agent.md")
+    if not path.is_file():
+        raise SystemExit("missing agent file: .github/agents/" + agent_name + ".agent.md")
+    text = path.read_text(encoding="utf-8")
+    if not text.startswith("---\n"):
+        raise SystemExit("missing frontmatter in " + agent_name + ".agent.md")
+    end = text.find("\n---\n", 4)
+    if end == -1:
+        raise SystemExit("unterminated frontmatter in " + agent_name + ".agent.md")
+    fm = text[4:end]
+    if "name:" not in fm:
+        raise SystemExit("missing name: in " + agent_name + ".agent.md")
+    if required_tool not in fm:
+        raise SystemExit("missing tool " + required_tool + " in " + agent_name + ".agent.md")
+
+researcher_text = (root / ".github/agents/researcher.agent.md").read_text(encoding="utf-8")
+if "RESEARCH.md" not in researcher_text:
+    raise SystemExit("researcher.agent.md body must reference RESEARCH.md")
+'
+echo ""
 finish_tests
