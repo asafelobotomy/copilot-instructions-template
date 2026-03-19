@@ -51,6 +51,7 @@ run_optional_phase "Hook Behavior (PowerShell parity)" "pwsh" "pwsh" \
 
 run_phase "Script Behavior" \
   "tests/test-sync-version.sh" \
+  "tests/test-stub-migration.sh" \
   "tests/test-sync-doc-index.sh" \
   "tests/test-sync-models.sh" \
   "tests/test-security-edge-cases.sh"
