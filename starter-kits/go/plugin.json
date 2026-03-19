@@ -1,0 +1,6 @@
+{
+  "name": "go-starter-kit",
+  "displayName": "Go Starter Kit",
+  "description": "Stack-specific skills, instructions, and prompts for Go projects — testing patterns, golangci-lint, module management, and idiomatic Go conventions.",
+  "version": "1.0.0"
+}

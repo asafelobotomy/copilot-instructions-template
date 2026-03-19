@@ -1,0 +1,6 @@
+{
+  "name": "react-starter-kit",
+  "displayName": "React Starter Kit",
+  "description": "Stack-specific skills, instructions, and prompts for React projects — component testing, accessibility, hooks patterns, state management, and Next.js conventions.",
+  "version": "1.0.0"
+}

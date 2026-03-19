@@ -57,6 +57,7 @@ run_phase "Script Behavior" \
 
 run_phase "Documentation And Contracts" \
   "tests/test-customization-contracts.sh" \
-  "tests/test-template-parity.sh"
+  "tests/test-template-parity.sh" \
+  "tests/test-starter-kits.sh"
 
 echo "All test suites passed."

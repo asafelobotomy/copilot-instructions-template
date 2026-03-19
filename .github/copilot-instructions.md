@@ -28,6 +28,7 @@ This repo has two distinct layers that must never be mixed:
 | **Developer prompts** | `.github/prompts/` | Resolved prompts for this repo — no `{{}}` tokens. |
 | **Template artefacts** | `template/skills/`, `template/hooks/`, `template/workspace/` | Delivered verbatim; must stay in parity with `.github/skills/`, `.github/hooks/`. |
 | **Model-pinned agents** | `.github/agents/` | Fetched directly by `SETUP.md` §2.5. No `template/agents/` mirror exists — deliberate exception. Agents contain no `{{}}` tokens and change rarely; maintaining a separate mirror would add CI overhead with no practical benefit. |
+| **Starter kits** | `starter-kits/` | VS Code agent plugin bundles per language/stack. Installed to consumer's `.github/starter-kits/` during setup based on detected stack. No `{{}}` tokens — delivered verbatim like agents. |
 
 **Invariant**: `.github/instructions/` and `.github/prompts/` must never contain `{{PLACEHOLDER}}` tokens.
 **Invariant**: `template/` files must never contain resolved project-specific values.
@@ -105,6 +106,7 @@ Every non-trivial change:
 | `MIGRATION.md` | Per-version migration registry |
 | `tests/` | Test suite — `bash tests/run-all.sh` |
 | `scripts/` | Utility scripts (sync-version, sync-doc-index) |
+| `starter-kits/` | VS Code agent plugin starter kits per language/stack |
 | `.copilot/workspace/` | Developer workspace identity files |
 
 ## Operating Modes

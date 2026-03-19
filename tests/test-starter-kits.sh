@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+# tests/test-starter-kits.sh -- validate starter-kit plugin structure and contracts.
+# Run: bash tests/test-starter-kits.sh
+# Exit 0: all checks passed. Exit 1: one or more checks failed.
+set -uo pipefail
+
+# shellcheck source=tests/lib/test-helpers.sh
+source "$(dirname "$0")/lib/test-helpers.sh"
+init_test_context "$0"
+
+echo "=== Starter-kit contract checks ==="
+echo ""
+
+echo "1. REGISTRY.json is valid JSON with required schema"
+assert_python "REGISTRY.json schema is valid" '
+registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
+if registry.get("schemaVersion") != "1.0":
+    raise SystemExit("missing or wrong schemaVersion")
+kits = registry.get("kits")
+if not isinstance(kits, list) or len(kits) == 0:
+    raise SystemExit("kits must be a non-empty list")
+for kit in kits:
+    for field in ("name", "displayName", "description", "detect", "files"):
+        if field not in kit:
+            raise SystemExit("kit " + kit.get("name", "?") + " missing field: " + field)
+    if not isinstance(kit["files"], list) or len(kit["files"]) == 0:
+        raise SystemExit("kit " + kit["name"] + " has empty files list")
+    if "plugin.json" not in kit["files"]:
+        raise SystemExit("kit " + kit["name"] + " missing plugin.json in files list")
+    detect = kit["detect"]
+    has_signal = "files" in detect or "language" in detect or "dependencies" in detect
+    if not has_signal:
+        raise SystemExit("kit " + kit["name"] + " detect has no signals (files/language/dependencies)")
+'
+echo ""
+
+echo "2. Every kit directory listed in REGISTRY.json exists"
+assert_python "kit directories exist" '
+registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
+for kit in registry["kits"]:
+    kit_dir = root / "starter-kits" / kit["name"]
+    if not kit_dir.is_dir():
+        raise SystemExit("missing kit directory: starter-kits/" + kit["name"] + "/")
+'
+echo ""
+
+echo "3. Every file listed in kit manifest exists on disk"
+assert_python "kit files exist on disk" '
+registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
+for kit in registry["kits"]:
+    kit_dir = root / "starter-kits" / kit["name"]
+    for rel in kit["files"]:
+        path = kit_dir / rel
+        if not path.is_file():
+            raise SystemExit("missing file: starter-kits/" + kit["name"] + "/" + rel)
+'
+echo ""
+
+echo "4. Every plugin.json has required fields"
+assert_python "plugin.json schema is valid" '
+registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
+for kit in registry["kits"]:
+    pj_path = root / "starter-kits" / kit["name"] / "plugin.json"
+    pj = json.loads(pj_path.read_text(encoding="utf-8"))
+    for field in ("name", "displayName", "description", "version"):
+        if field not in pj:
+            raise SystemExit("plugin.json in " + kit["name"] + " missing field: " + field)
+'
+echo ""
+
+echo "5. SKILL.md files in kits have valid YAML frontmatter"
+assert_python "kit SKILL.md frontmatter is valid" '
+registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
+for kit in registry["kits"]:
+    kit_dir = root / "starter-kits" / kit["name"]
+    for skill_md in kit_dir.rglob("SKILL.md"):
+        text = skill_md.read_text(encoding="utf-8")
+        if not text.startswith("---\n"):
+            raise SystemExit("missing frontmatter in " + str(skill_md.relative_to(root)))
+        end = text.find("\n---\n", 4)
+        if end == -1:
+            raise SystemExit("unterminated frontmatter in " + str(skill_md.relative_to(root)))
+        fm = text[4:end]
+        if "name:" not in fm or "description:" not in fm:
+            raise SystemExit("missing name/description in " + str(skill_md.relative_to(root)))
+'
+echo ""
+
+echo "6. Kit instruction files have valid frontmatter"
+assert_python "kit instruction frontmatter is valid" '
+registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
+for kit in registry["kits"]:
+    kit_dir = root / "starter-kits" / kit["name"]
+    instr_dir = kit_dir / "instructions"
+    if not instr_dir.exists():
+        continue
+    for path in instr_dir.glob("*.instructions.md"):
+        text = path.read_text(encoding="utf-8")
+        if not text.startswith("---\n"):
+            raise SystemExit("missing frontmatter in " + str(path.relative_to(root)))
+        end = text.find("\n---\n", 4)
+        if end == -1:
+            raise SystemExit("unterminated frontmatter in " + str(path.relative_to(root)))
+        fm = text[4:end]
+        if "applyTo:" not in fm or "description:" not in fm:
+            raise SystemExit("missing applyTo/description in " + str(path.relative_to(root)))
+'
+echo ""
+
+echo "7. Kit prompt files have valid frontmatter"
+assert_python "kit prompt frontmatter is valid" '
+registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
+for kit in registry["kits"]:
+    kit_dir = root / "starter-kits" / kit["name"]
+    prompts_dir = kit_dir / "prompts"
+    if not prompts_dir.exists():
+        continue
+    for path in prompts_dir.glob("*.prompt.md"):
+        text = path.read_text(encoding="utf-8")
+        if not text.startswith("---\n"):
+            raise SystemExit("missing frontmatter in " + str(path.relative_to(root)))
+        end = text.find("\n---\n", 4)
+        if end == -1:
+            raise SystemExit("unterminated frontmatter in " + str(path.relative_to(root)))
+        fm = text[4:end]
+        if "description:" not in fm:
+            raise SystemExit("missing description in " + str(path.relative_to(root)))
+'
+echo ""
+
+echo "8. No placeholder tokens in any starter-kit file"
+assert_python "no {{ tokens in starter-kits/" '
+for path in (root / "starter-kits").rglob("*"):
+    if not path.is_file():
+        continue
+    if path.suffix == ".json":
+        continue
+    text = path.read_text(encoding="utf-8")
+    # Match {{PLACEHOLDER}} patterns but not Go template syntax like {{.Field}}
+    if re.search(r"\{\{[A-Z_]+\}\}", text):
+        raise SystemExit("unresolved placeholder token in " + str(path.relative_to(root)))
+'
+echo ""
+
+echo "9. Kit names are lowercase alphanumeric with hyphens only"
+assert_python "kit names follow naming convention" '
+registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
+for kit in registry["kits"]:
+    name = kit["name"]
+    if not re.match(r"^[a-z][a-z0-9-]*$", name):
+        raise SystemExit("invalid kit name: " + name + " (must be lowercase alphanumeric with hyphens)")
+'
+echo ""
+
+finish_tests

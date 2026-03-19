@@ -35,18 +35,50 @@ MCP (Model Context Protocol) is GA in VS Code as of v1.102. MCP servers provide 
 | Tier | Default servers | When to enable | Configuration |
 |------|----------------|-----------------|---------------|
 | Always-on | filesystem, git | Every project — core development tools | Enabled by default in `.vscode/mcp.json` |
-| Credentials-required | github, fetch | When external API access is needed | Requires `${input:github-token}` or `${env:GITHUB_PERSONAL_ACCESS_TOKEN}` (GitHub) |
+| Credentials-required | github, fetch | When external API access is needed | `github` uses VS Code OAuth (HTTP remote, no PAT required); `fetch` needs no credentials |
+| Documentation | context7 | Any project using third-party libraries | HTTP remote, free tier requires no auth; optional API key for higher rate limits |
 
 ## Available servers
 
-| Server | Tier | Command | Purpose |
-|--------|------|---------|--------|
-| `@modelcontextprotocol/server-filesystem` | Always-on | `npx` | File operations beyond the workspace |
-| `mcp-server-git` | Always-on | **`uvx`** (Python — not on npm) | Git history, diffs, and branch operations |
-| `@modelcontextprotocol/server-github` | Credentials | `npx` | GitHub API — issues, PRs, repos, actions |
-| `mcp-server-fetch` | Credentials | **`uvx`** (Python — not on npm) | HTTP fetch for web content and APIs |
+| Server | Tier | Transport | Purpose |
+|--------|------|-----------|---------|
+| `@modelcontextprotocol/server-filesystem` | Always-on | `npx` (stdio) | File operations within the workspace; supports OS-level sandboxing |
+| `mcp-server-git` | Always-on | **`uvx`** (stdio, Python) | Git history, diffs, and branch operations |
+| `github/github-mcp-server` | Credentials | **HTTP remote** (`https://api.githubcopilot.com/mcp/`) | GitHub API — issues, PRs, repos, Actions, CI/CD, security alerts, Dependabot |
+| `mcp-server-fetch` | Credentials | **`uvx`** (stdio, Python) | HTTP fetch for web content and APIs |
+| `@upstash/context7-mcp` | Documentation | **HTTP remote** (`https://mcp.context7.com/mcp`) | Live, version-specific library documentation — prevents hallucinated or outdated APIs |
 
 > **Removed (v3.2.0):** `@modelcontextprotocol/server-memory` — replaced by VS Code's built-in memory tool (`/memories/`), which provides persistent storage with three scopes: user (cross-workspace), session (conversation), and repository.
+
+> **Archived (deprecated):** `@modelcontextprotocol/server-github` (npm) — replaced by `github/github-mcp-server` remote HTTP server. Do not add new configurations using the archived npm package.
+
+## Stack-specific servers
+
+The servers below are not included in the base consumer template. Add them to `.vscode/mcp.json` based on your project's technology stack.
+
+| Stack | Server | Transport | Notes |
+|-------|--------|-----------|-------|
+| Browser / UI testing | `@playwright/mcp` (Microsoft) | `npx -y @playwright/mcp@latest` | Accessibility-tree-based; no vision model needed |
+| PostgreSQL | Search MCP Marketplace for `postgres` | varies | Official reference server is archived; use marketplace for maintained replacement |
+| SQLite | Search MCP Marketplace for `sqlite` | varies | Same — official archived; find active replacement |
+| Redis | Search MCP Marketplace for `redis` | varies | Same |
+| Docker / containers | Search MCP Marketplace for `docker` | varies | Several options; evaluate trust and permissions carefully |
+| AWS | Search MCP Marketplace for `aws` | varies | Use fine-grained IAM credentials via `${env:}`, never hardcode |
+
+Discover servers: `code.visualstudio.com/mcp` (gallery) · `registry.modelcontextprotocol.io` (official registry) · `glama.ai` · `smithery.ai`
+
+### Optional: Sequential Thinking
+
+`@modelcontextprotocol/server-sequential-thinking` (`npx`) — adds a structured step-by-step reasoning tool. Useful for complex planning or debugging sessions that benefit from explicit thought chains. Not project-specific; consider adding to your **user-level** `mcp.json` rather than the workspace config.
+
+Configuration:
+```json
+"sequentialThinking": {
+  "type": "stdio",
+  "command": "npx",
+  "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+}
+```
 
 ## MCP capabilities (GA since v1.102)
 
@@ -74,10 +106,11 @@ Before adding any MCP server:
 
 1. Check if a built-in tool or existing MCP server already covers the need
 2. Search the MCP Marketplace (`code.visualstudio.com/mcp`) and official registry
-3. Check for `npx` vs `uvx` runtime requirement
+3. Check for `npx` vs `uvx` vs HTTP remote transport — prefer HTTP remote for officially hosted servers (no local process, OAuth-managed auth)
 4. Add to `.vscode/mcp.json` (workspace) or profile `mcp.json` (user) with appropriate tier
-5. For credentials-required servers, use `${input:}` or `${env:}` variable syntax — never hardcode secrets
-6. Agent files can restrict MCP access using the `mcp-servers` frontmatter field
+5. For credentials-required stdio servers, use `${input:}` or `${env:}` variable syntax — never hardcode secrets; HTTP remote servers use VS Code's built-in OAuth where supported
+6. For stdio servers on Linux/macOS, add `sandboxEnabled: true` with `sandbox.filesystem.denyRead` rules for credential directories (`~/.ssh`, `~/.gnupg`, `~/.aws`) as a defence-in-depth measure against prompt injection
+7. Agent files can restrict MCP access using the `mcp-servers` frontmatter field
 
 ## Subagent MCP use
 

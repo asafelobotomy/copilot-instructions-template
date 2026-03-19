@@ -190,6 +190,7 @@ Files that will be CREATED:
   .github/prompts/*.prompt.md         (slash command prompts)
   .github/hooks/copilot-hooks.json    (hook configuration)
   .github/hooks/scripts/*.sh + *.ps1  (hook scripts)
+  .github/starter-kits/*/              (stack-specific plugin kits, if matched)
   .copilot/workspace/*.md + DOC_INDEX.json (8 workspace files)
   CHANGELOG.md
 
@@ -281,9 +282,10 @@ If any are found, present them to the user:
 Substitute the user's answers and re-write the file before continuing to §2.5.
 Do not proceed with unresolved `{{...}}` tokens in the instructions file.
 
-> **Parallelization hint**: Steps §2.5 through §2.14 are independent file-creation tasks.
-> Fetch all URLs in parallel where your runtime supports it (e.g., batch `fetch_webpage` calls).
-> Write each file group as soon as its fetch completes — do not wait for all groups.
+> **Parallelization hint**: Steps §2.5 through §2.14 (including §2.11a) are independent
+> file-creation tasks. Fetch all URLs in parallel where your runtime supports it
+> (e.g., batch `fetch_webpage` calls). Write each file group as soon as its fetch
+> completes — do not wait for all groups.
 
 ---
 
@@ -443,19 +445,18 @@ If the stack was detected in §1, uncomment and populate the matching runtime se
 
 ```json
 {
-  "inputs": [
-    {
-      "type": "promptString",
-      "id": "github-token",
-      "description": "GitHub Personal Access Token (for MCP GitHub server)",
-      "password": true
-    }
-  ],
   "servers": {
     "filesystem": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"],
+      "sandboxEnabled": true,
+      "sandbox": {
+        "filesystem": {
+          "allowWrite": ["${workspaceFolder}"],
+          "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
+        }
+      }
     },
     "git": {
       "type": "stdio",
@@ -463,12 +464,8 @@ If the stack was detected in §1, uncomment and populate the matching runtime se
       "args": ["mcp-server-git", "--repository", "${workspaceFolder}"]
     },
     "github": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${input:github-token}"
-      },
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
       "disabled": true
     },
     "fetch": {
@@ -476,12 +473,38 @@ If the stack was detected in §1, uncomment and populate the matching runtime se
       "command": "uvx",
       "args": ["mcp-server-fetch"],
       "disabled": true
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "disabled": true
     }
   }
 }
 ```
 
-**If E22 = C**, also suggest stack-specific servers based on detected dependencies (PostgreSQL, Redis, Docker, AWS, etc.) using the mcp-builder skill if available.
+**If E22 = C**, enable relevant servers from the base config and add stack-specific servers based on the dependencies detected in §1.
+
+Enable these from the base config when appropriate:
+
+| Server | When to enable |
+|--------|----------------|
+| `github` | Project uses GitHub (issues, PRs, Actions, CI) |
+| `fetch` | Agent needs to read web docs, APIs, or external resources |
+| `context7` | Project uses any third-party libraries (provides live, version-specific docs) |
+
+Add stack-specific servers for detected dependencies. Common options:
+
+| Stack | Server | Transport |
+|-------|--------|-----------|
+| Browser / UI testing | `@playwright/mcp` (Microsoft) | `npx -y @playwright/mcp@latest` |
+| PostgreSQL | Search MCP Marketplace (`code.visualstudio.com/mcp`) for `postgres` | varies |
+| SQLite | Search MCP Marketplace for `sqlite` | varies |
+| Redis | Search MCP Marketplace for `redis` | varies |
+| Docker | Search MCP Marketplace for `docker` | varies |
+| AWS | Search MCP Marketplace for `aws` | varies |
+
+> Note: the official reference implementations for database servers (postgres, sqlite, redis) were moved to `servers-archived`. Always search the MCP Marketplace or `registry.modelcontextprotocol.io` to find an actively maintained replacement rather than using the archived packages.
 
 ---
 
@@ -511,6 +534,75 @@ The template contains these recommended defaults:
 ```
 
 Merge these into the project's `.vscode/settings.json`. If the file does not exist, create it with these contents. If it exists, add only the keys that are not already present.
+
+---
+
+## § 2.11a — Install starter-kit plugin (automatic)
+
+Starter kits are VS Code agent plugins that add stack-specific skills, instructions, and
+prompts. They are installed automatically based on the stack detected in §1.
+
+1. **Fetch the registry**:
+
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/starter-kits/REGISTRY.json
+```
+
+2. **Match the detected stack** — for each kit in `kits[]`, check:
+   - Does any file in `detect.files` exist in the consumer project?
+   - Does `detect.language` match `{{LANGUAGE}}` from §1?
+   - Does any entry in `detect.dependencies` appear in the project's dependency list?
+
+   If any condition matches, the kit is a candidate. A project may match multiple kits
+   (e.g., `typescript` + `react` + `docker`).
+
+3. **Present matches to the user**:
+
+```text
+Detected starter kits:
+  • Python Starter Kit — pytest/unittest patterns, type checking, security practices
+  • Docker Starter Kit — Dockerfile best practices, compose patterns, image security
+
+Install these starter kits? (yes / pick / skip)
+```
+
+   - **yes** — install all matched kits
+   - **pick** — let the user select which to install
+   - **skip** — skip starter-kit installation entirely
+
+4. **Fetch and write kit files** — for each selected kit, fetch every file listed in that
+   kit's `files[]` array from the template repository:
+
+   Base URL: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/starter-kits/<kit-name>/`
+
+   Write each file to `.github/starter-kits/<kit-name>/` in the consumer project, preserving
+   the subdirectory structure.
+
+5. **Register the plugin location** — add a `chat.pluginLocations` entry to
+   `.vscode/settings.json` for each installed kit:
+
+```json
+{
+  "chat.pluginLocations": [
+    ".github/starter-kits/python",
+    ".github/starter-kits/docker"
+  ]
+}
+```
+
+   If the key already exists, append entries — do not overwrite.
+
+6. **Report** — list the installed kits and their contents:
+
+```text
+Installed starter kits:
+  ✓ python  — 2 skills, 2 instructions, 1 prompt
+  ✓ docker  — 1 skill, 1 instruction, 1 prompt
+```
+
+> **No matching kits?** If §1 detected a stack but no kit matches, or if the consumer
+> chose "skip", print: "No starter kits installed. You can install one later by saying
+> 'Install a starter kit'."
 
 ---
 
@@ -725,6 +817,7 @@ SETUP COMPLETE — copilot-instructions-template vX.Y.Z
 ✓ .github/instructions/             N path-specific stubs
 ✓ .github/prompts/                  5 slash-command prompts
 ✓ .github/hooks/                    hooks config + 10 scripts (5 sh + 5 ps1)
+✓ .github/starter-kits/             N starter-kit plugins (or "none matched")
 ✓ .copilot/workspace/               8 workspace files (7 identity + DOC_INDEX.json)
 ✓ CHANGELOG.md                      [created / already existed]
 

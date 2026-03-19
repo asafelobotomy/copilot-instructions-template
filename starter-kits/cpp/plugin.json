@@ -1,0 +1,6 @@
+{
+  "name": "cpp-starter-kit",
+  "displayName": "C++ Starter Kit",
+  "description": "Stack-specific skills, instructions, and prompts for C++ projects — CMake patterns, memory safety, clang-tidy conventions, and modern C++ practices.",
+  "version": "1.0.0"
+}

@@ -56,6 +56,7 @@ These files are created in the consumer project during setup, not in this templa
 |------|------|
 | `.github/copilot-version.md` | Installed template version number (semver) + per-section fingerprints |
 | `.copilot/tools/INDEX.md` | Toolbox catalogue (created on first tool save) |
+| `.github/starter-kits/<kit>/` | Stack-specific starter-kit plugin (installed during setup if stack matches) |
 
 ---
 
@@ -76,4 +77,5 @@ These files are created in the consumer project during setup, not in this templa
 | Test coverage review | *"Review my tests"* / *"Check test coverage"* |
 | MCP (configure/add/list) | *"Configure MCP servers"* / *"Add an MCP server"* |
 | Hooks (configure/list/add) | *"Configure hooks"* / *"Show hooks"* |
+| Starter kits (install/list/remove) | *"Install a starter kit"* / *"Show starter kits"* / *"What starter kits are available?"* |
 | Plugins (list/find/test) | *"Show plugins"* / *"Find a plugin for ..."* |

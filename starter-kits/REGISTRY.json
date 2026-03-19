@@ -1,0 +1,131 @@
+{
+  "schemaVersion": "1.0",
+  "description": "Machine-readable index mapping stack detection signals to starter-kit plugins.",
+  "kits": [
+    {
+      "name": "python",
+      "displayName": "Python Starter Kit",
+      "description": "pytest/unittest patterns, type checking, venv/poetry guidance, security practices",
+      "detect": {
+        "files": ["pyproject.toml", "setup.py", "requirements.txt", "Pipfile"],
+        "language": "Python"
+      },
+      "files": [
+        "plugin.json",
+        "skills/python-testing/SKILL.md",
+        "skills/python-typing/SKILL.md",
+        "instructions/python-conventions.instructions.md",
+        "instructions/python-security.instructions.md",
+        "prompts/python-debug.prompt.md"
+      ]
+    },
+    {
+      "name": "typescript",
+      "displayName": "TypeScript Starter Kit",
+      "description": "ESLint/Prettier patterns, Jest/Vitest testing, type safety, module conventions",
+      "detect": {
+        "files": ["tsconfig.json"],
+        "language": "TypeScript"
+      },
+      "files": [
+        "plugin.json",
+        "skills/typescript-testing/SKILL.md",
+        "skills/typescript-strict/SKILL.md",
+        "instructions/typescript-conventions.instructions.md",
+        "instructions/typescript-security.instructions.md",
+        "prompts/typescript-debug.prompt.md"
+      ]
+    },
+    {
+      "name": "cpp",
+      "displayName": "C++ Starter Kit",
+      "description": "CMake patterns, memory safety, clang-tidy/format, modern C++ conventions",
+      "detect": {
+        "files": ["CMakeLists.txt"],
+        "language": "C++"
+      },
+      "files": [
+        "plugin.json",
+        "skills/cpp-build-systems/SKILL.md",
+        "instructions/cpp-conventions.instructions.md",
+        "instructions/cpp-safety.instructions.md",
+        "prompts/cpp-debug.prompt.md"
+      ]
+    },
+    {
+      "name": "rust",
+      "displayName": "Rust Starter Kit",
+      "description": "Cargo/clippy patterns, unsafe review, crate conventions, error handling",
+      "detect": {
+        "files": ["Cargo.toml"],
+        "language": "Rust"
+      },
+      "files": [
+        "plugin.json",
+        "skills/rust-patterns/SKILL.md",
+        "instructions/rust-conventions.instructions.md",
+        "prompts/rust-debug.prompt.md"
+      ]
+    },
+    {
+      "name": "go",
+      "displayName": "Go Starter Kit",
+      "description": "Go testing patterns, golangci-lint, module management, idiomatic Go conventions",
+      "detect": {
+        "files": ["go.mod"],
+        "language": "Go"
+      },
+      "files": [
+        "plugin.json",
+        "skills/go-patterns/SKILL.md",
+        "instructions/go-conventions.instructions.md",
+        "prompts/go-debug.prompt.md"
+      ]
+    },
+    {
+      "name": "java",
+      "displayName": "Java Starter Kit",
+      "description": "Maven/Gradle patterns, JUnit testing, Spring Boot conventions, dependency management",
+      "detect": {
+        "files": ["pom.xml", "build.gradle", "build.gradle.kts"],
+        "language": "Java"
+      },
+      "files": [
+        "plugin.json",
+        "skills/java-build-test/SKILL.md",
+        "instructions/java-conventions.instructions.md",
+        "prompts/java-debug.prompt.md"
+      ]
+    },
+    {
+      "name": "docker",
+      "displayName": "Docker Starter Kit",
+      "description": "Dockerfile best practices, compose patterns, image security, multi-stage builds",
+      "detect": {
+        "files": ["Dockerfile", "docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml"]
+      },
+      "files": [
+        "plugin.json",
+        "skills/docker-patterns/SKILL.md",
+        "instructions/docker-conventions.instructions.md",
+        "prompts/docker-debug.prompt.md"
+      ]
+    },
+    {
+      "name": "react",
+      "displayName": "React Starter Kit",
+      "description": "Component testing, accessibility, hooks patterns, state management, Next.js conventions",
+      "detect": {
+        "dependencies": ["react", "react-dom", "next"],
+        "language": "TypeScript"
+      },
+      "files": [
+        "plugin.json",
+        "skills/react-testing/SKILL.md",
+        "instructions/react-conventions.instructions.md",
+        "instructions/react-accessibility.instructions.md",
+        "prompts/react-component.prompt.md"
+      ]
+    }
+  ]
+}
