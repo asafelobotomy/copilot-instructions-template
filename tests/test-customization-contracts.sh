@@ -80,4 +80,16 @@ for kind in ("instructions", "prompts"):
             raise SystemExit(f"unresolved {{{{}} token in .github/{kind}/{path.name}")
 '
 echo ""
+
+echo "4. Developer copilot-instructions.md has no functional placeholder tokens"
+assert_python "no functional {{ tokens in .github/copilot-instructions.md" '
+text = (root / ".github/copilot-instructions.md").read_text(encoding="utf-8")
+# Strip fenced code blocks and inline code spans (descriptive mentions are allowed there)
+stripped = re.sub(r"```[\s\S]*?```", "", text)
+stripped = re.sub(r"`[^`\n]+`", "", stripped)
+m = re.search(r"\{\{[A-Z_]+\}\}", stripped)
+if m:
+    raise SystemExit("unresolved placeholder in .github/copilot-instructions.md: " + m.group())
+'
+echo ""
 finish_tests
