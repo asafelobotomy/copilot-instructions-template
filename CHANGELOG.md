@@ -11,6 +11,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ## [Unreleased]
 
+## [3.4.1](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.4.0...v3.4.1) (2026-03-19)
+
+### Bug Fixes
+
+- **ci:** resolve markdown lint, shellcheck, and structural validation failures (MD028, MD029, MD031, MD034, SC2221, SC2222, missing `## [Unreleased]` in CHANGELOG)
+
 ## [3.3.2](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.3.1...v3.3.2) (2026-03-07)
 
 
