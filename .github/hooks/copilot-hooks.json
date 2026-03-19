@@ -27,6 +27,12 @@
     "Stop": [
       {
         "type": "command",
+        "command": "./.github/hooks/scripts/scan-secrets.sh",
+        "windows": "powershell -File .github\\hooks\\scripts\\scan-secrets.ps1",
+        "timeout": 30
+      },
+      {
+        "type": "command",
         "command": "./.github/hooks/scripts/enforce-retrospective.sh",
         "windows": "powershell -File .github\\hooks\\scripts\\enforce-retrospective.ps1",
         "timeout": 5

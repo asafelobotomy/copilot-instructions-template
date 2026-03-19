@@ -1,13 +1,13 @@
 {
   "schemaVersion": "1.0",
-  "updated": "2026-03-06",
+  "updated": "2026-03-19",
   "purpose": "Canonical machine-readable inventory for repository metadata.",
   "counts": {
-    "agents": 6,
-    "skillsRepo": 13,
-    "skillsTemplate": 13,
-    "hookScriptsShell": 5,
-    "hookScriptsPowerShell": 5
+    "agents": 8,
+    "skillsRepo": 15,
+    "skillsTemplate": 15,
+    "hookScriptsShell": 9,
+    "hookScriptsPowerShell": 8
   },
   "agents": [
     "setup.agent.md",
@@ -15,7 +15,9 @@
     "review.agent.md",
     "fast.agent.md",
     "update.agent.md",
-    "doctor.agent.md"
+    "doctor.agent.md",
+    "researcher.agent.md",
+    "explore.agent.md"
   ],
   "skills": {
     "repo": [
@@ -23,8 +25,10 @@
       "fix-ci-failure",
       "lean-pr-review",
       "conventional-commit",
+      "create-adr",
       "mcp-builder",
       "webapp-testing",
+      "agentic-workflows",
       "issue-triage",
       "tool-protocol",
       "skill-management",
@@ -38,8 +42,10 @@
       "fix-ci-failure",
       "lean-pr-review",
       "conventional-commit",
+      "create-adr",
       "mcp-builder",
       "webapp-testing",
+      "agentic-workflows",
       "issue-triage",
       "tool-protocol",
       "skill-management",
@@ -51,18 +57,25 @@
   },
   "hookScripts": {
     "shell": [
+      "lib-hooks.sh",
+      "scan-secrets.sh",
       "session-start.sh",
       "guard-destructive.sh",
       "post-edit-lint.sh",
       "enforce-retrospective.sh",
-      "save-context.sh"
+      "save-context.sh",
+      "subagent-start.sh",
+      "subagent-stop.sh"
     ],
     "powershell": [
+      "scan-secrets.ps1",
       "session-start.ps1",
       "guard-destructive.ps1",
       "post-edit-lint.ps1",
       "enforce-retrospective.ps1",
-      "save-context.ps1"
+      "save-context.ps1",
+      "subagent-start.ps1",
+      "subagent-stop.ps1"
     ]
   },
   "notes": [

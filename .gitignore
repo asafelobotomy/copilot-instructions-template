@@ -3,6 +3,9 @@ node_modules/
 package.json
 package-lock.json
 
+# Hook scan logs (written by scan-secrets.sh at session end)
+logs/
+
 # Vale — downloaded style packages (not committed; fetched by `vale sync`)
 .github/vale/styles/Vale/
 .github/vale/styles/Google/

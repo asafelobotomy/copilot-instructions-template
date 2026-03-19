@@ -31,6 +31,8 @@ preferred_agents = [
     "fast.agent.md",
     "update.agent.md",
     "doctor.agent.md",
+    "researcher.agent.md",
+    "explore.agent.md",
 ]
 
 preferred_skills = [
@@ -38,8 +40,10 @@ preferred_skills = [
     "fix-ci-failure",
     "lean-pr-review",
     "conventional-commit",
+    "create-adr",
     "mcp-builder",
     "webapp-testing",
+    "agentic-workflows",
     "issue-triage",
     "tool-protocol",
     "skill-management",
@@ -50,19 +54,26 @@ preferred_skills = [
 ]
 
 preferred_shell_hooks = [
+    "lib-hooks.sh",
+    "scan-secrets.sh",
     "session-start.sh",
     "guard-destructive.sh",
     "post-edit-lint.sh",
     "enforce-retrospective.sh",
     "save-context.sh",
+    "subagent-start.sh",
+    "subagent-stop.sh",
 ]
 
 preferred_ps_hooks = [
+    "scan-secrets.ps1",
     "session-start.ps1",
     "guard-destructive.ps1",
     "post-edit-lint.ps1",
     "enforce-retrospective.ps1",
     "save-context.ps1",
+    "subagent-start.ps1",
+    "subagent-stop.ps1",
 ]
 
 

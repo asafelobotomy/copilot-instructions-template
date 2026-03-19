@@ -15,6 +15,7 @@ echo "1. Prompt files keep VS Code frontmatter and avoid deprecated keys"
 assert_python "prompt frontmatter stays valid" '
 expected = {
     "commit-msg.prompt.md",
+    "context-map.prompt.md",
     "explain.prompt.md",
     "refactor.prompt.md",
     "review-file.prompt.md",

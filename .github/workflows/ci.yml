@@ -86,6 +86,8 @@ jobs:
             "template/vscode/mcp.json" \
             "template/vscode/settings.json" \
             "template/hooks/copilot-hooks.json" \
+            "template/hooks/scripts/lib-hooks.sh" \
+            "template/hooks/scripts/scan-secrets.sh" \
             "template/hooks/scripts/session-start.sh" \
             "template/hooks/scripts/guard-destructive.sh" \
             "template/hooks/scripts/post-edit-lint.sh" \

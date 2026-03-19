@@ -334,6 +334,7 @@ Base URL: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-
 | `.github/skills/fix-ci-failure/SKILL.md` | `fix-ci-failure/SKILL.md` |
 | `.github/skills/lean-pr-review/SKILL.md` | `lean-pr-review/SKILL.md` |
 | `.github/skills/conventional-commit/SKILL.md` | `conventional-commit/SKILL.md` |
+| `.github/skills/create-adr/SKILL.md` | `create-adr/SKILL.md` |
 | `.github/skills/mcp-builder/SKILL.md` | `mcp-builder/SKILL.md` |
 | `.github/skills/webapp-testing/SKILL.md` | `webapp-testing/SKILL.md` |
 | `.github/skills/issue-triage/SKILL.md` | `issue-triage/SKILL.md` |
@@ -388,11 +389,12 @@ If any are found, present them to the user using the same prompt as §2.4.
 > If A17 = "Ask about each", present each prompt file by name and description before
 > fetching and writing it. Only write the ones the user approves.
 
-Write the following five files to `.github/prompts/` (fetch and write verbatim):
+Write the following six files to `.github/prompts/` (fetch and write verbatim):
 
 | File | URL |
 |------|-----|
 | `explain.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/prompts/explain.prompt.md` |
+| `context-map.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/prompts/context-map.prompt.md` |
 | `refactor.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/prompts/refactor.prompt.md` |
 | `test-gen.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/prompts/test-gen.prompt.md` |
 | `review-file.prompt.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/prompts/review-file.prompt.md` |
@@ -644,6 +646,7 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 | Script | URL |
 |--------|-----|
 | `lib-hooks.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/lib-hooks.sh` |
+| `scan-secrets.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/scan-secrets.sh` |
 | `session-start.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/session-start.sh` |
 | `guard-destructive.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/guard-destructive.sh` |
 | `post-edit-lint.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/post-edit-lint.sh` |
@@ -656,6 +659,7 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 
 | Script | URL |
 |--------|-----|
+| `scan-secrets.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/scan-secrets.ps1` |
 | `session-start.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/session-start.ps1` |
 | `guard-destructive.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/guard-destructive.ps1` |
 | `post-edit-lint.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/post-edit-lint.ps1` |
