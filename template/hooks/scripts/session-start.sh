@@ -6,6 +6,9 @@
 # risk:     safe
 set -euo pipefail
 
+# shellcheck source=.github/hooks/scripts/lib-hooks.sh
+source "$(dirname "$0")/lib-hooks.sh"
+
 # Gather project context
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
 COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
@@ -35,7 +38,7 @@ fi
 
 # Emit context for the agent — JSON-escape to handle special characters
 CONTEXT="Project: ${PROJECT_NAME} v${PROJECT_VER} | Branch: ${BRANCH} (${COMMIT}) | Node: ${NODE_VER} | Python: ${PYTHON_VER} | Heartbeat: ${PULSE}"
-CONTEXT_ESC=$(printf '%s' "$CONTEXT" | python3 -c "import sys,json; print(json.dumps(sys.stdin.read()), end='')" 2>/dev/null | sed 's/^"//;s/"$//' || printf '%s' "$CONTEXT")
+CONTEXT_ESC=$(json_escape "$CONTEXT")
 
 cat <<EOF
 {

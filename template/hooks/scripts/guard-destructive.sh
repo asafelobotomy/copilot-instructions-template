@@ -12,10 +12,8 @@
 # defense-in-depth.
 set -euo pipefail
 
-# JSON-escape a string for safe embedding in heredoc JSON output
-json_escape() {
-  printf '%s' "$1" | python3 -c "import sys,json; print(json.dumps(sys.stdin.read()), end='')" 2>/dev/null | sed 's/^"//;s/"$//' || printf '%s' "$1"
-}
+# shellcheck source=.github/hooks/scripts/lib-hooks.sh
+source "$(dirname "$0")/lib-hooks.sh"
 
 INPUT=$(cat)
 TOOL_NAME=$(echo "$INPUT" | grep -o '"tool_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*: *"\(.*\)"/\1/') || TOOL_NAME=""

@@ -126,6 +126,8 @@ fp=$(awk "/^## §${i} —/{found=1; next} /^## §/{if(found) exit} found{print}"
   .github/copilot-instructions.md | sha256sum | cut -c1-12)
 ```
 
+> **Windows note**: `sha256sum` requires Git Bash, WSL, or equivalent. If neither is available, set `fingerprints_available = false` — the legacy heuristic path will apply.
+
 Compare `current_fp` vs `stored_fp` from U1:
 
 - `current_fp = stored_fp` → **user did NOT modify** this section since last setup/update.
@@ -450,6 +452,8 @@ Write to `.github/copilot-version.md`:
 <!-- Do not edit manually — it is updated automatically during instruction updates. -->
 
 NEW
+Applied: <ORIGINAL-APPLIED-DATE>
+Updated: YYYY-MM-DD
 
 <!-- section-fingerprints
 §1=<fingerprint>
@@ -458,7 +462,7 @@ NEW
 -->
 ```
 
-Replace `NEW` with the new version string. Replace each `<fingerprint>` with the computed value. If the terminal is unavailable, omit the fingerprints block.
+Replace `NEW` with the new version string. Preserve the `Applied:` date from the previous version file unchanged. Replace `Updated: YYYY-MM-DD` with today's date. Replace each `<fingerprint>` with the computed value. If the terminal is unavailable, omit the fingerprints block.
 
 Do **not** run `scripts/sync-version.sh` — that script is template-repo infrastructure and does not exist in consumer projects.
 
@@ -549,8 +553,10 @@ Selected: pre-update-<DATE>-v<VERSION>/
   Backed up:  <DATE>
   Version:    <VERSION>
   Changed sections: <list>
+  Backed-up companion files: <list, or "none">
 
-Restoring this backup will replace your current .github/copilot-instructions.md.
+Restoring this backup will replace your current .github/copilot-instructions.md
+and any backed-up companion files.
 Your current file will be backed up first at:
   .github/archive/pre-restore-<TODAY>-<CURRENT_VERSION>/
 
@@ -561,11 +567,12 @@ Wait for confirmation.
 
 #### R3 — Back up the current file before restoring
 
-Before overwriting anything, create a new backup of the *current* instructions — the ones that are about to be replaced — using the same backup format:
+Before overwriting anything, create a new backup of the *current* instructions and any companion files that R4 will overwrite — using the same backup format:
 
 ```text
 .github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/
   copilot-instructions.md    ← copy of the file being replaced
+  <companion files>          ← copies of any companion files that will be restored
   BACKUP-MANIFEST.md         ← records this as a pre-restore snapshot
 ```
 
@@ -575,6 +582,8 @@ This means restoration is always reversible.
 
 Copy `copilot-instructions.md` from the selected backup directory to `.github/copilot-instructions.md`, replacing the current file exactly.
 
+For each companion file listed in `BACKUP-MANIFEST.md`, copy it from the backup directory to the corresponding path in the user's project, preserving the relative directory structure. If the companion file's parent directory does not exist, create it.
+
 #### R5 — Record the restoration
 
 Append to `CHANGELOG.md` under `## [Unreleased]`:
@@ -582,6 +591,7 @@ Append to `CHANGELOG.md` under `## [Unreleased]`:
 ```markdown
 ### Reverted
 - Copilot instructions restored from backup `pre-update-<DATE>-v<VERSION>`.
+  Files restored: `copilot-instructions.md` + companion files (if any — see BACKUP-MANIFEST.md).
   Pre-restore snapshot saved at `.github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/`.
 ```
 
@@ -591,6 +601,7 @@ Append to `CHANGELOG.md` under `## [Unreleased]`:
 Restored! ✓
 
   Restored from: .github/archive/pre-update-<DATE>-v<VERSION>/
+  Files restored: copilot-instructions.md + <N> companion file(s)
   Pre-restore snapshot saved at:
     .github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/
 

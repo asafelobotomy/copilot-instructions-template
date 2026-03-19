@@ -11,10 +11,9 @@ ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
 MODELS_FILE="$ROOT_DIR/MODELS.md"
 MODE="${1:---check}"
 
-if [[ "$MODE" != "--check" && "$MODE" != "--write" ]]; then
-  echo "Usage: bash scripts/sync-models.sh [--check|--write]"
-  exit 1
-fi
+# shellcheck source=scripts/lib.sh
+source "$(dirname "$0")/lib.sh"
+require_check_write_mode "sync-models.sh" "$MODE"
 
 if [[ ! -f "$MODELS_FILE" ]]; then
   echo "❌ MODELS.md not found at $MODELS_FILE"

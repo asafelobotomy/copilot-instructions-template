@@ -15,6 +15,7 @@ echo "1. Hook configuration and scripts stay in exact sync with template copies"
 assert_python "hook mirrors remain exact" '
 expected = {
     ".github/hooks/copilot-hooks.json": "template/hooks/copilot-hooks.json",
+    ".github/hooks/scripts/lib-hooks.sh": "template/hooks/scripts/lib-hooks.sh",
     ".github/hooks/scripts/enforce-retrospective.sh": "template/hooks/scripts/enforce-retrospective.sh",
     ".github/hooks/scripts/guard-destructive.sh": "template/hooks/scripts/guard-destructive.sh",
     ".github/hooks/scripts/post-edit-lint.sh": "template/hooks/scripts/post-edit-lint.sh",

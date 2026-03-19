@@ -97,12 +97,6 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<t
 
 ---
 
-## v3.1.0
-
-See **v3.2.0** — this release is bundled into v3.2.0 via its `Includes` field.
-
----
-
 ## v3.2.0
 
 | Breaking | Sections changed | Sections added | Includes |
@@ -152,21 +146,9 @@ See **v3.2.0** — this release is bundled into v3.2.0 via its `Includes` field.
 
 ---
 
-## v3.0.3
+## v3.1.0
 
-See **v3.0.4** — this release is bundled into v3.0.4 via its `Includes` field.
-
----
-
-## v3.0.2
-
-See **v3.0.4** — this release is bundled into v3.0.4 via its `Includes` field.
-
----
-
-## v3.0.1
-
-See **v3.0.4** — this release is bundled into v3.0.4 via its `Includes` field.
+See **v3.2.0** — this release is bundled into v3.2.0 via its `Includes` field.
 
 ---
 
@@ -189,6 +171,24 @@ See **v3.0.4** — this release is bundled into v3.0.4 via its `Includes` field.
 | `.github/skills/*/SKILL.md` (all 7) | `template/skills/*/SKILL.md` | Updated (5 bug fixes) |
 
 **Manual actions**: None — all changes are in companion files and can be auto-applied.
+
+---
+
+## v3.0.3
+
+See **v3.0.4** — this release is bundled into v3.0.4 via its `Includes` field.
+
+---
+
+## v3.0.2
+
+See **v3.0.4** — this release is bundled into v3.0.4 via its `Includes` field.
+
+---
+
+## v3.0.1
+
+See **v3.0.4** — this release is bundled into v3.0.4 via its `Includes` field.
 
 ---
 

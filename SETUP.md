@@ -30,6 +30,10 @@ inside the template repository itself.
 
 Run: `git remote get-url origin`
 
+If the command fails, returns no output, or the directory has no `.git/` folder:
+ask the user to confirm this is their target project directory before proceeding.
+Do not stop — just seek verbal confirmation.
+
 If the output contains `asafelobotomy/copilot-instructions-template`, **STOP** and
 tell the user:
 
@@ -172,6 +176,9 @@ Batch these into groups of up to 4 per `ask_questions` call. If `ask_questions` 
 - **E22 — MCP servers**: Should I configure Model Context Protocol servers?
   Options: A — None (skip MCP) | B — Always-on only (filesystem, git) | C — Full configuration (all tiers)
 
+- **E23 — Claude compatibility**: Should I generate a `CLAUDE.md` file for Claude Code compatibility?
+  Options: Yes | No
+
 #### § 0e — Pre-flight summary
 
 After all questions are answered, present a summary:
@@ -185,7 +192,7 @@ Files that will be CREATED:
   .github/copilot-instructions.md     (populated from template)
   .github/copilot-version.md          (installed template version)
   .github/agents/*.agent.md           (8 model-pinned agents)
-  .github/skills/*/SKILL.md           (13 starter skills)
+  .github/skills/*/SKILL.md           (14 starter skills)
   .github/instructions/*.md           (path-specific stubs)
   .github/prompts/*.prompt.md         (slash command prompts)
   .github/hooks/copilot-hooks.json    (hook configuration)
@@ -322,6 +329,7 @@ Base URL: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-
 
 | Target path | Fetch suffix |
 |-------------|-------------|
+| `.github/skills/agentic-workflows/SKILL.md` | `agentic-workflows/SKILL.md` |
 | `.github/skills/skill-creator/SKILL.md` | `skill-creator/SKILL.md` |
 | `.github/skills/fix-ci-failure/SKILL.md` | `fix-ci-failure/SKILL.md` |
 | `.github/skills/lean-pr-review/SKILL.md` | `lean-pr-review/SKILL.md` |
@@ -364,6 +372,14 @@ Write files to `.github/instructions/<name>` in the user's project.
 
 After setup, replace `{{TEST_FRAMEWORK}}` and `{{TEST_COMMAND}}` tokens in `tests.instructions.md` with the values from §1.
 
+After all substitutions, validate no `{{PLACEHOLDER}}` tokens remain in any written instruction stub:
+
+```bash
+grep -rE '\{\{[^}]+\}\}' .github/instructions/
+```
+
+If any are found, present them to the user using the same prompt as §2.4.
+
 ---
 
 ## § 2.8 — Scaffold prompt files
@@ -404,7 +420,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@v4
 
       # --- Runtime setup (uncomment and fill the section matching your stack) ---
 
@@ -627,6 +643,7 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 
 | Script | URL |
 |--------|-----|
+| `lib-hooks.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/lib-hooks.sh` |
 | `session-start.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/session-start.sh` |
 | `guard-destructive.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/guard-destructive.sh` |
 | `post-edit-lint.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/post-edit-lint.sh` |
@@ -688,6 +705,7 @@ Write to `.github/copilot-version.md`:
 <!-- Do not edit manually — it is updated automatically during instruction updates. -->
 
 X.Y.Z
+Applied: YYYY-MM-DD
 
 <!-- section-fingerprints
 §1=<fingerprint>
@@ -702,25 +720,23 @@ X.Y.Z
 -->
 ```
 
-Replace `X.Y.Z` with the fetched version string. Replace each `<fingerprint>` with the computed value from the shell command above.
+Replace `X.Y.Z` with the fetched version string. Replace `Applied: YYYY-MM-DD` with today's date. Replace each `<fingerprint>` with the computed value from the shell command above.
 
 If the terminal is unavailable, omit the `<!-- section-fingerprints ... -->` block — the Update agent will fall back to heuristic comparison.
 
 ---
 
-## § 2.14 — Generate Claude compatibility file (optional)
+## § 2.14 — Generate Claude compatibility file (E23 only)
 
-Ask the user: *"Generate a `CLAUDE.md` for Claude Code compatibility?"*
+> **Conditional (E23)**: If the user answered E23 = "No", skip this step entirely.
 
-**If Yes**: fetch and write `CLAUDE.md` to the project root:
+**If E23 = Yes**: fetch and write `CLAUDE.md` to the project root:
 
 ```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/CLAUDE.md
 ```
 
 Replace all `{{PLACEHOLDER}}` tokens with values resolved in §1.
-
-**If No**: skip this step.
 
 This file is auto-detected by Claude Code and by VS Code when using Claude models.
 It provides a lightweight mirror of the core project rules so teams using both tools
@@ -816,10 +832,10 @@ SETUP COMPLETE — copilot-instructions-template vX.Y.Z
 ✓ .github/copilot-instructions.md   populated
 ✓ .github/copilot-version.md        written (vX.Y.Z)
 ✓ .github/agents/                   8 model-pinned agents
-✓ .github/skills/                   13 starter skills
+✓ .github/skills/                   14 starter skills
 ✓ .github/instructions/             N path-specific stubs
 ✓ .github/prompts/                  5 slash-command prompts
-✓ .github/hooks/                    hooks config + 10 scripts (5 sh + 5 ps1)
+✓ .github/hooks/                    hooks config + 14 scripts (7 sh + 7 ps1)
 ✓ .github/starter-kits/             N starter-kit plugins (or "none matched")
 ✓ .copilot/workspace/               9 workspace files (8 identity + DOC_INDEX.json)
 ✓ CHANGELOG.md                      [created / already existed]

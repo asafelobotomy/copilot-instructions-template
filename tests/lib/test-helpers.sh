@@ -90,39 +90,11 @@ assert_valid_json() {
   fi
 }
 
-assert_python() {
-  local desc="$1" code="$2"
-  if REPO_ROOT="$REPO_ROOT" TEST_CODE="$code" python3 - <<'PY'
-import filecmp
-import json
-import os
-import pathlib
-import re
-import sys
-
-root = pathlib.Path(os.environ['REPO_ROOT'])
-code = os.environ['TEST_CODE']
-ns = {
-    "filecmp": filecmp,
-    "json": json,
-    "os": os,
-    "pathlib": pathlib,
-    "re": re,
-    "root": root,
-    "sys": sys,
-}
-exec(code, ns)
-PY
-  then
-    pass_note "$desc"
-  else
-    fail_note "$desc"
-  fi
-}
-
-assert_python_in_root() {
-  local desc="$1" root_path="$2" code="$3"
-  if TEST_ROOT="$root_path" TEST_CODE="$code" python3 - <<'PY'
+_run_python() {
+  # Internal helper: execute Python code with a 'root' path in scope.
+  # Usage: _run_python <root_path> <code>
+  local root_path="$1" code="$2"
+  TEST_ROOT="$root_path" TEST_CODE="$code" python3 - <<'PY'
 import filecmp
 import json
 import os
@@ -143,7 +115,20 @@ ns = {
 }
 exec(code, ns)
 PY
-  then
+}
+
+assert_python() {
+  local desc="$1" code="$2"
+  if _run_python "$REPO_ROOT" "$code"; then
+    pass_note "$desc"
+  else
+    fail_note "$desc"
+  fi
+}
+
+assert_python_in_root() {
+  local desc="$1" root_path="$2" code="$3"
+  if _run_python "$root_path" "$code"; then
     pass_note "$desc"
   else
     fail_note "$desc"

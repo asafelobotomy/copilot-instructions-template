@@ -6,6 +6,9 @@
 # risk:     safe
 set -euo pipefail
 
+# shellcheck source=.github/hooks/scripts/lib-hooks.sh
+source "$(dirname "$0")/lib-hooks.sh"
+
 # Read workspace files and create a compact summary to survive compaction
 SUMMARY=""
 
@@ -43,7 +46,7 @@ SUMMARY=$(echo "$SUMMARY" | head -c 2000)
 
 if [[ -n "$SUMMARY" ]]; then
   # Escape for JSON
-  SUMMARY_ESCAPED=$(echo "$SUMMARY" | python3 -c "import sys,json; print(json.dumps(sys.stdin.read().strip()))" 2>/dev/null | sed 's/^"//;s/"$//')
+  SUMMARY_ESCAPED=$(json_escape "$SUMMARY")
 
   cat <<EOF
 {
