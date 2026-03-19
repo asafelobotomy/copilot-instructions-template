@@ -50,9 +50,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 * implement session-start script to inject project context ([69f5609](https://github.com/asafelobotomy/copilot-instructions-template/commit/69f5609e2e846cfef39d511960435b221e6305f4))
 * implement skill-creator for new agent skills ([69f5609](https://github.com/asafelobotomy/copilot-instructions-template/commit/69f5609e2e846cfef39d511960435b221e6305f4))
 
-## [Unreleased]
+## [3.4.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v3.3.2...v3.4.0) (2026-03-19)
 
-### Added
+### Features
 
 - `extension-review` skill added in both `.github/skills/` and `template/skills/` for on-demand VS Code extension audits tied to detected stack signals.
 - `test-coverage-review` skill added in both `.github/skills/` and `template/skills/` for on-demand coverage-gap analysis, local test recommendations, and CI workflow suggestions.

@@ -24,7 +24,43 @@ the next tagged version (listed in **Includes**).
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<tag>/<template-source-path>
 ```
 
-**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0, v3.2.0, v3.3.0, v3.3.1, v3.3.2
+**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0, v3.2.0, v3.3.0, v3.3.1, v3.3.2, v3.4.0
+
+---
+
+## v3.4.0
+
+| Breaking | Sections changed | Sections added | Includes |
+|----------|-----------------|----------------|----------|
+| No | §2, §3, §6, §10, §13 | — | v3.3.2 |
+
+**What changed**: Introduces Researcher and Explore agents with a `RESEARCH.md` URL
+tracker, adds stack-specific starter kits, refactors hook scripts into shared
+libraries, and updates documentation and templates to surface the new
+capabilities.
+
+**New placeholders**: none
+
+**Companion files added**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/agents/researcher.agent.md` | `.github/agents/researcher.agent.md` | **New** (research-oriented agent) |
+| `.github/agents/explore.agent.md` | `.github/agents/explore.agent.md` | **New** (exploration agent) |
+| `starter-kits/*` | `starter-kits/*` | **New** (stack-specific starter kits for common languages/frameworks) |
+| `.copilot/workspace/RESEARCH.md` | `template/workspace/RESEARCH.md` | **New** (URL tracker for research tasks) |
+| `.github/hooks/scripts/lib-hooks.sh` | `template/hooks/scripts/lib-hooks.sh` | **New** (shared hook helper library) |
+
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/hooks/scripts/*.sh` | `template/hooks/scripts/*.sh` | Updated (shared JSON escaping utilities and common helpers) |
+| `AGENTS.md` | `AGENTS.md` | Updated (Researcher/Explore agents inventory) |
+| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` | Updated (metrics freshness and task logging) |
+| `.copilot/workspace/MEMORY.md` | `template/workspace/MEMORY.md` | Updated (documentation refinements) |
+
+**Manual actions**: None
 
 ---
 
