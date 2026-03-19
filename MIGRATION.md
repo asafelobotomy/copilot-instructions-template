@@ -24,7 +24,25 @@ the next tagged version (listed in **Includes**).
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<tag>/<template-source-path>
 ```
 
-**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0, v3.2.0, v3.3.0, v3.3.1, v3.3.2, v3.4.0
+**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0, v3.2.0, v3.3.0, v3.3.1, v3.3.2, v3.4.0, v3.4.1
+
+---
+
+## v3.4.1
+
+| Breaking | Sections changed | Sections added | Includes |
+|----------|-----------------|----------------|----------|
+| No | — | — | — |
+
+**What changed**: CI lint fixes only — markdown lint (MD028, MD029, MD031, MD034), shellcheck (SC2221/SC2222), and structural validation (missing `## [Unreleased]` in CHANGELOG). No template or hook behaviour changes.
+
+**New placeholders**: none
+
+**Companion files added**: none
+
+**Companion files updated**: none
+
+**Manual actions**: None
 
 ---
 
