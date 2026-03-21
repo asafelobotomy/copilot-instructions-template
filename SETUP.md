@@ -555,6 +555,14 @@ The template contains these recommended defaults:
 
 Merge these into the project's `.vscode/settings.json`. If the file does not exist, create it with these contents. If it exists, add only the keys that are not already present.
 
+Also fetch the extension recommendations template:
+
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/vscode/extensions.json
+```
+
+Merge the `recommendations` array into the project's `.vscode/extensions.json`. If the file does not exist, create it. If it exists, append entries that are not already present — do not duplicate or overwrite.
+
 ---
 
 ## § 2.11a — Install starter-kit plugin (automatic)
@@ -747,6 +755,72 @@ Replace all `{{PLACEHOLDER}}` tokens with values resolved in §1.
 This file is auto-detected by Claude Code and by VS Code when using Claude models.
 It provides a lightweight mirror of the core project rules so teams using both tools
 get consistent behaviour without maintaining two full instruction sets.
+
+---
+
+## § 2.15 — Install companion extension (optional)
+
+The `copilot-profile-tools` companion extension enables profile-aware extension
+management via Language Model Tools. It is optional — the Extensions agent
+falls back to CLI-only mode when the extension is absent.
+
+<!-- markdownlint-disable MD007 MD029 -->
+1. **Ask the user**:
+
+```text
+The copilot-profile-tools extension enables profile-aware extension management
+(active profile detection, profile isolation, in-process extension enumeration).
+
+Install it? (yes / skip)
+```
+
+   - **skip** — proceed without the extension. The Extensions agent uses CLI fallback.
+
+2. **Install** — if the user chose "yes":
+
+   Try the VS Code Marketplace first:
+
+   ```bash
+   code --install-extension asafelobotomy.copilot-profile-tools
+   ```
+
+   If a repo-specific profile was created or recommended earlier, target it:
+
+   ```bash
+   code --install-extension asafelobotomy.copilot-profile-tools --profile "{{PROJECT_NAME}}"
+   ```
+
+   If the Marketplace install fails (offline, restricted network, Marketplace
+   unavailable), fall back to the pre-built VSIX from GitHub Releases:
+
+   ```bash
+   # Fetch latest VSIX URL from GitHub Releases API
+   # Download the .vsix file
+   code --install-extension /tmp/copilot-profile-tools.vsix
+   ```
+
+3. **Add to workspace recommendations** — merge into `.vscode/extensions.json`:
+
+   ```json
+   {
+     "recommendations": [
+       "asafelobotomy.copilot-profile-tools"
+     ]
+   }
+   ```
+
+   If the file exists, append to the `recommendations` array. If it does not
+   exist, create it with the content above.
+
+4. **Report**:
+
+```text
+Companion extension:
+  ✓ copilot-profile-tools — installed (Marketplace)
+```
+
+   Or if skipped: `⊘ copilot-profile-tools — skipped (CLI fallback active)`
+<!-- markdownlint-enable MD007 MD029 -->
 
 ---
 

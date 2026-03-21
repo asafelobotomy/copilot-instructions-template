@@ -23,25 +23,36 @@ Review the current project's VS Code extensions and recommend what to keep, add,
 
 ## Steps
 
-1. **Get the installed list** - Ask the user to run `code --list-extensions | sort` and paste the output. Copilot cannot read installed extensions directly.
+1. **Get the installed list** - Try to enumerate extensions automatically using the `runCommands` tool:
 
-2. **Read workspace recommendations** - Inspect `.vscode/extensions.json` and `.vscode/settings.json` if they exist.
+   ```bash
+   code --list-extensions --show-versions | sort
+   ```
 
-3. **Detect the stack** - Scan the repository for the actual language, runtime, linter, formatter, test, and config signals that determine which extensions are relevant.
+   If the command fails (e.g., `code` CLI not on PATH or terminal unavailable), fall back to asking the user to run `code --list-extensions | sort` and paste the output.
 
-4. **Compare installed vs needed** - Build three groups:
+2. **Profile check** - Check whether a repo-specific VS Code Profile is active:
+   - Run `code --list-extensions | grep -i copilot-profile-tools` to detect the companion extension.
+   - **If installed**: use the `get_active_profile` Language Model Tool. If the user is on the Default Profile, recommend creating a dedicated Empty Profile (`code . --profile "ProjectName"`) before proceeding.
+   - **If not installed**: note that profile detection is limited. Recommend creating a repo-specific profile to isolate extensions from other projects.
+
+3. **Read workspace recommendations** - Inspect `.vscode/extensions.json` and `.vscode/settings.json` if they exist.
+
+4. **Detect the stack** - Scan the repository for the actual language, runtime, linter, formatter, test, and config signals that determine which extensions are relevant.
+
+5. **Compare installed vs needed** - Build three groups:
    - **Keep** - installed and relevant
    - **Recommended additions** - not installed but clearly useful for the detected stack
    - **Consider removing** - installed but irrelevant, duplicate, deprecated, or superseded
 
-5. **Handle unknown stacks carefully** - If the project uses a tool not covered by the built-in stack table, research the VS Code Marketplace and only recommend candidates that meet all three checks:
+6. **Handle unknown stacks carefully** - If the project uses a tool not covered by the built-in stack table, research the VS Code Marketplace and only recommend candidates that meet all three checks:
    - install count > 100k
    - rating >= 4.0
    - updated within the last 12 months
 
-6. **Persist new mappings** - If an unknown stack produces a qualified extension recommendation, append the new stack-to-extension mapping to `.copilot/workspace/TOOLS.md` under `Extension registry`.
+7. **Persist new mappings** - If an unknown stack produces a qualified extension recommendation, append the new stack-to-extension mapping to `.copilot/workspace/TOOLS.md` under `Extension registry`.
 
-7. **Present the report** - Use this structure:
+8. **Present the report** - Use this structure:
 
    ```markdown
    ## Extension Review - <project>
@@ -62,11 +73,12 @@ Review the current project's VS Code extensions and recommend what to keep, add,
    - extension registry updates made
    ```
 
-8. **Wait** - Do not modify `.vscode/extensions.json` or install/uninstall anything until the user explicitly asks.
+9. **Wait** - Do not modify `.vscode/extensions.json` or install/uninstall anything until the user explicitly asks.
 
 ## Verify
 
-- [ ] Installed extensions were requested from the user first
+- [ ] Installed extensions were obtained (auto-detected or user-provided)
+- [ ] Profile status was checked and repo-specific profile recommended if needed
 - [ ] Workspace recommendations were checked when present
 - [ ] Every recommendation is tied to an actual stack signal in the repo
 - [ ] Unknown-stack recommendations passed the install/rating/recency quality gate

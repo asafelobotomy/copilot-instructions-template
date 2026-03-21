@@ -201,11 +201,27 @@ Flag: `[WARN]` if naming conflicts detected.
 Flag: `[WARN]` if `chat.plugins.paths` contains non-existent paths.
 Skip this check silently if no plugin settings or paths are configured.
 
+### D10 — Companion extension (copilot-profile-tools)
+
+Check whether the `copilot-profile-tools` companion extension is installed:
+
+```bash
+code --list-extensions | grep -i copilot-profile-tools
+```
+
+- If installed: verify it appears in `.vscode/extensions.json` recommendations.
+- If not installed: note as `[INFO]` — the extension is optional but enables
+  profile-aware extension management via the Extensions agent.
+
+Flag: `[INFO]` if not installed (optional dependency).
+Flag: `[WARN]` if installed but missing from `.vscode/extensions.json` recommendations.
+Skip this check silently if `code` CLI is not available.
+
 ---
 
 ## Report format
 
-After all checks, print a structured health report with sections for each check (D1–D9), showing findings or "OK". End with a summary counting CRITICAL/HIGH/WARN/OK and an overall status (HEALTHY / DEGRADED / CRITICAL).
+After all checks, print a structured health report with sections for each check (D1–D10), showing findings or "OK". End with a summary counting CRITICAL/HIGH/WARN/OK and an overall status (HEALTHY / DEGRADED / CRITICAL).
 
 - If **HEALTHY**: print `All checks passed. No action needed.`
 - If **DEGRADED** (WARN only): suggest using "Apply fixes" handoff or manual resolution.

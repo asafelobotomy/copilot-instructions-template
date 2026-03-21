@@ -73,7 +73,7 @@ These files are created in the consumer project during setup, not in this templa
 | Retrospective | *"Run retrospective"* |
 | Show/build/save tools | *"Show me the toolbox"* / *"Build a tool for ..."* |
 | Skills (create/list/search) | *"Create a skill"* / *"Show my skills"* / *"Find a skill for ..."* |
-| Extensions review | *"Review extensions"* / *"Check my extensions"* |
+| Extensions (review/install/profile) | *"Review extensions"* / *"Check my extensions"* / *"Check my profile"* / *"Sync extensions"* / *"Install recommended extensions"* |
 | Test coverage review | *"Review my tests"* / *"Check test coverage"* |
 | MCP (configure/add/list) | *"Configure MCP servers"* / *"Add an MCP server"* |
 | Hooks (configure/list/add) | *"Configure hooks"* / *"Show hooks"* |

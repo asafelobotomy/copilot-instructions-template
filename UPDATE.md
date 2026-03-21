@@ -168,8 +168,7 @@ Walk through each intermediate version's MIGRATION.md entry and collect all comp
 | MCP config | `.vscode/mcp.json` |
 | Path instructions | `.github/instructions/*.instructions.md` |
 | Prompt files | `.github/prompts/*.prompt.md` |
-| Workspace identity | `.copilot/workspace/*.md` |
-
+| Workspace identity | `.copilot/workspace/*.md` || Companion extension | `copilot-profile-tools` (VS Code Marketplace / VSIX fallback) |
 For each companion file, determine:
 
 | Companion status | Condition | Action |
@@ -178,6 +177,17 @@ For each companion file, determine:
 | `UPDATABLE` | File exists; template version is newer | Offer to update (show diff summary) |
 | `CURRENT` | File exists and matches the latest template | Skip silently |
 | `USER_CUSTOMISED` | File exists but differs from both old and new template | Flag; let user decide |
+
+For the **companion extension** (`copilot-profile-tools`), use these statuses instead:
+
+| Extension status | Condition | Action |
+|-----------------|-----------|--------|
+| `NOT_INSTALLED` | Extension not present | Offer to install (Marketplace, VSIX fallback) |
+| `INSTALLED_CURRENT` | Installed and up-to-date | Skip silently |
+| `INSTALLED_OUTDATED` | Installed but newer version available | Offer update |
+| `INSTALL_FAILED` | Marketplace and VSIX both failed | Note and continue |
+
+Extension version check: run `code --list-extensions --show-versions | grep -i copilot-profile-tools` and compare against the latest release from `https://api.github.com/repos/asafelobotomy/copilot-profile-tools/releases/latest`.
 
 #### Step 4 — Accumulate metadata
 
@@ -211,6 +221,7 @@ If **all** §1–§9 sections have status `UNCHANGED` or `USER_ONLY` (no instruc
 
    No instruction section changes. <N> companion file(s) to update:
    <list each file with status (NEW / UPDATABLE)>
+   Companion extension: <INSTALLED_CURRENT / INSTALLED_OUTDATED / NOT_INSTALLED>
 
    Apply all? [Y / N / list to pick individually]
    ```
