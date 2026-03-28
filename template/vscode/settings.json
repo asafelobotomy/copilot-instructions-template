@@ -1,4 +1,6 @@
 {
+  "chat.mcp.autostart": "newAndOutdated",
+  "chat.subagents.allowInvocationsFromSubagents": true,
   "chat.useAgentsMdFile": true,
   "chat.useNestedAgentsMdFiles": true,
   "chat.useCustomAgentHooks": true,

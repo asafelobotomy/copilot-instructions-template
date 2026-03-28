@@ -1,30 +1,37 @@
 {
-  "servers": {
-    "filesystem": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"],
-      "sandboxEnabled": true,
-      "sandbox": {
-        "filesystem": {
-          "allowWrite": ["${workspaceFolder}"],
-          "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
-        }
-      }
-    },
-    "git": {
-      "type": "stdio",
-      "command": "uvx",
-      "args": ["mcp-server-git", "--repository", "${workspaceFolder}"]
-    },
-    "github": {
-      "type": "http",
-      "url": "https://api.githubcopilot.com/mcp/"
-    },
-    "fetch": {
-      "type": "stdio",
-      "command": "uvx",
-      "args": ["mcp-server-fetch"]
-    }
-  }
+	"servers": {
+		"filesystem": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-filesystem",
+				"${workspaceFolder}"
+			]
+		},
+		"git": {
+			"type": "stdio",
+			"command": "uvx",
+			"args": [
+				"mcp-server-git",
+				"--repository",
+				"${workspaceFolder}"
+			]
+		},
+		"github": {
+			"type": "http",
+			"url": "https://api.githubcopilot.com/mcp/"
+		},
+		"fetch": {
+			"type": "stdio",
+			"command": "uvx",
+			"args": [
+				"mcp-server-fetch"
+			]
+		},
+		"context7": {
+			"type": "http",
+			"url": "https://mcp.context7.com/mcp"
+		}
+	}
 }

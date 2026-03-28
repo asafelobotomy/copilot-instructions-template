@@ -73,3 +73,29 @@ Upstream instruction updates and restore-from-backup operations.
 - Claude Sonnet 4.6
 - Claude Sonnet 4.5
 - GPT-5.1
+
+## explore
+
+Fast read-only codebase exploration and Q&A. Uses lightweight models for speed;
+Sonnet is the capability fallback for complex queries.
+
+- Claude Haiku 4.5
+- GPT-5 mini
+- Claude Sonnet 4.6
+
+## extensions
+
+VS Code extension management, profile isolation, and workspace configuration.
+
+- Claude Sonnet 4.6
+- Claude Opus 4.6
+- GPT-5.1
+
+## researcher
+
+Online and offline research — fetch documentation, track URLs, and produce
+structured research output.
+
+- Claude Sonnet 4.6
+- Claude Sonnet 4.5
+- GPT-5 mini

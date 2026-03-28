@@ -461,10 +461,30 @@ If the stack was detected in §1, uncomment and populate the matching runtime se
 
 **If E22 = A (None) or the user used Simple/Advanced setup**: skip this step entirely.
 
-**If E22 = B (always-on only)** or **E22 = C (full)**: create `.vscode/mcp.json`:
+**If E22 = B (always-on only)** or **E22 = C (full)**: create `.vscode/mcp.json`.
+
+### Sandbox detection (Linux only)
+
+Before generating the config, detect whether the system uses a symlinked home directory (immutable Linux distros like Fedora Atomic, Bazzite, Silverblue, NixOS). The `bwrap` sandbox cannot follow symlinks for write paths — sandbox must be disabled on these systems.
+
+**Detection rule**: if the OS is Linux, check whether `/home` resolves to a different path (e.g., `/var/home`). Run in terminal or evaluate programmatically:
+
+```bash
+[[ "$(readlink -f /home)" != "/home" ]] && echo "immutable" || echo "standard"
+```
+
+- **Result = `standard`** (or macOS): use the **sandboxed variant** below.
+- **Result = `immutable`**: use the **unsandboxed variant** below.
+
+### Sandboxed variant (standard Linux / macOS — default)
 
 ```json
 {
+  "sandbox": {
+    "filesystem": {
+      "allowWrite": ["${userHome}/.npm"]
+    }
+  },
   "servers": {
     "filesystem": {
       "type": "stdio",
@@ -473,10 +493,47 @@ If the stack was detected in §1, uncomment and populate the matching runtime se
       "sandboxEnabled": true,
       "sandbox": {
         "filesystem": {
-          "allowWrite": ["${workspaceFolder}"],
+          "allowWrite": ["${workspaceFolder}", "${userHome}/.npm"],
           "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
         }
       }
+    },
+    "git": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-server-git", "--repository", "${workspaceFolder}"]
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "disabled": true
+    },
+    "fetch": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
+      "disabled": true
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "disabled": true
+    }
+  }
+}
+```
+
+### Unsandboxed variant (immutable Linux distros)
+
+Use this when the detection rule above returns `immutable`. The filesystem MCP server already restricts itself to `${workspaceFolder}` by design.
+
+```json
+{
+  "servers": {
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"]
     },
     "git": {
       "type": "stdio",
@@ -545,6 +602,8 @@ The template contains these recommended defaults:
 
 ```json
 {
+  "chat.mcp.autostart": "newAndOutdated",
+  "chat.subagents.allowInvocationsFromSubagents": true,
   "chat.useAgentsMdFile": true,
   "chat.useNestedAgentsMdFiles": true,
   "chat.useCustomAgentHooks": true,
