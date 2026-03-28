@@ -72,16 +72,36 @@ jobs:
             ".github/agents/coding.agent.md" \
             ".github/agents/review.agent.md" \
             ".github/agents/fast.agent.md" \
+            ".github/agents/doctor.agent.md" \
+            ".github/agents/explore.agent.md" \
+            ".github/agents/extensions.agent.md" \
+            ".github/agents/researcher.agent.md" \
+            ".github/agents/security.agent.md" \
+            ".github/agents/update.agent.md" \
             "SETUP.md" "UPDATE.md" "MIGRATION.md" "AGENTS.md" "VERSION.md" "CHANGELOG.md" \
             "scripts/sync-version.sh" \
             "scripts/sync-doc-index.sh" \
             "scripts/sync-models.sh" \
+            "scripts/sync-template-parity.sh" \
+            "scripts/validate-agent-frontmatter.sh" \
+            "scripts/stub-migration.sh" \
+            "scripts/lib.sh" \
             "MODELS.md" \
+            "CLAUDE.md" \
+            "llms.txt" \
+            "starter-kits/REGISTRY.json" \
             ".copilot/workspace/DOC_INDEX.json" \
             "template/copilot-instructions.md" \
             "template/instructions/tests.instructions.md" \
             "template/prompts/refactor.prompt.md" \
             "template/prompts/test-gen.prompt.md" \
+            "template/prompts/commit-msg.prompt.md" \
+            "template/prompts/context-map.prompt.md" \
+            "template/prompts/explain.prompt.md" \
+            "template/prompts/review-file.prompt.md" \
+            "template/instructions/api-routes.instructions.md" \
+            "template/instructions/config.instructions.md" \
+            "template/instructions/docs.instructions.md" \
             "template/copilot-setup-steps.yml" \
             "template/vscode/mcp.json" \
             "template/vscode/settings.json" \
@@ -95,12 +115,21 @@ jobs:
             "template/hooks/scripts/save-context.sh" \
             "template/hooks/scripts/subagent-start.sh" \
             "template/hooks/scripts/subagent-stop.sh" \
+            "template/hooks/scripts/session-start.ps1" \
+            "template/hooks/scripts/post-edit-lint.ps1" \
+            "template/hooks/scripts/enforce-retrospective.ps1" \
+            "template/hooks/scripts/save-context.ps1" \
+            "template/hooks/scripts/scan-secrets.ps1" \
+            "template/hooks/scripts/guard-destructive.ps1" \
+            "template/hooks/scripts/subagent-start.ps1" \
+            "template/hooks/scripts/subagent-stop.ps1" \
             "template/CHANGELOG.md" \
             "template/CLAUDE.md" \
             "template/workspace/IDENTITY.md" "template/workspace/SOUL.md" \
             "template/workspace/USER.md" "template/workspace/TOOLS.md" \
             "template/workspace/MEMORY.md" "template/workspace/DOC_INDEX.json" "template/workspace/BOOTSTRAP.md" \
-            "template/workspace/HEARTBEAT.md"; do
+            "template/workspace/HEARTBEAT.md" "template/workspace/RESEARCH.md" \
+            "template/vscode/extensions.json"; do
             if [[ ! -f "$f" ]]; then
               echo "❌ Missing: $f"; missing=1
             fi
@@ -377,6 +406,13 @@ jobs:
           for f in \
             template/hooks/copilot-hooks.json \
             template/vscode/mcp.json \
+            template/vscode/extensions.json \
+            template/vscode/settings.json \
+            template/workspace/DOC_INDEX.json \
+            .github/hooks/copilot-hooks.json \
+            .copilot/workspace/DOC_INDEX.json \
+            .markdownlint.json \
+            starter-kits/REGISTRY.json \
             release-please-config.json \
             .release-please-manifest.json; do
             if [[ -f "$f" ]]; then
@@ -470,6 +506,9 @@ jobs:
       - name: Hook behavior | save-context.sh
         run: bash tests/test-hook-save-context.sh
 
+      - name: Hook behavior | scan-secrets.sh
+        run: bash tests/test-hook-scan-secrets.sh
+
       - name: Hook behavior | hooks PowerShell parity
         run: bash tests/test-hooks-powershell.sh
 
@@ -491,9 +530,27 @@ jobs:
       - name: Docs and contracts | release metadata contracts
         run: bash tests/test-release-contracts.sh
 
+      - name: Script behavior | stub-migration.sh
+        run: bash tests/test-stub-migration.sh
+
+      - name: Script behavior | sync-models.sh
+        run: bash tests/test-sync-models.sh
+
+      - name: Script behavior | sync-template-parity.sh
+        run: bash tests/test-sync-template-parity.sh
+
+      - name: Script behavior | validate-agent-frontmatter.sh
+        run: bash tests/test-validate-agent-frontmatter.sh
+
       - name: Docs and contracts | customization file contracts
         run: bash tests/test-customization-contracts.sh
 
       - name: Docs and contracts | template parity
         run: bash tests/test-template-parity.sh
+
+      - name: Docs and contracts | starter-kits
+        run: bash tests/test-starter-kits.sh
+
+      - name: Docs and contracts | setup and update contracts
+        run: bash tests/test-setup-update-contracts.sh
 
