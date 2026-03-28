@@ -23,6 +23,7 @@
 | `fast.agent.md` | Claude Haiku 4.5 | Quick lookups and lightweight edits |
 | `update.agent.md` | Claude Sonnet 4.6 | Upstream instruction updates |
 | `doctor.agent.md` | Claude Sonnet 4.6 | Read-only health checks |
+| `security.agent.md` | GPT-5.4 | Read-only security audit (OWASP, secrets, supply chain) |
 
 ## Skills
 
@@ -61,6 +62,7 @@ Max subagent depth is 3 (configurable via `{{SUBAGENT_MAX_DEPTH}}`).
 | Code | Review, Doctor, Fast, Researcher, Explore, Extensions |
 | Review | Code, Fast, Researcher |
 | Doctor | Code, Update, Researcher, Explore |
+| Security | Code, Doctor, Researcher, Explore |
 | Extensions | Researcher, Doctor, Fast, Explore |
 | Researcher | Code, Doctor |
 | Explore | None |

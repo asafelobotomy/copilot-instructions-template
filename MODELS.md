@@ -99,3 +99,13 @@ structured research output.
 - Claude Sonnet 4.6
 - Claude Sonnet 4.5
 - GPT-5 mini
+
+## security
+
+Read-only security audit — OWASP Top 10, secrets, injection patterns, supply
+chain, shell hardening. GPT-5.4 for deep analytical capability; Opus as fallback.
+
+- GPT-5.4
+- Claude Opus 4.6
+- Claude Sonnet 4.6
+- GPT-5.1

@@ -80,3 +80,4 @@ These files are created in the consumer project during setup, not in this templa
 | Starter kits (install/list/remove) | *"Install a starter kit"* / *"Show starter kits"* / *"What starter kits are available?"* |
 | Plugins (list/find/test) | *"Show plugins"* / *"Find a plugin for ..."* |
 | Research (find/report/track) | *"Research [topic]"* / *"Find documentation for [topic]"* / *"Build a research report on [topic]"* / *"Update the URL tracker"* |
+| Security audit | *"Security audit"* / *"Scan for secrets"* / *"Check for vulnerabilities"* / *"Review security posture"* / *"Run security check"* |
