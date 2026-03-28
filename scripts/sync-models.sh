@@ -14,6 +14,7 @@ MODE="${1:---check}"
 # shellcheck source=scripts/lib.sh
 source "$(dirname "$0")/lib.sh"
 require_check_write_mode "sync-models.sh" "$MODE"
+require_command python3
 
 if [[ ! -f "$MODELS_FILE" ]]; then
   echo "❌ MODELS.md not found at $MODELS_FILE"
@@ -29,7 +30,11 @@ root      = pathlib.Path(sys.argv[1])
 models_md = pathlib.Path(sys.argv[2])
 mode      = sys.argv[3]
 
-AGENTS = ["coding", "doctor", "fast", "review", "setup", "update"]
+# Dynamic discovery: pick up any *.agent.md in .github/agents/
+AGENTS = sorted(
+    p.stem.replace(".agent", "")
+    for p in (root / ".github" / "agents").glob("*.agent.md")
+)
 
 
 def parse_models(content: str) -> dict[str, list[str]]:

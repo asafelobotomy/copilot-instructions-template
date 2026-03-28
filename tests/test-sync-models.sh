@@ -197,4 +197,14 @@ assert_success "real repo check exits zero" "$status"
 assert_contains "real repo check prints OK" "$output" "OK:"
 echo ""
 
+# 10. Dynamically discovered agent without MODELS.md section is reported
+echo "10. Extra agent file without MODELS.md section is caught"
+TMP=$(mktemp -d)
+make_fixture "$TMP"
+make_agent "$TMP" extra ModelX
+output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1) || true
+assert_contains "missing section for extra agent" "$output" "extra"
+rm -rf "$TMP"
+echo ""
+
 finish_tests

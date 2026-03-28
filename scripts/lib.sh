@@ -2,6 +2,36 @@
 # scripts/lib.sh — shared utilities for sync scripts.
 set -euo pipefail
 
+# err() — timestamped error to stderr.
+err() {
+  echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')] ERROR: $*" >&2
+}
+
+# log_step() — progress output to stdout.
+log_step() {
+  echo "→ $*"
+}
+
+# require_command() — fail fast if required binaries are missing.
+# Usage: require_command python3 jq
+require_command() {
+  local missing=()
+  for cmd in "$@"; do
+    command -v "$cmd" &>/dev/null || missing+=("$cmd")
+  done
+  if [[ ${#missing[@]} -gt 0 ]]; then
+    err "Required command(s) not found: ${missing[*]}"
+    exit 1
+  fi
+}
+
+# setup_tmpdir() — create a temp dir and register an EXIT trap to remove it.
+# Sets global TMPDIR_WORK; callers use it directly.
+setup_tmpdir() {
+  TMPDIR_WORK=$(mktemp -d)
+  trap 'rm -rf "$TMPDIR_WORK"' EXIT
+}
+
 # Validate that $mode is --check or --write; print usage and exit 1 otherwise.
 # Usage: require_check_write_mode <script_name> <mode>
 require_check_write_mode() {

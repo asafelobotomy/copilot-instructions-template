@@ -10,6 +10,10 @@ set -euo pipefail
 ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
 VERSION_FILE="$ROOT_DIR/VERSION.md"
 
+# shellcheck source=scripts/lib.sh
+source "$(dirname "$0")/lib.sh"
+require_command python3
+
 if [[ ! -f "$VERSION_FILE" ]]; then
   echo "❌ Missing VERSION.md"
   exit 1
@@ -21,8 +25,29 @@ if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   exit 1
 fi
 
-perl -0777 -i -pe 's#(> \*\*Template version\*\*: )[0-9]+\.[0-9]+\.[0-9]+( [^|]*\| \*\*Applied\*\*:)#${1}'"$VERSION"'${2}#g' "$ROOT_DIR/template/copilot-instructions.md"
-perl -0777 -i -pe 's#(\*\*)[0-9]+\.[0-9]+\.[0-9]+(\*\* <!-- x-release-please-version -->)#${1}'"$VERSION"'${2}#g' "$ROOT_DIR/README.md"
-perl -0777 -i -pe 's#("\."\s*:\s*")[0-9]+\.[0-9]+\.[0-9]+(")#${1}'"$VERSION"'${2}#g' "$ROOT_DIR/.release-please-manifest.json"
+python3 - "$ROOT_DIR" "$VERSION" <<'PY'
+import re
+import sys
+import pathlib
+
+root = pathlib.Path(sys.argv[1])
+version = sys.argv[2]
+
+def sub(path, pattern, repl):
+    t = path.read_text()
+    nt = re.sub(pattern, repl, t, flags=re.S)
+    if nt != t:
+        path.write_text(nt)
+
+sub(root / "template/copilot-instructions.md",
+    r'(> \*\*Template version\*\*: )\d+\.\d+\.\d+( [^|]*\| \*\*Applied\*\*:)',
+    rf'\g<1>{version}\g<2>')
+sub(root / "README.md",
+    r'(\*\*)\d+\.\d+\.\d+(\*\* <!-- x-release-please-version -->)',
+    rf'\g<1>{version}\g<2>')
+sub(root / ".release-please-manifest.json",
+    r'("\."\s*:\s*")\d+\.\d+\.\d+(")',
+    rf'\g<1>{version}\g<2>')
+PY
 
 echo "✅ Synced version references from VERSION.md ($VERSION)"

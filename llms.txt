@@ -23,6 +23,9 @@
 | `fast.agent.md` | Claude Haiku 4.5 | Quick lookups and lightweight edits |
 | `update.agent.md` | Claude Sonnet 4.6 | Upstream instruction updates |
 | `doctor.agent.md` | Claude Sonnet 4.6 | Read-only health checks |
+| `explore.agent.md` | Claude Haiku 4.5 | Fast read-only codebase exploration and Q&A |
+| `extensions.agent.md` | Claude Sonnet 4.6 | VS Code extension management and profiles |
+| `researcher.agent.md` | Claude Sonnet 4.6 | Online/offline research and documentation |
 | `security.agent.md` | GPT-5.4 | Read-only security audit (OWASP, secrets, supply chain) |
 
 ## Skills

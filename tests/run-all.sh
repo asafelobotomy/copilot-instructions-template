@@ -55,6 +55,8 @@ run_phase "Script Behavior" \
   "tests/test-stub-migration.sh" \
   "tests/test-sync-doc-index.sh" \
   "tests/test-sync-models.sh" \
+  "tests/test-validate-agent-frontmatter.sh" \
+  "tests/test-sync-template-parity.sh" \
   "tests/test-security-edge-cases.sh"
 
 run_phase "Documentation And Contracts" \
