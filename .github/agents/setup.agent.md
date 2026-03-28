@@ -29,6 +29,9 @@ Guidelines:
 - Complete all pre-flight checks before writing any file.
 - Prefer small, incremental file writes over large one-shot changes.
 - Always confirm the pre-flight summary with the user before writing.
+- Apply the Structured Thinking Discipline (§5): frame each setup phase as a
+  discrete problem, gather context once (do not re-fetch already-fetched URLs),
+  and do not re-read files already in memory.
 - Do not modify files in `asafelobotomy/copilot-instructions-template` — that is
   the template repo; all writes go to the consumer project.
 - Use `runCommands` for stack detection during §1 (e.g. `node --version`,

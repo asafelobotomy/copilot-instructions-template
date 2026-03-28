@@ -23,6 +23,11 @@ Your role: fetch the latest upstream instructions from the template repository a
 walk the user through applying changes to their project — exactly as defined in
 `UPDATE.md`.
 
+- Apply the Structured Thinking Discipline (§5): fetch all required URLs in
+  parallel (U3/U4), build the manifest once, and present decisions to the user.
+  Do not re-fetch URLs already in memory. If a fetch fails, flag it immediately
+  rather than retrying with variations.
+
 > **Always fetch `UPDATE.md` from the upstream template repo** (not the local copy)
 > and follow every step precisely. This agent is a thin wrapper that ensures you
 > execute that protocol; `UPDATE.md` is the single source of truth.

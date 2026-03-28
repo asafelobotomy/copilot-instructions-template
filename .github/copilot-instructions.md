@@ -67,6 +67,24 @@ Every non-trivial change:
 3. **Check** — run `bash tests/run-all.sh`. Fix before continuing.
 4. **Act** — address any baseline breach; summarise.
 
+### Structured Thinking Discipline
+
+Before acting on any medium-to-complex task:
+
+1. **Frame** — state the problem in one sentence. Decompose if you cannot.
+2. **Gather** — search once with broad terms. Do not repeat with minor variations.
+3. **Decide** — choose an approach and commit. Do not oscillate between equal options.
+4. **Act** — implement in one pass. Do not re-read files already read unless changed.
+5. **Verify** — check once. On failure, diagnose root cause before retrying.
+
+**Anti-loop rules** (all agents and subagents):
+
+- **3-strike rule**: same tool call unhelpful 3 times → reformulate or ask user.
+- **No circular re-reads**: do not re-read unchanged files within the same task.
+- **Monotonic progress**: each step must produce new information or output.
+- **Scope lock**: do not expand scope mid-task. Note new work for follow-up.
+- **Time-box exploration**: max 5 tool calls per sub-question. Surface gaps to user.
+
 ## Baselines
 
 | Baseline | Value |
@@ -156,6 +174,6 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 - **Tool Protocol**: Check `.copilot/tools/INDEX.md` before building. Follow `.github/skills/tool-protocol/SKILL.md`.
 - **Skill Protocol**: Skills loaded on demand from `.github/skills/`. Follow `.github/skills/skill-management/SKILL.md`.
 - **MCP Protocol**: Config in `.vscode/mcp.json`. Always-on: filesystem, git. Credentials-required: github, fetch.
-- **Subagent depth**: max 3. Stop and surface to user if reached. Subagents inherit all protocols.
+- **Subagent depth**: max 3. Stop and surface to user if reached. Subagents inherit all protocols including the Structured Thinking Discipline and anti-loop rules.
 
 *See also: `template/copilot-instructions.md` (consumer template) · `.github/agents/` · `.github/skills/` · `AGENTS.md` · `UPDATE.md` · `MIGRATION.md`*

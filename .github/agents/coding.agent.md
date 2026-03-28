@@ -35,6 +35,9 @@ Guidelines:
 - Full PDCA cycle is mandatory for every non-trivial change.
 - Run the three-check ritual before marking any task done.
 - Write or update tests alongside every change — never after.
+- Apply the Structured Thinking Discipline (§5) before starting any complex task.
+  Frame the problem → gather minimal context → decide → act → verify. If stuck
+  after 3 attempts at the same approach, reformulate or ask the user.
 
 ## Skill activation map
 

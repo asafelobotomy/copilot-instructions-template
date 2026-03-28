@@ -31,6 +31,10 @@ Your role: perform a comprehensive, read-only health check on every file that
 Copilot reads or maintains. Surface all issues with severity ratings. Do not
 modify any files — diagnosis only.
 
+- Apply the Structured Thinking Discipline (§5): run each check (D1–D13)
+  sequentially. If a check requires data from a prior check, reuse it — do not
+  re-read or re-fetch. If a fetch fails, flag it and move to the next check.
+
 **Announce at session start:**
 
 ```text

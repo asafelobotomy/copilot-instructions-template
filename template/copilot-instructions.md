@@ -116,6 +116,35 @@ Apply to every non-trivial change.
 **Check**: Run `{{TEST_COMMAND}}`. Review output. Fix before proceeding.
 **Act**: If baseline exceeded, address it now. Summarise what changed.
 
+### Structured Thinking Discipline
+
+Before acting on any medium-to-complex task, apply this decision sequence to avoid
+loop traps and wasted tokens:
+
+1. **Frame** — state the problem in one sentence. If you cannot, the task needs
+   decomposition before proceeding.
+2. **Gather** — identify the minimum information needed to act. Search once with
+   broad terms; do not repeat the same search with minor variations.
+3. **Decide** — choose an approach and commit. If two approaches seem equal, pick
+   either and move forward. Do not oscillate.
+4. **Act** — implement the chosen approach in one pass. Do not re-read files you
+   have already read unless the content has changed.
+5. **Verify** — check the result once. If it fails, diagnose the root cause before
+   retrying. Never retry the same action expecting a different result.
+
+**Anti-loop rules** (apply to all agents and subagents):
+
+- **3-strike rule**: if the same tool call or search returns unhelpful results
+  three times, stop and reformulate the approach or ask the user for guidance.
+- **No circular re-reads**: do not re-read a file within the same task unless
+  you have made changes to it since the last read.
+- **Monotonic progress**: each step must produce new information or new output.
+  If a step produces nothing new, skip it and move to the next.
+- **Scope lock**: once Plan is set, do not expand scope mid-task. If new work
+  is discovered, note it for a follow-up task.
+- **Time-box exploration**: limit exploratory searches to 5 tool calls per
+  sub-question. If the answer is not found, surface the gap to the user.
+
 ---
 
 ## §6 — Waste Catalogue (Muda)
@@ -208,6 +237,14 @@ When spawning subagents:
 - Each subagent must run the three-check ritual before reporting done.
 - Each subagent inherits the full Tool Protocol (§11), Skill Protocol (§12), and MCP Protocol (§13) — check the toolbox before building, search before coding, and flag any proposed toolbox saves to the parent.
 - Subagent output must include: files changed, LOC delta, test result, any baseline breaches.
+- **Subagents inherit the Structured Thinking Discipline (§5)** — the anti-loop
+  rules, 3-strike rule, and monotonic progress requirement apply at every depth.
+- **Prompt clarity**: when spawning a subagent, the prompt must include: (a) the
+  specific deliverable expected, (b) the format of the response, and (c) explicit
+  stop conditions. Vague prompts cause subagent loops.
+- **Fail fast**: if a subagent cannot make progress within 10 tool calls, it must
+  return what it has found so far with a clear statement of what blocked it.
+  Do not let subagents spin.
 
 ### Organization-Level Agents
 
