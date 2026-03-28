@@ -124,11 +124,13 @@ VS Code Profiles isolate extensions, settings, and keybindings per workspace.
 Best practice: each repository should use a dedicated profile.
 
 **Benefits:**
+
 - Extensions from unrelated projects do not interfere
 - Lighter editor startup (fewer extensions loaded)
 - Reproducible environment across team members
 
 **Commands:**
+
 - Create and open in new profile: `code . --profile "ProjectName"`
 - Install extension into profile: `code --install-extension ID --profile "Name"`
 
@@ -167,6 +169,7 @@ When the extension is detected, the following tools become available:
 ### Degradation when absent
 
 If the extension is not installed:
+
 - Profile detection is unavailable — recommend creating a profile via CLI
 - Extension enumeration falls back to `code --list-extensions`
 - Install/uninstall falls back to `code --install-extension` / `code --uninstall-extension`

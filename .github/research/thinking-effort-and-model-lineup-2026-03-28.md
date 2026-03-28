@@ -123,6 +123,7 @@ One chat turn with a 3x model costs 3 premium requests; a 0x model costs nothing
 | Raptor mini Preview | 0x | General | GitHub's own model; "fast, accurate inline suggestions" — 0x = included |
 
 **Notes on specific models:**
+
 - **GPT-5 mini**: The "Medium" label indicates thinking effort is enabled at Medium for this model.
   It is listed as 0x, meaning it is one of the three *included* models (alongside GPT-4.1 and
   GPT-4o) that consume zero premium requests on paid plans.
@@ -171,6 +172,7 @@ parameter before forwarding the request to the model provider.
 #### Anthropic mapping
 
 Anthropic's extended thinking API uses a `thinking` block with:
+
 - `type: "enabled"`
 - `budget_tokens: <integer>` — upper bound on thinking tokens
 
@@ -180,6 +182,7 @@ adaptive reasoning mode maps to Anthropic's dynamic budget behaviour where the m
 early if it concludes the reasoning is sufficient.
 
 In v1.109, VS Code began rendering Anthropic thinking tokens in the chat UI, controlled by:
+
 - `chat.thinking.style` — `detailed` or `compact`
 - `chat.agent.thinking.collapsedTools` — whether thinking during tool calls collapses
 - `chat.agent.thinking.terminalTools` — show thinking interleaved with terminal tool calls
@@ -187,6 +190,7 @@ In v1.109, VS Code began rendering Anthropic thinking tokens in the chat UI, con
 #### OpenAI mapping
 
 OpenAI's Responses API exposes `reasoning.effort` as a first-class string enum. VS Code maps:
+
 - Low → `"low"`
 - Medium → `"medium"`
 - High → `"high"`

@@ -168,7 +168,9 @@ Walk through each intermediate version's MIGRATION.md entry and collect all comp
 | MCP config | `.vscode/mcp.json` |
 | Path instructions | `.github/instructions/*.instructions.md` |
 | Prompt files | `.github/prompts/*.prompt.md` |
-| Workspace identity | `.copilot/workspace/*.md` || Companion extension | `copilot-profile-tools` (VS Code Marketplace / VSIX fallback) |
+| Workspace identity | `.copilot/workspace/*.md` |
+| Companion extension | `copilot-profile-tools` (VS Code Marketplace / VSIX fallback) |
+
 For each companion file, determine:
 
 | Companion status | Condition | Action |
@@ -475,19 +477,19 @@ Wait for the user's response before moving to the next companion file.
 2. Say: *"Describe the adjustments you want, or type your replacement text in full."*
 3. Accept the user's input. If they described changes rather than providing full text, produce the adjusted version and use `ask_questions` to confirm:
 
-```ask_questions
-header: "Confirm customisation"
-question: "Here is the adjusted version. Shall I apply this?"
-options:
-  - label: "Yes"
-    description: "Apply the customised version"
-    recommended: true
-  - label: "No"
-    description: "Let me revise further"
-allowFreeformInput: true
-```
+   ```ask_questions
+   header: "Confirm customisation"
+   question: "Here is the adjusted version. Shall I apply this?"
+   options:
+     - label: "Yes"
+       description: "Apply the customised version"
+       recommended: true
+     - label: "No"
+       description: "Let me revise further"
+   allowFreeformInput: true
+   ```
 
-> **Fallback**: If `ask_questions` is unavailable, ask in chat.
+   > **Fallback**: If `ask_questions` is unavailable, ask in chat.
 
 4. On confirmation, record the customised version. Say: *"Customised version recorded. Moving to the next change."*
 

@@ -347,7 +347,7 @@ Batch up to 4 unresolved placeholders per `ask_questions` call. Substitute the u
 Do not proceed with unresolved `{{...}}` tokens in the instructions file.
 
 > **Fallback**: If `ask_questions` is unavailable, present placeholders as a numbered list in chat.
-
+>
 > **Parallelization hint**: Steps §2.5 through §2.14 (including §2.11a) are independent
 > file-creation tasks. Fetch all URLs in parallel where your runtime supports it
 > (e.g., batch `fetch_webpage` calls). Write each file group as soon as its fetch

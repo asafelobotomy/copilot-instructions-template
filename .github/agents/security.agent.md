@@ -106,27 +106,32 @@ Flag: `[HIGH]` for medium-confidence matches requiring review.
 Scan source code for injection vulnerabilities:
 
 **SQL injection:**
+
 - String concatenation or template literals in `execute()`, `query()`, `raw()` calls
 - ORM `raw()` methods with interpolated variables
 
 **OS command injection:**
+
 - `subprocess` with `shell=True` and external input
 - `os.system()`, `os.popen()` with variables
 - `exec()`, `system()`, `passthru()` with user input (PHP)
 - `child_process.exec()` with `req.` parameters (Node.js)
 
 **Cross-site scripting (XSS):**
+
 - `.innerHTML =`, `document.write()`, `.insertAdjacentHTML()`
 - `dangerouslySetInnerHTML` in React
 - Unescaped template output (`{{{ }}}` in Handlebars, `|safe` in Jinja2)
 - `eval()` with potentially user-controlled input
 
 **Path traversal:**
+
 - File operations (`open()`, `fs.readFile()`) with request parameters
 - `include`/`require` with user input (PHP)
 - `../` sequences in URL handlers
 
 **SSRF:**
+
 - HTTP client calls (`requests.get()`, `fetch()`, `axios.get()`) with user-supplied URLs
 
 Flag: `[CRITICAL]` for injection with clear user input path.
@@ -152,6 +157,7 @@ Flag: `[HIGH]` for ECB mode, weak PRNG in security context, hardcoded crypto mat
 Check dependency management and CI/CD integrity:
 
 **Lock file presence:**
+
 - `package-lock.json` or `pnpm-lock.yaml` or `yarn.lock` for Node.js projects
 - `Pipfile.lock` or `poetry.lock` or `requirements.txt` with pinned versions for Python
 - `go.sum` for Go
@@ -159,12 +165,14 @@ Check dependency management and CI/CD integrity:
 - `Gemfile.lock` for Ruby
 
 **Dependency pinning:**
+
 - Unpinned versions in `package.json` (ranges like `^`, `~`, `*`, `>=`)
 - Bare package names in `requirements.txt` (no `==version`)
 - `git+` dependencies (bypass SCA)
 - `:latest` tags in Dockerfiles
 
 **GitHub Actions security:**
+
 - Actions NOT pinned to full SHA (`uses: action/name@v1` instead of `@<sha>`)
 - Third-party actions (non `actions/` or `github/` namespace)
 - `pull_request_target` with code checkout (privilege escalation)
@@ -173,6 +181,7 @@ Check dependency management and CI/CD integrity:
 - Secrets echoed to logs
 
 **SBOM / Dependabot / Renovate:**
+
 - Check for `.github/dependabot.yml` or `renovate.json`
 - Flag absence as a finding
 
@@ -185,18 +194,22 @@ Flag: `[WARN]` for unpinned dependency ranges, missing SBOM.
 Check for dangerous configurations:
 
 **Debug mode in production configs:**
+
 - `DEBUG = True` (Django), `debug=True` (Flask), `NODE_ENV=development`
 - `display_errors = On` (PHP), actuator exposure (Spring Boot)
 
 **Default credentials:**
+
 - `password`, `admin`, `root`, `changeme`, `secret`, `123456` as credential values
 - Default database connection strings (`postgres:postgres@`, `root:root@`)
 
 **CORS misconfiguration:**
+
 - `Access-Control-Allow-Origin: *` with credentials
 - Reflective CORS (origin echoed from request)
 
 **Missing security headers** (in server configs):
+
 - CSP with `unsafe-inline` or `unsafe-eval`
 - Missing `X-Frame-Options`, `X-Content-Type-Options`, HSTS
 - Wildcard `script-src *`
@@ -217,6 +230,7 @@ Scan all `.sh` and `.bash` files:
 ```
 
 **Dangerous patterns:**
+
 - Unquoted variable expansion in `rm`, `chmod`, `chown`, `mv`, `cp` commands
 - `eval` with variable content (`eval "$var"`, `eval $(...)`)
 - Fetch-and-execute patterns piping download output to a shell interpreter
@@ -259,11 +273,13 @@ id_ed25519, *.credentials, secrets.yml, secrets.yaml, .aws/credentials
 ```
 
 **GitHub Actions workflow hardening:**
+
 - Check for `permissions:` block in each workflow
 - Flag `runs-on: self-hosted` (higher attack surface)
 - Flag `workflow_run` triggers (privilege escalation vector)
 
 **If GitHub API is available** (via `githubRepo` tool), also check:
+
 - Branch protection rules on default branch
 - Open secret scanning alerts
 - Open Dependabot alerts (high/critical severity)
@@ -301,6 +317,7 @@ POST https://api.osv.dev/v1/query
 OSV.dev is free and requires no authentication.
 
 **Priority order:**
+
 1. Parse `package-lock.json` → extract name + version → query OSV.dev
 2. Parse `requirements.txt` or `poetry.lock` → query OSV.dev
 3. Parse `Cargo.lock`, `go.sum`, `Gemfile.lock` similarly
@@ -406,7 +423,7 @@ After all checks, print a structured security report:
 - Do not exfiltrate or display full secret values — always redact.
 - Limit OSV.dev queries to direct dependencies (≤ 50 queries per audit).
 
-## Skill activation map
+## Skill activation map (constraints)
 
 - Primary: `mcp-management`, `skill-management`
 - Contextual: `test-coverage-review`, `fix-ci-failure`, `tool-protocol`

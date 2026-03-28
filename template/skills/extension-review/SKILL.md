@@ -63,28 +63,28 @@ Review the current project's VS Code extensions and recommend what to keep, add,
 
 10. **Present the report** - Use this structure:
 
-   ```markdown
-   ## Extension Review - <project>
+    ```markdown
+    ## Extension Review - <project>
 
-   ### Keep
-   - `publisher.extension` - why it still fits
+    ### Keep
+    - `publisher.extension` - why it still fits
 
-   ### Recommended additions
-   - `publisher.extension` - what it provides | why needed
-     Install: Ctrl+P -> `ext install publisher.extension`
+    ### Recommended additions
+    - `publisher.extension` - what it provides | why needed
+      Install: Ctrl+P -> `ext install publisher.extension`
 
-   ### Consider removing
-   - `publisher.extension` - duplicate / unused language / deprecated
+    ### Consider removing
+    - `publisher.extension` - duplicate / unused language / deprecated
 
-   ### Agent plugins
-   - `plugin-name` - keep / remove / overlaps with `publisher.extension`
+    ### Agent plugins
+    - `plugin-name` - keep / remove / overlaps with `publisher.extension`
 
-   ### Notes
-   - stack signals discovered
-   - unknown stacks researched
-   - extension registry updates made
-   - MCP server overlaps identified
-   ```
+    ### Notes
+    - stack signals discovered
+    - unknown stacks researched
+    - extension registry updates made
+    - MCP server overlaps identified
+    ```
 
 11. **Wait** - Do not modify `.vscode/extensions.json` or install/uninstall anything until the user explicitly asks.
 
