@@ -222,9 +222,25 @@ If **all** §1–§9 sections have status `UNCHANGED` or `USER_ONLY` (no instruc
    No instruction section changes. <N> companion file(s) to update:
    <list each file with status (NEW / UPDATABLE)>
    Companion extension: <INSTALLED_CURRENT / INSTALLED_OUTDATED / NOT_INSTALLED>
-
-   Apply all? [Y / N / list to pick individually]
    ```
+
+   Then use `ask_questions`:
+
+   ```ask_questions
+   header: "Companion-only update"
+   question: "No instruction changes. Apply all companion file updates?"
+   options:
+     - label: "Y — Apply all"
+       description: "Update all listed companion files"
+       recommended: true
+     - label: "N — Skip"
+       description: "No changes will be made"
+     - label: "List — Pick individually"
+       description: "Choose which companion files to update"
+   allowFreeformInput: false
+   ```
+
+   > **Fallback**: If `ask_questions` is unavailable, present as Y/N/list in chat.
 
 2. If user confirms, write the companion files directly — no section-by-section walkthrough needed.
 3. Update the version file and fingerprints (Post-update step 1).
@@ -250,7 +266,23 @@ Structure the report as plain text with these sections in order:
 8. **Manual actions required** — accumulated from MIGRATION.md across all intermediate versions, or "None."
 9. **Guardrail check** — confirm §10, User Preferences block, migrated/user-added content, and resolved placeholder values are all PROTECTED
 10. **Backup** — note that backup will be created automatically before any writes
-11. **Prompt** — `U` (update all) / `S` (skip) / `C` (customise per-section and per-companion-file)
+11. **Prompt** — use `ask_questions` to get the user's decision:
+
+```ask_questions
+header: "Update decision"
+question: "How would you like to proceed with this update?"
+options:
+  - label: "U — Update all"
+    description: "Apply all changes automatically (user-modified sections are preserved with a note)"
+    recommended: true
+  - label: "S — Skip"
+    description: "No changes will be made — stay on your current version"
+  - label: "C — Customise"
+    description: "Walk through each change individually and decide per-section"
+allowFreeformInput: false
+```
+
+> **Fallback**: If `ask_questions` is unavailable, present as U/S/C in chat.
 
 Wait for the user's response before proceeding.
 
@@ -330,8 +362,18 @@ Apply all `UPDATED`, `NEW_SECTION`, and `BREAKING` section items, plus all `NEW`
 
 1. If any `{{PLACEHOLDER}}` tokens from MIGRATION.md are unresolved in §10:
    - List each unresolved placeholder with its default value (if known).
-   - Ask the user to provide values, or accept defaults.
+   - Use `ask_questions` with freeform input to collect values:
+
+   ```ask_questions
+   header: "Unresolved placeholder: {{PLACEHOLDER_NAME}}"
+   question: "This update introduces {{PLACEHOLDER_NAME}}. What value should it have? (default: <default_value>)"
+   allowFreeformInput: true
+   ```
+
+   Batch up to 4 unresolved placeholders per `ask_questions` call.
    - Add resolved values to the §10 placeholder table.
+
+   > **Fallback**: If `ask_questions` is unavailable, present placeholders as a numbered list in chat.
 
 2. Proceed to **Post-update steps**.
 
@@ -373,6 +415,24 @@ HOW TO HANDLE THIS CHANGE?
                  it before it's applied.
 ```
 
+Use `ask_questions` for each section decision:
+
+```ask_questions
+header: "Section §<N>"
+question: "How should I handle §<N> <Section name>? (Status: <STATUS>)"
+options:
+  - label: "A — Apply"
+    description: "Replace this section with the new template version"
+    recommended: true
+  - label: "B — Skip"
+    description: "Keep your current version — no change made"
+  - label: "C — Customise"
+    description: "View the full new text and tailor it before applying"
+allowFreeformInput: false
+```
+
+> **Fallback**: If `ask_questions` is unavailable, present as A/B/C in chat.
+
 Wait for the user's response (A, B, or C) before moving to the next item.
 
 **After all section items are reviewed**, walk through companion files:
@@ -391,13 +451,44 @@ WHAT THIS FILE DOES:
   B — Skip       Leave this file unchanged (or uncreated).
 ```
 
+Use `ask_questions` for each companion file decision:
+
+```ask_questions
+header: "Companion: <filename>"
+question: "How should I handle <destination path>? (Status: <STATUS>)"
+options:
+  - label: "A — Apply"
+    description: "<Create / Update> this companion file"
+    recommended: true
+  - label: "B — Skip"
+    description: "Leave this file unchanged (or uncreated)"
+allowFreeformInput: false
+```
+
+> **Fallback**: If `ask_questions` is unavailable, present as A/B in chat.
+
 Wait for the user's response before moving to the next companion file.
 
 **If the user chooses C (Customise for a specific change)**:
 
 1. Show the full new section text.
 2. Say: *"Describe the adjustments you want, or type your replacement text in full."*
-3. Accept the user's input. If they described changes rather than providing full text, produce the adjusted version and confirm: *"Here is the adjusted version — shall I apply this?"*
+3. Accept the user's input. If they described changes rather than providing full text, produce the adjusted version and use `ask_questions` to confirm:
+
+```ask_questions
+header: "Confirm customisation"
+question: "Here is the adjusted version. Shall I apply this?"
+options:
+  - label: "Yes"
+    description: "Apply the customised version"
+    recommended: true
+  - label: "No"
+    description: "Let me revise further"
+allowFreeformInput: true
+```
+
+> **Fallback**: If `ask_questions` is unavailable, ask in chat.
+
 4. On confirmation, record the customised version. Say: *"Customised version recorded. Moving to the next change."*
 
 **After all items are reviewed**, present a final confirmation:
@@ -417,6 +508,21 @@ Review complete.
 Shall I write these changes now? (yes / no)
 ```
 
+Use `ask_questions` for the final confirmation:
+
+```ask_questions
+header: "Write changes"
+question: "Review complete. Shall I write these changes now?"
+options:
+  - label: "Yes"
+    description: "Apply all confirmed changes"
+    recommended: true
+  - label: "No"
+    description: "Cancel — no changes will be written"
+allowFreeformInput: false
+```
+
+> **Fallback**: If `ask_questions` is unavailable, present as yes/no in chat.
 > **Pre-write Backup runs here — immediately after "yes", before the first write.**
 
 ---
@@ -431,8 +537,8 @@ Apply these checks **before writing any section**, regardless of the decision pa
 | **§10 collision** | A change would overwrite any content in `## §10 —` | Skip the change automatically. Log in the anomaly list. |
 | **Migrated content** | Section contains `<!-- migrated -->` blocks | Preserve those blocks verbatim; write the update around them. |
 | **User-added content** | Section contains `<!-- user-added -->` blocks | Preserve those blocks verbatim; write the update around them. |
-| **User preference conflict** | New section changes behaviour already configured in `### User Preferences` | Flag to user before applying: show both the new template instruction and the user's current preference. Ask which takes precedence. |
-| **Metric threshold conflict** | New section changes default threshold values (LOC warn/high, dep budget) that were already resolved in §10 | Show the current resolved values alongside the new template defaults. Ask user which to keep. |
+| **User preference conflict** | New section changes behaviour already configured in `### User Preferences` | Flag to user before applying: show both the new template instruction and the user's current preference. Use `ask_questions` to ask which takes precedence (options: "Keep my preference" / "Use template version"). Fallback: ask in chat. |
+| **Metric threshold conflict** | New section changes default threshold values (LOC warn/high, dep budget) that were already resolved in §10 | Show the current resolved values alongside the new template defaults. Use `ask_questions` to ask which to keep (options: "Keep current values" / "Use template defaults"). Fallback: ask in chat. |
 
 ---
 
@@ -542,17 +648,24 @@ Backups are created automatically when you run "Update your instructions".
 
 And stop.
 
-If backups exist, list them:
+If backups exist, list them and use `ask_questions`:
 
-```text
-Available instruction backups:
-
-  1.  pre-update-2026-02-19-v1.0.0/   (installed: 2026-02-19)
-  2.  pre-update-2026-03-10-v1.1.0/   (installed: 2026-03-10)
-  ...
-
-Which backup would you like to restore? Enter a number, or say "cancel".
+```ask_questions
+header: "Select backup"
+question: "Which backup would you like to restore?"
+options:
+  - label: "pre-update-2026-02-19-v1.0.0/"
+    description: "Installed: 2026-02-19"
+  - label: "pre-update-2026-03-10-v1.1.0/"
+    description: "Installed: 2026-03-10"
+  - label: "Cancel"
+    description: "Do not restore any backup"
+allowFreeformInput: false
 ```
+
+Populate the options dynamically from the scanned backup directories. Include a "Cancel" option.
+
+> **Fallback**: If `ask_questions` is unavailable, list backups as a numbered list in chat.
 
 #### R2 — Show the backup manifest
 
@@ -573,6 +686,22 @@ Your current file will be backed up first at:
 
 Proceed? (yes / no)
 ```
+
+Use `ask_questions` to confirm:
+
+```ask_questions
+header: "Confirm restore"
+question: "Restoring will replace your current instructions. A pre-restore snapshot will be saved first. Proceed?"
+options:
+  - label: "Yes"
+    description: "Restore from this backup (current files will be backed up first)"
+    recommended: true
+  - label: "No"
+    description: "Cancel the restore"
+allowFreeformInput: false
+```
+
+> **Fallback**: If `ask_questions` is unavailable, present as yes/no in chat.
 
 Wait for confirmation.
 

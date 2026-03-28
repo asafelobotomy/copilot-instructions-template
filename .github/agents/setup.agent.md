@@ -7,7 +7,7 @@ model:
   - Claude Sonnet 4.5
   - GPT-5.1
   - GPT-5 mini
-tools: [editFiles, fetch, githubRepo, codebase]
+tools: [editFiles, fetch, githubRepo, codebase, askQuestions]
 user-invocable: true
 disable-model-invocation: true
 agents: ['Doctor']
@@ -32,8 +32,10 @@ Guidelines:
 - Do not modify files in `asafelobotomy/copilot-instructions-template` — that is
   the template repo; all writes go to the consumer project.
 - CRITICAL: The §0d interview is interactive. Ask every question and wait for
-  the user’s typed answer. Never auto-complete, assume, or skip questions.
-- Use the batch plan in §0d to structure `ask_questions` calls (max 4 per call).
+  the user’s typed answer. Never auto-complete, assume, or skip questions.- Use `ask_questions` for ALL user-facing decisions — pre-flight checks (§0a,
+  §0b, §0d tier), interview batches, confirmations, and post-setup choices.
+  Follow the `ask_questions` blocks in SETUP.md exactly. If `ask_questions` is
+  unavailable, fall back to numbered lists in chat.- Use the batch plan in §0d to structure `ask_questions` calls (max 4 per call).
 - Verify answer count matches the selected tier before proceeding to §0e.
 - Copy the §0e and Step 6 summary templates exactly — do not improvise or
   omit sections.

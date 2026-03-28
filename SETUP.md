@@ -46,27 +46,49 @@ Only proceed once you have confirmed the working directory is the user's own pro
 
 Check whether `.github/copilot-instructions.md` already exists in the user's project.
 
-If it exists, ask the user:
+If it exists, use `ask_questions` to present the choice:
 
-> "`.github/copilot-instructions.md` already exists. How should I handle it?
-> **A** — Archive to `.github/archive/pre-setup-YYYY-MM-DD/` then use the template (safe default)
-> **B** — Delete the old file and start fresh
-> **C** — Merge: preserve unique conventions from the old file into §10 of the new instructions"
+```ask_questions
+header: "Existing instructions"
+question: ".github/copilot-instructions.md already exists. How should I handle it?"
+options:
+  - label: "A — Archive then use template"
+    description: "Archive to .github/archive/pre-setup-YYYY-MM-DD/ then use the template"
+    recommended: true
+  - label: "B — Delete and start fresh"
+    description: "Delete the old file and use the template from scratch"
+  - label: "C — Merge"
+    description: "Preserve unique conventions from the old file into §10 of the new instructions"
+allowFreeformInput: false
+```
 
 Wait for the user's choice before proceeding. Default is **A** if the user types "skip" or says nothing.
+
+> **Fallback**: If `ask_questions` is unavailable (CLI, Codex, or cloud environments), present as a numbered list in chat.
 
 ### § 0b — Existing workspace identity files
 
 Check whether `.copilot/workspace/` exists and contains any files (IDENTITY.md, SOUL.md, etc.).
 
-If files exist, ask the user:
+If files exist, use `ask_questions`:
 
-> "Workspace identity files already exist in `.copilot/workspace/`. These may contain session history and learned preferences.
-> **K** — Keep all existing files (recommended)
-> **O** — Overwrite all with fresh stubs
-> **I** — Handle each file individually (I'll ask about each one)"
+```ask_questions
+header: "Workspace identity files"
+question: "Workspace identity files already exist in .copilot/workspace/. These may contain session history and learned preferences. How should I handle them?"
+options:
+  - label: "K — Keep all existing files"
+    description: "Preserve session history and learned preferences"
+    recommended: true
+  - label: "O — Overwrite all with fresh stubs"
+    description: "Replace all workspace files with new defaults"
+  - label: "I — Handle each file individually"
+    description: "I'll ask about each file one by one"
+allowFreeformInput: false
+```
 
 Default is **K**.
+
+> **Fallback**: If `ask_questions` is unavailable, present as a numbered list in chat.
 
 ### § 0c — Existing documentation stubs
 
@@ -74,13 +96,25 @@ Check for `CHANGELOG.md` in the project root. Note if it exists — skip creatin
 
 ### § 0d — User Preference Interview
 
-Ask the user which setup tier they want, then present the corresponding questions.
+Use `ask_questions` to present the tier selection:
 
-> "Which setup level do you want?
-> **Q — Quick** (5 questions, ~3 min, sensible defaults for everything else)
-> **S — Standard** (17 questions, ~6 min)
-> **F — Full** (23 questions, ~10 min)
-> Or type **skip** to use all defaults immediately."
+```ask_questions
+header: "Setup tier"
+question: "Which setup level do you want?"
+options:
+  - label: "Q — Quick"
+    description: "5 questions, ~3 min, sensible defaults for everything else"
+    recommended: true
+  - label: "S — Standard"
+    description: "17 questions, ~6 min"
+  - label: "F — Full"
+    description: "23 questions, ~10 min"
+  - label: "Skip"
+    description: "Use all defaults immediately — no questions asked"
+allowFreeformInput: false
+```
+
+Then present the corresponding questions for the selected tier.
 
 #### Tier Q questions (always ask)
 
@@ -208,7 +242,23 @@ Ready to proceed. Type "go" to continue or "stop" to cancel.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-Wait for the user to confirm. If they say "stop" or "cancel", halt immediately. If they say "go", "yes", "continue", or press Enter, proceed to §1.
+Use `ask_questions` to confirm:
+
+```ask_questions
+header: "Pre-flight confirmation"
+question: "Review the setup summary above. Ready to proceed?"
+options:
+  - label: "Go"
+    description: "Proceed with setup"
+    recommended: true
+  - label: "Stop"
+    description: "Cancel setup — no files will be written"
+allowFreeformInput: false
+```
+
+If they choose "Stop", halt immediately. If they choose "Go", proceed to §1.
+
+> **Fallback**: If `ask_questions` is unavailable, wait for the user to type "go" or "stop" in chat.
 
 ---
 
@@ -281,13 +331,18 @@ Before continuing, grep the written `.github/copilot-instructions.md` for any re
 grep -oE '\{\{[^}]+\}\}' .github/copilot-instructions.md
 ```
 
-If any are found, present them to the user:
+If any are found, present them to the user using `ask_questions` with freeform input enabled:
 
-> "I couldn't auto-detect values for these placeholders — please provide them:
-> {{PLACEHOLDER_NAME}}: ?"
+```ask_questions
+header: "Unresolved placeholder: {{PLACEHOLDER_NAME}}"
+question: "I couldn't auto-detect a value for {{PLACEHOLDER_NAME}}. What should it be?"
+allowFreeformInput: true
+```
 
-Substitute the user's answers and re-write the file before continuing to §2.5.
+Batch up to 4 unresolved placeholders per `ask_questions` call. Substitute the user's answers and re-write the file before continuing to §2.5.
 Do not proceed with unresolved `{{...}}` tokens in the instructions file.
+
+> **Fallback**: If `ask_questions` is unavailable, present placeholders as a numbered list in chat.
 
 > **Parallelization hint**: Steps §2.5 through §2.14 (including §2.11a) are independent
 > file-creation tasks. Fetch all URLs in parallel where your runtime supports it
@@ -644,19 +699,27 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
    If any condition matches, the kit is a candidate. A project may match multiple kits
    (e.g., `typescript` + `react` + `docker`).
 
-3. **Present matches to the user**:
+3. **Present matches to the user** using `ask_questions`:
 
-```text
-Detected starter kits:
-  • Python Starter Kit — pytest/unittest patterns, type checking, security practices
-  • Docker Starter Kit — Dockerfile best practices, compose patterns, image security
-
-Install these starter kits? (yes / pick / skip)
+```ask_questions
+header: "Starter kits"
+question: "Detected starter kits that match your project. Install them?"
+options:
+  - label: "Yes"
+    description: "Install all matched kits"
+    recommended: true
+  - label: "Pick"
+    description: "Let me select which to install"
+  - label: "Skip"
+    description: "Skip starter-kit installation entirely"
+allowFreeformInput: false
 ```
 
-   - **yes** — install all matched kits
-   - **pick** — let the user select which to install
-   - **skip** — skip starter-kit installation entirely
+   - **Yes** — install all matched kits
+   - **Pick** — present a second `ask_questions` call with `multiSelect: true` listing each matched kit by name and description, then install only the selected ones
+   - **Skip** — skip starter-kit installation entirely
+
+   > **Fallback**: If `ask_questions` is unavailable, present as a numbered list in chat.
 
 4. **Fetch and write kit files** — for each selected kit, fetch every file listed in that
    kit's `files[]` array from the template repository:
@@ -824,16 +887,23 @@ management via Language Model Tools. It is optional — the Extensions agent
 falls back to CLI-only mode when the extension is absent.
 
 <!-- markdownlint-disable MD007 MD029 -->
-1. **Ask the user**:
+1. **Ask the user** using `ask_questions`:
 
-```text
-The copilot-profile-tools extension enables profile-aware extension management
-(active profile detection, profile isolation, in-process extension enumeration).
-
-Install it? (yes / skip)
+```ask_questions
+header: "Companion extension"
+question: "The copilot-profile-tools extension enables profile-aware extension management (active profile detection, profile isolation, in-process extension enumeration). Install it?"
+options:
+  - label: "Yes"
+    description: "Install the companion extension"
+  - label: "Skip"
+    description: "Proceed without it — the Extensions agent uses CLI fallback"
+    recommended: true
+allowFreeformInput: false
 ```
 
-   - **skip** — proceed without the extension. The Extensions agent uses CLI fallback.
+   > **Fallback**: If `ask_questions` is unavailable, present as a yes/skip choice in chat.
+
+   - **Skip** — proceed without the extension. The Extensions agent uses CLI fallback.
 
 2. **Install** — if the user chose "yes":
 
@@ -987,12 +1057,36 @@ Next steps:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-Then ask:
+Then use `ask_questions` for post-setup cleanup:
 
-> "Setup is complete. Should I delete `SETUP.md` from your project now? (It's a machine-readable guide that's no longer needed.)"
+```ask_questions
+header: "Delete SETUP.md"
+question: "Setup is complete. Should I delete SETUP.md from your project? It's a machine-readable guide that's no longer needed."
+options:
+  - label: "Yes"
+    description: "Delete SETUP.md from this project"
+    recommended: true
+  - label: "No"
+    description: "Keep SETUP.md for reference"
+allowFreeformInput: false
+```
+
+> **Fallback**: If `ask_questions` is unavailable, present as yes/no choices in chat.
 
 If the user confirms, delete `SETUP.md` from the **user's project**. Do not delete it from the template repository.
 
-Offer the Doctor agent handoff:
+Offer the Doctor agent handoff via `ask_questions`:
 
-> "Would you like me to hand off to the Doctor agent for a full health check?"
+```ask_questions
+header: "Health check"
+question: "Would you like me to hand off to the Doctor agent for a full health check?"
+options:
+  - label: "Yes"
+    description: "Run a Doctor health check now"
+    recommended: true
+  - label: "No"
+    description: "Skip the health check"
+allowFreeformInput: false
+```
+
+> **Fallback**: If `ask_questions` is unavailable, present as yes/no in chat.

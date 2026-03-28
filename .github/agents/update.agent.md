@@ -6,7 +6,7 @@ model:
   - Claude Sonnet 4.6
   - Claude Sonnet 4.5
   - GPT-5.1
-tools: [fetch, editFiles, codebase, runCommands]
+tools: [fetch, editFiles, codebase, runCommands, askQuestions]
 user-invocable: true
 disable-model-invocation: true
 agents: ['Doctor']
@@ -52,6 +52,12 @@ walk the user through applying changes to their project — exactly as defined i
   `.github/archive/pre-update-<TODAY>-v<VERSION>/` before the first write.
 - **Present the Pre-flight Report first** — do not apply changes until the user
   chooses U, S, or C.
+- **Use `ask_questions` for ALL user-facing decisions** — update path selection
+  (U/S/C), per-section decisions (A/B/C), companion file decisions (A/B),
+  customisation confirmations, placeholder resolution, guardrail conflict
+  resolutions, and restore sequence choices. Follow the `ask_questions` blocks
+  in UPDATE.md exactly. If `ask_questions` is unavailable (CLI, Codex, cloud),
+  fall back to presenting choices in chat.
 - **Announce role at session start**:
 
   ```text
