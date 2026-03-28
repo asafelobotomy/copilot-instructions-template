@@ -7,7 +7,7 @@ model:
   - Claude Sonnet 4.5
   - GPT-5.1
   - GPT-5 mini
-tools: [editFiles, fetch, githubRepo, codebase, askQuestions]
+tools: [editFiles, fetch, githubRepo, codebase, askQuestions, runCommands, search]
 user-invocable: true
 disable-model-invocation: true
 agents: ['Doctor', 'Code', 'Extensions', 'Researcher', 'Explore']
@@ -31,6 +31,9 @@ Guidelines:
 - Always confirm the pre-flight summary with the user before writing.
 - Do not modify files in `asafelobotomy/copilot-instructions-template` — that is
   the template repo; all writes go to the consumer project.
+- Use `runCommands` for stack detection during §1 (e.g. `node --version`,
+  `python3 --version`, `ls package.json`, `cat go.mod`). Use `search` for
+  semantic codebase exploration when resolving placeholders.
 - CRITICAL: The §0d interview is interactive. Ask every question and wait for
   the user’s typed answer. Never auto-complete, assume, or skip questions.- Use `ask_questions` for ALL user-facing decisions — pre-flight checks (§0a,
   §0b, §0d tier), interview batches, confirmations, and post-setup choices.

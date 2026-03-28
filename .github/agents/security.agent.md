@@ -7,7 +7,7 @@ model:
   - Claude Opus 4.6
   - Claude Sonnet 4.6
   - GPT-5.1
-tools: [codebase, runCommands, githubRepo, fetch]
+tools: [codebase, runCommands, githubRepo, fetch, search]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Doctor', 'Researcher', 'Explore', 'Review']
@@ -37,6 +37,11 @@ Do not modify any files — diagnosis only.
 ```text
 Security agent — running security audit…
 ```
+
+## Skill activation map
+
+- Primary: `skill-management`
+- Contextual: `test-coverage-review`
 
 ---
 

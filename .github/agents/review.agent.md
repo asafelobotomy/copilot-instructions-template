@@ -7,7 +7,7 @@ model:
   - Claude Opus 4.6
   - Claude Sonnet 4.6
   - GPT-5.1
-tools: [codebase, githubRepo, runCommands]
+tools: [codebase, githubRepo, runCommands, search]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Fast', 'Researcher', 'Doctor', 'Explore', 'Security']
@@ -15,6 +15,10 @@ handoffs:
   - label: Implement fixes
     agent: Code
     prompt: Implement the fixes and improvements identified in the review. Address critical and major findings first.
+    send: false
+  - label: Security scan
+    agent: Security
+    prompt: Run a security audit alongside this code review. Focus on any vulnerability patterns found during the review.
     send: false
 ---
 
@@ -39,5 +43,5 @@ Guidelines:
 
 ## Skill activation map
 
-- Primary: `lean-pr-review`
+- Primary: `lean-pr-review`, `skill-management`
 - Contextual: `test-coverage-review`, `issue-triage`, `fix-ci-failure`

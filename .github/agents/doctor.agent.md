@@ -6,7 +6,7 @@ model:
   - Claude Sonnet 4.6
   - Claude Opus 4.6
   - Claude Opus 4.5
-tools: [codebase, runCommands]
+tools: [codebase, runCommands, fetch, githubRepo]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Update', 'Researcher', 'Explore', 'Security', 'Extensions']
@@ -19,6 +19,10 @@ handoffs:
     agent: Update
     prompt: The Doctor identified that the installed instructions are behind the template. Run the instruction update protocol now.
     send: true
+  - label: Security audit
+    agent: Security
+    prompt: The Doctor health check is complete. Run a security audit to complement the structural checks.
+    send: false
 ---
 
 You are the Doctor agent for copilot-instructions-template.
@@ -38,7 +42,9 @@ Doctor agent — running health check…
 ## Files to inspect
 
 Run every check below. Use the `runCommands` tool to count lines and grep for
-patterns. Use `codebase` to read file contents.
+patterns. Use `codebase` to read file contents. Use `fetch` to check upstream
+template version (for D6 version comparison). Use `githubRepo` to check
+repository metadata when relevant.
 
 ### Core instructions
 

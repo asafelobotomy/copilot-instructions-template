@@ -9,7 +9,7 @@ model:
   - GPT-5.3-Codex
   - GPT-5.2-Codex
   - GPT-5.1-Codex
-tools: [editFiles, runCommands, codebase, githubRepo]
+tools: [editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Review', 'Doctor', 'Fast', 'Researcher', 'Explore', 'Extensions', 'Security']
@@ -18,6 +18,10 @@ handoffs:
     agent: Review
     prompt: Review the changes just made for quality, correctness, and Lean/Kaizen alignment. Tag all findings with waste categories.
     send: true
+  - label: Security check
+    agent: Security
+    prompt: Run a security audit on the changes just made. Flag any vulnerabilities introduced.
+    send: false
 ---
 
 You are the Coding agent for copilot-instructions-template.
@@ -35,4 +39,4 @@ Guidelines:
 ## Skill activation map
 
 - Primary: `tool-protocol`, `skill-management`, `mcp-management`
-- Contextual: `webapp-testing`, `test-coverage-review`, `fix-ci-failure`
+- Contextual: `webapp-testing`, `test-coverage-review`, `fix-ci-failure`, `conventional-commit`, `create-adr`, `agentic-workflows`

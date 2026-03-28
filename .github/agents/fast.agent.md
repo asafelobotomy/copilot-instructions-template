@@ -35,4 +35,4 @@ Guidelines:
 ## Skill activation map
 
 - Primary: none by default (keep latency minimal)
-- Contextual: `conventional-commit`, `tool-protocol`
+- Contextual: `conventional-commit`, `tool-protocol`, `skill-management`

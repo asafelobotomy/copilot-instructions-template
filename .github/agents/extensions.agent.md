@@ -6,7 +6,7 @@ model:
   - Claude Sonnet 4.6
   - Claude Opus 4.6
   - GPT-5.1
-tools: [codebase, runCommands, fetch]
+tools: [codebase, runCommands, fetch, editFiles, askQuestions]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Researcher', 'Doctor', 'Fast', 'Explore', 'Security']
@@ -41,6 +41,10 @@ Extensions agent — scanning workspace…
 3. **Install / uninstall** — manage extensions via `code` CLI
 4. **Sync** — reconcile installed extensions with `.vscode/extensions.json`
 5. **Recommendations** — update `.vscode/extensions.json` based on stack signals
+6. **Direct edits** — use `editFiles` for `.vscode/extensions.json` updates
+   (no Code handoff needed for simple recommendation changes)
+7. **User confirmation** — use `askQuestions` to confirm install/uninstall
+   actions and profile changes before executing
 
 ---
 
