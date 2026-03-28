@@ -306,6 +306,20 @@ The Graduated Trust Model assigns verification behaviour based on path patterns.
 
 *(Populated from setup interview answers. See `SETUP.md` for question definitions.)*
 
+### Thinking Effort Configuration
+
+Recommended thinking effort levels per agent role (set in VS Code model picker):
+
+| Agent role | Effort | Rationale |
+|------------|--------|-----------|
+| Coding, Review, Research, Security | **High** | Complex reasoning benefits from deep thinking |
+| Setup, Update, Doctor, Extensions | **Medium** | Mechanical/structured tasks; adaptive reasoning sufficient |
+| Fast, Explore | **Low** | Speed over depth for lookups and navigation |
+
+> Override: open the model picker → click `>` next to the model → select effort
+> level. The setting persists per model across conversations. See `MODELS.md` in
+> the template repo for detailed per-agent rationale.
+
 ---
 
 ## §11 — Tool Protocol

@@ -15,18 +15,23 @@
 > **Single source of truth**: [MODELS.md](MODELS.md) — edit there, then run
 > `bash scripts/sync-models.sh --write` to propagate to agent files.
 
-| Surface | Recommended model | Role |
-|---------|-------------------|------|
-| `setup.agent.md` | Claude Sonnet 4.6 | Interactive setup and onboarding |
-| `coding.agent.md` | GPT-5.1 | Implementation, refactoring, multi-step coding |
-| `review.agent.md` | GPT-5.4 | Deep review, debugging, architectural analysis |
-| `fast.agent.md` | Claude Haiku 4.5 | Quick lookups and lightweight edits |
-| `update.agent.md` | Claude Sonnet 4.6 | Upstream instruction updates |
-| `doctor.agent.md` | Claude Sonnet 4.6 | Read-only health checks |
-| `explore.agent.md` | Claude Haiku 4.5 | Fast read-only codebase exploration and Q&A |
-| `extensions.agent.md` | Claude Sonnet 4.6 | VS Code extension management and profiles |
-| `researcher.agent.md` | Claude Sonnet 4.6 | Online/offline research and documentation |
-| `security.agent.md` | GPT-5.4 | Read-only security audit (OWASP, secrets, supply chain) |
+| Surface | Recommended model | Thinking Effort | Role |
+|---------|-------------------|-----------------|------|
+| `setup.agent.md` | Claude Sonnet 4.6 | Medium | Interactive setup and onboarding |
+| `coding.agent.md` | GPT-5.1 | High | Implementation, refactoring, multi-step coding |
+| `review.agent.md` | GPT-5.4 | High | Deep review, debugging, architectural analysis |
+| `fast.agent.md` | Claude Haiku 4.5 | Low | Quick lookups and lightweight edits |
+| `update.agent.md` | Claude Sonnet 4.6 | Medium | Upstream instruction updates |
+| `doctor.agent.md` | Claude Sonnet 4.6 | Medium | Read-only health checks |
+| `explore.agent.md` | Claude Haiku 4.5 | Low | Fast read-only codebase exploration and Q&A |
+| `extensions.agent.md` | Claude Sonnet 4.6 | Medium | VS Code extension management and profiles |
+| `researcher.agent.md` | Claude Sonnet 4.6 | High | Online/offline research and documentation |
+| `security.agent.md` | GPT-5.4 | High | Read-only security audit (OWASP, secrets, supply chain) |
+
+> **Thinking Effort** is a per-user, per-model setting in the VS Code model picker.
+> Low = fast/cheap, Medium = balanced, High = deep reasoning. See `MODELS.md`
+> "Thinking Effort Guide" for rationale. No per-agent override exists in
+> `.agent.md` frontmatter — these are configuration recommendations.
 
 ## Skills
 

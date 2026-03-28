@@ -52,6 +52,16 @@ def parse_models(content: str) -> dict[str, list[str]]:
     return result
 
 
+def parse_thinking_effort(content: str) -> dict[str, str]:
+    """Return {agent_name: effort_level} from the Thinking Effort Guide table."""
+    result = {}
+    for line in content.splitlines():
+        m = re.match(r'\|\s*(\w+)\s*\|\s*(Low|Medium|High)\s*\|', line)
+        if m:
+            result[m.group(1)] = m.group(2)
+    return result
+
+
 def get_agent_models(agent_file: pathlib.Path) -> list[str]:
     """Extract the model: list from an agent frontmatter."""
     content = agent_file.read_text()
@@ -94,6 +104,17 @@ def get_llms_primary(llms_file: pathlib.Path) -> dict[str, str]:
     return result
 
 
+def get_llms_effort(llms_file: pathlib.Path) -> dict[str, str]:
+    """Parse the Thinking Effort column from llms.txt table."""
+    result = {}
+    for line in llms_file.read_text().splitlines():
+        m = re.match(r'\|\s*`([^`]+)`\s*\|\s*[^|]+\|\s*(Low|Medium|High)\s*\|', line)
+        if m:
+            stem = m.group(1).replace(".agent.md", "")
+            result[stem] = m.group(2)
+    return result
+
+
 def set_llms_primary(llms_file: pathlib.Path, agent: str, model: str) -> bool:
     """Update the primary model column for an agent row in llms.txt."""
     content = llms_file.read_text()
@@ -105,6 +126,17 @@ def set_llms_primary(llms_file: pathlib.Path, agent: str, model: str) -> bool:
         rf'\1{model} \2',
         new_content,
     )
+    if new_content == content:
+        return False
+    llms_file.write_text(new_content)
+    return True
+
+
+def set_llms_effort(llms_file: pathlib.Path, agent: str, effort: str) -> bool:
+    """Update the Thinking Effort column for an agent row in llms.txt."""
+    content = llms_file.read_text()
+    pattern = rf'(\|\s*`{re.escape(agent)}\.agent\.md`\s*\|\s*[^|]+\|\s*)(Low|Medium|High)(\s*\|)'
+    new_content = re.sub(pattern, rf'\g<1>{effort}\3', content)
     if new_content == content:
         return False
     llms_file.write_text(new_content)
@@ -160,6 +192,24 @@ for agent in AGENTS:
     else:
         if set_llms_primary(llms_file, agent, primary):
             changed.append(f"llms.txt ({agent})")
+
+# Check/update llms.txt thinking effort column
+effort_registry = parse_thinking_effort(content)
+if effort_registry:
+    llms_effort = get_llms_effort(llms_file)
+    for agent in AGENTS:
+        expected = effort_registry.get(agent)
+        if not expected:
+            continue
+        if llms_effort.get(agent) == expected:
+            continue
+        if mode == "--check":
+            print(f"❌ Drift: llms.txt thinking effort for {agent} is "
+                  f"'{llms_effort.get(agent)}' (expected '{expected}')")
+            drift = True
+        else:
+            if set_llms_effort(llms_file, agent, expected):
+                changed.append(f"llms.txt effort ({agent})")
 
 if mode == "--check":
     if drift:

@@ -18,6 +18,36 @@ bash scripts/sync-models.sh --check
 
 ---
 
+## Thinking Effort Guide
+
+VS Code exposes a **Thinking Effort** setting per reasoning-capable model (Low /
+Medium / High). This controls the native extended thinking budget — how many
+reasoning tokens the model allocates before responding. Higher effort means deeper
+analysis but more latency and token cost. The setting is adaptive: models can
+stop thinking early for simple prompts even at High.
+
+Recommended effort levels per agent:
+
+| Agent | Effort | Rationale |
+|-------|--------|-----------|
+| coding | High | Complex multi-step implementation needs full reasoning depth |
+| doctor | Medium | Mechanical checklist inspection; adaptive reasoning sufficient |
+| fast | Low | Speed is the goal; minimal thinking overhead |
+| review | High | Deep architectural analysis requires maximum reasoning |
+| setup | Medium | Structured interview; decisions are sequential, not complex |
+| update | Medium | Mechanical diff-and-merge; adaptive reasoning sufficient |
+| explore | Low | Read-only lookup; speed over depth |
+| extensions | Medium | Evaluation involves trade-offs but not deep reasoning |
+| researcher | High | Research synthesis benefits from deep analytical thinking |
+| security | High | Vulnerability analysis requires thorough reasoning chains |
+
+> **User override**: these are recommendations. Users set thinking effort per model
+> in the VS Code model picker (click `>` next to the model name). The setting
+> persists across conversations for each model. There is no per-agent override in
+> `.agent.md` frontmatter as of VS Code 1.110.
+
+---
+
 ## coding
 
 Implementation, refactoring, and multi-step coding tasks.

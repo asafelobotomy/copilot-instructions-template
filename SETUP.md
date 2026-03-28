@@ -213,6 +213,9 @@ Batch these into groups of up to 4 per `ask_questions` call. If `ask_questions` 
 - **E23 — Claude compatibility**: Should I generate a `CLAUDE.md` file for Claude Code compatibility?
   Options: Yes | No
 
+- **E24 — Thinking effort**: How should I configure thinking effort for reasoning models?
+  Options: A — Use MODELS.md recommendations (Low/Medium/High per agent role) | B — All High (maximum reasoning depth) | C — All Medium (balanced) | D — Skip (leave at VS Code defaults)
+
 #### § 0e — Pre-flight summary
 
 After all questions are answered, present a summary:
@@ -316,6 +319,7 @@ Add the User Preferences table to `## § 10 — Project-Specific Overrides` usin
 | A6 | Code style | [answer or "default"] |
 ...
 | E22 | MCP servers | [answer or "default"] |
+| E24 | Thinking effort | [answer or "MODELS.md recommendations"] |
 ```
 
 Write the populated file to `.github/copilot-instructions.md` in the user's project.

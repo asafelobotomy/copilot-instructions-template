@@ -22,11 +22,20 @@
 | <https://github.com/modelcontextprotocol/servers> | MCP reference server implementations — Filesystem, Git, Memory, Sequential Thinking, Fetch; Git/Filesystem already configured in .vscode/mcp.json | 2026-03-28 | mcp, reference |
 | <https://modelcontextprotocol.io/docs/tools/inspector> | MCP Inspector — interactive dev tool for testing MCP servers via npx; useful for debugging custom tool servers | 2026-03-28 | mcp, debug, tooling |
 
-## GitHub Copilot
+## GitHub Copilot — Models and Thinking Effort
 
 | URL | Summary | Date | Tags |
 |-----|---------|------|------|
 | <https://docs.github.com/en/copilot> | GitHub Copilot documentation hub | 2026-03-15 | github, copilot |
+| <https://code.visualstudio.com/docs/copilot/customization/language-models> | Configure thinking effort (None/Low/Medium/High via model picker `>` submenu); deprecated settings; BYOK; auto model selection; multipliers | 2026-03-28 | thinking-effort, models, billing |
+| <https://code.visualstudio.com/docs/copilot/concepts/language-models> | Concepts: thinking tokens, context window, adaptive reasoning, effort levels vary by model and provider | 2026-03-28 | thinking-effort, concepts |
+| <https://code.visualstudio.com/updates/v1_99> | v1.99 Mar 2025 — Thinking Tool (experimental, agent mode only, any model); `github.copilot.chat.agent.thinkingTool` setting | 2026-03-28 | thinking-tool, agents |
+| <https://code.visualstudio.com/updates/v1_109> | v1.109 Jan 2026 — Anthropic thinking tokens rendered in chat UX; `chat.thinking.style`, `chat.agent.thinking.collapsedTools` settings | 2026-03-28 | thinking-effort, ux |
+| <https://code.visualstudio.com/updates/v1_110> | v1.110 Feb 2026 — current stable; agent plugins, agentic browser tools, context compaction, fork session | 2026-03-28 | stable, release-notes |
+| <https://docs.github.com/en/copilot/concepts/billing/copilot-requests> | Model multipliers (0x included, 0.33x light, 1x standard, 3x flagship); premium request accounting; 10% auto-selection discount | 2026-03-28 | billing, multipliers |
+| <https://docs.github.com/en/copilot/reference/ai-models/model-comparison> | Task-based model comparison table: all models with task categories, model card links | 2026-03-28 | models, reference |
+| <https://docs.github.com/en/copilot/using-github-copilot/ai-models/supported-ai-models-in-copilot> | Canonical model list; plan availability; retirement history; LTS models | 2026-03-28 | models, reference |
+| <https://docs.github.com/en/copilot/concepts/auto-model-selection> | Auto model selection: qualifying models, 10% multiplier discount for paid plans, coding agent auto selection | 2026-03-28 | models, billing |
 
 ## Shell Scripting / CI Automation
 
