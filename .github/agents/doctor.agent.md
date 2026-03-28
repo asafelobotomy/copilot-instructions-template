@@ -1,6 +1,6 @@
 ---
 name: Doctor
-description: Read-only health check — instructions, agents, MCP config, workspace files
+description: Read-only health check — instructions, agents, MCP config, workspace files, upstream baseline comparison
 argument-hint: Say "health check", "check attention budget", "check MCP config", or "check agent files"
 model:
   - Claude Sonnet 4.6
@@ -225,15 +225,161 @@ Flag: `[INFO]` if not installed (optional dependency).
 Flag: `[WARN]` if installed but missing from `.vscode/extensions.json` recommendations.
 Skip this check silently if `code` CLI is not available.
 
+### D11 — Upstream version check
+
+> **Consumer repos only.** Skip this check in the developer repo (detected by D3/D6
+> context — zero `{{` tokens in `.github/copilot-instructions.md` means developer repo).
+
+Fetch the current upstream template version:
+
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/VERSION.md
+```
+
+Compare the fetched version against the installed version from `.github/copilot-version.md`
+(already read during D6).
+
+| Condition | Result |
+|-----------|--------|
+| Installed version `=` upstream version | `OK — up to date (vX.Y.Z)` |
+| Installed version `<` upstream version | Flag: upstream is `vX.Y.Z`, installed is `vA.B.C` |
+| Installed version is `unknown` or missing | Flag: cannot determine installed version |
+| Fetch fails (network, 404) | Flag as `[WARN]` — unable to check upstream; skip gracefully |
+
+**Semver comparison**: split both versions on `.` and compare major, minor, patch numerically.
+
+Flag: `[HIGH]` if installed version is behind by a **major** version (breaking changes likely).
+Flag: `[WARN]` if installed version is behind by a minor or patch version.
+Flag: `[INFO]` if up to date.
+
+If behind, include in the report:
+
+```text
+Upstream template vX.Y.Z is available (installed: vA.B.C).
+Use the "Update instructions" handoff to apply the update.
+```
+
+### D12 — Section fingerprint integrity
+
+> **Consumer repos only.** Skip in developer repo.
+
+Parse the `<!-- section-fingerprints ... -->` block from `.github/copilot-version.md`
+into a map of `§N → stored_fingerprint`.
+
+If the fingerprint block is absent (legacy installation or missing file):
+
+- Flag: `[WARN]` — fingerprint tracking unavailable; section drift cannot be detected.
+- Skip the rest of D12.
+
+If fingerprints are available, for each section §1–§9, compute the current fingerprint:
+
+```bash
+fp=$(awk "/^## §${i} —/{found=1; next} /^## §/{if(found) exit} found{print}" \
+  .github/copilot-instructions.md | sha256sum | cut -c1-12)
+```
+
+Compare `current_fp` vs `stored_fp`:
+
+| Condition | Result |
+|-----------|--------|
+| All match | `OK — no section drift detected` |
+| One or more differ | List the drifted sections with their stored and current fingerprints |
+
+Flag: `[INFO]` for each drifted section — drift is not inherently bad (the user may have
+intentionally customised). But it is important context for the Update agent.
+Flag: `[WARN]` if more than half of sections (≥5 of 9) have drifted — suggests
+the file may have been bulk-edited outside the update flow.
+
+Report drifted sections in a table:
+
+```text
+| Section | Stored FP | Current FP | Status |
+|---------|-----------|------------|--------|
+| §1      | abc123def456 | abc123def456 | OK |
+| §3      | 789abc012345 | fff000111222 | DRIFTED |
+```
+
+### D13 — Companion file completeness
+
+> **Consumer repos only.** Skip in developer repo.
+
+Fetch the upstream canonical inventory:
+
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/workspace/DOC_INDEX.json
+```
+
+If the fetch fails: Flag `[WARN]` — unable to verify companion completeness; skip gracefully.
+
+Parse the JSON and verify the consumer project has a corresponding local file for
+each expected artefact:
+
+#### Agents
+
+For each entry in `DOC_INDEX.agents[]`, check that `.github/agents/<name>` exists locally.
+
+Flag: `[HIGH]` for each missing agent file — the agent will not be available.
+Flag: `[INFO]` for any local agent file NOT in the upstream inventory (user-added agent — valid).
+
+#### Skills
+
+For each entry in `DOC_INDEX.skills.template[]`, check that `.github/skills/<name>/SKILL.md`
+exists locally.
+
+Flag: `[WARN]` for each missing skill.
+Flag: `[INFO]` for any local skill NOT in the upstream inventory (user-added skill — valid).
+
+#### Hook scripts
+
+For each entry in `DOC_INDEX.hookScripts.shell[]`, check that
+`.github/hooks/scripts/<name>` exists locally.
+
+For each entry in `DOC_INDEX.hookScripts.powershell[]`, check that
+`.github/hooks/scripts/<name>` exists locally. **Only check PowerShell scripts on
+Windows** (`[Environment]::OSVersion` or if `.ps1` files already exist locally).
+
+Flag: `[HIGH]` for missing shell hook scripts.
+Flag: `[WARN]` for missing PowerShell hook scripts (may not apply on non-Windows).
+
+#### Hook configuration
+
+Check that `.github/hooks/copilot-hooks.json` exists.
+
+Flag: `[HIGH]` if missing — hooks will not function.
+
+#### Summary counts
+
+Compare local counts against upstream `DOC_INDEX.counts`:
+
+```text
+| Category | Upstream | Local | Status |
+|----------|----------|-------|--------|
+| Agents   | 10       | 10    | OK     |
+| Skills   | 15       | 14    | MISSING 1 |
+| Hooks (shell) | 9   | 9     | OK     |
+```
+
+Flag: `[HIGH]` if any category is below upstream count.
+Flag: `[INFO]` if any category exceeds upstream count (user additions).
+
 ---
 
 ## Report format
 
-After all checks, print a structured health report with sections for each check (D1–D10), showing findings or "OK". End with a summary counting CRITICAL/HIGH/WARN/OK and an overall status (HEALTHY / DEGRADED / CRITICAL).
+After all checks, print a structured health report with sections for each check
+(D1–D13), showing findings or "OK". End with a summary counting
+CRITICAL/HIGH/WARN/INFO/OK and an overall status:
+
+- **HEALTHY** — zero CRITICAL or HIGH findings.
+- **DEGRADED** — WARN findings only (no CRITICAL or HIGH).
+- **CRITICAL** — at least one CRITICAL or HIGH finding.
+
+Action guidance:
 
 - If **HEALTHY**: print `All checks passed. No action needed.`
 - If **DEGRADED** (WARN only): suggest using "Apply fixes" handoff or manual resolution.
-- If **CRITICAL** or **HIGH**: use "Apply fixes" handoff for file issues, or "Update instructions" handoff if behind template version.
+- If **CRITICAL** or **HIGH**: use "Apply fixes" handoff for file issues, or
+  "Update instructions" handoff if behind template version.
 
 > **This agent is read-only.** Do not modify any files. Surface findings
 > only — let the Code agent or Update agent make changes.

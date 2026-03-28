@@ -117,4 +117,51 @@ if "RESEARCH.md" not in researcher_text:
     raise SystemExit("researcher.agent.md body must reference RESEARCH.md")
 '
 echo ""
+
+echo "6. Doctor agent defines D11-D13 upstream baseline checks"
+assert_python "doctor has D11 upstream version check" '
+text = (root / ".github/agents/doctor.agent.md").read_text(encoding="utf-8")
+if "### D11" not in text:
+    raise SystemExit("doctor.agent.md missing D11 check definition")
+if "VERSION.md" not in text:
+    raise SystemExit("D11 must reference VERSION.md for upstream comparison")
+if "raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/VERSION.md" not in text:
+    raise SystemExit("D11 must contain the upstream VERSION.md fetch URL")
+'
+
+assert_python "doctor has D12 fingerprint integrity check" '
+text = (root / ".github/agents/doctor.agent.md").read_text(encoding="utf-8")
+if "### D12" not in text:
+    raise SystemExit("doctor.agent.md missing D12 check definition")
+if "section-fingerprints" not in text:
+    raise SystemExit("D12 must reference section-fingerprints block")
+if "sha256sum" not in text:
+    raise SystemExit("D12 must use sha256sum for fingerprint computation")
+'
+
+assert_python "doctor has D13 companion file completeness check" '
+text = (root / ".github/agents/doctor.agent.md").read_text(encoding="utf-8")
+if "### D13" not in text:
+    raise SystemExit("doctor.agent.md missing D13 check definition")
+if "DOC_INDEX.json" not in text:
+    raise SystemExit("D13 must reference DOC_INDEX.json as canonical inventory")
+if "raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/workspace/DOC_INDEX.json" not in text:
+    raise SystemExit("D13 must contain the upstream DOC_INDEX.json fetch URL")
+'
+
+assert_python "doctor report format covers D1-D13" '
+text = (root / ".github/agents/doctor.agent.md").read_text(encoding="utf-8")
+if "D1\u2013D13" not in text and "D1-D13" not in text:
+    raise SystemExit("report format section must reference D1-D13 range")
+'
+
+assert_python "doctor has fetch tool for upstream checks" '
+text = (root / ".github/agents/doctor.agent.md").read_text(encoding="utf-8")
+# Check frontmatter tools list
+end = text.find("\n---\n", 4)
+fm = text[4:end]
+if "fetch" not in fm:
+    raise SystemExit("doctor frontmatter must include fetch tool for upstream checks")
+'
+echo ""
 finish_tests
