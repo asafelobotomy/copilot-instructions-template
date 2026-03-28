@@ -6,7 +6,7 @@ compatibility: ">=3.2"
 
 # Extension Review
 
-> Skill metadata: version "1.0"; license MIT; tags [extensions, vscode, audit, tooling, review]; compatibility ">=3.2"; recommended tools [codebase, fetch].
+> Skill metadata: version "1.1"; license MIT; tags [extensions, vscode, audit, tooling, review, plugins]; compatibility ">=3.2"; recommended tools [codebase, fetch].
 
 Review the current project's VS Code extensions and recommend what to keep, add, or remove based on the actual stack in the repository.
 
@@ -40,19 +40,28 @@ Review the current project's VS Code extensions and recommend what to keep, add,
 
 4. **Detect the stack** - Scan the repository for the actual language, runtime, linter, formatter, test, and config signals that determine which extensions are relevant.
 
-5. **Compare installed vs needed** - Build three groups:
+5. **Audit agent plugins** - Search `@agentPlugins` in the Extensions view to list installed agent plugins. Agent plugins bundle skills, agents, hooks, and MCP servers. Check for:
+   - Plugins that overlap with installed extensions (duplicate functionality)
+   - Plugins that contribute MCP servers already configured in `.vscode/mcp.json`
+   - Plugins no longer relevant to the current stack
+
+6. **Check MCP-contributing extensions** - Some extensions register MCP servers automatically. Cross-reference `.vscode/mcp.json` with extension-contributed servers to identify:
+   - Extensions whose MCP servers duplicate standalone MCP server configs
+   - Extensions installed only for their MCP server that could be replaced by a lightweight MCP config
+
+7. **Compare installed vs needed** - Build three groups:
    - **Keep** - installed and relevant
    - **Recommended additions** - not installed but clearly useful for the detected stack
    - **Consider removing** - installed but irrelevant, duplicate, deprecated, or superseded
 
-6. **Handle unknown stacks carefully** - If the project uses a tool not covered by the built-in stack table, research the VS Code Marketplace and only recommend candidates that meet all three checks:
+8. **Handle unknown stacks carefully** - If the project uses a tool not covered by the built-in stack table, research the VS Code Marketplace and only recommend candidates that meet all three checks:
    - install count > 100k
    - rating >= 4.0
    - updated within the last 12 months
 
-7. **Persist new mappings** - If an unknown stack produces a qualified extension recommendation, append the new stack-to-extension mapping to `.copilot/workspace/TOOLS.md` under `Extension registry`.
+9. **Persist new mappings** - If an unknown stack produces a qualified extension recommendation, append the new stack-to-extension mapping to `.copilot/workspace/TOOLS.md` under `Extension registry`.
 
-8. **Present the report** - Use this structure:
+10. **Present the report** - Use this structure:
 
    ```markdown
    ## Extension Review - <project>
@@ -67,19 +76,25 @@ Review the current project's VS Code extensions and recommend what to keep, add,
    ### Consider removing
    - `publisher.extension` - duplicate / unused language / deprecated
 
+   ### Agent plugins
+   - `plugin-name` - keep / remove / overlaps with `publisher.extension`
+
    ### Notes
    - stack signals discovered
    - unknown stacks researched
    - extension registry updates made
+   - MCP server overlaps identified
    ```
 
-9. **Wait** - Do not modify `.vscode/extensions.json` or install/uninstall anything until the user explicitly asks.
+11. **Wait** - Do not modify `.vscode/extensions.json` or install/uninstall anything until the user explicitly asks.
 
 ## Verify
 
 - [ ] Installed extensions were obtained (auto-detected or user-provided)
 - [ ] Profile status was checked and repo-specific profile recommended if needed
 - [ ] Workspace recommendations were checked when present
+- [ ] Agent plugins were audited for overlap and relevance
+- [ ] MCP-contributing extensions were cross-referenced with `.vscode/mcp.json`
 - [ ] Every recommendation is tied to an actual stack signal in the repo
 - [ ] Unknown-stack recommendations passed the install/rating/recency quality gate
 - [ ] No extension was installed, uninstalled, or written automatically

@@ -6,7 +6,7 @@ compatibility: ">=1.4"
 
 # MCP Management
 
-> Skill metadata: version "1.0"; license MIT; tags [mcp, servers, configuration, integration]; compatibility ">=1.4"; recommended tools [codebase, editFiles, fetch].
+> Skill metadata: version "1.1"; license MIT; tags [mcp, servers, configuration, integration]; compatibility ">=1.4"; recommended tools [codebase, editFiles, fetch].
 
 MCP (Model Context Protocol) is GA in VS Code as of v1.102. MCP servers provide tools, resources, and prompts beyond built-in capabilities. Configuration lives in `.vscode/mcp.json` (workspace-scoped) or profile-level `mcp.json` (user-scoped).
 
@@ -90,12 +90,14 @@ MCP servers can expose four capability types:
 | **Tools** | Functions the agent can invoke (e.g., query database, call API) | Agent calls tools directly |
 | **Resources** | Data sources the agent can read (e.g., database schemas, config files) | Agent reads from `#` context menu |
 | **Prompts** | Reusable prompt templates provided by the server | Available via `/` slash commands |
+| **MCP Apps** | Interactive UI components (forms, visualisations, drag-and-drop) | Rendered inline in chat responses |
 | **Sampling** | Server requests the agent to generate text on its behalf | Agent responds to server requests |
 
 Additional features: **elicitations** (server requests user input via the agent), **MCP auth** (OAuth/token flows for secure server connections).
 
 ## Server discovery
 
+- **MCP gallery**: In the Extensions view, search `@mcp` to browse and install servers directly (installs to user profile or workspace)
 - **MCP Marketplace**: Browse and install servers from `code.visualstudio.com/mcp`
 - **Official registry**: `github.com/modelcontextprotocol/servers`
 - **Community registries**: `mcp.so`, `glama.ai`, `smithery.ai`
@@ -110,8 +112,31 @@ Before adding any MCP server:
 3. Check for `npx` vs `uvx` vs HTTP remote transport — prefer HTTP remote for officially hosted servers (no local process, OAuth-managed auth)
 4. Add to `.vscode/mcp.json` (workspace) or profile `mcp.json` (user) with appropriate tier
 5. For credentials-required stdio servers, use `${input:}` or `${env:}` variable syntax — never hardcode secrets; HTTP remote servers use VS Code's built-in OAuth where supported
-6. For stdio servers on Linux/macOS, add `sandboxEnabled: true` with `sandbox.filesystem.denyRead` rules for credential directories (`~/.ssh`, `~/.gnupg`, `~/.aws`) as a defence-in-depth measure against prompt injection
+6. For stdio servers on Linux/macOS, add `sandboxEnabled: true` with `sandbox.filesystem.denyRead` rules for credential directories (`~/.ssh`, `~/.gnupg`, `~/.aws`) as a defence-in-depth measure against prompt injection. Optionally add `sandbox.network.allowedDomains` to restrict outbound network access
 7. Agent files can restrict MCP access using the `mcp-servers` frontmatter field
+
+### Sandbox compatibility (Linux)
+
+On immutable Linux distros (Fedora Atomic/Bazzite/Silverblue, NixOS) where `/home` is a symlink to `/var/home`, the `bwrap` sandbox rejects `allowWrite` paths because symlink resolution points outside the expected location. Detect at setup time:
+
+```bash
+[[ "$(readlink -f /home)" != "/home" ]] && echo "immutable" || echo "standard"
+```
+
+- **standard**: use sandboxed config (`sandboxEnabled: true` + `allowWrite`/`denyRead` rules)
+- **immutable**: omit `sandboxEnabled`, `sandbox`, and the top-level `sandbox` block entirely
+
+## Auto-start
+
+Set `"chat.mcp.autostart": "newAndOutdated"` in `.vscode/settings.json` so MCP servers start automatically when a chat message is sent. This eliminates the need to manually click the refresh/start button each session. VS Code will show a trust dialog the first time a new or changed server auto-starts.
+
+## CLI and external agent access
+
+As of VS Code 1.113, MCP servers configured in `.vscode/mcp.json` are automatically bridged to Copilot CLI and Claude agents. No additional configuration is required — servers registered in the workspace or user profile are available to all agent runtimes.
+
+## Settings Sync
+
+With Settings Sync enabled, MCP server configurations can be synchronised across devices. Run `Settings Sync: Configure` and enable the **MCP Servers** option to maintain a consistent development environment across machines.
 
 ## Subagent MCP use
 
