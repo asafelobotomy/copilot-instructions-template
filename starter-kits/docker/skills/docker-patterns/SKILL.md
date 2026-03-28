@@ -1,6 +1,7 @@
 ---
 name: docker-patterns
 description: Docker and Docker Compose patterns — multi-stage builds, layer caching, compose orchestration, health checks, and security scanning
+compatibility: ">=1.4"
 ---
 
 # Docker Patterns
@@ -132,3 +133,10 @@ docker scout cves local://app    # Scan for vulnerabilities
 ```dockerfile
 RUN --mount=type=cache,target=/root/.npm npm ci --ignore-scripts
 ```
+
+## Verify
+
+- [ ] Dockerfile uses multi-stage builds and runs as non-root in production stage
+- [ ] Compose services declare health checks and avoid inline secrets
+- [ ] Image scan command is documented with at least one fallback scanner
+- [ ] Build and runtime commands are reproducible for local debugging

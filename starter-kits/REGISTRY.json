@@ -116,8 +116,7 @@
       "displayName": "React Starter Kit",
       "description": "Component testing, accessibility, hooks patterns, state management, Next.js conventions",
       "detect": {
-        "dependencies": ["react", "react-dom", "next"],
-        "language": "TypeScript"
+        "dependencies": ["react", "react-dom", "next"]
       },
       "files": [
         "plugin.json",

@@ -23,8 +23,8 @@ Systematic debugging workflow for Docker issues.
 3. **Inspect** — gather state:
    - Check environment variables: `docker inspect <container> | grep -A 20 Env`
    - Check mounted volumes: `docker inspect <container> | grep -A 10 Mounts`
-   - Check health status: `docker inspect --format='{{.State.Health.Status}}' <container>`
-   - Check DNS resolution: `docker compose exec app nslookup db`
+   - Check health status: `docker inspect --format='{{.State.Health.Status}}' <container>` (if no healthcheck is defined, inspect logs instead)
+   - Check DNS resolution: `docker compose exec app nslookup db` (fallback: `getent hosts db`)
 
 4. **Fix** — make the minimal change:
    - Fix the Dockerfile or compose file
@@ -34,5 +34,5 @@ Systematic debugging workflow for Docker issues.
 5. **Verify** — confirm the fix:
    - `docker compose up -d` — services start cleanly
    - `docker compose ps` — all services show healthy status
-   - `docker scout cves local://<image>` — no critical vulnerabilities
+   - `docker scout cves local://<image>` — no critical vulnerabilities (if Docker Scout is unavailable, use `trivy image <image>`)
    - Test the application endpoint or run integration tests

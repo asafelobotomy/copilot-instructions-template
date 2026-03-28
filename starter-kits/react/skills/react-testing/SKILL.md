@@ -1,6 +1,7 @@
 ---
 name: react-testing
 description: Test React components effectively — React Testing Library patterns, user event simulation, hook testing, and snapshot discipline
+compatibility: ">=1.4"
 ---
 
 # React Testing
@@ -123,3 +124,10 @@ function renderWithProviders(ui: React.ReactElement) {
 - Use snapshots only for small, stable components (icons, badges).
 - Never snapshot entire pages or complex components.
 - Review snapshot diffs carefully — do not blindly update.
+
+## Verify
+
+- [ ] Tests prioritize accessibility-first queries (`getByRole`, `getByLabelText`)
+- [ ] User interactions are exercised with `userEvent` rather than implementation hooks
+- [ ] Async flows assert loading, success, and error states
+- [ ] Snapshot usage is minimal and intentionally reviewed

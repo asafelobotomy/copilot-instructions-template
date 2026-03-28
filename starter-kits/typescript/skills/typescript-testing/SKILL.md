@@ -1,6 +1,7 @@
 ---
 name: typescript-testing
 description: Write and organize TypeScript tests using Jest or Vitest — mocking patterns, async testing, snapshot discipline, and coverage
+compatibility: ">=1.4"
 ---
 
 # TypeScript Testing
@@ -114,3 +115,10 @@ export default {
 
 - Focus coverage on business logic and edge cases.
 - Use `/* v8 ignore next */` or `/* istanbul ignore next */` sparingly and with justification.
+
+## Verify
+
+- [ ] Test framework selection (Vitest/Jest) matches project signals and existing setup
+- [ ] Async tests await all effects and cover failure paths
+- [ ] Mocks are boundary-oriented and reset between tests
+- [ ] Coverage exclusions are justified and minimal

@@ -1,6 +1,7 @@
 ---
 name: typescript-strict
 description: Apply strict TypeScript — compiler flags, type narrowing, discriminated unions, branded types, and escape hatch discipline
+compatibility: ">=1.4"
 ---
 
 # TypeScript Strict Mode
@@ -99,3 +100,10 @@ type EventName = `on${Capitalize<string>}`;
 const ROLES = ["admin", "editor", "viewer"] as const;
 type Role = (typeof ROLES)[number]; // "admin" | "editor" | "viewer"
 ```
+
+## Verify
+
+- [ ] Strict compiler options are enabled and checked without emit
+- [ ] Narrowing strategy avoids unsafe assertions on unknown data
+- [ ] Escape hatches (`as`, `any`) are minimized and justified
+- [ ] Domain-critical identifiers and unions are modeled with precise types

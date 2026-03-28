@@ -33,6 +33,6 @@ Systematic debugging workflow for TypeScript/JavaScript issues.
 
 5. **Verify** — confirm the fix:
    - Run the specific failing test
-   - Run the full test suite: `npm test`
+   - Run the full test suite with the project's package manager (`npm test`, `pnpm test`, `yarn test`, or `bun test`)
    - Run the type checker: `npx tsc --noEmit`
    - Run the linter: `npx eslint .`

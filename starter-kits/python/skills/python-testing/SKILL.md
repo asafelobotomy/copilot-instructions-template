@@ -1,6 +1,7 @@
 ---
 name: python-testing
 description: Write and organize Python tests using pytest — fixtures, parametrize, mocking, and project-appropriate test structure
+compatibility: ">=1.4"
 ---
 
 # Python Testing
@@ -101,3 +102,10 @@ pytest --cov=src --cov-report=term-missing
 
 - Aim for meaningful coverage of business logic — avoid chasing 100% on boilerplate.
 - Use `# pragma: no cover` sparingly and only with justification.
+
+## Verify
+
+- [ ] Test layout mirrors source layout and follows project naming conventions
+- [ ] Fixtures and mocks are scoped to external boundaries, not internals
+- [ ] Regression test reproduces the bug before the fix
+- [ ] Coverage output highlights business-logic gaps, not just line count

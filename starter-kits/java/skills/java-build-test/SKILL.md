@@ -1,6 +1,7 @@
 ---
 name: java-build-test
 description: Java build and test patterns — Maven/Gradle configuration, JUnit 5 testing, Mockito mocking, and CI integration
+compatibility: ">=1.4"
 ---
 
 # Java Build and Test
@@ -160,3 +161,10 @@ mvn verify   # JaCoCo report in target/site/jacoco/
 # Gradle with JaCoCo
 ./gradlew jacocoTestReport
 ```
+
+## Verify
+
+- [ ] Build tool choice (Maven or Gradle) matches repository signals
+- [ ] Tests use JUnit 5 conventions and deterministic assertions
+- [ ] Dependency/version checks are included in developer workflow
+- [ ] Coverage reporting is enabled and reviewable in CI/local output

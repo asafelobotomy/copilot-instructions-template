@@ -1,6 +1,7 @@
 ---
 name: python-typing
 description: Apply Python type annotations effectively — mypy/pyright configuration, common patterns, generic types, and stub guidance
+compatibility: ">=1.4"
 ---
 
 # Python Typing
@@ -120,3 +121,10 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .models import User
 ```
+
+## Verify
+
+- [ ] Public APIs have explicit parameter and return annotations
+- [ ] Type checker config exists and runs in CI or local verification flow
+- [ ] `Any` usage is intentional and justified
+- [ ] Stub strategy (`types-*`, `.pyi`, `py.typed`) matches dependency reality

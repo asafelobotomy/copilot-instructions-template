@@ -1,6 +1,7 @@
 ---
 name: cpp-build-systems
 description: Configure and use CMake effectively — project structure, targets, dependencies, testing integration, and preset workflows
+compatibility: ">=1.4"
 ---
 
 # C++ Build Systems
@@ -123,3 +124,10 @@ cmake --preset debug              # Configure
 cmake --build build/debug -j      # Build
 ctest --test-dir build/debug      # Test
 ```
+
+## Verify
+
+- [ ] Target scope uses `target_*` APIs with correct `PRIVATE`/`PUBLIC`/`INTERFACE` semantics
+- [ ] Build configuration is reproducible via CMake presets
+- [ ] Test targets are wired through CTest
+- [ ] Dependency approach (vcpkg/Conan/FetchContent) matches project constraints

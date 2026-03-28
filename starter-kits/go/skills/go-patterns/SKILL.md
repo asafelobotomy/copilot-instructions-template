@@ -1,6 +1,7 @@
 ---
 name: go-patterns
 description: Idiomatic Go patterns — testing with table tests, error handling, concurrency, module management, and linting
+compatibility: ">=1.4"
 ---
 
 # Go Patterns
@@ -150,3 +151,10 @@ go test -cover ./...             # Test with coverage
 go vet ./...                     # Vet for suspicious constructs
 go build ./...                   # Build all packages
 ```
+
+## Verify
+
+- [ ] Tests follow table-driven and subtest patterns where appropriate
+- [ ] Errors are wrapped with context and remain compatible with `errors.Is`/`errors.As`
+- [ ] Module hygiene commands (`go mod tidy`, `go mod verify`) are part of workflow
+- [ ] Lint and vet checks run cleanly on changed packages

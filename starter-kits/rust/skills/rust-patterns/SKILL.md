@@ -1,6 +1,7 @@
 ---
 name: rust-patterns
 description: Idiomatic Rust patterns — error handling, ownership, testing, unsafe review, and cargo tooling
+compatibility: ">=1.4"
 ---
 
 # Rust Patterns
@@ -137,3 +138,10 @@ cargo doc --open    # Generate and view docs
 cargo audit         # Security audit dependencies
 cargo deny check    # License and advisory checks
 ```
+
+## Verify
+
+- [ ] Error strategy distinguishes library-grade typed errors from app-level propagation
+- [ ] Tests cover both happy path and failure semantics
+- [ ] Any `unsafe` usage has explicit safety invariants and boundary tests
+- [ ] Cargo quality commands (`fmt`, `clippy`, `test`) pass on changed code
