@@ -6,7 +6,7 @@ compatibility: ">=2.0"
 
 # MCP Server Builder
 
-> Skill metadata: version "1.1"; license MIT; tags [mcp, server, tool, integration, scaffold]; compatibility ">=2.0"; recommended tools [codebase, editFiles, runCommands].
+> Skill metadata: version "1.2"; license MIT; tags [mcp, server, tool, integration, scaffold]; compatibility ">=2.0"; recommended tools [codebase, editFiles, runCommands].
 
 Build a new Model Context Protocol (MCP) server from scratch. This skill walks through the full lifecycle: clarifying the server's purpose, choosing transport, scaffolding, implementing tools/resources, testing, and registering the server in `.vscode/mcp.json`.
 
@@ -119,7 +119,19 @@ Verify:
 - [ ] Each tool executes correctly with sample inputs
 - [ ] Error cases return meaningful messages
 
-### 6. Register in `.vscode/mcp.json`
+### 6. Add resources and prompts (optional)
+
+Beyond tools, MCP servers can expose:
+
+| Capability | Purpose | VS Code access |
+|------------|---------|---------------|
+| **Resources** | Read-only data context (files, schemas, API docs) | Chat → Add Context → MCP Resources |
+| **Prompts** | Pre-configured prompt templates | Type `/<server>.<prompt>` in chat |
+| **MCP Apps** | Interactive UI (forms, visualisations, drag-and-drop) | Rendered inline in chat |
+
+Add resources when the server has data the agent should reference. Add prompts when there are common task patterns. Consider MCP Apps (using `@modelcontextprotocol/ext-apps` SDK) for interactive output.
+
+### 7. Register in `.vscode/mcp.json`
 
 Add the server to the project's MCP configuration:
 
@@ -138,14 +150,35 @@ Add the server to the project's MCP configuration:
 
 > **Note**: For production use, compile TypeScript first (`npx tsc`) and reference the compiled JS output instead of running `tsx` at runtime.
 
-### 7. Document
+### 8. Document
 
 - Add the server to the §13 Available servers table in `.github/copilot-instructions.md`
 - If the server is reusable across projects, consider publishing to an MCP registry
+
+### 9. Distribute via plugin (optional)
+
+To bundle the server as part of an agent plugin for sharing:
+
+1. Create `.mcp.json` at the plugin root (uses `mcpServers` key, not `servers`):
+
+   ```json
+   {
+     "mcpServers": {
+       "<server-name>": {
+         "command": "${CLAUDE_PLUGIN_ROOT}/servers/<server-name>",
+         "args": ["--config", "${CLAUDE_PLUGIN_ROOT}/config.json"]
+       }
+     }
+   }
+   ```
+
+2. Use `${CLAUDE_PLUGIN_ROOT}` for all path references within the plugin
+3. Plugin MCP servers start automatically on enable and are implicitly trusted
 
 ## Verify
 
 - [ ] Server starts via stdio and responds to `initialize` request
 - [ ] All tools execute correctly in MCP Inspector
+- [ ] Resources and prompts are discoverable (if implemented)
 - [ ] `.vscode/mcp.json` is valid JSON with the new server entry
 - [ ] §13 Available servers table is updated
