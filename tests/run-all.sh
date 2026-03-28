@@ -43,6 +43,7 @@ run_phase "Hook Behavior" \
   "tests/test-hook-enforce-retrospective.sh" \
   "tests/test-hook-save-context.sh" \
   "tests/test-guard-destructive.sh" \
+  "tests/test-hook-scan-secrets.sh" \
   "tests/test-release-contracts.sh"
 
 run_optional_phase "Hook Behavior (PowerShell parity)" "pwsh" "pwsh" \

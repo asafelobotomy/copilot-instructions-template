@@ -17,8 +17,8 @@ PYTHON_VER=$(python3 --version 2>/dev/null | awk '{print $2}' || echo "n/a")
 
 # Check for project manifest
 if [[ -f package.json ]]; then
-  PROJECT_NAME=$(grep -m1 '"name"' package.json | sed 's/.*: *"\(.*\)".*/\1/' 2>/dev/null || echo "unknown")
-  PROJECT_VER=$(grep -m1 '"version"' package.json | sed 's/.*: *"\(.*\)".*/\1/' 2>/dev/null || echo "unknown")
+  PROJECT_NAME=$(python3 -c "import json; d=json.load(open('package.json')); print(d.get('name','unknown'))" 2>/dev/null || echo "unknown")
+  PROJECT_VER=$(python3 -c "import json; d=json.load(open('package.json')); print(d.get('version','unknown'))" 2>/dev/null || echo "unknown")
 elif [[ -f pyproject.toml ]]; then
   PROJECT_NAME=$(grep -m1 '^name' pyproject.toml | sed 's/.*= *"\(.*\)"/\1/' 2>/dev/null || echo "unknown")
   PROJECT_VER=$(grep -m1 '^version' pyproject.toml | sed 's/.*= *"\(.*\)"/\1/' 2>/dev/null || echo "unknown")

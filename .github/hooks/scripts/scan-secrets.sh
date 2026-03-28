@@ -66,14 +66,14 @@ PATTERNS=(
 )
 
 if [[ "${SKIP_SECRETS_SCAN:-}" == "true" ]]; then
-  echo "⏭️  Secrets scan skipped (SKIP_SECRETS_SCAN=true)"
+  echo "⏭️  Secrets scan skipped (SKIP_SECRETS_SCAN=true)" >&2
   printf '{"continue": true}'
   exit 0
 fi
 
 # Ensure we are in a git repository
 if ! git rev-parse --is-inside-work-tree &>/dev/null; then
-  echo "⚠️  Not in a git repository, skipping secrets scan"
+  echo "⚠️  Not in a git repository, skipping secrets scan" >&2
   printf '{"continue": true}'
   exit 0
 fi
@@ -104,7 +104,7 @@ else
 fi
 
 if [[ ${#FILES[@]} -eq 0 ]]; then
-  echo "✨ No modified files to scan"
+  echo "✨ No modified files to scan" >&2
   printf '{"timestamp":"%s","event":"scan_complete","mode":"%s","scope":"%s","status":"clean","files_scanned":0}\n' \
     "$TIMESTAMP" "$MODE" "$SCOPE" >> "$LOG_FILE"
   printf '{"continue": true}'
@@ -177,7 +177,7 @@ scan_file() {
 
     while IFS=: read -r line_num matched_line; do
       local match
-      match=$(printf '%s\n' "$matched_line" | grep -oE "$regex" 2>/dev/null | head -1)
+      match=$(printf '%s\n' "$matched_line" | grep -oE -- "$regex" 2>/dev/null | head -1)
       [[ -z "$match" ]] && continue
 
       if [[ "$pattern_name" == "INTERNAL_IP_PORT" ]]; then
@@ -202,11 +202,11 @@ scan_file() {
 
       FINDINGS+=("$filepath	$line_num	$pattern_name	$severity	$redacted")
       FINDING_COUNT=$((FINDING_COUNT + 1))
-    done < <(grep -nE "$regex" "$read_path" 2>/dev/null || true)
+    done < <(grep -nE -- "$regex" "$read_path" 2>/dev/null || true)
   done
 }
 
-echo "🔍 Scanning ${#FILES[@]} modified file(s) for secrets..."
+echo "🔍 Scanning ${#FILES[@]} modified file(s) for secrets..." >&2
 
 for filepath in "${FILES[@]}"; do
   if [[ "$SCOPE" == "staged" ]]; then
@@ -220,18 +220,18 @@ for filepath in "${FILES[@]}"; do
 done
 
 if [[ $FINDING_COUNT -gt 0 ]]; then
-  echo ""
-  echo "⚠️  Found $FINDING_COUNT potential secret(s) in modified files:"
-  echo ""
-  printf "  %-40s %-6s %-28s %s\n" "FILE" "LINE" "PATTERN" "SEVERITY"
-  printf "  %-40s %-6s %-28s %s\n" "----" "----" "-------" "--------"
+  echo "" >&2
+  echo "⚠️  Found $FINDING_COUNT potential secret(s) in modified files:" >&2
+  echo "" >&2
+  printf "  %-40s %-6s %-28s %s\n" "FILE" "LINE" "PATTERN" "SEVERITY" >&2
+  printf "  %-40s %-6s %-28s %s\n" "----" "----" "-------" "--------" >&2
 
   FINDINGS_JSON="["
   FIRST=true
   for finding in "${FINDINGS[@]}"; do
     IFS=$'\t' read -r fpath fline pname psev redacted <<< "$finding"
 
-    printf "  %-40s %-6s %-28s %s\n" "$fpath" "$fline" "$pname" "$psev"
+    printf "  %-40s %-6s %-28s %s\n" "$fpath" "$fline" "$pname" "$psev" >&2
 
     if [[ "$FIRST" != "true" ]]; then
       FINDINGS_JSON+=","
@@ -242,21 +242,21 @@ if [[ $FINDING_COUNT -gt 0 ]]; then
   done
   FINDINGS_JSON+="]"
 
-  echo ""
+  echo "" >&2
 
   printf '{"timestamp":"%s","event":"secrets_found","mode":"%s","scope":"%s","files_scanned":%d,"finding_count":%d,"findings":%s}\n' \
     "$TIMESTAMP" "$MODE" "$SCOPE" "${#FILES[@]}" "$FINDING_COUNT" "$FINDINGS_JSON" >> "$LOG_FILE"
 
   if [[ "$MODE" == "block" ]]; then
-    echo "🚫 Session blocked: resolve the findings above before committing."
-    echo "   Set SCAN_MODE=warn to log without blocking, or add patterns to SECRETS_ALLOWLIST."
+    echo "🚫 Session blocked: resolve the findings above before committing." >&2
+    echo "   Set SCAN_MODE=warn to log without blocking, or add patterns to SECRETS_ALLOWLIST." >&2
     printf '{"continue": false}'
     exit 0
   else
-    echo "💡 Review the findings above. Set SCAN_MODE=block to prevent commits with secrets."
+    echo "💡 Review the findings above. Set SCAN_MODE=block to prevent commits with secrets." >&2
   fi
 else
-  echo "✅ No secrets detected in ${#FILES[@]} scanned file(s)"
+  echo "✅ No secrets detected in ${#FILES[@]} scanned file(s)" >&2
   printf '{"timestamp":"%s","event":"scan_complete","mode":"%s","scope":"%s","status":"clean","files_scanned":%d}\n' \
     "$TIMESTAMP" "$MODE" "$SCOPE" "${#FILES[@]}" >> "$LOG_FILE"
 fi

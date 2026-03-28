@@ -82,4 +82,38 @@ foreach ($pattern in $cautionPatterns) {
     }
 }
 
+# Read-only agent guardrails — Doctor, Review, and Explore should not perform
+# mutating terminal operations without explicit user approval.
+$agentName = ''
+try {
+    $agentName = $data.copilot_agent ?? ''
+    if (-not $agentName) { $agentName = $env:COPILOT_AGENT ?? '' }
+} catch { $agentName = '' }
+
+if ($agentName -match '^(Doctor|Review|Explore)$') {
+    $readonlyWritePatterns = @(
+        '(^|[;&|]\s*)(mkdir|touch|cp|mv|truncate|install)\s',
+        '(^|[;&|]\s*)(sed\s+-i|perl\s+-i|tee\s)',
+        '(^|[;&|]\s*)(echo|printf).*>+',
+        '(^|[;&|]\s*)(git\s+(add|commit|push|reset|checkout|switch|merge|rebase|cherry-pick|revert|tag|stash))',
+        '(^|[;&|]\s*)((npm|pnpm|yarn|bun)\s+(install|add|remove|update|upgrade|publish))',
+        '(^|[;&|]\s*)(pip|uv\s+pip)\s+install'
+    )
+
+    foreach ($rwp in $readonlyWritePatterns) {
+        if ($command -imatch $rwp) {
+            $preview = if ($command.Length -gt 200) { $command.Substring(0,200) } else { $command }
+            [PSCustomObject]@{
+                hookSpecificOutput = [PSCustomObject]@{
+                    hookEventName           = 'PreToolUse'
+                    permissionDecision      = 'ask'
+                    permissionDecisionReason = "$agentName is a read-only agent. Mutating terminal commands require explicit user confirmation."
+                    additionalContext       = "The command '$preview' appears to mutate files or repository state. Use the Code agent for implementation tasks or confirm this one-off command."
+                }
+            } | ConvertTo-Json -Depth 5
+            exit 0
+        }
+    }
+}
+
 '{"continue": true}'
