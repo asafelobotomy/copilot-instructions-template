@@ -16,6 +16,11 @@ make_input() {
   printf '{"tool_name": "%s", "tool_input": {"command": "%s"}}' "$tool_name" "$command"
 }
 
+make_input_with_agent() {
+  local tool_name="$1" command="$2" agent_name="$3"
+  printf '{"tool_name": "%s", "tool_input": {"command": "%s"}, "agentName": "%s"}' "$tool_name" "$command" "$agent_name"
+}
+
 make_input_non_terminal() {
   local tool_name="$1"
   printf '{"tool_name": "%s", "tool_input": {"filePath": "/tmp/test.ts"}}' "$tool_name"
@@ -129,6 +134,14 @@ echo ""
 echo "9. Additional caution patterns (cargo publish, pip install --)"
 assert_decision "cargo publish caution"    "$(make_input 'bash' 'cargo publish')"             "ask"
 assert_decision "pip install -- caution"   "$(make_input 'bash' 'pip install --upgrade requests')" "ask"
+echo ""
+
+# ── 10. Read-only agent guardrails ───────────────────────────────────────────
+echo "10. Read-only agents require confirmation for mutating commands"
+assert_decision "Doctor write command asks" "$(make_input_with_agent 'bash' 'mkdir tmp-report' 'Doctor')" "ask"
+assert_decision "Review git commit asks"    "$(make_input_with_agent 'bash' 'git commit -m test' 'Review')" "ask"
+assert_decision "Explore npm add asks"      "$(make_input_with_agent 'bash' 'npm add zod' 'Explore')" "ask"
+assert_continue "Doctor read command continues" "$(make_input_with_agent 'bash' 'ls -la' 'Doctor')"
 echo ""
 
 # ── Summary ───────────────────────────────────────────────────────────────────

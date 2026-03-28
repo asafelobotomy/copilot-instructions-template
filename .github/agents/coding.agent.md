@@ -10,6 +10,8 @@ model:
   - GPT-5.2-Codex
   - GPT-5.1-Codex
 tools: [editFiles, runCommands, codebase, githubRepo]
+user-invocable: true
+disable-model-invocation: false
 agents: ['Review', 'Doctor', 'Fast', 'Researcher', 'Explore', 'Extensions']
 handoffs:
   - label: Review changes
@@ -29,3 +31,8 @@ Guidelines:
 - Full PDCA cycle is mandatory for every non-trivial change.
 - Run the three-check ritual before marking any task done.
 - Write or update tests alongside every change — never after.
+
+## Skill activation map
+
+- Primary: `tool-protocol`, `skill-management`, `mcp-management`
+- Contextual: `webapp-testing`, `test-coverage-review`, `fix-ci-failure`

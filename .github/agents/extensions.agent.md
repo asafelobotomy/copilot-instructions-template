@@ -7,7 +7,9 @@ model:
   - Claude Opus 4.6
   - GPT-5.1
 tools: [codebase, runCommands, fetch]
-agents: ['Researcher', 'Doctor', 'Fast', 'Explore']
+user-invocable: true
+disable-model-invocation: false
+agents: ['Code', 'Researcher', 'Doctor', 'Fast', 'Explore']
 handoffs:
   - label: Apply changes
     agent: Code
@@ -188,3 +190,8 @@ For full profile support, install the companion extension:
   before executing any `code --install-extension` or `code --uninstall-extension`
   command.
 - Do not modify `.vscode/extensions.json` until the user approves the changes.
+
+## Skill activation map
+
+- Primary: `extension-review`, `plugin-management`
+- Contextual: `mcp-management`, `tool-protocol`

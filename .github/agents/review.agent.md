@@ -8,6 +8,8 @@ model:
   - Claude Sonnet 4.6
   - GPT-5.1
 tools: [codebase, githubRepo, runCommands]
+user-invocable: true
+disable-model-invocation: false
 agents: ['Code', 'Fast', 'Researcher']
 handoffs:
   - label: Implement fixes
@@ -34,3 +36,8 @@ Guidelines:
 `[major] | [src/api/search.ts:87] | [W2 Waiting] | Synchronous file read inside request handler — blocks event loop; convert to async`
 `[advisory] | [src/utils/format.ts:18] | [W4 Over-processing] | One-liner wrapped in a function with no added value — consider inlining`
 </examples>
+
+## Skill activation map
+
+- Primary: `lean-pr-review`
+- Contextual: `test-coverage-review`, `issue-triage`, `fix-ci-failure`

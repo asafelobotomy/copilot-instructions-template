@@ -7,6 +7,8 @@ model:
   - GPT-5 mini
   - GPT-4.1
 tools: [codebase, editFiles, runCommands]
+user-invocable: true
+disable-model-invocation: false
 agents: ['Code']
 handoffs:
   - label: Hand off to Code
@@ -29,3 +31,8 @@ Guidelines:
 - Do not run the full PDCA cycle for simple edits — just make the change and
   summarise in one line.
 - Use `runCommands` for quick lookups (`wc -l`, `grep`, `ls`) before opening files.
+
+## Skill activation map
+
+- Primary: none by default (keep latency minimal)
+- Contextual: `conventional-commit`, `tool-protocol`

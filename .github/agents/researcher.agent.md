@@ -7,6 +7,8 @@ model:
   - Claude Sonnet 4.5
   - GPT-5 mini
 tools: [fetch, webSearch, codebase, search, editFiles]
+user-invocable: true
+disable-model-invocation: false
 agents: ['Code', 'Doctor']
 handoffs:
   - label: Implement findings
@@ -112,3 +114,8 @@ One-paragraph executive summary.
 - **No test execution** — no `runCommands` for test runs.
 - **No file deletion** — only append to `RESEARCH.md`; never remove rows.
 - **No git operations** — do not commit or push.
+
+## Skill activation map
+
+- Primary: `skill-management`
+- Contextual: `mcp-management`, `plugin-management`, `agentic-workflows`

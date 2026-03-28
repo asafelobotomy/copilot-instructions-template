@@ -58,9 +58,12 @@ Max subagent depth is 3 (configurable via `{{SUBAGENT_MAX_DEPTH}}`).
 
 | Agent | May invoke |
 |-------|-----------|
-| Code | Review, Doctor, Fast |
-| Review | Code, Fast |
-| Doctor | Code, Update |
+| Code | Review, Doctor, Fast, Researcher, Explore, Extensions |
+| Review | Code, Fast, Researcher |
+| Doctor | Code, Update, Researcher, Explore |
+| Extensions | Researcher, Doctor, Fast, Explore |
+| Researcher | Code, Doctor |
+| Explore | None |
 | Fast | Code |
 | Setup | Doctor |
 | Update | Doctor |

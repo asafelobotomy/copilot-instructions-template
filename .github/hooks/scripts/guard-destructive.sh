@@ -49,6 +49,28 @@ except Exception:
     print('')
 " 2>/dev/null || echo "")
 
+AGENT_NAME=$(echo "$INPUT" | python3 -c "
+import sys, json
+try:
+  data = json.load(sys.stdin)
+  candidates = [
+    data.get('agent_name'),
+    data.get('agentName'),
+    (data.get('context') or {}).get('agentName'),
+    (data.get('context') or {}).get('agent_name'),
+    (data.get('session') or {}).get('agentName'),
+    (data.get('session') or {}).get('agent_name'),
+  ]
+  for value in candidates:
+    if isinstance(value, str) and value.strip():
+      print(value.strip())
+      break
+  else:
+    print('')
+except Exception:
+  print('')
+" 2>/dev/null || echo "")
+
 # Blocked patterns — dangerous commands that should never auto-execute
 BLOCKED_PATTERNS=(
   'rm -rf /'
@@ -113,6 +135,37 @@ EOF
     exit 0
   fi
 done
+
+# Read-only agent guardrails — Doctor, Review, and Explore should not perform
+# mutating terminal operations without explicit user approval.
+if [[ "$AGENT_NAME" =~ ^(Doctor|Review|Explore)$ ]]; then
+  READONLY_WRITE_PATTERNS=(
+    '(^|[;&|][[:space:]]*)(mkdir|touch|cp|mv|truncate|install)[[:space:]]'
+    '(^|[;&|][[:space:]]*)(sed[[:space:]]+-i|perl[[:space:]]+-i|tee[[:space:]])'
+    '(^|[;&|][[:space:]]*)(echo|printf).*>+'
+    '(^|[;&|][[:space:]]*)(git[[:space:]]+(add|commit|push|reset|checkout|switch|merge|rebase|cherry-pick|revert|tag|stash))'
+    '(^|[;&|][[:space:]]*)((npm|pnpm|yarn|bun)[[:space:]]+(install|add|remove|update|upgrade|publish))'
+    '(^|[;&|][[:space:]]*)(pip|uv[[:space:]]+pip)[[:space:]]+install'
+  )
+
+  for pattern in "${READONLY_WRITE_PATTERNS[@]}"; do
+    if echo "$TOOL_INPUT" | grep -qiE "$pattern"; then
+      AGENT_ESC=$(json_escape "$AGENT_NAME")
+      COMMAND_ESC=$(json_escape "$(echo "$TOOL_INPUT" | head -c 200)")
+      cat <<EOF
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "ask",
+    "permissionDecisionReason": "${AGENT_ESC} is a read-only agent. Mutating terminal commands require explicit user confirmation.",
+    "additionalContext": "The command '${COMMAND_ESC}' appears to mutate files or repository state. Use the Code agent for implementation tasks or confirm this one-off command."
+  }
+}
+EOF
+      exit 0
+    fi
+  done
+fi
 
 # Safe — allow execution
 echo '{"continue": true}'

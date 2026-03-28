@@ -7,6 +7,8 @@ model:
   - Claude Opus 4.6
   - Claude Opus 4.5
 tools: [codebase, runCommands]
+user-invocable: true
+disable-model-invocation: false
 agents: ['Code', 'Update', 'Researcher', 'Explore']
 handoffs:
   - label: Apply fixes
@@ -229,3 +231,8 @@ After all checks, print a structured health report with sections for each check 
 
 > **This agent is read-only.** Do not modify any files. Surface findings
 > only — let the Code agent or Update agent make changes.
+
+## Skill activation map
+
+- Primary: `mcp-management`, `skill-management`
+- Contextual: `extension-review`, `tool-protocol`

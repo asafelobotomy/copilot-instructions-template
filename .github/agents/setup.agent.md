@@ -8,6 +8,7 @@ model:
   - GPT-5.1
   - GPT-5 mini
 tools: [editFiles, fetch, githubRepo, codebase]
+user-invocable: true
 disable-model-invocation: true
 agents: ['Doctor']
 handoffs:
@@ -36,3 +37,8 @@ Guidelines:
 - Verify answer count matches the selected tier before proceeding to §0e.
 - Copy the §0e and Step 6 summary templates exactly — do not improvise or
   omit sections.
+
+## Skill activation map
+
+- Primary: `skill-management`
+- Contextual: `extension-review`, `mcp-management`, `plugin-management`

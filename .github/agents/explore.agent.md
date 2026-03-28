@@ -7,6 +7,8 @@ model:
   - GPT-5 mini
   - Claude Sonnet 4.6
 tools: [codebase, search, runCommands]
+user-invocable: true
+disable-model-invocation: false
 agents: []
 ---
 
@@ -32,3 +34,8 @@ and answer questions about the current repository without making any modificatio
 - **Structured output** — report files found, line numbers, and relevant
   excerpts. Use Markdown tables for lists of findings.
 - **No handoffs** — Explore is a subagent; the calling agent decides next steps.
+
+## Skill activation map
+
+- Primary: `skill-management` (discovery logic)
+- Contextual: none by default; this agent is intentionally read-only and lean

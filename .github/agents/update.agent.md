@@ -7,6 +7,7 @@ model:
   - Claude Sonnet 4.5
   - GPT-5.1
 tools: [fetch, editFiles, codebase, runCommands]
+user-invocable: true
 disable-model-invocation: true
 agents: ['Doctor']
 handoffs:
@@ -74,3 +75,8 @@ walk the user through applying changes to their project — exactly as defined i
 
 Offer the "Run health check" handoff so the Doctor agent can verify the
 applied changes are structurally correct and within budget.
+
+## Skill activation map
+
+- Primary: `skill-management`
+- Contextual: `fix-ci-failure`, `tool-protocol`
