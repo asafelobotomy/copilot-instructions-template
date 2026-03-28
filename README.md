@@ -24,4 +24,4 @@ See [`AGENTS.md`](AGENTS.md) for the full list of commands (health check, retros
 
 ## Version
 
-Current template version: **4.1.0** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md) and [`MIGRATION.md`](MIGRATION.md).
+Current template version: **4.1.1** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md) and [`MIGRATION.md`](MIGRATION.md).
