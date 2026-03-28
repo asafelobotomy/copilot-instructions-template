@@ -1,9 +1,9 @@
 {
   "schemaVersion": "1.0",
-  "updated": "2026-03-19",
+  "updated": "2026-03-28",
   "purpose": "Canonical machine-readable inventory for repository metadata.",
   "counts": {
-    "agents": 8,
+    "agents": 10,
     "skillsRepo": 15,
     "skillsTemplate": 15,
     "hookScriptsShell": 9,
@@ -17,7 +17,9 @@
     "update.agent.md",
     "doctor.agent.md",
     "researcher.agent.md",
-    "explore.agent.md"
+    "explore.agent.md",
+    "extensions.agent.md",
+    "security.agent.md"
   ],
   "skills": {
     "repo": [
