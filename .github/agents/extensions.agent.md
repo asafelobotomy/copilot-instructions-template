@@ -9,7 +9,7 @@ model:
 tools: [codebase, runCommands, fetch]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Researcher', 'Doctor', 'Fast', 'Explore']
+agents: ['Code', 'Researcher', 'Doctor', 'Fast', 'Explore', 'Security']
 handoffs:
   - label: Apply changes
     agent: Code

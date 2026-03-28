@@ -10,7 +10,7 @@ model:
 tools: [editFiles, fetch, githubRepo, codebase, askQuestions]
 user-invocable: true
 disable-model-invocation: true
-agents: ['Doctor']
+agents: ['Doctor', 'Code', 'Extensions', 'Researcher', 'Explore']
 handoffs:
   - label: Run health check
     agent: Doctor

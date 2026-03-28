@@ -9,7 +9,7 @@ model:
 tools: [fetch, webSearch, codebase, search, editFiles]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Doctor']
+agents: ['Code', 'Doctor', 'Explore', 'Security']
 handoffs:
   - label: Implement findings
     agent: Code

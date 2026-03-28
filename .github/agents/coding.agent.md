@@ -12,7 +12,7 @@ model:
 tools: [editFiles, runCommands, codebase, githubRepo]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Review', 'Doctor', 'Fast', 'Researcher', 'Explore', 'Extensions']
+agents: ['Review', 'Doctor', 'Fast', 'Researcher', 'Explore', 'Extensions', 'Security']
 handoffs:
   - label: Review changes
     agent: Review

@@ -9,7 +9,7 @@ model:
 tools: [codebase, editFiles, runCommands]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code']
+agents: ['Code', 'Explore']
 handoffs:
   - label: Hand off to Code
     agent: Code

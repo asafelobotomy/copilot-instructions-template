@@ -9,7 +9,7 @@ model:
 tools: [fetch, editFiles, codebase, runCommands, askQuestions]
 user-invocable: true
 disable-model-invocation: true
-agents: ['Doctor']
+agents: ['Doctor', 'Code', 'Researcher', 'Explore']
 handoffs:
   - label: Run health check
     agent: Doctor

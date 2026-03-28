@@ -9,7 +9,7 @@ model:
 tools: [codebase, runCommands]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Update', 'Researcher', 'Explore']
+agents: ['Code', 'Update', 'Researcher', 'Explore', 'Security', 'Extensions']
 handoffs:
   - label: Apply fixes
     agent: Code

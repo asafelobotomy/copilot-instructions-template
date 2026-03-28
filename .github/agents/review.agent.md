@@ -10,7 +10,7 @@ model:
 tools: [codebase, githubRepo, runCommands]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Fast', 'Researcher']
+agents: ['Code', 'Fast', 'Researcher', 'Doctor', 'Explore', 'Security']
 handoffs:
   - label: Implement fixes
     agent: Code
