@@ -7,6 +7,33 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [4.1.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v4.0.0...v4.1.0) (2026-03-28)
+
+
+### Features
+
+* add compatibility field and verification sections to various skills and prompts ([bf166ae](https://github.com/asafelobotomy/copilot-instructions-template/commit/bf166ae49d60925d396dd9211fe69f56c172fab2))
+* **agents:** add Security audit agent ([44b674f](https://github.com/asafelobotomy/copilot-instructions-template/commit/44b674f7a253d28dd67669048db3ac82f0e5ca3a))
+* **agents:** add Security audit agent ([06f2a43](https://github.com/asafelobotomy/copilot-instructions-template/commit/06f2a43ae5d0a16aee6ebea48579a6c1a5bac758))
+* **agents:** add structured thinking discipline and anti-loop rules ([cd2a0b4](https://github.com/asafelobotomy/copilot-instructions-template/commit/cd2a0b4b052c69c68e0a011bcb055538d97d5b2c))
+* **agents:** add upstream baseline checks D11-D13 to Doctor agent ([c9a3aa9](https://github.com/asafelobotomy/copilot-instructions-template/commit/c9a3aa9c69bbee279335e09c7094eb2927d80886))
+* **agents:** enable cross-agent delegation for comprehensive task coverage ([ccb1d1b](https://github.com/asafelobotomy/copilot-instructions-template/commit/ccb1d1ba636d66bf7418fb75373f4560b2dd3512))
+* **agents:** expand tools, skills, and handoffs for comprehensive capability ([1badf77](https://github.com/asafelobotomy/copilot-instructions-template/commit/1badf77e3961cec2cccafa6fdc0844117bffab67))
+* enhance extension management with new agent and profile tools support ([63a4292](https://github.com/asafelobotomy/copilot-instructions-template/commit/63a4292e6be9d004f905a1933839a2ccea10d62e))
+* enhance MCP configuration with context7 support and improved sandbox settings ([bc11dc6](https://github.com/asafelobotomy/copilot-instructions-template/commit/bc11dc6afd6bed2cb9dba05c5618f24022c3b5b8))
+* **models:** add thinking effort recommendations and sync support ([f11c661](https://github.com/asafelobotomy/copilot-instructions-template/commit/f11c661bfbd9e8091aa390bf7dad8259d823a5f7))
+* **scripts:** dynamic agent discovery, shared lib helpers, new validation scripts ([8d0c305](https://github.com/asafelobotomy/copilot-instructions-template/commit/8d0c30572095634227e68d7d09ba86de9badd4e5))
+* **setup:** integrate askQuestions directives and add contract tests ([9c18496](https://github.com/asafelobotomy/copilot-instructions-template/commit/9c184964d65eb571aa9e559253c817b455088e76))
+
+
+### Bug Fixes
+
+* **ci:** add v4.0.0 MIGRATION.md entry and fix CHANGELOG [Unreleased] position ([1135b69](https://github.com/asafelobotomy/copilot-instructions-template/commit/1135b69008c432a10979fd923f0116485f807944))
+* **ci:** sync CI workflow with full test and file inventory ([ffb59b1](https://github.com/asafelobotomy/copilot-instructions-template/commit/ffb59b1d92c2606720b776d216acdb2db0b143db))
+* **docs:** improve formatting and clarity in agent and skill documentation ([1ad8019](https://github.com/asafelobotomy/copilot-instructions-template/commit/1ad8019458f89ff2647de8e19d8c3ea13c5c32d6))
+* **hooks:** harden scan-secrets, normalize JSON parsing, add read-only agent guards ([77f74c3](https://github.com/asafelobotomy/copilot-instructions-template/commit/77f74c33f8b5f856c48c80cbbe7bd2fd7d5dfd55))
+* **release:** automate MIGRATION.md stub and anchor [Unreleased] in CHANGELOG ([63c20ec](https://github.com/asafelobotomy/copilot-instructions-template/commit/63c20ec3ff78dcbb18f77b427e0b1e5c74aa9c28))
+
 ## [Unreleased]
 
 ---
