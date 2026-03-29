@@ -1,6 +1,6 @@
 # Copilot Instructions — {{PROJECT_NAME}}
 
-> **Template version**: 4.2.0 <!-- x-release-please-version --> | **Applied**: {{SETUP_DATE}}
+> **Template version**: 5.0.0 <!-- x-release-please-version --> | **Applied**: {{SETUP_DATE}}
 > Living document — self-edit rules in §8.
 >
 > **Models**: each `.github/agents/*.agent.md` pins its model. Codex models are headless-only (no interactive prompts). See [model comparison](https://docs.github.com/en/copilot/reference/ai-models/model-comparison).
