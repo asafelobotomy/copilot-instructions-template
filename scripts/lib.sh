@@ -41,3 +41,11 @@ require_check_write_mode() {
     exit 1
   fi
 }
+
+# require_python_check_write() — validate mode and require python3 in one call.
+# Combines require_check_write_mode + require_command python3.
+# Usage: require_python_check_write <script_name> <mode>
+require_python_check_write() {
+  require_check_write_mode "$1" "$2"
+  require_command python3
+}

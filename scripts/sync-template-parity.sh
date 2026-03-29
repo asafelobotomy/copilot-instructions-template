@@ -11,8 +11,7 @@ MODE="${1:---check}"
 
 # shellcheck source=scripts/lib.sh
 source "$(dirname "$0")/lib.sh"
-require_check_write_mode "sync-template-parity.sh" "$MODE"
-require_command python3
+require_python_check_write "sync-template-parity.sh" "$MODE"
 
 python3 - "$ROOT_DIR" "$MODE" <<'PY'
 import filecmp
@@ -29,18 +28,24 @@ SKILL_DIVERGENT = {"mcp-management"}
 drift = []
 repaired = []
 
+def is_drift(src, dst):
+    """Return True if dst is missing or differs from src."""
+    if not dst.exists():
+        return True
+    return not filecmp.cmp(src, dst, shallow=False)
+
 # ── Hook scripts & config ────────────────────────────────────────────────────
 
 hook_config = root / "template/hooks/copilot-hooks.json"
 hook_repo = root / ".github/hooks/copilot-hooks.json"
-if hook_config.exists() and hook_repo.exists():
-    if not filecmp.cmp(hook_config, hook_repo, shallow=False):
+if hook_config.exists():
+    if is_drift(hook_config, hook_repo):
         drift.append(("template/hooks/copilot-hooks.json", ".github/hooks/copilot-hooks.json"))
 
 for ext in ("*.sh", "*.ps1"):
     for src in sorted((root / "template/hooks/scripts").glob(ext)):
         dst = root / ".github/hooks/scripts" / src.name
-        if dst.exists() and not filecmp.cmp(src, dst, shallow=False):
+        if is_drift(src, dst):
             drift.append((f"template/hooks/scripts/{src.name}", f".github/hooks/scripts/{src.name}"))
 
 # ── Skills ────────────────────────────────────────────────────────────────────
@@ -52,8 +57,8 @@ for src_dir in sorted((root / "template/skills").iterdir()):
         continue
     src = src_dir / "SKILL.md"
     dst = root / ".github/skills" / src_dir.name / "SKILL.md"
-    if src.exists() and dst.exists():
-        if not filecmp.cmp(src, dst, shallow=False):
+    if src.exists():
+        if is_drift(src, dst):
             drift.append((f"template/skills/{src_dir.name}/SKILL.md",
                           f".github/skills/{src_dir.name}/SKILL.md"))
 
@@ -74,7 +79,7 @@ for kind in ("instructions", "prompts"):
         if "{{" in src_text:
             continue  # template stub with placeholders — skip
         dst = dev_dir / src.name
-        if dst.exists() and not filecmp.cmp(src, dst, shallow=False):
+        if is_drift(src, dst):
             drift.append((f"template/{kind}/{src.name}", f".github/{kind}/{src.name}"))
 
 # ── Act ───────────────────────────────────────────────────────────────────────

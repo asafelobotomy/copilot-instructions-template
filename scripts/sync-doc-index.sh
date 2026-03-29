@@ -12,8 +12,7 @@ MODE="${1:---check}"
 
 # shellcheck source=scripts/lib.sh
 source "$(dirname "$0")/lib.sh"
-require_check_write_mode "sync-doc-index.sh" "$MODE"
-require_command python3
+require_python_check_write "sync-doc-index.sh" "$MODE"
 
 python3 - "$ROOT_DIR" "$DOC_INDEX_PATH" "$MODE" <<'PY'
 import datetime

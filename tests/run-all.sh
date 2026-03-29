@@ -57,7 +57,8 @@ run_phase "Script Behavior" \
   "tests/test-sync-models.sh" \
   "tests/test-validate-agent-frontmatter.sh" \
   "tests/test-sync-template-parity.sh" \
-  "tests/test-security-edge-cases.sh"
+  "tests/test-security-edge-cases.sh" \
+  "tests/test-copilot-audit.sh"
 
 run_phase "Documentation And Contracts" \
   "tests/test-customization-contracts.sh" \

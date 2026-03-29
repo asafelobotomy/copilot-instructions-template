@@ -125,4 +125,39 @@ assert_success "mcp-management divergence allowed" "$status"
 rm -rf "$TMP"
 echo ""
 
+echo "10. Missing hook script is detected"
+TMP=$(mktemp -d)
+make_fixture "$TMP"
+rm "$TMP/.github/hooks/scripts/test.sh"
+output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1) || true
+assert_contains "missing hook script detected" "$output" "test.sh"
+rm -rf "$TMP"
+echo ""
+
+echo "11. Missing skill mirror is detected"
+TMP=$(mktemp -d)
+make_fixture "$TMP"
+rm "$TMP/.github/skills/test-skill/SKILL.md"
+output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1) || true
+assert_contains "missing skill detected" "$output" "test-skill"
+rm -rf "$TMP"
+echo ""
+
+echo "12. --write creates missing files"
+TMP=$(mktemp -d)
+make_fixture "$TMP"
+rm "$TMP/.github/hooks/scripts/test.sh"
+rm "$TMP/.github/skills/test-skill/SKILL.md"
+output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --write 2>&1)
+status=$?
+assert_success "--write exits zero for missing files" "$status"
+assert_contains "reports created hook" "$output" "test.sh"
+assert_contains "reports created skill" "$output" "test-skill"
+# Verify --check now passes
+output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1)
+status=$?
+assert_success "check passes after write creates missing" "$status"
+rm -rf "$TMP"
+echo ""
+
 finish_tests

@@ -229,7 +229,7 @@ Files that will be CREATED:
   .github/copilot-instructions.md     (populated from template)
   .github/copilot-version.md          (installed template version)
   .github/agents/*.agent.md           (10 model-pinned agents)
-  .github/skills/*/SKILL.md           (14 starter skills)
+  .github/skills/*/SKILL.md           (15 starter skills)
   .github/instructions/*.md           (path-specific stubs)
   .github/prompts/*.prompt.md         (slash command prompts)
   .github/hooks/copilot-hooks.json    (hook configuration)
@@ -529,54 +529,13 @@ After writing, replace `{{THREE_CHECK_COMMAND}}`, `{{TEST_FRAMEWORK}}`, and `{{T
 
 ## § 2.9 — Scaffold Copilot setup steps workflow
 
-Create `.github/workflows/copilot-setup-steps.yml`:
+Fetch the setup steps workflow template and write it to `.github/workflows/copilot-setup-steps.yml`:
 
-```yaml
-name: "Copilot Setup Steps"
-
-on:
-  workflow_dispatch:
-
-jobs:
-  copilot-setup-steps:
-    name: "Copilot Setup Steps"
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-
-      # --- Runtime setup (uncomment and fill the section matching your stack) ---
-
-      # Node.js / Bun
-      # - uses: actions/setup-node@v4
-      #   with:
-      #     node-version: "{{RUNTIME_VERSION}}"
-      # - run: {{INSTALL_COMMAND}}
-
-      # Python
-      # - uses: actions/setup-python@v5
-      #   with:
-      #     python-version: "{{RUNTIME_VERSION}}"
-      # - run: pip install -r requirements.txt
-
-      # Go
-      # - uses: actions/setup-go@v5
-      #   with:
-      #     go-version: "{{RUNTIME_VERSION}}"
-
-      # Rust
-      # - uses: dtolnay/rust-toolchain@stable
-
-      # --- Verification ---
-      # - name: Build
-      #   run: {{BUILD_COMMAND}}
-      # - name: Test
-      #   run: {{TEST_COMMAND}}
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/copilot-setup-steps.yml
 ```
 
-If the stack was detected in §1, uncomment and populate the matching runtime section. Remove unused runtime sections.
+If the stack was detected in §1, uncomment and populate the matching runtime section inside the fetched file. Remove unused runtime sections. Replace `{{RUNTIME_VERSION}}`, `{{INSTALL_COMMAND}}`, `{{BUILD_COMMAND}}`, and `{{TEST_COMMAND}}` tokens using values from §1.
 
 ---
 
@@ -838,35 +797,35 @@ Fetch and write the following hook files to the user's `.github/hooks/`:
 **Configuration**: fetch and write to `.github/hooks/copilot-hooks.json`:
 
 ```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/copilot-hooks.json
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/copilot-hooks.json
 ```
 
 **Bash scripts** (Linux/macOS) — fetch each to `.github/hooks/scripts/`:
 
 | Script | URL |
 |--------|-----|
-| `lib-hooks.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/lib-hooks.sh` |
-| `scan-secrets.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/scan-secrets.sh` |
-| `session-start.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/session-start.sh` |
-| `guard-destructive.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/guard-destructive.sh` |
-| `post-edit-lint.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/post-edit-lint.sh` |
-| `enforce-retrospective.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/enforce-retrospective.sh` |
-| `save-context.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/save-context.sh` |
-| `subagent-start.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/subagent-start.sh` |
-| `subagent-stop.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/subagent-stop.sh` |
+| `lib-hooks.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/lib-hooks.sh` |
+| `scan-secrets.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/scan-secrets.sh` |
+| `session-start.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/session-start.sh` |
+| `guard-destructive.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/guard-destructive.sh` |
+| `post-edit-lint.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/post-edit-lint.sh` |
+| `enforce-retrospective.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/enforce-retrospective.sh` |
+| `save-context.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/save-context.sh` |
+| `subagent-start.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/subagent-start.sh` |
+| `subagent-stop.sh` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/subagent-stop.sh` |
 
 **PowerShell scripts** (Windows) — fetch each to `.github/hooks/scripts/`:
 
 | Script | URL |
 |--------|-----|
-| `scan-secrets.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/scan-secrets.ps1` |
-| `session-start.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/session-start.ps1` |
-| `guard-destructive.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/guard-destructive.ps1` |
-| `post-edit-lint.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/post-edit-lint.ps1` |
-| `enforce-retrospective.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/enforce-retrospective.ps1` |
-| `save-context.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/save-context.ps1` |
-| `subagent-start.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/subagent-start.ps1` |
-| `subagent-stop.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/hooks/scripts/subagent-stop.ps1` |
+| `scan-secrets.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/scan-secrets.ps1` |
+| `session-start.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/session-start.ps1` |
+| `guard-destructive.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/guard-destructive.ps1` |
+| `post-edit-lint.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/post-edit-lint.ps1` |
+| `enforce-retrospective.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/enforce-retrospective.ps1` |
+| `save-context.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/save-context.ps1` |
+| `subagent-start.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/subagent-start.ps1` |
+| `subagent-stop.ps1` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/hooks/scripts/subagent-stop.ps1` |
 
 After writing the `.sh` files, make them executable:
 
@@ -914,6 +873,7 @@ for f in \
   .github/hooks/scripts/*.ps1 \
   .github/instructions/*.instructions.md \
   .github/prompts/*.prompt.md \
+  .github/workflows/copilot-setup-steps.yml \
   .copilot/workspace/*.md \
   .copilot/workspace/DOC_INDEX.json; do
   [ -f "$f" ] || continue
@@ -957,6 +917,7 @@ Applied: YYYY-MM-DD
 .github/agents/security.agent.md=<hash>
 .github/agents/setup.agent.md=<hash>
 .github/agents/update.agent.md=<hash>
+.github/workflows/copilot-setup-steps.yml=<hash>
 ... (one line per installed companion file)
 -->
 
@@ -1165,9 +1126,9 @@ SETUP COMPLETE — copilot-instructions-template vX.Y.Z
 ✓ .github/copilot-instructions.md   populated
 ✓ .github/copilot-version.md        written (vX.Y.Z)
 ✓ .github/agents/                   10 model-pinned agents
-✓ .github/skills/                   14 starter skills
+✓ .github/skills/                   15 starter skills
 ✓ .github/instructions/             N path-specific stubs
-✓ .github/prompts/                  5 slash-command prompts
+✓ .github/prompts/                  6 slash-command prompts
 ✓ .github/hooks/                    hooks config + 14 scripts (7 sh + 7 ps1)
 ✓ .github/starter-kits/             N starter-kit plugins (or "none matched")
 ✓ .copilot/workspace/               9 workspace files (8 identity + DOC_INDEX.json)

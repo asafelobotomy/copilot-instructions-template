@@ -17,7 +17,7 @@ setup_sandbox() {
   local ver="${1:-1.2.3}"
   SANDBOX=$(mktemp -d)
   # Minimal tree matching the paths the script targets
-  mkdir -p "$SANDBOX/template"
+  mkdir -p "$SANDBOX/template" "$SANDBOX/.github"
   echo "$ver" > "$SANDBOX/VERSION.md"
   cat > "$SANDBOX/template/copilot-instructions.md" <<'INST'
 # Copilot Instructions Template
@@ -30,6 +30,12 @@ INST
 
   printf 'Current template version: **0.0.0** <!-- x-release-please-version --> — see CHANGELOG.md.\n' \
     > "$SANDBOX/README.md"
+
+  cat > "$SANDBOX/.github/copilot-instructions.md" <<'DVINST'
+# Developer Instructions — copilot-instructions-template
+
+> Role: AI developer for this repository. Template version: 0.0.0 | Updated: 2025-01-01
+DVINST
 }
 
 teardown_sandbox() {
@@ -64,6 +70,8 @@ exit_code=$?
 assert_success "exits 0" "$exit_code"
 assert_file_contains "copilot-instructions updated" "$SANDBOX/template/copilot-instructions.md" "Template version\*\*: 1.2.3"
 assert_file_not_contains "old version gone"         "$SANDBOX/template/copilot-instructions.md" "Template version\*\*: 0.0.0"
+assert_file_contains "dev-instructions updated"     "$SANDBOX/.github/copilot-instructions.md"  "Template version: 1.2.3"
+assert_file_not_contains "dev-instructions old ver" "$SANDBOX/.github/copilot-instructions.md"  "Template version: 0.0.0"
 assert_file_contains "readme updated"              "$SANDBOX/README.md"                         "\*\*1.2.3\*\*"
 assert_file_not_contains "readme old version gone" "$SANDBOX/README.md"                         "\*\*0.0.0\*\*"
 assert_file_contains "manifest updated"             "$SANDBOX/.release-please-manifest.json"   '"1.2.3"'

@@ -1,6 +1,6 @@
 # Developer Instructions — copilot-instructions-template
 
-> Role: AI developer for this repository. Template version: 3.3.2 | Updated: 2026-02-27
+> Role: AI developer for this repository. Template version: 4.1.1 | Updated: 2026-03-29
 >
 > **⚡ Critical Reminders** — every session, every task:
 >

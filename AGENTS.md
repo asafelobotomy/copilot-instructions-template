@@ -65,7 +65,7 @@ These files are created in the consumer project during setup, not in this templa
 | Action | Trigger phrase |
 |--------|----------------|
 | First-time setup | *"Setup from asafelobotomy/copilot-instructions-template"* |
-| Update instructions | *"Update your instructions"* |
+| Update instructions | *"Update your instructions"* / *"Check for instruction updates"* / *"Update from copilot-instructions-template"* / *"Sync instructions with the template"* / *"Check the template for updates"* |
 | Force update check | *"Force check instruction updates"* |
 | Restore backup | *"Restore instructions from backup"* |
 | Health check | *"Run health check"* / *"Doctor check"* |

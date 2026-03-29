@@ -31,7 +31,7 @@ Your role: perform a comprehensive, read-only health check on every file that
 Copilot reads or maintains. Surface all issues with severity ratings. Do not
 modify any files — diagnosis only.
 
-- Apply the Structured Thinking Discipline (§5): run each check (D1–D13)
+- Apply the Structured Thinking Discipline (§5): run each check (D1–D14)
   sequentially. If a check requires data from a prior check, reuse it — do not
   re-read or re-fetch. If a fetch fails, flag it and move to the next check.
 
@@ -366,12 +366,75 @@ Compare local counts against upstream `DOC_INDEX.counts`:
 Flag: `[HIGH]` if any category is below upstream count.
 Flag: `[INFO]` if any category exceeds upstream count (user additions).
 
+### D14 — Static audit (copilot_audit.py)
+
+> **Available in this developer repo only.** Skip in consumer repos that have not
+> installed `scripts/copilot_audit.py`.
+
+Check if the audit script is present:
+
+```bash
+[[ -f scripts/copilot_audit.py ]] && echo PRESENT || echo ABSENT
+```
+
+If present, invoke it:
+
+```bash
+python3 scripts/copilot_audit.py --root . --output json
+```
+
+Parse the JSON output. Map findings to the report:
+
+| Script severity | Report flag |
+|-----------------|-------------|
+| CRITICAL        | `[CRITICAL]` |
+| HIGH            | `[HIGH]` |
+| WARN            | `[WARN]` |
+| INFO            | `[INFO]` |
+
+Include each finding's `file` and `message` verbatim. The script exit code mirrors
+overall severity: exit 0 = no CRITICAL/HIGH; exit 1 = at least one CRITICAL or HIGH.
+
+Checks covered by D14 (these overlap with D1–D13 but use deterministic static
+analysis rather than conversational inspection):
+
+| ID | Scope |
+|----|-------|
+| A1 | Agent frontmatter completeness |
+| A2 | Agent handoff target resolution |
+| A3 | Agent files: no unresolved placeholders |
+| I1 | Instructions placeholder separation |
+| I2 | Consumer template line count / token budget |
+| I3 | `.instructions.md` frontmatter + applyTo |
+| P1 | `.prompt.md` mode value validity |
+| S1 | Skill name matches directory |
+| S2 | Skill size constraints |
+| M1 | MCP config valid JSON + servers key |
+| M2 | MCP no npx anti-patterns |
+| M3 | MCP no literal secrets in env |
+| H1 | Hooks config: exists and valid JSON |
+| H2 | Hooks config: all referenced scripts exist |
+| SH1 | Hook scripts: shebang present |
+| SH2 | Hook scripts: set -euo pipefail |
+| SH3 | Hook scripts: bash syntax check |
+| VS1 | VS Code settings valid JSON + plugin paths |
+
+If the script is absent, note `[INFO] D14 — copilot_audit.py not found; static
+audit skipped` and continue.
+| Agents   | 10       | 10    | OK     |
+| Skills   | 15       | 14    | MISSING 1 |
+| Hooks (shell) | 9   | 9     | OK     |
+```
+
+Flag: `[HIGH]` if any category is below upstream count.
+Flag: `[INFO]` if any category exceeds upstream count (user additions).
+
 ---
 
 ## Report format
 
 After all checks, print a structured health report with sections for each check
-(D1–D13), showing findings or "OK". End with a summary counting
+(D1–D14), showing findings or "OK". End with a summary counting
 CRITICAL/HIGH/WARN/INFO/OK and an overall status:
 
 - **HEALTHY** — zero CRITICAL or HIGH findings.

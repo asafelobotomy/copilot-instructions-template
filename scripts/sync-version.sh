@@ -48,6 +48,9 @@ sub(root / "README.md",
 sub(root / ".release-please-manifest.json",
     r'("\."\s*:\s*")\d+\.\d+\.\d+(")',
     rf'\g<1>{version}\g<2>')
+sub(root / ".github/copilot-instructions.md",
+    r'(Template version: )\d+\.\d+\.\d+',
+    rf'\g<1>{version}')
 PY
 
 echo "✅ Synced version references from VERSION.md ($VERSION)"

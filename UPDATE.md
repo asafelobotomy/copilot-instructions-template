@@ -228,6 +228,7 @@ contains a path not listed in MIGRATION.md, include it in the manifest regardles
 | `template/workspace/*.md` | `.copilot/workspace/*.md` | Workspace identity |
 | `template/workspace/DOC_INDEX.json` | `.copilot/workspace/DOC_INDEX.json` | Doc index |
 | `template/copilot-instructions.md` | `.github/copilot-instructions.md` | Handled by U5 Step 2 |
+| `template/copilot-setup-steps.yml` | `.github/workflows/copilot-setup-steps.yml` | GitHub Actions workflow |
 | `template/CLAUDE.md` | `CLAUDE.md` | Claude compat file |
 | `starter-kits/<kit>/**` | `.github/starter-kits/<kit>/**` | Only kits already installed |
 
@@ -707,6 +708,7 @@ for f in \
   .github/hooks/scripts/*.ps1 \
   .github/instructions/*.instructions.md \
   .github/prompts/*.prompt.md \
+  .github/workflows/copilot-setup-steps.yml \
   .copilot/workspace/*.md \
   .copilot/workspace/DOC_INDEX.json; do
   [ -f "$f" ] || continue
@@ -745,6 +747,7 @@ Updated: YYYY-MM-DD
 .github/agents/security.agent.md=<hash>
 .github/agents/setup.agent.md=<hash>
 .github/agents/update.agent.md=<hash>
+.github/workflows/copilot-setup-steps.yml=<hash>
 ... (one line per installed companion file)
 -->
 

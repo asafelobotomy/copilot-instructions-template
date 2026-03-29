@@ -14,7 +14,7 @@ the next tagged version (listed in **Includes**).
 
 - **Sections changed**: Which `§N` sections of `copilot-instructions.md` were modified.
 - **Sections added**: New `§N` sections introduced (consumers upgrading from before this version will not have them).
-- **Companion files**: Files outside `copilot-instructions.md` that were added or updated. The update protocol offers these to the user.
+- **Companion files**: Files outside `copilot-instructions.md` that were added or updated. The update protocol offers these to the user. **Consumer-deliverable only** — paths matching the Excluded paths list in UPDATE.md U5 Step 3 (`tests/`, `scripts/`, `.github/workflows/`, `SETUP.md`, `UPDATE.md`, `MIGRATION.md`, `AGENTS.md`, `README.md`, `CHANGELOG.md`, `MODELS.md`, etc.) are template-internal and are not offered to consumers even if they appear in historical entries.
 - **New placeholders**: `{{PLACEHOLDER}}` tokens introduced in `§10` that consumers need to resolve.
 - **Manual actions**: Steps that require human intervention beyond accepting section updates.
 
@@ -93,7 +93,7 @@ and skill files.
 |----------|-----------------|----------------|----------|
 | Yes | §2, §13 | §13 | v3.4.1 |
 
-**What changed**: Adds §13 MCP Protocol (section count 12 → 13); §2 gains Test Coverage Review with local recommendations and CI workflow generation; Setup interview expands to 22 questions (E22 Expert tier). Includes all v3.4.x CI-fix patches.
+**What changed**: Adds §13 MCP Protocol (section count 12 → 13); §2 gains Test Coverage Review with local recommendations and CI workflow generation; Setup interview expands to 22 questions (E22 Expert tier). Includes all v3.4.x CI-fix patches. Template-repo docs (`SETUP.md`, `UPDATE.md`, `MIGRATION.md`) also updated but are not consumer-deliverable.
 
 **Breaking**: §13 is a new section — consumers upgrading from v3.x will not have it and must add it manually or re-run setup.
 
@@ -101,12 +101,7 @@ and skill files.
 
 **Companion files added**: none
 
-**Companion files updated**:
-
-| Destination | Template source | Action |
-|-------------|----------------|--------|
-| `.github/copilot-instructions.md` | `template/copilot-instructions.md` | Updated (§2 + new §13) |
-| `SETUP.md` | `SETUP.md` | Updated (E22, §2.12 MCP scaffold step) |
+**Companion files updated**: none
 
 **Manual actions**: Add `## §13 — MCP Protocol` section to your `.github/copilot-instructions.md` if upgrading from v3.x without re-running setup.
 
