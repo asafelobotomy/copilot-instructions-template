@@ -363,6 +363,51 @@ assert_success "real repo exits 0" "$exit_code"
 assert_contains "real repo HEALTHY" "$out" '"status": "HEALTHY"'
 echo ""
 
+# ── 17. H2 — missing PowerShell hook script ──────────────────────────────────
+echo "17. H2: missing PowerShell hook script triggers WARN"
+setup_sandbox
+cat > "$SANDBOX/.github/hooks/copilot-hooks.json" <<'JSON'
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "./.github/hooks/scripts/session-start.sh",
+        "windows": "powershell -File .github\\hooks\\scripts\\missing-session-start.ps1",
+        "timeout": 10
+      }
+    ]
+  }
+}
+JSON
+out=$(run_audit)
+exit_code=$?
+assert_success "exits 0 on WARN-only H2" "$exit_code"
+assert_contains "H2 reports missing PowerShell script" "$out" 'missing-session-start.ps1'
+teardown_sandbox
+echo ""
+
+# ── 18. VS1 — invalid customization locations in settings.json ──────────────
+echo "18. VS1: invalid customization paths in settings.json trigger WARN"
+setup_sandbox
+cat > "$SANDBOX/.vscode/settings.json" <<'JSON'
+{
+  "chat.plugins.paths": [".copilot/plugins/missing.json"],
+  "chat.instructionsFilesLocations": [".github/missing-instructions"],
+  "chat.promptFilesLocations": [".github/missing-prompts"],
+  "chat.agentFilesLocations": [".github/missing-agents"],
+  "chat.agentSkillsLocations": [".github/missing-skills"],
+  "chat.hookFilesLocations": [".github/missing-hooks"]
+}
+JSON
+out=$(run_audit)
+exit_code=$?
+assert_success "VS1 WARN-only still exits 0" "$exit_code"
+assert_contains "VS1 reports missing plugin path" "$out" 'chat.plugins.paths entry not found'
+assert_contains "VS1 reports missing instructions path" "$out" 'chat.instructionsFilesLocations entry not found'
+teardown_sandbox
+echo ""
+
 # ── Summary ───────────────────────────────────────────────────────────────────
 echo "Results: $PASS passed, $FAIL failed"
 [[ $FAIL -eq 0 ]]

@@ -421,13 +421,6 @@ analysis rather than conversational inspection):
 
 If the script is absent, note `[INFO] D14 — copilot_audit.py not found; static
 audit skipped` and continue.
-| Agents   | 10       | 10    | OK     |
-| Skills   | 15       | 14    | MISSING 1 |
-| Hooks (shell) | 9   | 9     | OK     |
-```
-
-Flag: `[HIGH]` if any category is below upstream count.
-Flag: `[INFO]` if any category exceeds upstream count (user additions).
 
 ---
 

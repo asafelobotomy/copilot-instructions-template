@@ -481,14 +481,32 @@ def check_h2_hooks_scripts_exist(root: pathlib.Path) -> CheckResult:
             data = json.loads(hooks_file.read_text(encoding="utf-8", errors="replace"))
         except json.JSONDecodeError:
             continue  # H1 already flagged this
-        # Collect all string values that look like shell script paths
         raw = json.dumps(data)
+        # .sh scripts — values are direct paths like "./.github/hooks/scripts/session-start.sh"
         for script_path in re.findall(r'"([^"]+\.sh)"', raw):
-            # Paths may be absolute (from repo root) or relative to hooks dir
             candidate = root / script_path.lstrip("/")
             if not candidate.exists():
-                result.findings.append(Finding("H2", rel, HIGH,
-                                               f"Referenced script not found: {script_path}"))
+                result.findings.append(Finding(
+                    "H2",
+                    rel,
+                    HIGH,
+                    f"Referenced script not found: {script_path}",
+                ))
+        # .ps1 scripts — often appear in windows commands like
+        # "powershell -File .github\\hooks\\scripts\\session-start.ps1"
+        for ps_path in re.findall(r'"[^"]*?([./A-Za-z0-9_\\\\/-]+\.ps1)"', raw):
+            norm = ps_path.replace("\\", "/")
+            rel_path = norm.lstrip("/")
+            if rel_path.startswith("./"):
+                rel_path = rel_path[2:]
+            candidate = root / rel_path
+            if not candidate.exists():
+                result.findings.append(Finding(
+                    "H2",
+                    rel,
+                    WARN,
+                    f"Referenced script not found: {ps_path}",
+                ))
     return result
 
 
@@ -564,8 +582,12 @@ def check_sh3_bash_syntax(root: pathlib.Path) -> CheckResult:
 
 
 def check_vs1_settings_plugins(root: pathlib.Path) -> CheckResult:
-    """VS1 — .vscode/settings.json: valid JSON; chat.plugins.paths entries resolve."""
-    result = CheckResult("VS1", "VS Code settings: JSON valid + plugin paths resolve")
+    """VS1 — .vscode/settings.json: valid JSON + customization paths resolve.
+
+    Validates plugin paths plus the Copilot customization location settings so
+    that agents, prompts, skills, instructions, and hooks are discoverable.
+    """
+    result = CheckResult("VS1", "VS Code settings: JSON valid + customization paths resolve")
     settings_file = root / ".vscode" / "settings.json"
     if not settings_file.exists():
         result.findings.append(Finding("VS1", ".vscode/settings.json", INFO,
@@ -578,14 +600,33 @@ def check_vs1_settings_plugins(root: pathlib.Path) -> CheckResult:
         result.findings.append(Finding("VS1", rel, CRITICAL,
                                        f"Invalid JSON: {exc}"))
         return result
-    plugin_paths = data.get("chat.plugins.paths", [])
-    if isinstance(plugin_paths, list):
-        for p in plugin_paths:
-            if isinstance(p, str):
-                resolved = pathlib.Path(p) if pathlib.Path(p).is_absolute() else root / p
-                if not resolved.exists():
-                    result.findings.append(Finding("VS1", rel, WARN,
-                                                   f"chat.plugins.paths entry not found: {p}"))
+
+    def _check_path_list(key: str, base: pathlib.Path = root) -> None:
+        paths = data.get(key, [])
+        if not isinstance(paths, list):
+            return
+        for p in paths:
+            if not isinstance(p, str):
+                continue
+            resolved = pathlib.Path(p) if pathlib.Path(p).is_absolute() else base / p
+            if not resolved.exists():
+                result.findings.append(Finding(
+                    "VS1",
+                    rel,
+                    WARN,
+                    f"{key} entry not found: {p}",
+                ))
+
+    # Plugin bundles
+    _check_path_list("chat.plugins.paths")
+
+    # Copilot customization locations — all relative to workspace root
+    _check_path_list("chat.instructionsFilesLocations")
+    _check_path_list("chat.promptFilesLocations")
+    _check_path_list("chat.agentFilesLocations")
+    _check_path_list("chat.agentSkillsLocations")
+    _check_path_list("chat.hookFilesLocations")
+
     return result
 
 
