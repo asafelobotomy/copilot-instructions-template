@@ -36,7 +36,7 @@ jobs:
           if ! git diff --quiet; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add template/copilot-instructions.md README.md .release-please-manifest.json
+            git add template/copilot-instructions.md README.md .release-please-manifest.json .github/copilot-instructions.md
             git commit -m "chore: sync version references [skip ci]"
             git push
           fi
