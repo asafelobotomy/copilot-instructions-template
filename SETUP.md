@@ -1129,7 +1129,7 @@ SETUP COMPLETE — copilot-instructions-template vX.Y.Z
 ✓ .github/skills/                   15 starter skills
 ✓ .github/instructions/             N path-specific stubs
 ✓ .github/prompts/                  6 slash-command prompts
-✓ .github/hooks/                    hooks config + 14 scripts (7 sh + 7 ps1)
+✓ .github/hooks/                    hooks config + 17 scripts (9 sh + 8 ps1)
 ✓ .github/starter-kits/             N starter-kit plugins (or "none matched")
 ✓ .copilot/workspace/               9 workspace files (8 identity + DOC_INDEX.json)
 ✓ CHANGELOG.md                      [created / already existed]

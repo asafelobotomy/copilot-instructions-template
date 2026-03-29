@@ -240,10 +240,7 @@ def check_i2_instructions_length(root: pathlib.Path) -> CheckResult:
 def check_i3_instruction_stubs(root: pathlib.Path) -> CheckResult:
     """I3 — .instructions.md files: frontmatter present; applyTo non-empty."""
     result = CheckResult("I3", "Instruction stub frontmatter")
-    dirs = [
-        root / ".github" / "instructions",
-        root / "template" / "instructions",
-    ]
+    dirs = _instruction_dirs(root)
     found = False
     for d in dirs:
         for ifile in sorted(d.glob("*.instructions.md")) if d.is_dir() else []:
@@ -265,14 +262,70 @@ def check_i3_instruction_stubs(root: pathlib.Path) -> CheckResult:
     return result
 
 
-def check_p1_prompt_mode(root: pathlib.Path) -> CheckResult:
-    """P1 — .prompt.md files: known mode value if present."""
-    result = CheckResult("P1", "Prompt file frontmatter")
-    valid_modes = {"ask", "edit", "agent", "generate"}
-    dirs = [
+def _instruction_dirs(root: pathlib.Path) -> list[pathlib.Path]:
+    """Return all directories that may contain .instructions.md files.
+
+    Includes both core instruction stubs and starter-kit instruction bundles.
+    """
+    dirs: list[pathlib.Path] = [
+        root / ".github" / "instructions",
+        root / "template" / "instructions",
+    ]
+    starter_root = root / "starter-kits"
+    if starter_root.is_dir():
+        for kit in starter_root.iterdir():
+            if kit.is_dir():
+                kit_instructions = kit / "instructions"
+                if kit_instructions.is_dir():
+                    dirs.append(kit_instructions)
+    return dirs
+
+
+def _prompt_dirs(root: pathlib.Path) -> list[pathlib.Path]:
+    """Return all directories that may contain prompt files.
+
+    Includes both core prompts and starter-kit prompt bundles.
+    """
+    dirs: list[pathlib.Path] = [
         root / ".github" / "prompts",
         root / "template" / "prompts",
     ]
+    # Starter-kit prompts (delivered verbatim to consumers)
+    starter_root = root / "starter-kits"
+    if starter_root.is_dir():
+        for kit in starter_root.iterdir():
+            if kit.is_dir():
+                kit_prompts = kit / "prompts"
+                if kit_prompts.is_dir():
+                    dirs.append(kit_prompts)
+    return dirs
+
+
+def _skill_dirs(root: pathlib.Path) -> list[pathlib.Path]:
+    """Return all directories that may contain SKILL.md files."""
+    dirs: list[pathlib.Path] = [
+        root / ".github" / "skills",
+        root / "template" / "skills",
+    ]
+    starter_root = root / "starter-kits"
+    if starter_root.is_dir():
+        for kit in starter_root.iterdir():
+            if kit.is_dir():
+                kit_skills = kit / "skills"
+                if kit_skills.is_dir():
+                    dirs.append(kit_skills)
+    return dirs
+
+
+def check_p1_prompt_mode(root: pathlib.Path) -> CheckResult:
+    """P1 — .prompt.md files: frontmatter matches VS Code prompt schema.
+
+    Contract in this repo:
+    - `description:` and `agent:` are required.
+    - `mode:` is deprecated and must not appear.
+    """
+    result = CheckResult("P1", "Prompt file frontmatter")
+    dirs = _prompt_dirs(root)
     found = False
     for d in dirs:
         for pfile in sorted(d.glob("*.prompt.md")) if d.is_dir() else []:
@@ -284,11 +337,17 @@ def check_p1_prompt_mode(root: pathlib.Path) -> CheckResult:
                                                "No YAML frontmatter block"))
                 continue
             fm = parse_frontmatter(text)
-            mode = fm.get("mode", "")
-            if isinstance(mode, str) and mode and mode not in valid_modes:
+            desc = fm.get("description", "")
+            agent = fm.get("agent", "")
+            if not isinstance(desc, str) or not desc:
                 result.findings.append(Finding("P1", rel, HIGH,
-                                               f"Unknown mode: '{mode}' "
-                                               f"(valid: {', '.join(sorted(valid_modes))})"))
+                                               "Missing 'description' field in frontmatter"))
+            if not isinstance(agent, str) or not agent:
+                result.findings.append(Finding("P1", rel, HIGH,
+                                               "Missing 'agent' field in frontmatter"))
+            if "mode" in fm and fm.get("mode"):
+                result.findings.append(Finding("P1", rel, HIGH,
+                                               "Deprecated 'mode' field present — use 'agent' instead"))
     if not found:
         result.findings.append(Finding("P1", ".github/prompts/", INFO,
                                        "No .prompt.md files found"))
@@ -298,10 +357,7 @@ def check_p1_prompt_mode(root: pathlib.Path) -> CheckResult:
 def check_s1_skill_name_matches_dir(root: pathlib.Path) -> CheckResult:
     """S1 — SKILL.md: name in frontmatter must match parent directory name."""
     result = CheckResult("S1", "Skill name matches directory")
-    dirs = [
-        root / ".github" / "skills",
-        root / "template" / "skills",
-    ]
+    dirs = _skill_dirs(root)
     found = False
     for d in dirs:
         if not d.is_dir():
@@ -329,10 +385,7 @@ def check_s1_skill_name_matches_dir(root: pathlib.Path) -> CheckResult:
 def check_s2_skill_size(root: pathlib.Path) -> CheckResult:
     """S2 — SKILL.md: body ≤ 500 lines; description ≤ 1024 chars."""
     result = CheckResult("S2", "Skill size constraints")
-    dirs = [
-        root / ".github" / "skills",
-        root / "template" / "skills",
-    ]
+    dirs = _skill_dirs(root)
     for d in dirs:
         if not d.is_dir():
             continue
@@ -581,6 +634,153 @@ def check_sh3_bash_syntax(root: pathlib.Path) -> CheckResult:
     return result
 
 
+def _iter_ps_scripts(root: pathlib.Path) -> Iterator[pathlib.Path]:
+    """Yield all .ps1 files under .github/hooks/scripts/ and template/hooks/scripts/."""
+    for d in [
+        root / "template" / "hooks" / "scripts",
+        root / ".github" / "hooks" / "scripts",
+    ]:
+        if d.is_dir():
+            yield from sorted(d.glob("*.ps1"))
+
+
+def check_ps1_basic_sanity(root: pathlib.Path) -> CheckResult:
+    """PS1 — PowerShell hook scripts: basic sanity checks.
+
+    Verifies that scripts are non-empty and opt into stricter error handling
+    via Set-StrictMode where present.
+    """
+    result = CheckResult("PS1", "PowerShell hook scripts: basic sanity")
+    found = False
+    has_pwsh = _shutil_which("pwsh")
+    for ps1 in _iter_ps_scripts(root):
+        found = True
+        rel = str(ps1.relative_to(root))
+        text = ps1.read_text(encoding="utf-8", errors="replace")
+        if not text.strip():
+            result.findings.append(Finding("PS1", rel, HIGH,
+                                           "Script is empty"))
+            continue
+        # Recommend, but do not require, Set-StrictMode usage.
+        # This is advisory-only (INFO) so a repo can still be
+        # HEALTHY while gradually tightening PowerShell hooks.
+        if "Set-StrictMode" not in text:
+            result.findings.append(Finding("PS1", rel, INFO,
+                                           "Set-StrictMode not enabled — consider adding for safer hooks"))
+
+        # Optional static syntax check when PowerShell is available.
+        if has_pwsh:
+            ps_path = str(ps1).replace("'", "''")
+            cmd = (
+                "$errors = $null; "
+                f"[System.Management.Automation.Language.Parser]::ParseFile('{ps_path}',"
+                "[ref]$null,[ref]$errors) > $null; "
+                "if ($errors -and $errors.Count -gt 0) { $errors | Out-String; exit 1 }"
+            )
+            proc = subprocess.run(
+                ["pwsh", "-NoLogo", "-NoProfile", "-Command", cmd],
+                capture_output=True,
+                text=True,
+            )
+            if proc.returncode != 0:
+                msg = (proc.stderr or proc.stdout).strip()
+                if not msg:
+                    msg = "PowerShell syntax error (see pwsh output)"
+                result.findings.append(Finding("PS1", rel, HIGH, msg))
+    if not found:
+        result.findings.append(Finding("PS1", ".github/hooks/scripts/", INFO,
+                                       "No PowerShell hook scripts found"))
+    return result
+
+
+def check_k1_starter_kit_plugins(root: pathlib.Path) -> CheckResult:
+    """K1 — starter-kit plugin.json files: valid JSON + basic metadata."""
+    result = CheckResult("K1", "Starter-kit plugins: valid JSON + metadata")
+    kits_root = root / "starter-kits"
+    if not kits_root.is_dir():
+        result.findings.append(Finding("K1", "starter-kits/", INFO,
+                                       "No starter-kits directory — skip"))
+        return result
+    for kit_dir in sorted(p for p in kits_root.iterdir() if p.is_dir()):
+        plugin_path = kit_dir / "plugin.json"
+        rel = str(plugin_path.relative_to(root))
+        if not plugin_path.exists():
+            result.findings.append(Finding("K1", rel, HIGH,
+                                           "Missing plugin.json for starter kit"))
+            continue
+        try:
+            data = json.loads(plugin_path.read_text(encoding="utf-8", errors="replace"))
+        except json.JSONDecodeError as exc:
+            result.findings.append(Finding("K1", rel, CRITICAL,
+                                           f"Invalid JSON: {exc}"))
+            continue
+        for key in ("name", "displayName", "description", "version"):
+            val = data.get(key)
+            if not isinstance(val, str) or not val:
+                result.findings.append(Finding("K1", rel, HIGH,
+                                               f"Missing or empty '{key}' field in starter-kit plugin"))
+    return result
+
+
+def check_k2_starter_registry(root: pathlib.Path) -> CheckResult:
+    """K2 — starter-kits REGISTRY.json consistency.
+
+    Ensures that every listed kit has a directory and that all referenced
+    files exist. Also warns about kit directories not mentioned in REGISTRY.
+    """
+    result = CheckResult("K2", "Starter-kits registry consistency")
+    kits_root = root / "starter-kits"
+    registry_path = kits_root / "REGISTRY.json"
+    if not registry_path.exists():
+        result.findings.append(Finding("K2", str(registry_path.relative_to(root)), INFO,
+                                       "REGISTRY.json not found — starter-kits registry missing"))
+        return result
+
+    try:
+        data = json.loads(registry_path.read_text(encoding="utf-8", errors="replace"))
+    except json.JSONDecodeError as exc:
+        result.findings.append(Finding("K2", str(registry_path.relative_to(root)), CRITICAL,
+                                       f"Invalid JSON: {exc}"))
+        return result
+
+    kits = data.get("kits", [])
+    if not isinstance(kits, list):
+        return result
+
+    seen: set[str] = set()
+    for kit in kits:
+        if not isinstance(kit, dict):
+            continue
+        name = kit.get("name")
+        if not isinstance(name, str) or not name:
+            result.findings.append(Finding("K2", str(registry_path.relative_to(root)), HIGH,
+                                           "Kit entry missing 'name' field"))
+            continue
+        seen.add(name)
+        kit_dir = kits_root / name
+        if not kit_dir.is_dir():
+            result.findings.append(Finding("K2", str(kit_dir.relative_to(root)), HIGH,
+                                           f"Kit '{name}' listed in REGISTRY.json but directory is missing"))
+            continue
+        files = kit.get("files", [])
+        if not isinstance(files, list):
+            continue
+        for rel_path in files:
+            if not isinstance(rel_path, str):
+                continue
+            candidate = kit_dir / rel_path
+            if not candidate.exists():
+                result.findings.append(Finding("K2", str(registry_path.relative_to(root)), HIGH,
+                                               f"Kit '{name}': file listed in REGISTRY.json missing: {rel_path}"))
+
+    # Warn about kit directories not registered in REGISTRY.json
+    for kit_dir in sorted(p for p in kits_root.iterdir() if p.is_dir()):
+        if kit_dir.name not in seen:
+            result.findings.append(Finding("K2", str(kit_dir.relative_to(root)), WARN,
+                                           "Starter-kit directory not listed in REGISTRY.json"))
+    return result
+
+
 def check_vs1_settings_plugins(root: pathlib.Path) -> CheckResult:
     """VS1 — .vscode/settings.json: valid JSON + customization paths resolve.
 
@@ -649,6 +849,8 @@ ALL_CHECKS = [
     check_p1_prompt_mode,
     check_s1_skill_name_matches_dir,
     check_s2_skill_size,
+    check_k1_starter_kit_plugins,
+    check_k2_starter_registry,
     check_m1_mcp_valid_json,
     check_m2_mcp_no_npm_antipatterns,
     check_m3_mcp_no_secrets,
@@ -657,6 +859,7 @@ ALL_CHECKS = [
     check_sh1_shebang,
     check_sh2_pipefail,
     check_sh3_bash_syntax,
+    check_ps1_basic_sanity,
     check_vs1_settings_plugins,
 ]
 

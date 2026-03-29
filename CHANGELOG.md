@@ -7,6 +7,29 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [4.2.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v4.1.1...v4.2.0) (2026-03-29)
+
+
+### Features
+
+* **scripts/tests:** add `copilot_audit.py` static audit tool with unit tests, wired into the Doctor agent as D14 and the CI suite.
+* **starter-kits:** extend static audit coverage to starter-kit prompts, skills, instructions, plugin manifests, and the starter-kits registry.
+
+
+### Bug Fixes
+
+* **hooks:** treat PowerShell `Set-StrictMode` as advisory and add optional PowerShell syntax validation when `pwsh` is available.
+* **docs/tests:** align Doctor D14 report range, setup hook counts, and customization contracts with the new static audit behavior.
+
+## [4.1.1](https://github.com/asafelobotomy/copilot-instructions-template/compare/v4.1.0...v4.1.1) (2026-03-28)
+
+
+### Bug Fixes
+
+* **docs:** resolve markdownlint errors in agent and research docs ([c50704c](https://github.com/asafelobotomy/copilot-instructions-template/commit/c50704c))
+
+## [Unreleased]
+
 ## [4.1.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v4.0.0...v4.1.0) (2026-03-28)
 
 
@@ -33,15 +56,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 * **docs:** improve formatting and clarity in agent and skill documentation ([1ad8019](https://github.com/asafelobotomy/copilot-instructions-template/commit/1ad8019458f89ff2647de8e19d8c3ea13c5c32d6))
 * **hooks:** harden scan-secrets, normalize JSON parsing, add read-only agent guards ([77f74c3](https://github.com/asafelobotomy/copilot-instructions-template/commit/77f74c33f8b5f856c48c80cbbe7bd2fd7d5dfd55))
 * **release:** automate MIGRATION.md stub and anchor [Unreleased] in CHANGELOG ([63c20ec](https://github.com/asafelobotomy/copilot-instructions-template/commit/63c20ec3ff78dcbb18f77b427e0b1e5c74aa9c28))
-
-## [4.1.1](https://github.com/asafelobotomy/copilot-instructions-template/compare/v4.1.0...v4.1.1) (2026-03-28)
-
-
-### Bug Fixes
-
-* **docs:** resolve markdownlint errors in agent and research docs ([c50704c](https://github.com/asafelobotomy/copilot-instructions-template/commit/c50704c))
-
-## [Unreleased]
 
 ---
 

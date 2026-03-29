@@ -24,7 +24,25 @@ the next tagged version (listed in **Includes**).
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<tag>/<template-source-path>
 ```
 
-**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0, v3.2.0, v3.3.0, v3.3.1, v3.3.2, v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1
+**Available tags**: v1.1.0, v1.4.0, v2.0.0, v2.1.0, v2.2.0, v3.0.0, v3.0.1, v3.0.2, v3.0.3, v3.0.4, v3.1.0, v3.2.0, v3.3.0, v3.3.1, v3.3.2, v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1, v4.2.0
+
+## v4.2.0
+
+| Breaking | Sections changed | Sections added | Includes |
+|----------|-----------------|----------------|----------|
+| No | None | None | v4.1.1 |
+
+**What changed**: Adds a static copilot_audit.py script and Doctor D14 integration for auditing Copilot-visible files, extends coverage to starter-kit prompts, skills, instructions, and registry metadata, and updates hooks and setup docs to match the new static audit behavior.
+
+**Breaking**: None
+
+**New placeholders**: None
+
+**Companion files added**: None
+
+**Companion files updated**: None
+
+**Manual actions**: None — changes are template-internal (scripts, tests, agents, and documentation) and do not alter consumer instructions.
 
 ## v4.1.0
 

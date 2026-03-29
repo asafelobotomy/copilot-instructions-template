@@ -149,10 +149,10 @@ if "raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.
     raise SystemExit("D13 must contain the upstream DOC_INDEX.json fetch URL")
 '
 
-assert_python "doctor report format covers D1-D13" '
+assert_python "doctor report format covers D1-D14" '
 text = (root / ".github/agents/doctor.agent.md").read_text(encoding="utf-8")
-if "D1\u2013D13" not in text and "D1-D13" not in text:
-    raise SystemExit("report format section must reference D1-D13 range")
+if "D1\u2013D14" not in text and "D1-D14" not in text:
+    raise SystemExit("report format section must reference D1-D14 range")
 '
 
 assert_python "doctor has fetch tool for upstream checks" '

@@ -25,6 +25,7 @@ setup_sandbox() {
   mkdir -p "$SANDBOX/template/prompts"
   mkdir -p "$SANDBOX/template/skills/my-skill"
   mkdir -p "$SANDBOX/.vscode"
+  mkdir -p "$SANDBOX/starter-kits/python"
 
   # Developer instructions — must have zero {{PLACEHOLDER}} tokens
   cat > "$SANDBOX/.github/copilot-instructions.md" <<'MD'
@@ -78,7 +79,8 @@ INST
   # Valid .prompt.md
   cat > "$SANDBOX/.github/prompts/commit.prompt.md" <<'PROMPT'
 ---
-mode: agent
+description: Commit helper
+agent: agent
 ---
 Write a commit message.
 PROMPT
@@ -109,6 +111,31 @@ SH
       "args": ["mcp-server-git"]
     }
   }
+}
+JSON
+
+  # Minimal starter-kit metadata (one kit with plugin + registry entry)
+  cat > "$SANDBOX/starter-kits/python/plugin.json" <<'JSON'
+{
+  "name": "python-starter-kit",
+  "displayName": "Python Starter Kit",
+  "description": "Sandbox starter kit",
+  "version": "1.0.0"
+}
+JSON
+
+  cat > "$SANDBOX/starter-kits/REGISTRY.json" <<'JSON'
+{
+  "schemaVersion": "1.0",
+  "description": "Sandbox registry",
+  "kits": [
+    {
+      "name": "python",
+      "displayName": "Python Starter Kit",
+      "description": "Sandbox starter kit",
+      "files": ["plugin.json"]
+    }
+  ]
 }
 JSON
 }
@@ -405,6 +432,41 @@ exit_code=$?
 assert_success "VS1 WARN-only still exits 0" "$exit_code"
 assert_contains "VS1 reports missing plugin path" "$out" 'chat.plugins.paths entry not found'
 assert_contains "VS1 reports missing instructions path" "$out" 'chat.instructionsFilesLocations entry not found'
+teardown_sandbox
+echo ""
+
+# ── 19. K1 — invalid starter-kit plugin JSON ────────────────────────────────
+echo "19. K1: invalid starter-kit plugin JSON triggers CRITICAL"
+setup_sandbox
+printf 'not json\n' > "$SANDBOX/starter-kits/python/plugin.json"
+out=$(run_audit)
+exit_code=$?
+assert_failure "exits non-zero on bad plugin" "$exit_code"
+assert_contains "K1 invalid plugin JSON" "$out" '"check_id": "K1"'
+teardown_sandbox
+echo ""
+
+# ── 20. K2 — REGISTRY references missing starter-kit files ─────────────────
+echo "20. K2: REGISTRY references missing starter-kit files triggers HIGH"
+setup_sandbox
+cat > "$SANDBOX/starter-kits/REGISTRY.json" <<'JSON'
+{
+  "schemaVersion": "1.0",
+  "description": "Sandbox registry with missing files",
+  "kits": [
+    {
+      "name": "python",
+      "displayName": "Python Starter Kit",
+      "description": "Sandbox kit",
+      "files": ["plugin.json", "skills/python-testing/SKILL.md"]
+    }
+  ]
+}
+JSON
+out=$(run_audit)
+exit_code=$?
+assert_failure "exits non-zero on missing starter-kit file" "$exit_code"
+assert_contains "K2 missing file" "$out" 'skills/python-testing/SKILL.md'
 teardown_sandbox
 echo ""
 
