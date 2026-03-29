@@ -60,7 +60,7 @@
 | <https://code.visualstudio.com/docs/copilot/customization/prompt-files> | `.prompt.md` frontmatter — description, name, argument-hint, agent, model, tools (all optional) | 2026-03-29 | prompts, audit, frontmatter |
 | <https://code.visualstudio.com/docs/copilot/customization/hooks> | 8 hook event types, file locations, JSON wire format, `chat.hookFilesLocations` defaults | 2026-03-29 | hooks, audit |
 | <https://code.visualstudio.com/docs/copilot/reference/mcp-configuration> | Full MCP JSON schema field reference — stdio, http/sse, sandbox, input variables, dev mode | 2026-03-29 | mcp, audit, schema |
-| <https://code.visualstudio.com/docs/copilot/reference/copilot-settings> | Complete chat.* and github.copilot.* settings reference; plugin/MCP settings | 2026-03-29 | settings, audit, reference |
+| <https://code.visualstudio.com/docs/copilot/reference/copilot-settings> | Complete chat.\* and github.copilot.\* settings reference; plugin/MCP settings | 2026-03-29 | settings, audit, reference |
 | <https://agentskills.io/specification> | Agent Skills spec — name/description constraints, allowed-tools, token budget (~100 tokens metadata, <5000 body) | 2026-03-29 | skills, validation, spec |
 | <https://raw.githubusercontent.com/agentskills/agentskills/main/skills-ref/README.md> | skills-ref CLI — validate, read-properties, to-prompt commands; Python API; marked "demo only" | 2026-03-29 | skills, validation, cli |
 | <https://github.com/openai/tiktoken> | tiktoken BPE tokeniser; cl100k_base is best offline proxy for Claude token counts (±10%) | 2026-03-29 | tokens, estimation, python |

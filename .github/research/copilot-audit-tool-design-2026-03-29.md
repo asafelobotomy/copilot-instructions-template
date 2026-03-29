@@ -84,6 +84,7 @@ workspace folder to the `.git` root and discovers all customisations at intermed
 levels. An audit tool must implement the same path-walking logic.
 
 **Sources:**
+
 - <https://code.visualstudio.com/docs/copilot/customization/custom-instructions>
 - <https://code.visualstudio.com/docs/copilot/customization/hooks>
 - <https://code.visualstudio.com/docs/copilot/reference/copilot-settings>
@@ -116,7 +117,7 @@ glob patterns (e.g., `**/*.ts`, `src/api/**`, `"**"` for all files).
 
 **Official CLI validator** (`skills-ref` from `agentskills/agentskills` repo):
 
-```
+```bash
 pip install git+https://github.com/agentskills/agentskills#subdirectory=skills-ref
 skills-ref validate ./my-skill          # exit 0 = valid, 1 = errors
 skills-ref read-properties ./my-skill   # JSON output of parsed fields
@@ -133,6 +134,7 @@ CI dependency.
 - `SKILL.md` body: < 5000 tokens recommended; keep body under 500 lines
 
 **Sources:**
+
 - <https://agentskills.io/specification>
 - <https://raw.githubusercontent.com/agentskills/agentskills/main/skills-ref/README.md>
 - <https://code.visualstudio.com/docs/copilot/customization/agent-skills>
@@ -144,6 +146,7 @@ CI dependency.
 **Configuration file:** `.vscode/mcp.json`
 
 **Top-level keys:**
+
 - `"servers"`: required object — map of server name → server config
 - `"inputs"`: optional array — input variable definitions for secrets
 
@@ -183,6 +186,7 @@ own schema checks. The MCP Inspector (`npx @modelcontextprotocol/inspector`) is 
 interactive debugging tool for running servers, not a config-file validator.
 
 **Sources:**
+
 - <https://code.visualstudio.com/docs/copilot/reference/mcp-configuration>
 - <https://code.visualstudio.com/docs/copilot/customization/mcp-servers>
 - <https://modelcontextprotocol.io/docs/tools/inspector>
@@ -217,6 +221,7 @@ for a static offline audit tool.
 the repository `anthropics/anthropic-tokenizer-python` returns HTTP 404.
 
 **Sources:**
+
 - <https://github.com/openai/tiktoken>
 - <https://agentskills.io/specification> (token budget guidance)
 
@@ -266,6 +271,7 @@ name=$(sed -n '/^---$/,/^---$/p' SKILL.md | yq '.name')
 parse or validate YAML frontmatter content.
 
 **Sources:**
+
 - <https://python-frontmatter.readthedocs.io/en/latest/>
 - <https://github.com/mikefarah/yq>
 
@@ -328,6 +334,7 @@ json.tool`. Custom implementation required in the audit tool. Extractable from t
 existing `tests/test-hook-*.sh` files in this repo.
 
 **Sources:**
+
 - <https://github.com/koalaman/shellcheck>
 - <https://code.visualstudio.com/docs/copilot/customization/hooks>
 
@@ -396,7 +403,7 @@ summary to populate its D1–D13 check results programmatically.
 
 ### Python dependencies
 
-```
+```text
 python-frontmatter>=1.1.0   # YAML frontmatter parsing
 jsonschema>=4.0.0            # schema-based field validation
 tiktoken>=0.7.0              # token estimation (optional; degrades gracefully)
