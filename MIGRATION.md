@@ -30,17 +30,40 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<t
 
 | Breaking | Sections changed | Sections added | Includes |
 |----------|-----------------|----------------|----------|
-| TBD | — | — | — |
+| No | §2, §13 | — | — |
 
-**What changed**: *(stub — fill in before the next release or immediately after)*
+**What changed**: Adds Extensions and Security agents; hardens agent invocation policies
+and read-only guardrails across all agent files; integrates `ask_questions` directives into
+SETUP.md; introduces dynamic agent and skill discovery in setup scripts; updates the Doctor
+agent with upstream baseline checks (D11–D13); improves cross-agent delegation and tool
+handoffs for comprehensive capability coverage; documentation formatting fixes across agents
+and skill files.
 
-**New placeholders**: none
+**Breaking**: None
 
-**Companion files added**: none
+**New placeholders**: None
 
-**Companion files updated**: none
+**Companion files added**:
 
-**Manual actions**: None
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/agents/extensions.agent.md` | `.github/agents/extensions.agent.md` | **New** (VS Code extension management agent) |
+| `.github/agents/security.agent.md` | `.github/agents/security.agent.md` | **New** (security audit agent) |
+
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/agents/coding.agent.md` | `.github/agents/coding.agent.md` | Updated (cross-agent delegation, tool handoffs) |
+| `.github/agents/doctor.agent.md` | `.github/agents/doctor.agent.md` | Updated (D11–D13 upstream baseline checks) |
+| `.github/agents/explore.agent.md` | `.github/agents/explore.agent.md` | Updated (read-only guardrail hardening) |
+| `.github/agents/fast.agent.md` | `.github/agents/fast.agent.md` | Updated (invocation policy hardening) |
+| `.github/agents/researcher.agent.md` | `.github/agents/researcher.agent.md` | Updated (tool handoffs and capability coverage) |
+| `.github/agents/review.agent.md` | `.github/agents/review.agent.md` | Updated (cross-agent delegation) |
+| `.github/agents/setup.agent.md` | `.github/agents/setup.agent.md` | Updated (`ask_questions` directives integrated) |
+| `.github/agents/update.agent.md` | `.github/agents/update.agent.md` | Updated (invocation policy hardening) |
+
+**Manual actions**: None — agent files are installed by setup/update; no manual edits required.
 
 ---
 

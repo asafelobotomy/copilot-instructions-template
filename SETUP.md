@@ -228,7 +228,7 @@ SETUP SUMMARY — copilot-instructions-template vX.Y.Z
 Files that will be CREATED:
   .github/copilot-instructions.md     (populated from template)
   .github/copilot-version.md          (installed template version)
-  .github/agents/*.agent.md           (8 model-pinned agents)
+  .github/agents/*.agent.md           (10 model-pinned agents)
   .github/skills/*/SKILL.md           (14 starter skills)
   .github/instructions/*.md           (path-specific stubs)
   .github/prompts/*.prompt.md         (slash command prompts)
@@ -363,46 +363,110 @@ Do not proceed with unresolved `{{...}}` tokens in the instructions file.
 > `template/` staging pattern; it avoids maintaining a redundant mirror for files that require
 > no token substitution and change infrequently.
 
-Create `.github/agents/` and write eight agent files. Fetch each from the template repository:
+Create `.github/agents/` and write all agent files. Use **dynamic discovery** to ensure new
+agents added to the template are never missed: fetch the repository tree and enumerate every
+`.agent.md` file at the canonical path.
 
-| Target path | Source URL |
-|-------------|-----------|
-| `.github/agents/setup.agent.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/setup.agent.md` |
-| `.github/agents/coding.agent.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/coding.agent.md` |
-| `.github/agents/review.agent.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/review.agent.md` |
-| `.github/agents/fast.agent.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/fast.agent.md` |
-| `.github/agents/update.agent.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/update.agent.md` |
-| `.github/agents/doctor.agent.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/doctor.agent.md` |
-| `.github/agents/researcher.agent.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/researcher.agent.md` |
-| `.github/agents/explore.agent.md` | `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/explore.agent.md` |
+**Step 1 — Enumerate agents via GitHub API tree**:
 
-Write each file verbatim to the target path. If any fetch fails, **stop immediately** and report the error.
+```text
+GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/git/trees/main?recursive=1
+Accept: application/vnd.github+json
+```
+
+Filter the `tree[]` array for entries where `type == "blob"` and `path` matches
+`.github/agents/*.agent.md`. Collect the full path list.
+
+> **Truncation guard**: if the response contains `"truncated": true`, the tree is incomplete
+> (repo exceeded the 100,000-entry or 7 MB limit). Fall back to the **known-agents table**
+> below instead of proceeding with the partial list, to guarantee no agent is silently missed.
+
+**Step 2 — Fetch and write each agent file**:
+
+For each agent path discovered in step 1, fetch verbatim from the template repository
+(substitute the actual agent filename for `<agent-path>`):
+
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/coding.agent.md
+```
+
+Construct the URL by replacing `coding.agent.md` with the filename from step 1.
+Write each file to the same relative path (`.github/agents/`) in the user's project.
+If any fetch fails, **stop immediately** and report the error.
+
+**Known agents** (current as of v4.1.1 — the dynamic step above supersedes this list and
+will discover any agents added in future releases):
+
+| Agent file |
+|------------|
+| `.github/agents/coding.agent.md` |
+| `.github/agents/doctor.agent.md` |
+| `.github/agents/explore.agent.md` |
+| `.github/agents/extensions.agent.md` |
+| `.github/agents/fast.agent.md` |
+| `.github/agents/researcher.agent.md` |
+| `.github/agents/review.agent.md` |
+| `.github/agents/security.agent.md` |
+| `.github/agents/setup.agent.md` |
+| `.github/agents/update.agent.md` |
+
+**Fallback** (if the API tree call is unavailable): fetch each agent in the known-agents
+table above using the same URL pattern as step 2 (substitute the agent filename).
+For example: `.github/agents/security.agent.md` →
+`https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/agents/security.agent.md`.
+If a file returns HTTP 404, skip it silently (it may have been renamed or removed).
 
 ---
 
 ## § 2.6 — Scaffold skill library
 
-Create `.github/skills/` and write the following skill files. Each skill goes in its own subdirectory. Fetch each from the template repository and write verbatim. If any fetch fails, **stop immediately**.
+Create `.github/skills/` and write all skill files. Use **dynamic discovery** (same approach as
+§ 2.5) to ensure new skills are never missed.
 
-Base URL: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.github/skills/`
+**Step 1 — Enumerate skills via GitHub API tree**:
 
-| Target path | Fetch suffix |
-|-------------|-------------|
+```text
+GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/git/trees/main?recursive=1
+```
+
+Filter for entries where `path` matches `template/skills/*/SKILL.md`. Collect the skill name
+from the subdirectory component.
+
+> **Truncation guard**: if the response contains `"truncated": true`, the tree is incomplete.
+> Fall back to the **known-skills table** below instead of continuing with the partial list.
+
+**Step 2 — Fetch and write each skill**:
+
+For each skill discovered, fetch its `SKILL.md` from the template repository
+(substitute the actual skill folder name for `<skill-name>`):
+
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/skills/conventional-commit/SKILL.md
+```
+
+Construct the URL by replacing `conventional-commit` with the skill directory name from
+step 1. Write to `.github/skills/<skill-name>/SKILL.md` in the user's project. If any
+fetch fails, **stop immediately**.
+
+**Known skills** (current as of v4.1.1 — the dynamic step above supersedes this list):
+
+| Target path | Fetch suffix (under `template/skills/`) |
+|-------------|----------------------------------------|
 | `.github/skills/agentic-workflows/SKILL.md` | `agentic-workflows/SKILL.md` |
-| `.github/skills/skill-creator/SKILL.md` | `skill-creator/SKILL.md` |
-| `.github/skills/fix-ci-failure/SKILL.md` | `fix-ci-failure/SKILL.md` |
-| `.github/skills/lean-pr-review/SKILL.md` | `lean-pr-review/SKILL.md` |
 | `.github/skills/conventional-commit/SKILL.md` | `conventional-commit/SKILL.md` |
 | `.github/skills/create-adr/SKILL.md` | `create-adr/SKILL.md` |
-| `.github/skills/mcp-builder/SKILL.md` | `mcp-builder/SKILL.md` |
-| `.github/skills/webapp-testing/SKILL.md` | `webapp-testing/SKILL.md` |
+| `.github/skills/extension-review/SKILL.md` | `extension-review/SKILL.md` |
+| `.github/skills/fix-ci-failure/SKILL.md` | `fix-ci-failure/SKILL.md` |
 | `.github/skills/issue-triage/SKILL.md` | `issue-triage/SKILL.md` |
-| `.github/skills/tool-protocol/SKILL.md` | `tool-protocol/SKILL.md` |
-| `.github/skills/skill-management/SKILL.md` | `skill-management/SKILL.md` |
+| `.github/skills/lean-pr-review/SKILL.md` | `lean-pr-review/SKILL.md` |
+| `.github/skills/mcp-builder/SKILL.md` | `mcp-builder/SKILL.md` |
 | `.github/skills/mcp-management/SKILL.md` | `mcp-management/SKILL.md` |
 | `.github/skills/plugin-management/SKILL.md` | `plugin-management/SKILL.md` |
-| `.github/skills/extension-review/SKILL.md` | `extension-review/SKILL.md` |
+| `.github/skills/skill-creator/SKILL.md` | `skill-creator/SKILL.md` |
+| `.github/skills/skill-management/SKILL.md` | `skill-management/SKILL.md` |
 | `.github/skills/test-coverage-review/SKILL.md` | `test-coverage-review/SKILL.md` |
+| `.github/skills/tool-protocol/SKILL.md` | `tool-protocol/SKILL.md` |
+| `.github/skills/webapp-testing/SKILL.md` | `webapp-testing/SKILL.md` |
 
 ---
 
@@ -814,7 +878,7 @@ chmod +x .github/hooks/scripts/*.sh
 
 ---
 
-## § 2.13 — Write version file and section fingerprints
+## § 2.13 — Write version file, section fingerprints, and file manifest
 
 Write the installed template version to `.github/copilot-version.md` in the user's project.
 
@@ -832,6 +896,29 @@ for i in $(seq 1 9); do
   fp=$(awk "/^## §${i} —/{found=1; next} /^## §/{if(found) exit} found{print}" \
     .github/copilot-instructions.md | sha256sum | cut -c1-12)
   echo "§${i}=${fp}"
+done
+echo "-->"
+```
+
+**Compute file-manifest hashes** — run this command to record content hashes for all
+installed companion files. These hashes allow the Update agent to accurately distinguish
+between files the user has modified vs files that are simply out of date with the template:
+
+```bash
+echo "<!-- file-manifest"
+for f in \
+  .github/agents/*.agent.md \
+  .github/skills/*/SKILL.md \
+  .github/hooks/copilot-hooks.json \
+  .github/hooks/scripts/*.sh \
+  .github/hooks/scripts/*.ps1 \
+  .github/instructions/*.instructions.md \
+  .github/prompts/*.prompt.md \
+  .copilot/workspace/*.md \
+  .copilot/workspace/DOC_INDEX.json; do
+  [ -f "$f" ] || continue
+  h=$(sha256sum "$f" | cut -c1-12)
+  echo "${f}=${h}"
 done
 echo "-->"
 ```
@@ -858,11 +945,44 @@ Applied: YYYY-MM-DD
 §8=<fingerprint>
 §9=<fingerprint>
 -->
+
+<!-- file-manifest
+.github/agents/coding.agent.md=<hash>
+.github/agents/doctor.agent.md=<hash>
+.github/agents/explore.agent.md=<hash>
+.github/agents/extensions.agent.md=<hash>
+.github/agents/fast.agent.md=<hash>
+.github/agents/researcher.agent.md=<hash>
+.github/agents/review.agent.md=<hash>
+.github/agents/security.agent.md=<hash>
+.github/agents/setup.agent.md=<hash>
+.github/agents/update.agent.md=<hash>
+... (one line per installed companion file)
+-->
+
+<!-- setup-answers
+LANGUAGE=<resolved value>
+RUNTIME=<resolved value>
+PACKAGE_MANAGER=<resolved value>
+TEST_FRAMEWORK=<resolved value>
+TEST_COMMAND=<resolved value>
+TYPE_CHECK_COMMAND=<resolved value>
+BUILD_COMMAND=<resolved value>
+PROJECT_NAME=<resolved value>
+... (one line per resolved {{PLACEHOLDER}} token — omit any left as {{...}})
+-->
 ```
 
-Replace `X.Y.Z` with the fetched version string. Replace `Applied: YYYY-MM-DD` with today's date. Replace each `<fingerprint>` with the computed value from the shell command above.
+Replace `X.Y.Z` with the fetched version string. Replace `Applied: YYYY-MM-DD` with today's
+date. Replace each `<fingerprint>` and `<hash>` with the computed values from the shell
+commands above. Populate the `<!-- setup-answers ... -->` block with every `{{PLACEHOLDER}}`
+token that was successfully resolved during §1 and §2.4 — record the placeholder name (without
+`{{` and `}}`) as the key and the resolved value as the value. Omit any placeholder that
+remained unresolved (still contains `{{...}}`).
 
-If the terminal is unavailable, omit the `<!-- section-fingerprints ... -->` block — the Update agent will fall back to heuristic comparison.
+If the terminal is unavailable, omit both the `<!-- section-fingerprints ... -->` and
+`<!-- file-manifest ... -->` blocks — the Update agent will fall back to API-based content
+comparison. Always write the `<!-- setup-answers ... -->` block (it requires no terminal).
 
 ---
 
@@ -1044,7 +1164,7 @@ SETUP COMPLETE — copilot-instructions-template vX.Y.Z
 
 ✓ .github/copilot-instructions.md   populated
 ✓ .github/copilot-version.md        written (vX.Y.Z)
-✓ .github/agents/                   8 model-pinned agents
+✓ .github/agents/                   10 model-pinned agents
 ✓ .github/skills/                   14 starter skills
 ✓ .github/instructions/             N path-specific stubs
 ✓ .github/prompts/                  5 slash-command prompts

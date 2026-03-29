@@ -49,6 +49,7 @@ Extract:
 - **Applied date**: the `Applied` value from that line.
 - **Updated date**: the `Updated` value if present (set by a previous update run).
 - **Section fingerprints**: parse the `<!-- section-fingerprints ... -->` block from `.github/copilot-version.md` into a map of `§N → stored_fingerprint`. If the block is absent (legacy installation), set `fingerprints_available = false`.
+- **Setup answers**: parse the `<!-- setup-answers ... -->` block from `.github/copilot-version.md` into a key-value map of `PLACEHOLDER_NAME → resolved_value`. If the block is absent, set `setup_answers = {}`. These values are used as defaults during placeholder re-resolution in U5 Step 2 — the agent pre-fills them and only asks the user to confirm or override, rather than re-running the full interview.
 - **§10 content**: the entire `## §10 — Project-Specific Overrides` section — this is preserved unconditionally and never included in the diff.
 
 ### U2 — Fetch the current template version
@@ -82,6 +83,54 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 From **MIGRATION.md**, extract all version entries **newer than the installed version**. These provide structured metadata: sections changed, companion files added/updated, new placeholders, breaking changes, and manual actions. This data drives the per-version change groups in the Pre-flight Report.
 
 From **CHANGELOG.md**, extract all changelog entries **newer than the installed version** for the "What's new" narrative. If the installed version is `unknown`, include the full changelog.
+
+### U3b — GitHub API compare (authoritative file diff)
+
+> **Execute in parallel with U4.** This step queries the GitHub compare API to produce a
+> complete, authoritative list of every template-repo file that changed between the
+> installed version and the latest version. It is the **primary** mechanism for companion
+> file discovery and is independent of MIGRATION.md documentation completeness.
+
+Fetch the compare endpoint:
+
+```text
+GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/compare/v{INSTALLED_VERSION}...main
+Accept: application/vnd.github+json
+```
+
+Parse the JSON response. Extract the `files[]` array. For each entry record:
+
+- `filename` — path within the template repository
+- `status` — one of `added`, `modified`, `removed`, `renamed`
+- `previous_filename` — the old path (renamed files only)
+
+Store this as `API_FILE_DIFF`. This is the authoritative change set.
+
+**Fallback A — no git tag for installed version**: If the compare endpoint returns HTTP 404
+(no `v{INSTALLED_VERSION}` tag exists), fetch the full repository tree at `main`:
+
+```text
+GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/git/trees/main?recursive=1
+```
+
+Extract all `blob` entries from `tree[]`. Set `API_FILE_DIFF` to this full list with all
+statuses set to `modified` — the three-way comparison in U5 Step 3 will determine which
+files are `CURRENT` vs `UPDATABLE` vs `USER_CUSTOMISED`.
+
+> **Truncation guard**: if the tree response contains `"truncated": true`, the result is
+> incomplete (repo exceeded the 100,000-entry or 7 MB limit). Log a warning in the Pre-flight
+> Report anomaly list and fall back to the MIGRATION.md-only path (set `API_FILE_DIFF = null`).
+> Do not proceed with a partial tree — a silently incomplete companion file manifest is worse
+> than a conservative MIGRATION.md-only pass.
+
+**Fallback B — API unavailable or rate-limited**: If both requests fail, set
+`API_FILE_DIFF = null` and fall back to the MIGRATION.md-only path in U5 Step 3.
+Log `API_FILE_DIFF = null (fallback: MIGRATION.md only)` in the Pre-flight Report
+anomaly list.
+
+> **Rate limits**: 60 unauthenticated requests/hour; 5,000 authenticated/hour.
+> Copilot's authentication context is sufficient for authenticated requests.
+> The compare call and the optional tree call together count as at most 2 requests.
 
 ### U4 — Fetch templates for three-way merge
 
@@ -155,30 +204,113 @@ If `fingerprints_available = false` (legacy installation): treat all sections as
 
 **Legacy fallback** (when `fingerprints_available = false` AND `OLD_BASELINE = null`): compare installed vs new template directly. A section that differs is `UPDATED` unless the installed version has been substantially modified beyond placeholder resolution (e.g., added paragraphs, changed rules, different table rows), in which case mark `USER_MODIFIED`. This heuristic path is only reached for installations predating fingerprint support.
 
-#### Step 3 — Companion file manifest
+#### Step 3 — Companion file manifest (API-driven)
 
-Walk through each intermediate version's MIGRATION.md entry and collect all companion files:
+**Primary source**: Use `API_FILE_DIFF` from U3b filtered through the Path Mapping Table
+below. If `API_FILE_DIFF = null`, fall back to walking MIGRATION.md entries (legacy path).
 
-| Category | Examples |
-|----------|---------|
-| Agent files | `.github/agents/*.agent.md` |
-| Skills | `.github/skills/*/SKILL.md` |
-| Hook config | `.github/hooks/copilot-hooks.json` |
-| Hook scripts | `.github/hooks/scripts/*.sh` |
-| MCP config | `.vscode/mcp.json` |
-| Path instructions | `.github/instructions/*.instructions.md` |
-| Prompt files | `.github/prompts/*.prompt.md` |
-| Workspace identity | `.copilot/workspace/*.md` |
-| Companion extension | `copilot-profile-tools` (VS Code Marketplace / VSIX fallback) |
+**Secondary source**: Walk each intermediate version's MIGRATION.md entry for enriching
+metadata — breaking change notes, new placeholder announcements, manual actions. Do **not**
+rely on MIGRATION.md as the complete source of companion file changes. If `API_FILE_DIFF`
+contains a path not listed in MIGRATION.md, include it in the manifest regardless.
 
-For each companion file, determine:
+##### Path Mapping Table
 
-| Companion status | Condition | Action |
-|-----------------|-----------|--------|
-| `NEW` | File does not exist in user's project | Offer to create |
-| `UPDATABLE` | File exists; template version is newer | Offer to update (show diff summary) |
-| `CURRENT` | File exists and matches the latest template | Skip silently |
-| `USER_CUSTOMISED` | File exists but differs from both old and new template | Flag; let user decide |
+| Template repo glob | Consumer destination | Notes |
+|-------------------|---------------------|-------|
+| `.github/agents/*.agent.md` | `.github/agents/*.agent.md` | Verbatim; no placeholders |
+| `template/skills/*/SKILL.md` | `.github/skills/*/SKILL.md` | `template/` → `.github/` |
+| `template/hooks/copilot-hooks.json` | `.github/hooks/copilot-hooks.json` | Hook config |
+| `template/hooks/scripts/*.sh` | `.github/hooks/scripts/*.sh` | Make executable after write |
+| `template/hooks/scripts/*.ps1` | `.github/hooks/scripts/*.ps1` | PowerShell scripts |
+| `template/instructions/*.instructions.md` | `.github/instructions/*.instructions.md` | Path-scoped stubs |
+| `template/prompts/*.prompt.md` | `.github/prompts/*.prompt.md` | Slash commands |
+| `template/workspace/*.md` | `.copilot/workspace/*.md` | Workspace identity |
+| `template/workspace/DOC_INDEX.json` | `.copilot/workspace/DOC_INDEX.json` | Doc index |
+| `template/copilot-instructions.md` | `.github/copilot-instructions.md` | Handled by U5 Step 2 |
+| `template/CLAUDE.md` | `CLAUDE.md` | Claude compat file |
+| `starter-kits/<kit>/**` | `.github/starter-kits/<kit>/**` | Only kits already installed |
+
+**Excluded paths** (template-repo internals; never delivered to consumers — ignore in diff):
+`tests/`, `scripts/`, `.github/workflows/`, `.github/copilot-instructions.md`,
+`.github/instructions/`, `.github/prompts/`, `.github/hooks/`, `.github/skills/`,
+`SETUP.md`, `UPDATE.md`, `MIGRATION.md`, `AGENTS.md`, `MODELS.md`, `VERSION.md`,
+`CHANGELOG.md`, `README.md`, `llms.txt`, `release-please-config.json`,
+`CLAUDE.md` (top-level developer copy; consumer version is `template/CLAUDE.md`),
+`.markdownlint*`, `.gitignore`, `.github/copilot-version.md`.
+
+**Roster completeness check** — always run this regardless of `API_FILE_DIFF` content:
+
+Enumerate the complete current agent and skill rosters by fetching the API tree **once**:
+
+```text
+GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/git/trees/main?recursive=1
+```
+
+If this request was already made for U3b Fallback A, reuse that cached response — do not
+fetch again.
+
+From the response, in a single pass:
+
+1. Filter `tree[]` for entries matching `.github/agents/*.agent.md`. Compare against the
+   consumer's `.github/agents/` directory. Add any missing agents to the manifest with
+   status `NEW`.
+
+2. Filter `tree[]` for entries matching `template/skills/*/SKILL.md`. Map each to
+   `.github/skills/<skill-name>/SKILL.md` in the consumer project. Compare against the
+   consumer's `.github/skills/` directory. Add any missing skills to the manifest with
+   status `NEW`.
+
+This ensures every file in both rosters is discovered even when `API_FILE_DIFF` is `null`
+(MIGRATION.md-only fallback) or when a release was made without updating MIGRATION.md.
+
+**Status determination** for each companion file (after mapping template path → consumer path):
+
+| Status | Condition | Action |
+|--------|-----------|--------|
+| `NEW` | Consumer path does not exist | Offer to create |
+| `UPDATABLE` | Consumer file unmodified from OLD_BASELINE; new template differs | Offer update |
+| `USER_CUSTOMISED` | Consumer file modified from OLD_BASELINE; new template also differs | Flag; let user decide |
+| `CURRENT` | Consumer file matches latest template | Skip silently |
+| `DELETED_FROM_TEMPLATE` | File removed from template in this version range | If consumer has the file: inform and offer to delete. If absent: skip silently. |
+
+**Deleted path handling** for each file with `status: "removed"` in `API_FILE_DIFF`:
+
+1. Map the `filename` through the Path Mapping Table to find the consumer destination path. If the path does not match any mapping rule, skip it (it is a template-internal file).
+2. If the consumer destination path does **not** exist: skip silently.
+3. If the consumer destination path **exists**:
+   - Assign status `DELETED_FROM_TEMPLATE`.
+   - Run a three-way comparison against `OLD_BASELINE` to determine whether the consumer has customised the file since installation:
+     - Consumer file matches OLD_BASELINE → unmodified copy → recommend deletion. Default action: **keep** unless the user explicitly accepts.
+     - Consumer file differs from OLD_BASELINE → user-customised → warn that the file is no longer part of the template but contains user changes. Present both options: retain as a standalone custom file, or delete. Default action: **keep**.
+   - Include in the Pre-flight Report under a dedicated "Removed from template" group.
+
+> **Preservation rule**: Never delete a consumer file without an explicit user confirmation. The default action for `DELETED_FROM_TEMPLATE` files is always **keep**.
+
+**Three-way comparison** for each file appearing as `modified` or `added` in `API_FILE_DIFF`:
+
+1. Fetch **old template version** of the file (at installed version tag):
+
+   ```text
+   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/v{INSTALLED_VERSION}/{template-source-path}
+   ```
+
+   If the installed version has no tag or the fetch fails, skip to step 3.
+
+2. Read the **consumer's current file** content.
+
+3. Compare:
+   - `consumer == old_template` → unmodified → status `UPDATABLE`
+   - `consumer != old_template` → possibly user-modified → status `USER_CUSTOMISED`
+   - If old template fetch failed: compare `consumer` vs new template.
+     Identical → `CURRENT`; different → `UPDATABLE` (no baseline; assume unmodified).
+
+4. **File-manifest refinement**: if `copilot-version.md` contains a `<!-- file-manifest -->`
+   block (see Post-update step 1) and the block records a content hash for this file:
+   - Compute `current_hash = sha256(consumer_file_content)[0:12]` (requires terminal)
+   - If `current_hash == stored_manifest_hash` → consumer has **not** modified the file
+     → override to `UPDATABLE` regardless of content comparison result.
+   - If terminal is unavailable, skip this check and rely on content comparison.
 
 For the **companion extension** (`copilot-profile-tools`), use these statuses instead:
 
@@ -548,7 +680,7 @@ Apply these checks **before writing any section**, regardless of the decision pa
 
 After all changes are confirmed and written:
 
-### 1 — Update the version file and section fingerprints
+### 1 — Update the version file, section fingerprints, and file manifest
 
 Recompute section fingerprints for the updated instructions file:
 
@@ -558,6 +690,28 @@ for i in $(seq 1 9); do
   fp=$(awk "/^## §${i} —/{found=1; next} /^## §/{if(found) exit} found{print}" \
     .github/copilot-instructions.md | sha256sum | cut -c1-12)
   echo "§${i}=${fp}"
+done
+echo "-->"
+```
+
+Compute file-manifest hashes for every companion file that was **written or updated** this
+run (agent files, skills, hook scripts, instruction stubs, prompt files, workspace files):
+
+```bash
+echo "<!-- file-manifest"
+for f in \
+  .github/agents/*.agent.md \
+  .github/skills/*/SKILL.md \
+  .github/hooks/copilot-hooks.json \
+  .github/hooks/scripts/*.sh \
+  .github/hooks/scripts/*.ps1 \
+  .github/instructions/*.instructions.md \
+  .github/prompts/*.prompt.md \
+  .copilot/workspace/*.md \
+  .copilot/workspace/DOC_INDEX.json; do
+  [ -f "$f" ] || continue
+  h=$(sha256sum "$f" | cut -c1-12)
+  echo "${f}=${h}"
 done
 echo "-->"
 ```
@@ -579,9 +733,44 @@ Updated: YYYY-MM-DD
 ...
 §9=<fingerprint>
 -->
+
+<!-- file-manifest
+.github/agents/coding.agent.md=<hash>
+.github/agents/doctor.agent.md=<hash>
+.github/agents/explore.agent.md=<hash>
+.github/agents/extensions.agent.md=<hash>
+.github/agents/fast.agent.md=<hash>
+.github/agents/researcher.agent.md=<hash>
+.github/agents/review.agent.md=<hash>
+.github/agents/security.agent.md=<hash>
+.github/agents/setup.agent.md=<hash>
+.github/agents/update.agent.md=<hash>
+... (one line per installed companion file)
+-->
+
+<!-- setup-answers
+LANGUAGE=<resolved value>
+RUNTIME=<resolved value>
+PACKAGE_MANAGER=<resolved value>
+TEST_FRAMEWORK=<resolved value>
+TEST_COMMAND=<resolved value>
+TYPE_CHECK_COMMAND=<resolved value>
+BUILD_COMMAND=<resolved value>
+PROJECT_NAME=<resolved value>
+... (one line per resolved {{PLACEHOLDER}} token — omit any left as {{...}})
+-->
 ```
 
-Replace `NEW` with the new version string. Preserve the `Applied:` date from the previous version file unchanged. Replace `Updated: YYYY-MM-DD` with today's date. Replace each `<fingerprint>` with the computed value. If the terminal is unavailable, omit the fingerprints block.
+Replace `NEW` with the new version string. Preserve the `Applied:` date from the previous
+version file unchanged. Replace `Updated: YYYY-MM-DD` with today's date. Replace each
+`<fingerprint>` and `<hash>` with the computed values.
+
+If the existing `copilot-version.md` already contains a `<!-- setup-answers ... -->` block,
+preserve it unchanged — placeholder values resolved during initial setup remain valid across
+updates unless the user explicitly changes them.
+
+If the terminal is unavailable, omit both the `<!-- section-fingerprints ... -->` and
+`<!-- file-manifest ... -->` blocks — the Update agent will fall back to content comparison.
 
 Do **not** run `scripts/sync-version.sh` — that script is template-repo infrastructure and does not exist in consumer projects.
 
