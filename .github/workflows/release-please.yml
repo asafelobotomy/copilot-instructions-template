@@ -32,8 +32,7 @@ jobs:
   release-please:
     name: Release Please
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'success'
-      if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
     steps:
       - name: Harden runner
         uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2
@@ -49,8 +48,8 @@ jobs:
         id: release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-            config-file: release-please-config.json
-            manifest-file: .release-please-manifest.json
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
 
       - name: Merge release PR
         if: steps.release.outputs.pr && !steps.release.outputs.release_created
@@ -86,11 +85,11 @@ jobs:
         run: |
           # Pull the release commit that release-please just pushed
           git pull --ff-only
-            git fetch --tags origin
-            if ! git rev-parse "refs/tags/${TAG}" >/dev/null 2>&1; then
-              echo "::error::Release tag ${TAG} not found. Aborting MIGRATION stub."
-              exit 1
-            fi
+          git fetch --tags origin
+          if ! git rev-parse "refs/tags/${TAG}" >/dev/null 2>&1; then
+            echo "::error::Release tag ${TAG} not found. Aborting MIGRATION stub."
+            exit 1
+          fi
           bash scripts/stub-migration.sh "$TAG"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
