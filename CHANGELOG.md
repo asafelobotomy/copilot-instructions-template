@@ -34,6 +34,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 * **hooks:** harden scan-secrets, normalize JSON parsing, add read-only agent guards ([77f74c3](https://github.com/asafelobotomy/copilot-instructions-template/commit/77f74c33f8b5f856c48c80cbbe7bd2fd7d5dfd55))
 * **release:** automate MIGRATION.md stub and anchor [Unreleased] in CHANGELOG ([63c20ec](https://github.com/asafelobotomy/copilot-instructions-template/commit/63c20ec3ff78dcbb18f77b427e0b1e5c74aa9c28))
 
+## [4.1.1](https://github.com/asafelobotomy/copilot-instructions-template/compare/v4.1.0...v4.1.1) (2026-03-28)
+
+
+### Bug Fixes
+
+* **docs:** resolve markdownlint errors in agent and research docs ([c50704c](https://github.com/asafelobotomy/copilot-instructions-template/commit/c50704c))
+
 ## [Unreleased]
 
 ---
