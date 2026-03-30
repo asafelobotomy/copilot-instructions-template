@@ -158,6 +158,7 @@ echo ""
 echo "8. Setup agent lists askQuestions in tools"
 # ──────────────────────────────────────────────────────────────
 
+# shellcheck disable=SC2043
 for agent in setup; do
   assert_file_contains "$agent.agent.md has askQuestions tool" \
     "$REPO_ROOT/.github/agents/${agent}.agent.md" "askQuestions"
@@ -168,6 +169,7 @@ echo ""
 echo "9. Agent files mention ask_questions usage directive"
 # ──────────────────────────────────────────────────────────────
 
+# shellcheck disable=SC2043
 for agent in setup; do
   assert_file_contains "$agent.agent.md has ask_questions usage directive" \
     "$REPO_ROOT/.github/agents/${agent}.agent.md" "ask_questions.*for.*ALL.*user-facing"
