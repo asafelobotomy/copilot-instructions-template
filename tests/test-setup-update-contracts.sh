@@ -50,7 +50,7 @@ for section in \
   "### C — Customise" \
   "## Post-update steps" \
   "## Restore from backup" \
-  "#### R1 —" \
+  "### R1 —" \
   "#### R2 —" \
   "#### R3 —" \
   "#### R4 —" \
