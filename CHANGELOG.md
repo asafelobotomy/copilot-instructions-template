@@ -7,6 +7,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [5.1.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.0.1...v5.1.0) (2026-03-30)
+
+
+### Features
+
+* Add setup interview questions and companion file manifests ([8101ca0](https://github.com/asafelobotomy/copilot-instructions-template/commit/8101ca000b6ecf021e2b59f7f34c9d0f9a7292c3))
+
+
+### Bug Fixes
+
+* **hooks:** tighten overbroad blocked patterns in guard-destructive ([7e91c98](https://github.com/asafelobotomy/copilot-instructions-template/commit/7e91c98917aa33eea731d13d3643dfe49fffe006))
+* resolve three failing CI jobs (ShellCheck, workspace-index, markdownlint) ([#31](https://github.com/asafelobotomy/copilot-instructions-template/issues/31)) ([65ddeeb](https://github.com/asafelobotomy/copilot-instructions-template/commit/65ddeebf7b13224bd5a0baf98b011a1cc5498d43))
+
 ## [5.0.1](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.0.0...v5.0.1) (2026-03-30)
 
 
