@@ -7,6 +7,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [5.0.1](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.0.0...v5.0.1) (2026-03-30)
+
+
+### Bug Fixes
+
+* **ci:** include .github/copilot-instructions.md in version sync auto-commit ([6857cca](https://github.com/asafelobotomy/copilot-instructions-template/commit/6857cca840a4274e52f06813a1956bf18948c27a))
+* **hooks:** update output structure to use 'continue' instead of 'decision' for blocking conditions ([8ec2340](https://github.com/asafelobotomy/copilot-instructions-template/commit/8ec2340f1fb377d35f3ed673bfd9e693d42c3c74))
+* **tests:** update PS1 enforce-retrospective test to expect continue:false ([341f45d](https://github.com/asafelobotomy/copilot-instructions-template/commit/341f45d4d6cfa839f9262218e56497c03683012d))
+
 ## [5.0.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v4.2.0...v5.0.0) (2026-03-29)
 
 
