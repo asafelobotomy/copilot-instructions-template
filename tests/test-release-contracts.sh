@@ -83,4 +83,16 @@ if ci_name != rp_name:
 '
 echo ""
 
+echo "6. release workflow is gated by the release planner"
+assert_python "release workflow uses plan-release gate" '
+rp_text = (root / ".github/workflows/release-please.yml").read_text(encoding="utf-8")
+if "bash scripts/plan-release.sh --write-config" not in rp_text:
+    raise SystemExit("release planner step missing")
+if "steps.plan.outputs.should_release ==" not in rp_text:
+    raise SystemExit("release action missing planner gate")
+if "config-file: ${{ steps.plan.outputs.config_file }}" not in rp_text:
+    raise SystemExit("release action not using planner config")
+'
+echo ""
+
 finish_tests

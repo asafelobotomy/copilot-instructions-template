@@ -25,3 +25,9 @@ See [`AGENTS.md`](AGENTS.md) for the full list of commands (health check, retros
 ## Version
 
 Current template version: **5.1.0** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md) and [`MIGRATION.md`](MIGRATION.md).
+
+## Release automation
+
+After a commit lands on `main`, GitHub runs the full workflow set first. When CI passes, the release workflow evaluates only consumer-facing paths: `template/`, `.github/agents/`, `starter-kits/`, `SETUP.md`, and `UPDATE.md`.
+
+Changes outside that surface are treated as developer-only and do not produce a release. Consumer-facing changes do produce a release: `feat` commits keep a minor bump, `fix` and `deps` keep a patch bump, and non-releasable commit headers fall back to a forced patch release so consumer updates are still tagged and published.

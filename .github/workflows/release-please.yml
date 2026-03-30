@@ -45,11 +45,22 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
+      - name: Plan release
+        id: plan
+        env:
+          PLAN_CONFIG: ${{ runner.temp }}/release-please-config.json
+        run: bash scripts/plan-release.sh --write-config "$PLAN_CONFIG"
+
+      - name: Skip release for dev-only changes
+        if: steps.plan.outputs.should_release != 'true'
+        run: echo "Skipping release: ${{ steps.plan.outputs.reason }}"
+
       - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
         id: release
+        if: steps.plan.outputs.should_release == 'true'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          config-file: release-please-config.json
+          config-file: ${{ steps.plan.outputs.config_file }}
           manifest-file: .release-please-manifest.json
 
       - name: Merge release PR
