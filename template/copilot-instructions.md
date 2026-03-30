@@ -213,15 +213,16 @@ Event-triggered health checks that keep the agent aligned with real project stat
 
 Hooks are deterministic shell commands that VS Code executes at specific lifecycle points during an agent session. Unlike instructions (soft guidance), hooks run your code with guaranteed outcomes — they enforce rules that the agent would otherwise follow probabilistically.
 
-Hook configuration lives in `.github/hooks/copilot-hooks.json`. VS Code supports eight lifecycle events. The template ships seven starter hooks:
+Hook configuration lives in `.github/hooks/copilot-hooks.json`. VS Code supports eight lifecycle events. The template wires all eight events using deterministic scripts:
 
-| Event | Script | Purpose |
-|-------|--------|---------|
-| `SessionStart` | `session-start.sh` | Inject project context (name, version, branch, runtimes, heartbeat pulse) |
+| Event | Primary script(s) | Purpose |
+|-------|-------------------|---------|
+| `SessionStart` | `session-start.sh`, `pulse.sh --trigger session_start` | Inject project context and initialize heartbeat state |
+| `UserPromptSubmit` | `pulse.sh --trigger user_prompt` | Detect explicit heartbeat and retrospective prompts |
 | `PreToolUse` | `guard-destructive.sh` | Block dangerous commands; flag caution patterns for user confirmation (§5 enforcement) |
-| `PostToolUse` | `post-edit-lint.sh` | Auto-format edited files using the project's formatter |
-| `Stop` | `enforce-retrospective.sh` | Prevent session end if retrospective has not been run |
-| `PreCompact` | `save-context.sh` | Preserve workspace state (heartbeat, memory, heuristics) before context compaction |
+| `PostToolUse` | `post-edit-lint.sh`, `pulse.sh --trigger soft_post_tool` | Auto-format edited files and debounce heartbeat soft triggers |
+| `Stop` | `scan-secrets.sh`, `pulse.sh --trigger stop` | Run secret scan and retrospective gate |
+| `PreCompact` | `save-context.sh`, `pulse.sh --trigger compaction` | Preserve workspace state before context compaction |
 | `SubagentStart` | `subagent-start.sh` | Inject governance context (depth limit, inherited protocols) when a subagent spawns |
 | `SubagentStop` | `subagent-stop.sh` | Log subagent completion and prompt result review |
 

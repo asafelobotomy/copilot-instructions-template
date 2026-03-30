@@ -104,42 +104,32 @@ echo ""
 
 echo "2. Consumer docs-only changes force a patch release"
 sandbox=$(make_release_sandbox)
-runtime_config="$sandbox/runtime-config.json"
 (
   cd "$sandbox" || exit 1
   printf 'clarified\n' >> template/copilot-instructions.md
   git add template/copilot-instructions.md
   git commit -q -m "docs: clarify consumer template wording"
 )
-output=$(run_plan "$sandbox" --write-config "$runtime_config")
+output=$(run_plan "$sandbox")
 assert_contains "consumer docs change triggers release" "$output" "should_release=true"
 assert_contains "consumer docs change bumps patch" "$output" "version_bump=patch"
 assert_contains "consumer docs change forces release-as" "$output" "force_release_as=true"
 assert_contains "consumer docs change computes next patch" "$output" "next_version=1.2.4"
-assert_python_in_root "runtime config injects release-as" "$sandbox" '
-config = json.loads((root / "runtime-config.json").read_text(encoding="utf-8"))
-assert config["packages"]["."]["release-as"] == "1.2.4"
-'
 echo ""
 
 echo "3. Consumer feat commits keep native minor bumping"
 sandbox=$(make_release_sandbox)
-runtime_config="$sandbox/runtime-config.json"
 (
   cd "$sandbox" || exit 1
   printf '{"name":"python"}\n' > starter-kits/python/plugin.json
   git add starter-kits/python/plugin.json
   git commit -q -m "feat: expand python starter kit"
 )
-output=$(run_plan "$sandbox" --write-config "$runtime_config")
+output=$(run_plan "$sandbox")
 assert_contains "consumer feat triggers release" "$output" "should_release=true"
 assert_contains "consumer feat bumps minor" "$output" "version_bump=minor"
 assert_contains "consumer feat does not force release-as" "$output" "force_release_as=false"
 assert_contains "consumer feat computes next minor" "$output" "next_version=1.3.0"
-assert_python_in_root "runtime config stays clean for native release" "$sandbox" '
-config = json.loads((root / "runtime-config.json").read_text(encoding="utf-8"))
-assert "release-as" not in config["packages"]["."]
-'
 echo ""
 
 echo "4. Non-conventional consumer commits still infer a patch release"
@@ -154,6 +144,36 @@ output=$(run_plan "$sandbox")
 assert_contains "wip consumer commit still triggers release" "$output" "should_release=true"
 assert_contains "wip consumer commit infers patch" "$output" "version_bump=patch"
 assert_contains "wip consumer commit forces release-as" "$output" "force_release_as=true"
+echo ""
+
+echo "5. release-style commit still plans a release (workflow handles loop guard)"
+sandbox=$(make_release_sandbox)
+(
+  cd "$sandbox" || exit 1
+  # Loop prevention now lives in workflow `if:` conditions, not in this script.
+  printf 'Template copy v1.2.4\n' > template/copilot-instructions.md
+  git add template/copilot-instructions.md
+  git commit -q -m "chore(main): release 1.2.4"
+)
+output=$(run_plan "$sandbox")
+assert_contains "release-style commit triggers release planning" "$output" "should_release=true"
+assert_contains "release-style commit falls back to patch" "$output" "version_bump=patch"
+assert_contains "release-style commit forces release-as" "$output" "force_release_as=true"
+echo ""
+
+echo "6. Breaking-change bang (feat!:) in consumer commit body infers major via fallback"
+sandbox=$(make_release_sandbox)
+(
+  cd "$sandbox" || exit 1
+  printf 'note\n' >> SETUP.md
+  git add SETUP.md
+  # Non-conventional header so native-bump stays none; bang in body exercises fallback_bump
+  git commit -q -m "[WIP] big change" -m "* feat!: remove legacy bootstrap path"
+)
+output=$(run_plan "$sandbox")
+assert_contains "feat-bang consumer commit triggers release" "$output" "should_release=true"
+assert_contains "feat-bang consumer commit infers major" "$output" "version_bump=major"
+assert_contains "feat-bang consumer commit forces release-as" "$output" "force_release_as=true"
 echo ""
 
 finish_tests

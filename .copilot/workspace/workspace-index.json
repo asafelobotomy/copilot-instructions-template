@@ -7,8 +7,8 @@
     "agents": 9,
     "skillsRepo": 15,
     "skillsTemplate": 14,
-    "hookScriptsShell": 11,
-    "hookScriptsPowerShell": 8
+    "hookScriptsShell": 12,
+    "hookScriptsPowerShell": 9
   },
   "agents": [
     "setup.agent.md",
@@ -68,7 +68,8 @@
       "subagent-start.sh",
       "subagent-stop.sh",
       "mcp-npx.sh",
-      "mcp-uvx.sh"
+      "mcp-uvx.sh",
+      "pulse.sh"
     ],
     "powershell": [
       "scan-secrets.ps1",
@@ -78,7 +79,8 @@
       "enforce-retrospective.ps1",
       "save-context.ps1",
       "subagent-start.ps1",
-      "subagent-stop.ps1"
+      "subagent-stop.ps1",
+      "pulse.ps1"
     ]
   },
   "notes": [

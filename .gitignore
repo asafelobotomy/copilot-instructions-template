@@ -21,3 +21,8 @@ Thumbs.db
 # Python bytecode cache
 __pycache__/
 *.pyc
+
+# Heartbeat orchestrator sidecar state
+.copilot/workspace/.heartbeat-session
+.copilot/workspace/.heartbeat-events.jsonl
+.copilot/workspace/state.json

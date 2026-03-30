@@ -256,6 +256,27 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - uses: raven-actions/actionlint@e01d1ea33dd6a5ed517d95b4c0c357560ac6f518 # v2
 
+  yamllint:
+    name: YAML lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install yamllint
+        run: pip install yamllint --quiet
+
+      - name: Lint workflow YAML files
+        run: |
+          yamllint -d "{extends: relaxed, rules: {line-length: {max: 200}}}" \
+            .github/workflows/*.yml
+
   shellcheck:
     name: Shell script lint
     runs-on: ubuntu-latest
@@ -290,6 +311,9 @@ jobs:
 
       - name: Hook behavior | session-start.sh
         run: bash tests/test-hook-session-start.sh
+
+      - name: Hook behavior | pulse.sh
+        run: bash tests/test-hook-pulse.sh
 
       - name: Hook behavior | post-edit-lint.sh
         run: bash tests/test-hook-post-edit-lint.sh

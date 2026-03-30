@@ -86,12 +86,14 @@ echo ""
 echo "6. release workflow is gated by the release planner"
 assert_python "release workflow uses plan-release gate" '
 rp_text = (root / ".github/workflows/release-please.yml").read_text(encoding="utf-8")
-if "bash scripts/plan-release.sh --write-config" not in rp_text:
+if "bash scripts/plan-release.sh" not in rp_text:
     raise SystemExit("release planner step missing")
 if "steps.plan.outputs.should_release ==" not in rp_text:
     raise SystemExit("release action missing planner gate")
-if "config-file: ${{ steps.plan.outputs.config_file }}" not in rp_text:
-    raise SystemExit("release action not using planner config")
+if "release-as: ${{ steps.plan.outputs.next_version }}" not in rp_text:
+    raise SystemExit("forced release step missing direct release-as input")
+if "startsWith(github.event.workflow_run.head_commit.message" not in rp_text or "chore(main): release " not in rp_text:
+    raise SystemExit("workflow-level loop guard missing")
 '
 echo ""
 

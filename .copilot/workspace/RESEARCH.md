@@ -37,6 +37,20 @@
 | <https://docs.github.com/en/copilot/using-github-copilot/ai-models/supported-ai-models-in-copilot> | Canonical model list; plan availability; retirement history; LTS models | 2026-03-28 | models, reference |
 | <https://docs.github.com/en/copilot/concepts/auto-model-selection> | Auto model selection: qualifying models, 10% multiplier discount for paid plans, coding agent auto selection | 2026-03-28 | models, billing |
 
+## Release Automation Tooling
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://github.com/googleapis/release-please> | release-please README — releasable units (feat/fix/deps only), path config (single dir), release-as commit footer, monorepo manifest | 2026-03-30 | release, semver, changelog |
+| <https://raw.githubusercontent.com/googleapis/release-please/main/docs/manifest-releaser.md> | Manifest config — exclude-paths per package, release-as per package, skip-github-release, force-tag-creation | 2026-03-30 | release, manifest |
+| <https://raw.githubusercontent.com/googleapis/release-please/main/docs/customizing.md> | Customising releases — single-path subdirectory scoping via `path`, versioning strategies, extra-files, pull-request-title-pattern | 2026-03-30 | release, customisation |
+| <https://github.com/googleapis/release-please-action> | Action inputs — release-as (direct input), skip-github-release, skip-github-pull-request, config-file, manifest-file | 2026-03-30 | release, actions |
+| <https://github.com/changesets/changesets> | Changesets — intent-file model for multi-package repos; requires contributor to run `changeset add`; not path-based | 2026-03-30 | release, changesets, monorepo |
+| <https://github.com/changesets/action> | Changesets CI action — hasChangesets and published outputs; version/publish commands; no path filtering | 2026-03-30 | release, changesets, actions |
+| <https://github.com/semantic-release/semantic-release> | semantic-release — fully automated, no PR, no path filter; [skip ci] loop prevention via @semantic-release/git | 2026-03-30 | release, semantic-release |
+| <https://github.com/release-drafter/release-drafter> | release-drafter — draft-only, human publishes; include-paths filters changelog entries (not release gating) | 2026-03-30 | release, changelog |
+| <https://github.com/tj-actions/changed-files> | Changed-files action — glob patterns, any_changed boolean output; requires sha: input for workflow_run context | 2026-03-30 | actions, path-filter |
+
 ## Shell Testing Frameworks
 
 | URL | Summary | Date | Tags |
@@ -61,6 +75,16 @@
 | <https://python-frontmatter.readthedocs.io/en/latest/> | python-frontmatter — zero-dep Python library for parsing Jekyll-style YAML front matter from .md files | 2026-03-28 | python, frontmatter, yaml |
 | <https://github.com/DavidAnson/markdownlint-cli2> | markdownlint-cli2 — configuration-based Markdown linter CLI; already in use in this repo via .markdownlint-cli2.yaml | 2026-03-28 | markdown, lint, ci |
 | <https://github.com/modelcontextprotocol/servers> | MCP reference server implementations — Filesystem, Git, Memory, Sequential Thinking, Fetch; Git/Filesystem already configured in .vscode/mcp.json | 2026-03-28 | mcp, reference |
+
+## Heartbeat / Agent Health Files
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://docs.openclaw.ai/gateway/heartbeat> | OpenClaw heartbeat: timed interval turns (30m default), HEARTBEAT_OK suppression, lightContext/isolatedSession cost controls, response-contract, HEARTBEAT.md as read-only checklist input | 2026-03-30 | heartbeat, openclaw, agent-health |
+| <https://docs.openclaw.ai/automation/cron-vs-heartbeat> | Cron vs Heartbeat decision guide: heartbeat = batched main-session awareness, cron = exact timing + isolation. Heartbeat reduces API calls vs many small pollers | 2026-03-30 | heartbeat, cron, openclaw |
+| <https://code.visualstudio.com/docs/copilot/customization/hooks> | VS Code hooks full reference: 8 lifecycle events, Stop hook decision:block vs continue:false semantics, PreCompact additionalContext-only output, SessionStart sessionId field, timeout constraints | 2026-03-30 | hooks, vscode, lifecycle |
+| <https://code.visualstudio.com/docs/copilot/customization/agent-plugins> | Agent plugins: bundles of skills/hooks/agents/MCP servers; CLAUDE_PLUGIN_ROOT env var; hooks.json discovered automatically; plugin hooks fire alongside workspace hooks | 2026-03-30 | plugins, vscode, hooks |
+| <https://martinfowler.com/articles/201701-event-driven.html> | Fowler event-driven patterns: Event Notification vs Event-Carried State Transfer vs Event Sourcing; event-as-passive-aggressive-command anti-pattern | 2026-03-30 | event-driven, patterns, architecture |
 
 ## Metadata, Constants, and AI Agent File Patterns
 

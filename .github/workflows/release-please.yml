@@ -33,7 +33,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' && !startsWith(github.event.workflow_run.head_commit.message, 'chore(main): release ')
     steps:
       - name: Harden runner
         uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2
@@ -47,9 +47,7 @@ jobs:
 
       - name: Plan release
         id: plan
-        env:
-          PLAN_CONFIG: ${{ runner.temp }}/release-please-config.json
-        run: bash scripts/plan-release.sh --write-config "$PLAN_CONFIG"
+        run: bash scripts/plan-release.sh
 
       - name: Skip release for dev-only changes
         if: steps.plan.outputs.should_release != 'true'
@@ -57,44 +55,39 @@ jobs:
           echo "Skipping release: ${{ steps.plan.outputs.reason }}"
 
       - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
-        id: release
-        if: steps.plan.outputs.should_release == 'true'
+        id: release_native
+        if: steps.plan.outputs.should_release == 'true' && steps.plan.outputs.force_release_as != 'true'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          config-file: ${{ steps.plan.outputs.config_file }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
+        id: release_forced
+        if: steps.plan.outputs.should_release == 'true' && steps.plan.outputs.force_release_as == 'true'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-as: ${{ steps.plan.outputs.next_version }}
+          config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
       - name: Merge release PR
-        if: steps.release.outputs.pr && !steps.release.outputs.release_created
+        if: (steps.release_native.outputs.pr || steps.release_forced.outputs.pr) && !(steps.release_native.outputs.release_created == 'true' || steps.release_forced.outputs.release_created == 'true')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_PR: ${{ steps.release_native.outputs.pr || steps.release_forced.outputs.pr }}
         run: |
-          pr_number=${{ fromJSON(steps.release.outputs.pr).number }}
-          if output=$(gh pr merge "$pr_number" \
+          pr_number=$(python3 -c 'import json, os; print(json.loads(os.environ["RELEASE_PR"])["number"])')
+          gh pr merge "$pr_number" \
             --repo ${{ github.repository }} \
-            --squash 2>&1); then
-            echo "$output"
-          else
-            echo "$output"
-            # Branch protection requires CI on the PR itself — fall back to auto-merge.
-            if grep -Fq 'Auto merge is not allowed for this repository' <<< "$output"; then
-              echo '::warning::Repository auto-merge is disabled. Enable it in Settings → General or merge the release PR manually.'
-            elif grep -qiE 'required status|protected branch|branch protection' <<< "$output"; then
-              echo '::notice::Branch protection active. Falling back to --auto; PR will merge once PR checks pass.'
-              gh pr merge "$pr_number" \
-                --repo ${{ github.repository }} \
-                --squash \
-                --auto \
-                || echo '::warning::Auto-merge failed. Merge the release PR manually.'
-            else
-              exit 1
-            fi
-          fi
+            --squash \
+            --auto \
+            || echo '::warning::Auto-merge failed or unavailable. Merge the release PR manually.'
 
       - name: Stub MIGRATION.md entry for new release
-        if: steps.release.outputs.release_created == 'true'
+        if: steps.release_native.outputs.release_created == 'true' || steps.release_forced.outputs.release_created == 'true'
         env:
-          TAG: ${{ steps.release.outputs.tag_name }}
+          TAG: ${{ steps.release_native.outputs.tag_name || steps.release_forced.outputs.tag_name }}
         run: |
           # Pull the release commit that release-please just pushed
           git pull --ff-only

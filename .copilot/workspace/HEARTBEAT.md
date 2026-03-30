@@ -46,7 +46,25 @@ After completing a task, reflect on these questions. Write insights to the indic
 7. **Lessons learned** — State as concrete rules: "When [situation], do [action] instead of [what usually fails]." Only record lessons grounded in this session’s events. → *MEMORY.md + SOUL.md*
 8. **Correction log** — Did $USER correct, reject, or redirect anything I produced? What was my original output and what did $USER want instead? → *MEMORY.md (Recurring Error Patterns) + SOUL.md*
 
+After completing retrospective steps, mark the current session sentinel complete:
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+p = Path('.copilot/workspace/.heartbeat-session')
+if p.exists():
+	parts = p.read_text(encoding='utf-8').strip().split('|')
+	if len(parts) >= 3:
+		p.write_text(f"{parts[0]}|{parts[1]}|complete\n", encoding='utf-8')
+PY
+```
+
 <!-- Add custom retrospective questions below this line -->
+
+## Response Contract
+
+- If all checks pass and no new issues were found, keep Pulse as `HEARTBEAT_OK` and do not append a History row.
+- Append a History row only when trigger is Explicit or Session start, a check raised an alert, or retrospective output was persisted to SOUL.md / MEMORY.md / USER.md.
 
 ## Agent Notes
 
@@ -56,7 +74,7 @@ After completing a task, reflect on these questions. Write insights to the indic
 
 *(Append-only. Keep last 5 entries.)*
 
-| Date | Trigger | Result | Actions taken |
-|------|---------|--------|---------------|
-| 2026-03-19 | Task completion + explicit debug | WARN→PASS | Added CI check 4 for copilot-instructions.md placeholders; updated MEMORY.md metrics freshness; logged this heartbeat entry |
-| 2026-03-19 | Task completion (Researcher + Explore agents) | PASS | Added researcher.agent.md, explore.agent.md; RESEARCH.md URL tracker; SETUP.md counts 6→8 agents, 8→9 workspace files; DOC_INDEX updated; tests 226→227+ |
+| Date | Session ID | Trigger | Result | Actions taken |
+|------|------------|---------|--------|---------------|
+| 2026-03-19 | n/a | Task completion + explicit debug | WARN→PASS | Added CI check 4 for copilot-instructions.md placeholders; updated MEMORY.md metrics freshness; logged this heartbeat entry |
+| 2026-03-19 | n/a | Task completion (Researcher + Explore agents) | PASS | Added researcher.agent.md, explore.agent.md; RESEARCH.md URL tracker; SETUP.md counts 6→8 agents, 8→9 workspace files; DOC_INDEX updated; tests 226→227+ |

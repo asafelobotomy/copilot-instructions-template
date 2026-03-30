@@ -18,12 +18,18 @@ fi
 
 run_ps_script() {
   local script_path="$1" payload="$2"
+  shift 2
   if [[ -n "${PWSH_COVERAGE_TRACE:-}" ]]; then
-    printf '%s' "$payload" | "$PWSH" -NoLogo -NoProfile -File "$REPO_ROOT/tests/coverage/invoke-powershell-with-coverage.ps1" -ScriptPath "$script_path" -TracePath "$PWSH_COVERAGE_TRACE" 2>/dev/null
+    if [[ $# -eq 0 ]]; then
+      printf '%s' "$payload" | "$PWSH" -NoLogo -NoProfile -File "$REPO_ROOT/tests/coverage/invoke-powershell-with-coverage.ps1" -ScriptPath "$script_path" -TracePath "$PWSH_COVERAGE_TRACE" 2>/dev/null
+      return
+    fi
+    # Coverage wrapper supports only ScriptPath/TracePath, so run direct when args are needed.
+    printf '%s' "$payload" | "$PWSH" -NoLogo -NoProfile -File "$script_path" "$@" 2>/dev/null
     return
   fi
 
-  printf '%s' "$payload" | "$PWSH" -NoLogo -NoProfile -File "$script_path" 2>/dev/null
+  printf '%s' "$payload" | "$PWSH" -NoLogo -NoProfile -File "$script_path" "$@" 2>/dev/null
 }
 
 echo "=== PowerShell hook script unit tests ==="
@@ -33,6 +39,7 @@ SESSION_START="$SCRIPTS_DIR/session-start.ps1"
 POST_LINT="$SCRIPTS_DIR/post-edit-lint.ps1"
 ENFORCE_RETRO="$SCRIPTS_DIR/enforce-retrospective.ps1"
 SAVE_CTX="$SCRIPTS_DIR/save-context.ps1"
+PULSE="$SCRIPTS_DIR/pulse.ps1"
 
 echo "1. session-start.ps1 returns valid SessionStart JSON"
 output=$(run_ps_script "$SESSION_START" '{}')
@@ -49,6 +56,16 @@ printf '{"name":"pwsh-project","version":"1.2.3"}\n' > "$TMP_NPM/package.json"
 output=$(cd "$TMP_NPM" && run_ps_script "$SESSION_START" '{}')
 assert_contains "package.json name is surfaced" "$output" "pwsh-project"
 assert_contains "package.json version is surfaced" "$output" "1.2.3"
+echo ""
+
+echo "2a. pulse.ps1 initializes heartbeat sentinel on session_start"
+TMP_SENT_START=$(mktemp -d); CLEANUP_DIRS+=("$TMP_SENT_START")
+mkdir -p "$TMP_SENT_START/.copilot/workspace"
+output=$(cd "$TMP_SENT_START" && run_ps_script "$PULSE" '{"sessionId":"ps-sess-1"}' -Trigger session_start)
+assert_contains "pulse session_start continues" "$output" '"continue":true'
+sentinel=$(cat "$TMP_SENT_START/.copilot/workspace/.heartbeat-session" 2>/dev/null)
+assert_contains "powershell sentinel contains session id" "$sentinel" "ps-sess-1"
+assert_contains "powershell sentinel starts pending" "$sentinel" "pending"
 echo ""
 
 echo "3. post-edit-lint.ps1 safely passes through non-edit and malformed input"
@@ -74,7 +91,7 @@ echo "5. enforce-retrospective.ps1 blocks when no transcript or recent heartbeat
 TMP_BLOCK=$(mktemp -d); CLEANUP_DIRS+=("$TMP_BLOCK")
 output=$(cd "$TMP_BLOCK" && run_ps_script "$ENFORCE_RETRO" '{"stop_hook_active": false}')
 assert_valid_json "enforce-retrospective block emits JSON" "$output"
-assert_contains "enforce-retrospective blocks missing retrospective" "$output" '"continue": false'
+assert_contains "enforce-retrospective blocks missing retrospective" "$output" '"decision": "block"'
 echo ""
 
 echo "6. enforce-retrospective.ps1 passes with retrospective transcript or fresh heartbeat"
@@ -87,6 +104,24 @@ mkdir -p "$TMP_HB/.copilot/workspace"
 touch "$TMP_HB/.copilot/workspace/HEARTBEAT.md"
 output=$(cd "$TMP_HB" && run_ps_script "$ENFORCE_RETRO" '{"stop_hook_active": false}')
 assert_contains "fresh heartbeat allows continuation" "$output" '"continue": true'
+echo ""
+
+echo "6a. enforce-retrospective.ps1 honors heartbeat sentinel states"
+TMP_SENT=$(mktemp -d); CLEANUP_DIRS+=("$TMP_SENT")
+mkdir -p "$TMP_SENT/.copilot/workspace"
+printf 'abc|2026-03-30T00:00:00Z|pending\n' > "$TMP_SENT/.copilot/workspace/.heartbeat-session"
+output=$(cd "$TMP_SENT" && run_ps_script "$ENFORCE_RETRO" '{"stop_hook_active": false}')
+assert_contains "pending sentinel blocks" "$output" '"decision": "block"'
+printf 'abc|2026-03-30T00:00:00Z|complete\n' > "$TMP_SENT/.copilot/workspace/.heartbeat-session"
+output=$(cd "$TMP_SENT" && run_ps_script "$ENFORCE_RETRO" '{"stop_hook_active": false}')
+assert_contains "complete sentinel allows continuation" "$output" '"continue": true'
+echo ""
+
+echo "6b. pulse.ps1 blocks stop when retrospective is incomplete"
+TMP_BLOCK_PULSE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_BLOCK_PULSE")
+mkdir -p "$TMP_BLOCK_PULSE/.copilot/workspace"
+output=$(cd "$TMP_BLOCK_PULSE" && run_ps_script "$PULSE" '{"stop_hook_active": false}' -Trigger stop)
+assert_contains "pulse stop blocks" "$output" '"decision":"block"'
 echo ""
 
 echo "7. save-context.ps1 emits JSON and includes workspace summaries when present"

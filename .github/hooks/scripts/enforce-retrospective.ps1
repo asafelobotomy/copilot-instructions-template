@@ -5,45 +5,12 @@
 # risk:     safe
 
 $ErrorActionPreference = 'SilentlyContinue'
-$input_json = $input | Out-String
+$inputJson = $input | Out-String
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$pulsePath = Join-Path $scriptDir 'pulse.ps1'
 
-try {
-    $data = $input_json | ConvertFrom-Json
-} catch {
-    '{"continue": true}'; exit 0
-}
-
-# Prevent infinite loops — if already in a stop-hook continuation, allow exit
-if ($data.stop_hook_active -eq $true) {
-    '{"continue": true}'; exit 0
-}
-
-$transcriptPath = $data.transcript_path ?? ''
-$retroRan = $false
-
-if ($transcriptPath -and (Test-Path $transcriptPath)) {
-    $content = Get-Content $transcriptPath -Raw -ErrorAction SilentlyContinue
-    if ($content -imatch 'retrospective|HEARTBEAT|Q[1-8].*SOUL|Q[1-8].*MEMORY|Q[1-8].*USER') {
-        $retroRan = $true
-    }
-}
-
-# Also check if HEARTBEAT.md was modified in the last 5 minutes
-if (-not $retroRan -and (Test-Path '.copilot/workspace/HEARTBEAT.md')) {
-    $lastWrite = (Get-Item '.copilot/workspace/HEARTBEAT.md').LastWriteTime
-    if ((Get-Date) - $lastWrite -lt [TimeSpan]::FromMinutes(5)) {
-        $retroRan = $true
-    }
-}
-
-if (-not $retroRan) {
-    [PSCustomObject]@{
-        continue = $false
-        hookSpecificOutput = [PSCustomObject]@{
-            hookEventName = 'Stop'
-            reason        = 'The retrospective has not been run this session. Before stopping, run the Retrospective section of HEARTBEAT.md (§8 procedure step 3) and persist insights to workspace files.'
-        }
-    } | ConvertTo-Json -Depth 5
+if (Test-Path $pulsePath) {
+    $inputJson | & $pulsePath -Trigger stop
     exit 0
 }
 

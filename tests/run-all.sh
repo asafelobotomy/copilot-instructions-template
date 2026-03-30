@@ -59,6 +59,7 @@ run_optional_phase() {
 
 run_phase "Hook Behavior" \
   "tests/test-hook-session-start.sh" \
+  "tests/test-hook-pulse.sh" \
   "tests/test-hook-post-edit-lint.sh" \
   "tests/test-hook-enforce-retrospective.sh" \
   "tests/test-hook-save-context.sh" \

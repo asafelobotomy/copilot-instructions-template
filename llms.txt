@@ -10,6 +10,14 @@
 - [UPDATE.md](UPDATE.md): Remote update and restore protocol.
 - [MIGRATION.md](MIGRATION.md): Per-version migration registry.
 
+## Route queries quickly
+
+- Setup or first install flow: [SETUP.md](SETUP.md)
+- Updating existing installs: [UPDATE.md](UPDATE.md)
+- Release-to-release changes: [MIGRATION.md](MIGRATION.md)
+- Core operating rules: [.github/copilot-instructions.md](.github/copilot-instructions.md)
+- Trigger phrases and remote bootstrap entrypoint: [AGENTS.md](AGENTS.md)
+
 ## Model strategy
 
 > **Single source of truth**: [MODELS.md](MODELS.md) — edit there, then run
@@ -34,7 +42,10 @@
 
 ## Skills
 
-The repo ships 14 skills in `.github/skills/` and `template/skills/`. High-signal examples:
+Skill inventory changes over time.
+Use `.copilot/workspace/workspace-index.json` as the canonical source for exact skill names and counts.
+
+High-signal examples:
 
 - `extension-review`: audit VS Code extensions against detected stack signals
 - `test-coverage-review`: audit test coverage and recommend local tests plus CI workflows
@@ -43,39 +54,45 @@ The repo ships 14 skills in `.github/skills/` and `template/skills/`. High-signa
 - `mcp-management`: configure external tool access
 - `plugin-management`: discover and manage agent plugins
 
-Canonical inventory lives in `.copilot/workspace/workspace-index.json`.
-
 ## Hooks
 
-Seven lifecycle hooks in `.github/hooks/scripts/` (bash + PowerShell pairs):
+Hook orchestration is configured in `.github/hooks/copilot-hooks.json` and mirrored in
+`template/hooks/copilot-hooks.json`. Canonical script inventory and counts live in
+`.copilot/workspace/workspace-index.json`.
 
-| Event | Script | Purpose |
-|-------|--------|---------|
-| SessionStart | `session-start` | Inject project context into new sessions |
+Current lifecycle events:
+
+This table is a quick summary. For exact executable wiring, use `.github/hooks/copilot-hooks.json`.
+
+| Event | Primary script(s) | Purpose |
+|-------|-------------------|---------|
+| SessionStart | `session-start`, `pulse --trigger session_start` | Initialize session context and heartbeat state |
+| UserPromptSubmit | `pulse --trigger user_prompt` | Detect explicit heartbeat or retrospective prompts |
 | PreToolUse | `guard-destructive` | Block dangerous terminal commands |
-| PostToolUse | `post-edit-lint` | Lint after file edits |
-| Stop | `enforce-retrospective` | Prompt retrospective at session end |
-| PreCompact | `save-context` | Save workspace state before compaction |
+| PostToolUse | `post-edit-lint`, `pulse --trigger soft_post_tool` | Lint edits and debounce heartbeat soft triggers |
+| PreCompact | `save-context`, `pulse --trigger compaction` | Preserve state before context compaction |
+| Stop | `scan-secrets`, `pulse --trigger stop` | Secret scan and retrospective gate |
 | SubagentStart | `subagent-start` | Inject governance context for subagents |
 | SubagentStop | `subagent-stop` | Log subagent completion |
 
 ## Subagent orchestration
 
-Each agent declares an `agents:` allow-list restricting which subagents it may invoke.
+Each agent declares an `agents:` allow-list in `.github/agents/*.agent.md` frontmatter.
+Treat each agent file as the source of truth for permitted subagents.
 Max subagent depth is 3 (configurable via `{{SUBAGENT_MAX_DEPTH}}`).
 
-| Agent | May invoke |
-|-------|-----------|
-| Code | Review, Doctor, Fast, Researcher, Explore, Extensions |
-| Review | Code, Fast, Researcher |
-| Doctor | Code, Update, Researcher, Explore |
-| Security | Code, Doctor, Researcher, Explore |
-| Extensions | Researcher, Doctor, Fast, Explore |
-| Researcher | Code, Doctor |
-| Explore | None |
-| Fast | Code |
-| Setup | Doctor |
-| Update | Doctor |
+Current agents: Setup, Code, Review, Fast, Doctor, Explore, Extensions,
+Researcher, Security.
+
+Exact handoff permissions can evolve. Read `.github/agents/*.agent.md` frontmatter for authoritative `agents:` allow-lists.
+
+## Canonical machine sources
+
+- Inventory and counts: `.copilot/workspace/workspace-index.json`
+- Model assignments and rationale: [MODELS.md](MODELS.md)
+- Hook event wiring: `.github/hooks/copilot-hooks.json`
+- Template hook mirror: `template/hooks/copilot-hooks.json`
+- Agent metadata and handoff policy: `.github/agents/*.agent.md`
 
 ## Cross-tool compatibility
 

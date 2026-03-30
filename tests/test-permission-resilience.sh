@@ -21,6 +21,7 @@ HOOK_SCRIPTS=(
   mcp-npx.sh
   mcp-uvx.sh
   post-edit-lint.sh
+  pulse.sh
   save-context.sh
   scan-secrets.sh
   session-start.sh

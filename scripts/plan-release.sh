@@ -8,7 +8,6 @@ require_command git python3
 
 head_ref="HEAD"
 base_ref=""
-write_config=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -20,12 +19,8 @@ while [[ $# -gt 0 ]]; do
       base_ref="$2"
       shift 2
       ;;
-    --write-config)
-      write_config="$2"
-      shift 2
-      ;;
     *)
-      echo "Usage: bash scripts/plan-release.sh [--base <git-ref>] [--head <git-ref>] [--write-config <path>]"
+            echo "Usage: bash scripts/plan-release.sh [--base <git-ref>] [--head <git-ref>]"
       exit 1
       ;;
   esac
@@ -53,17 +48,12 @@ declare -a consumer_paths=(
 mapfile -t consumer_files < <(git diff --name-only "$base_ref" "$head_ref" -- "${consumer_paths[@]}" | sed '/^$/d')
 consumer_commit_messages=$(git log --format=%B%x1e "$base_ref..$head_ref" -- "${consumer_paths[@]}" || true)
 current_version=$(tr -d '[:space:]' < VERSION.md)
-config_path=${write_config:-"$repo_root/release-please-config.json"}
 
 CONSUMER_FILES=$(printf '%s\n' "${consumer_files[@]:-}") \
 CONSUMER_COMMITS="$consumer_commit_messages" \
 CURRENT_VERSION="$current_version" \
-SOURCE_CONFIG="$repo_root/release-please-config.json" \
-TARGET_CONFIG="$config_path" \
 python3 - <<'PY'
-import json
 import os
-import pathlib
 import re
 
 
@@ -97,9 +87,11 @@ def first_nonempty_line(text: str) -> str:
 def fallback_bump(message: str) -> str:
     if re.search(r"BREAKING[ -]CHANGE:\s", message):
         return "major"
-    if re.search(r"(^|\n)\s*[*-]?\s*feat(?:\([^)]+\))?!?:\s", message, re.MULTILINE):
+    if re.search(r"(^|\n)\s*[-*]?\s*\w+(?:\([^)]+\))?!:\s", message, re.MULTILINE):
+        return "major"
+    if re.search(r"(^|\n)\s*[-*]?\s*feat(?:\([^)]+\))?:\s", message, re.MULTILINE):
         return "minor"
-    if re.search(r"(^|\n)\s*[*-]?\s*(fix|deps)(?:\([^)]+\))?!?:\s", message, re.MULTILINE):
+    if re.search(r"(^|\n)\s*[-*]?\s*(fix|deps)(?:\([^)]+\))?:\s", message, re.MULTILINE):
         return "patch"
     return "none"
 
@@ -107,8 +99,6 @@ def fallback_bump(message: str) -> str:
 consumer_files = [line for line in os.environ.get("CONSUMER_FILES", "").splitlines() if line]
 messages = [chunk.strip() for chunk in os.environ.get("CONSUMER_COMMITS", "").split("\x1e") if chunk.strip()]
 current_version = os.environ["CURRENT_VERSION"]
-source_config = pathlib.Path(os.environ["SOURCE_CONFIG"])
-target_config = pathlib.Path(os.environ["TARGET_CONFIG"])
 
 should_release = bool(consumer_files)
 native_bump = "none"
@@ -144,21 +134,11 @@ else:
     next_version = bump_version(current_version, bump)
     reason = "consumer changes need forced release-as fallback"
 
-config = json.loads(source_config.read_text(encoding="utf-8"))
-package = config.setdefault("packages", {}).setdefault(".", {})
-package.pop("release-as", None)
-if force_release_as:
-    package["release-as"] = next_version
-
-target_config.parent.mkdir(parents=True, exist_ok=True)
-target_config.write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
-
 outputs = {
     "should_release": "true" if should_release else "false",
     "version_bump": bump,
     "force_release_as": "true" if force_release_as else "false",
     "next_version": next_version,
-    "config_file": str(target_config),
     "reason": reason,
 }
 
