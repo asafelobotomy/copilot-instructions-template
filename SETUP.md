@@ -258,9 +258,9 @@ allowFreeformInput: false
 
 > **Fallback**: present as a numbered list in chat if unavailable.
 
-4. Fetch kit files from `starter-kits/<kit-name>/`, write to `.github/starter-kits/<kit-name>/`.
-5. Register in `.vscode/settings.json` under `chat.pluginLocations`.
-6. Report installed kits. If none matched: "No starter kits installed. Say 'Install a starter kit' later."
+1. Fetch kit files from `starter-kits/<kit-name>/`, write to `.github/starter-kits/<kit-name>/`.
+2. Register in `.vscode/settings.json` under `chat.pluginLocations`.
+3. Report installed kits. If none matched: "No starter kits installed. Say 'Install a starter kit' later."
 
 ---
 

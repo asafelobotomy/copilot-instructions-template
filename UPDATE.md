@@ -77,10 +77,12 @@ From MIGRATION.md, list versions between installed (exclusive) and new (inclusiv
 For each §1–§9 (§10 excluded):
 
 **User modification** (fingerprint-based): compute fingerprint if `fingerprints_available`:
+
 ```bash
 fp=$(awk "/^## §${i} —/{found=1; next} /^## §/{if(found) exit} found{print}" \
   .github/copilot-instructions.md | sha256sum | cut -c1-12)
 ```
+
 Match = not modified. Mismatch = modified. If unavailable → legacy heuristic.
 
 **Upstream change**: compare old baseline vs new template (ignore resolved placeholders). If OLD_BASELINE unavailable, compare installed vs new template.
@@ -317,7 +319,7 @@ Report: version transition, section counts, companion counts, breaking changes, 
 
 ## Restore from backup
 
-#### R1 — List available backups
+### R1 — List available backups
 
 Scan `.github/archive/` for `pre-update-*` dirs. If none: "No backups found." → stop.
 
