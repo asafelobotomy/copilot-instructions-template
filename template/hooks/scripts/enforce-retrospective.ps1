@@ -5,12 +5,11 @@
 # risk:     safe
 
 $ErrorActionPreference = 'SilentlyContinue'
-$inputJson = [Console]::In.ReadToEnd()
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $pulsePath = Join-Path $scriptDir 'pulse.ps1'
 
 if (Test-Path $pulsePath) {
-    $inputJson | & $pulsePath -Trigger stop
+    & $pulsePath -Trigger stop
     exit 0
 }
 
