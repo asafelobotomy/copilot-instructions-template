@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-# tests/test-sync-doc-index.sh -- direct tests for scripts/sync-doc-index.sh
-# Run: bash tests/test-sync-doc-index.sh
+# tests/test-sync-workspace-index.sh -- direct tests for scripts/sync-workspace-index.sh
+# Run: bash tests/test-sync-workspace-index.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
 
 # shellcheck source=tests/lib/test-helpers.sh
 source "$(dirname "$0")/lib/test-helpers.sh"
 init_test_context "$0"
-SCRIPT="$REPO_ROOT/scripts/sync-doc-index.sh"
+SCRIPT="$REPO_ROOT/scripts/sync-workspace-index.sh"
+trap cleanup_dirs EXIT
 
 make_fixture() {
   local root="$1"
@@ -41,40 +42,39 @@ make_fixture() {
   : > "$root/template/hooks/scripts/save-context.ps1"
 }
 
-echo "=== sync-doc-index.sh direct tests ==="
+echo "=== sync-workspace-index.sh direct tests ==="
 echo ""
 
 echo "1. Invalid mode is rejected"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" --wat 2>&1)
 status=$?
 assert_failure "invalid mode exits non-zero" "$status"
-assert_contains "invalid mode prints usage" "$output" "Usage: bash scripts/sync-doc-index.sh"
+assert_contains "invalid mode prints usage" "$output" "Usage: bash scripts/sync-workspace-index.sh"
 echo ""
 
-echo "2. Missing DOC_INDEX.json in check mode fails with repair hint"
-TMP_MISSING=$(mktemp -d)
+echo "2. Missing workspace-index.json in check mode fails with repair hint"
+TMP_MISSING=$(mktemp -d); CLEANUP_DIRS+=("$TMP_MISSING")
 make_fixture "$TMP_MISSING"
 output=$(ROOT_DIR="$TMP_MISSING" bash "$SCRIPT" --check 2>&1)
 status=$?
-assert_failure "missing DOC_INDEX exits non-zero" "$status"
-assert_contains "missing DOC_INDEX is reported" "$output" "FAIL: missing"
-assert_contains "repair hint is printed" "$output" "Run: bash scripts/sync-doc-index.sh --write"
-rm -rf "$TMP_MISSING"
+assert_failure "missing workspace-index exits non-zero" "$status"
+assert_contains "missing workspace-index is reported" "$output" "FAIL: missing"
+assert_contains "repair hint is printed" "$output" "Run: bash scripts/sync-workspace-index.sh --write"
 echo ""
 
 echo "3. Write mode creates a valid canonical index"
-TMP_WRITE=$(mktemp -d)
+TMP_WRITE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_WRITE")
 make_fixture "$TMP_WRITE"
 output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --write 2>&1)
 status=$?
 assert_success "write mode exits zero" "$status"
 assert_contains "write mode reports target" "$output" "OK: wrote"
-assert_python_in_root "DOC_INDEX.json is valid JSON" "$TMP_WRITE" "
-path = root / '.copilot/workspace/DOC_INDEX.json'
+assert_python_in_root "workspace-index.json is valid JSON" "$TMP_WRITE" "
+path = root / '.copilot/workspace/workspace-index.json'
 json.load(path.open())
 "
 assert_python_in_root "counts match fixture contents" "$TMP_WRITE" "
-path = root / '.copilot/workspace/DOC_INDEX.json'
+path = root / '.copilot/workspace/workspace-index.json'
 data = json.load(path.open())
 assert data['counts']['agents'] == 3
 assert data['counts']['skillsRepo'] == 3
@@ -83,7 +83,7 @@ assert data['counts']['hookScriptsShell'] == 3
 assert data['counts']['hookScriptsPowerShell'] == 3
 "
 assert_python_in_root "preferred items come first and extras sort after them" "$TMP_WRITE" "
-path = root / '.copilot/workspace/DOC_INDEX.json'
+path = root / '.copilot/workspace/workspace-index.json'
 data = json.load(path.open())
 assert data['agents'] == ['setup.agent.md', 'review.agent.md', 'z-last.agent.md']
 assert data['skills']['repo'] == ['skill-creator', 'extension-review', 'zzz-extra']
@@ -97,11 +97,11 @@ echo "4. Check mode passes when file is in sync"
 output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --check 2>&1)
 status=$?
 assert_success "check mode passes on synced file" "$status"
-assert_contains "check mode success message" "$output" "OK: DOC_INDEX.json is in sync"
+assert_contains "check mode success message" "$output" "OK: workspace-index.json is in sync"
 echo ""
 
 echo "5. Drift is detected after manual modification"
-python3 - "$TMP_WRITE/.copilot/workspace/DOC_INDEX.json" <<'PY'
+python3 - "$TMP_WRITE/.copilot/workspace/workspace-index.json" <<'PY'
 import json
 import sys
 path = sys.argv[1]
@@ -115,8 +115,8 @@ PY
 output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --check 2>&1)
 status=$?
 assert_failure "check mode fails on drift" "$status"
-assert_contains "drift message is printed" "$output" "FAIL: DOC_INDEX.json is out of sync"
-assert_contains "drift includes repair hint" "$output" "Run: bash scripts/sync-doc-index.sh --write"
+assert_contains "drift message is printed" "$output" "FAIL: workspace-index.json is out of sync"
+assert_contains "drift includes repair hint" "$output" "Run: bash scripts/sync-workspace-index.sh --write"
 echo ""
 
 echo "6. Write mode repairs the drifted file"
@@ -126,7 +126,6 @@ assert_success "write repairs drift" "$status"
 output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --check 2>&1)
 status=$?
 assert_success "check passes after repair" "$status"
-rm -rf "$TMP_WRITE"
 echo ""
 
 finish_tests

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # lib-hooks.sh — shared utilities for agent lifecycle hook scripts.
 # Source this file at the top of each hook script:
 #   source "$(dirname "$0")/lib-hooks.sh"

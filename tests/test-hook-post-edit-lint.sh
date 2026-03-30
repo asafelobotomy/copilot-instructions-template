@@ -8,6 +8,8 @@ set -uo pipefail
 source "$(dirname "$0")/lib/test-helpers.sh"
 init_test_context "$0"
 SCRIPT="$REPO_ROOT/template/hooks/scripts/post-edit-lint.sh"
+TMPDIR_LINT=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_LINT")
+trap cleanup_dirs EXIT
 
 echo "=== post-edit-lint.sh ==="
 echo ""
@@ -25,11 +27,11 @@ assert_matches "no filePath passes through" "$output" '"continue": true'
 echo ""
 
 echo "3. Edit tool does not crash with valid file path"
-TMPFILE=$(mktemp /tmp/test_XXXXXX.txt)
+TMPFILE="$TMPDIR_LINT/test_edit.txt"
+touch "$TMPFILE"
 input=$(printf '{"tool_name": "replace_string_in_file", "tool_input": {"filePath": "%s"}}' "$TMPFILE")
 echo "$input" | bash "$SCRIPT" 2>/dev/null
 assert_success "edit tool with valid .txt file" $?
-rm -f "$TMPFILE"
 echo ""
 
 echo "4. Script handles empty and malformed JSON without crashing"
@@ -40,20 +42,20 @@ assert_success "empty JSON object" $?
 echo ""
 
 echo "5. Write and create tool name variants trigger the lint path"
-TMPFILE_WRITE=$(mktemp /tmp/test_XXXXXX.txt)
+TMPFILE_WRITE="$TMPDIR_LINT/test_write.txt"
+touch "$TMPFILE_WRITE"
 output=$(printf '{"tool_name": "write_to_file", "tool_input": {"filePath": "%s"}}' "$TMPFILE_WRITE" | bash "$SCRIPT" 2>/dev/null)
 assert_matches "write_to_file triggers and continues" "$output" '"continue": true'
-rm -f "$TMPFILE_WRITE"
-TMPFILE_CREATE=$(mktemp /tmp/test_XXXXXX.txt)
+TMPFILE_CREATE="$TMPDIR_LINT/test_create.txt"
+touch "$TMPFILE_CREATE"
 output=$(printf '{"tool_name": "create_file", "tool_input": {"filePath": "%s"}}' "$TMPFILE_CREATE" | bash "$SCRIPT" 2>/dev/null)
 assert_matches "create_file triggers and continues" "$output" '"continue": true'
-rm -f "$TMPFILE_CREATE"
 echo ""
 
 echo "6. Alternate file key is accepted"
-TMPFILE_ALT=$(mktemp /tmp/test_XXXXXX.txt)
+TMPFILE_ALT="$TMPDIR_LINT/test_alt.txt"
+touch "$TMPFILE_ALT"
 output=$(printf '{"tool_name": "edit_file", "tool_input": {"file": "%s"}}' "$TMPFILE_ALT" | bash "$SCRIPT" 2>/dev/null)
 assert_matches "alternate file key continues" "$output" '"continue": true'
-rm -f "$TMPFILE_ALT"
 
 finish_tests

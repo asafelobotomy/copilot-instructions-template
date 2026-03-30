@@ -15,10 +15,8 @@ if [[ -z "$PWSH" ]]; then
   exit 1
 fi
 
-make_input() {
-  local tool_name="$1" command="$2"
-  printf '{"tool_name":"%s","tool_input":{"command":"%s"}}' "$tool_name" "$command"
-}
+# Input construction delegates to shared helpers
+make_input() { make_guard_input "$@"; }
 
 run_guard() {
   local payload="$1"

@@ -7,6 +7,7 @@ set -uo pipefail
 # shellcheck source=tests/lib/test-helpers.sh
 source "$(dirname "$0")/lib/test-helpers.sh"
 init_test_context "$0"
+trap 'teardown_sandbox' EXIT
 
 # Path to the script under test (relative to repo root)
 SCRIPT="$REPO_ROOT/scripts/sync-version.sh"
@@ -34,7 +35,7 @@ INST
   cat > "$SANDBOX/.github/copilot-instructions.md" <<'DVINST'
 # Developer Instructions — copilot-instructions-template
 
-> Role: AI developer for this repository. Template version: 0.0.0 | Updated: 2025-01-01
+> Role: AI developer for this repository. Template version: 0.0.0 <!-- x-release-please-version --> | Updated: 2025-01-01
 DVINST
 }
 
@@ -84,6 +85,7 @@ echo "2. Inline marker preserved after substitution"
 setup_sandbox "2.0.0"
 run_script >/dev/null
 assert_file_contains "marker still in instructions" "$SANDBOX/template/copilot-instructions.md" "x-release-please-version"
+assert_file_contains "marker still in dev-instructions" "$SANDBOX/.github/copilot-instructions.md" "x-release-please-version"
 teardown_sandbox
 echo ""
 
@@ -131,7 +133,7 @@ mkdir -p "$SANDBOX/.github"
 # Intentionally do NOT create VERSION.md
 ROOT_DIR="$SANDBOX" bash "$SCRIPT" 2>/dev/null
 assert_fail "missing VERSION.md → exit non-zero" $?
-rm -rf "$SANDBOX"
+teardown_sandbox
 echo ""
 
 # ── 6. Invalid semver (alpha string) → non-zero exit ─────────────────────────

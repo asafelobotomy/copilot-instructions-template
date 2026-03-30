@@ -9,6 +9,53 @@ set -euo pipefail
 # shellcheck source=.github/hooks/scripts/lib-hooks.sh
 source "$(dirname "$0")/lib-hooks.sh"
 
+# Detect operating system and distro
+OS_KERNEL=$(uname -s 2>/dev/null || echo "unknown")
+OS_ARCH=$(uname -m 2>/dev/null || echo "unknown")
+case "$OS_KERNEL" in
+  Linux)
+    OS_ID=$(grep '^ID=' /etc/os-release 2>/dev/null | cut -d= -f2 | tr -d '"' || echo "unknown")
+    OS_VERSION=$(grep '^VERSION_ID=' /etc/os-release 2>/dev/null | cut -d= -f2 | tr -d '"' || echo "unknown")
+    OS_VARIANT=$(grep '^VARIANT_ID=' /etc/os-release 2>/dev/null | cut -d= -f2 | tr -d '"' || echo "")
+    # Detect immutable/atomic desktops
+    if grep -qi 'ostree\|atomic\|immutable' /etc/os-release 2>/dev/null \
+       || [[ -f /run/ostree-booted ]]; then
+      OS_IMMUTABLE="true"
+    else
+      OS_IMMUTABLE="false"
+    fi
+    # Detect package manager
+    if command -v apt &>/dev/null; then       PKG_MGR="apt"
+    elif command -v pacman &>/dev/null; then   PKG_MGR="pacman"
+    elif command -v dnf &>/dev/null; then      PKG_MGR="dnf"
+    elif command -v rpm-ostree &>/dev/null; then PKG_MGR="rpm-ostree"
+    elif command -v zypper &>/dev/null; then   PKG_MGR="zypper"
+    elif command -v nix &>/dev/null; then      PKG_MGR="nix"
+    elif command -v apk &>/dev/null; then      PKG_MGR="apk"
+    else                                       PKG_MGR="unknown"
+    fi
+    OS_DISPLAY="${OS_ID}${OS_VARIANT:+/$OS_VARIANT} ${OS_VERSION} (${OS_ARCH})"
+    ;;
+  Darwin)
+    OS_ID="macos"
+    OS_VERSION=$(sw_vers -productVersion 2>/dev/null || echo "unknown")
+    OS_IMMUTABLE="false"
+    PKG_MGR=$(command -v brew &>/dev/null && echo "brew" || echo "unknown")
+    OS_DISPLAY="macOS ${OS_VERSION} (${OS_ARCH})"
+    ;;
+  MINGW*|MSYS*|CYGWIN*)
+    OS_ID="windows"
+    OS_VERSION="n/a"
+    OS_IMMUTABLE="false"
+    PKG_MGR=$(command -v winget &>/dev/null && echo "winget" || echo "unknown")
+    OS_DISPLAY="Windows/MSYS (${OS_ARCH})"
+    ;;
+  *)
+    OS_ID="unknown"; OS_VERSION="unknown"; OS_IMMUTABLE="false"; PKG_MGR="unknown"
+    OS_DISPLAY="${OS_KERNEL} (${OS_ARCH})"
+    ;;
+esac
+
 # Gather project context
 BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
 COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
@@ -37,7 +84,7 @@ if [[ -f .copilot/workspace/HEARTBEAT.md ]]; then
 fi
 
 # Emit context for the agent — JSON-escape to handle special characters
-CONTEXT="Project: ${PROJECT_NAME} v${PROJECT_VER} | Branch: ${BRANCH} (${COMMIT}) | Node: ${NODE_VER} | Python: ${PYTHON_VER} | Heartbeat: ${PULSE}"
+CONTEXT="OS: ${OS_DISPLAY} | Pkg: ${PKG_MGR} | Immutable: ${OS_IMMUTABLE} | Project: ${PROJECT_NAME} v${PROJECT_VER} | Branch: ${BRANCH} (${COMMIT}) | Node: ${NODE_VER} | Python: ${PYTHON_VER} | Heartbeat: ${PULSE}"
 CONTEXT_ESC=$(json_escape "$CONTEXT")
 
 cat <<EOF

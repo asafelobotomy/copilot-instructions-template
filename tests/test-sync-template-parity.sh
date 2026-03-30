@@ -8,6 +8,7 @@ set -uo pipefail
 source "$(dirname "$0")/lib/test-helpers.sh"
 init_test_context "$0"
 SCRIPT="$REPO_ROOT/scripts/sync-template-parity.sh"
+trap cleanup_dirs EXIT
 
 make_fixture() {
   local dir="$1"
@@ -44,45 +45,41 @@ assert_contains "invalid mode prints usage" "$output" "Usage:"
 echo ""
 
 echo "2. In-sync fixture passes --check"
-TMP=$(mktemp -d)
+TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_fixture "$TMP"
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1)
 status=$?
 assert_success "check mode exits zero" "$status"
 assert_contains "check mode prints OK" "$output" "in sync"
-rm -rf "$TMP"
 echo ""
 
 echo "3. Drifted hook script is detected"
-TMP=$(mktemp -d)
+TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_fixture "$TMP"
 echo "# changed" >> "$TMP/.github/hooks/scripts/test.sh"
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1) || true
 assert_contains "drift detected in hook" "$output" "test.sh"
-rm -rf "$TMP"
 echo ""
 
 echo "4. Drifted skill is detected"
-TMP=$(mktemp -d)
+TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_fixture "$TMP"
 echo "# changed" >> "$TMP/.github/skills/test-skill/SKILL.md"
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1) || true
 assert_contains "drift detected in skill" "$output" "test-skill"
-rm -rf "$TMP"
 echo ""
 
 echo "5. Template with placeholder tokens is skipped"
-TMP=$(mktemp -d)
+TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_fixture "$TMP"
 # The prompt has {{}} in template, different in .github — should NOT be flagged
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1)
 status=$?
 assert_success "placeholder file is skipped" "$status"
-rm -rf "$TMP"
 echo ""
 
 echo "6. --write repairs drifted files"
-TMP=$(mktemp -d)
+TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_fixture "$TMP"
 echo "# changed" >> "$TMP/.github/hooks/scripts/test.sh"
 echo "# changed" >> "$TMP/.github/skills/test-skill/SKILL.md"
@@ -95,15 +92,13 @@ assert_contains "reports repaired skill" "$output" "test-skill"
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1)
 status=$?
 assert_success "check passes after write" "$status"
-rm -rf "$TMP"
 echo ""
 
 echo "7. Idempotency — second --write is a no-op"
-TMP=$(mktemp -d)
+TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_fixture "$TMP"
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --write 2>&1)
 assert_contains "already in sync" "$output" "in sync"
-rm -rf "$TMP"
 echo ""
 
 echo "8. Real repo is in sync"
@@ -114,7 +109,7 @@ assert_contains "real repo in sync" "$output" "in sync"
 echo ""
 
 echo "9. mcp-management divergence is not flagged"
-TMP=$(mktemp -d)
+TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_fixture "$TMP"
 mkdir -p "$TMP/template/skills/mcp-management" "$TMP/.github/skills/mcp-management"
 echo "# template version" > "$TMP/template/skills/mcp-management/SKILL.md"
@@ -122,29 +117,26 @@ echo "# developer version (intentionally different)" > "$TMP/.github/skills/mcp-
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1)
 status=$?
 assert_success "mcp-management divergence allowed" "$status"
-rm -rf "$TMP"
 echo ""
 
 echo "10. Missing hook script is detected"
-TMP=$(mktemp -d)
+TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_fixture "$TMP"
 rm "$TMP/.github/hooks/scripts/test.sh"
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1) || true
 assert_contains "missing hook script detected" "$output" "test.sh"
-rm -rf "$TMP"
 echo ""
 
 echo "11. Missing skill mirror is detected"
-TMP=$(mktemp -d)
+TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_fixture "$TMP"
 rm "$TMP/.github/skills/test-skill/SKILL.md"
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1) || true
 assert_contains "missing skill detected" "$output" "test-skill"
-rm -rf "$TMP"
 echo ""
 
 echo "12. --write creates missing files"
-TMP=$(mktemp -d)
+TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_fixture "$TMP"
 rm "$TMP/.github/hooks/scripts/test.sh"
 rm "$TMP/.github/skills/test-skill/SKILL.md"
@@ -157,7 +149,6 @@ assert_contains "reports created skill" "$output" "test-skill"
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1)
 status=$?
 assert_success "check passes after write creates missing" "$status"
-rm -rf "$TMP"
 echo ""
 
 finish_tests

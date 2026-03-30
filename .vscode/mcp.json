@@ -2,7 +2,7 @@
 	"servers": {
 		"filesystem": {
 			"type": "stdio",
-			"command": "npx",
+			"command": "${workspaceFolder}/.github/hooks/scripts/mcp-npx.sh",
 			"args": [
 				"-y",
 				"@modelcontextprotocol/server-filesystem",
@@ -11,7 +11,7 @@
 		},
 		"git": {
 			"type": "stdio",
-			"command": "uvx",
+			"command": "${workspaceFolder}/.github/hooks/scripts/mcp-uvx.sh",
 			"args": [
 				"mcp-server-git",
 				"--repository",
@@ -24,7 +24,7 @@
 		},
 		"fetch": {
 			"type": "stdio",
-			"command": "uvx",
+			"command": "${workspaceFolder}/.github/hooks/scripts/mcp-uvx.sh",
 			"args": [
 				"mcp-server-fetch"
 			]

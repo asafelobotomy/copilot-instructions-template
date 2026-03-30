@@ -9,6 +9,7 @@ source "$(dirname "$0")/lib/test-helpers.sh"
 init_test_context "$0"
 SCRIPTS_DIR="$REPO_ROOT/template/hooks/scripts"
 PWSH=$(command -v pwsh || true)
+trap cleanup_dirs EXIT
 
 if [[ -z "$PWSH" ]]; then
   echo "pwsh is required for tests/test-hooks-powershell.sh"
@@ -43,12 +44,11 @@ assert_contains "session-start includes branch context" "$output" "Branch:"
 echo ""
 
 echo "2. session-start.ps1 detects project manifests"
-TMP_NPM=$(mktemp -d)
+TMP_NPM=$(mktemp -d); CLEANUP_DIRS+=("$TMP_NPM")
 printf '{"name":"pwsh-project","version":"1.2.3"}\n' > "$TMP_NPM/package.json"
 output=$(cd "$TMP_NPM" && run_ps_script "$SESSION_START" '{}')
 assert_contains "package.json name is surfaced" "$output" "pwsh-project"
 assert_contains "package.json version is surfaced" "$output" "1.2.3"
-rm -rf "$TMP_NPM"
 echo ""
 
 echo "3. post-edit-lint.ps1 safely passes through non-edit and malformed input"
@@ -63,38 +63,34 @@ assert_contains "post-edit-lint malformed JSON continues" "$output" '"continue":
 echo ""
 
 echo "4. post-edit-lint.ps1 accepts edit tool payloads with filePath"
-TMP_FILE=$(mktemp)
+TMP_FILE=$(mktemp); CLEANUP_DIRS+=("$(dirname "$TMP_FILE")")
 output=$(run_ps_script "$POST_LINT" "{\"tool_name\":\"edit_file\",\"tool_input\":{\"filePath\":\"$TMP_FILE\"}}")
 status=$?
 assert_success "post-edit-lint edit payload exits zero" "$status"
 assert_contains "post-edit-lint edit payload continues" "$output" '"continue": true'
-rm -f "$TMP_FILE"
 echo ""
 
 echo "5. enforce-retrospective.ps1 blocks when no transcript or recent heartbeat exists"
-TMP_BLOCK=$(mktemp -d)
+TMP_BLOCK=$(mktemp -d); CLEANUP_DIRS+=("$TMP_BLOCK")
 output=$(cd "$TMP_BLOCK" && run_ps_script "$ENFORCE_RETRO" '{"stop_hook_active": false}')
 assert_valid_json "enforce-retrospective block emits JSON" "$output"
 assert_contains "enforce-retrospective blocks missing retrospective" "$output" '"continue": false'
-rm -rf "$TMP_BLOCK"
 echo ""
 
 echo "6. enforce-retrospective.ps1 passes with retrospective transcript or fresh heartbeat"
-TMP_RETRO=$(mktemp -d)
+TMP_RETRO=$(mktemp -d); CLEANUP_DIRS+=("$TMP_RETRO")
 printf 'retrospective complete\n' > "$TMP_RETRO/transcript.txt"
 output=$(cd "$TMP_RETRO" && run_ps_script "$ENFORCE_RETRO" "{\"stop_hook_active\": false, \"transcript_path\": \"$TMP_RETRO/transcript.txt\"}")
 assert_contains "transcript keyword allows continuation" "$output" '"continue": true'
-rm -rf "$TMP_RETRO"
-TMP_HB=$(mktemp -d)
+TMP_HB=$(mktemp -d); CLEANUP_DIRS+=("$TMP_HB")
 mkdir -p "$TMP_HB/.copilot/workspace"
 touch "$TMP_HB/.copilot/workspace/HEARTBEAT.md"
 output=$(cd "$TMP_HB" && run_ps_script "$ENFORCE_RETRO" '{"stop_hook_active": false}')
 assert_contains "fresh heartbeat allows continuation" "$output" '"continue": true'
-rm -rf "$TMP_HB"
 echo ""
 
 echo "7. save-context.ps1 emits JSON and includes workspace summaries when present"
-TMP_CTX=$(mktemp -d)
+TMP_CTX=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CTX")
 mkdir -p "$TMP_CTX/.copilot/workspace"
 printf 'HEARTBEAT_OK\n' > "$TMP_CTX/.copilot/workspace/HEARTBEAT.md"
 printf 'recent memory entry\n' > "$TMP_CTX/.copilot/workspace/MEMORY.md"
@@ -107,7 +103,6 @@ assert_contains "save-context hookEventName present" "$output" "PreCompact"
 assert_contains "save-context includes heartbeat" "$output" "HEARTBEAT_OK"
 assert_contains "save-context includes memory summary" "$output" "recent memory entry"
 assert_contains "save-context includes heuristics summary" "$output" "verify before commit"
-rm -rf "$TMP_CTX"
 echo ""
 
 finish_tests

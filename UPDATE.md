@@ -1,56 +1,35 @@
 # Update Protocol — copilot-instructions-template
 
-> **For Copilot**: This document defines the update process. Follow every step precisely. Do **not** write anything to the user's project until the user has confirmed the update plan after the Pre-flight Report — except for the automatic backup, which is always created silently before the first write.
+> **For Copilot**: Follow every step precisely. Do **not** write until the user confirms after the Pre-flight Report — except the automatic backup (always created silently before first write).
 >
-> **For the human**: Open a Copilot chat and say one of the trigger phrases below. Copilot will fetch this document, check for updates, and walk you through the process.
+> **For the human**: Say one of the trigger phrases below in a Copilot chat.
+>
+> **ask_questions convention**: Use `ask_questions` for ALL user-facing decisions. Each block must have `header:`, `question:`, `options:` with `- label:` entries.
 
 ---
 
 ## Trigger phrases
 
-> **Canonical source**: The complete trigger phrase list is in `AGENTS.md` → "Canonical triggers" table.
-> The phrases below are repeated here because UPDATE.md is fetched independently from the template repo.
+- *"Update your instructions"* / *"Check for instruction updates"* / *"Update from copilot-instructions-template"* / *"Sync instructions with the template"* / *"Check the template for updates"*
+- *"Force check instruction updates"* (bypasses version equality — see Force check section)
+- *"Restore instructions from backup"* / *"Roll back the instructions update"* / *"List instruction backups"*
 
-When a user says any of the following in a project that already has Copilot instructions installed:
-
-- *"Update your instructions"*
-- *"Check for instruction updates"*
-- *"Update from copilot-instructions-template"*
-- *"Sync instructions with the template"*
-- *"Check the template for updates"*
-- *"Force check instruction updates"* *(bypasses version equality check — see end of document)*
-
-> **Disambiguation**: All of these phrases mean the same thing — check the upstream template repository at `https://github.com/asafelobotomy/copilot-instructions-template` for a newer version and, if one exists, walk the user through applying the changes. This is not a request to edit the instructions in an ad-hoc way.
-
-To restore a previous version after an update:
-
-- *"Restore instructions from backup"*
-- *"Roll back the instructions update"*
-- *"List instruction backups"*
-
-...perform the corresponding sequence below.
+All update phrases check `https://github.com/asafelobotomy/copilot-instructions-template` for a newer version.
 
 ---
 
 ## Pre-flight Sequence
 
-Complete all five steps before presenting anything to the user. Do not write anything yet.
+Complete all steps before presenting anything. Do not write yet.
 
 ### U1 — Read the installed instructions
 
-Read `.github/copilot-instructions.md` in the **user's current project**.
+Read `.github/copilot-instructions.md` and `.github/copilot-version.md`. Extract:
 
-Read `.github/copilot-version.md` in the **user's current project**.
-
-Extract:
-
-- **Installed version**: from `.github/copilot-version.md` (must be semver `x.y.z`).
-  - If `.github/copilot-version.md` is absent or invalid, treat installed version as `unknown` and proceed with a full comparison.
-- **Applied date**: the `Applied` value from that line.
-- **Updated date**: the `Updated` value if present (set by a previous update run).
-- **Section fingerprints**: parse the `<!-- section-fingerprints ... -->` block from `.github/copilot-version.md` into a map of `§N → stored_fingerprint`. If the block is absent (legacy installation), set `fingerprints_available = false`.
-- **Setup answers**: parse the `<!-- setup-answers ... -->` block from `.github/copilot-version.md` into a key-value map of `PLACEHOLDER_NAME → resolved_value`. If the block is absent, set `setup_answers = {}`. These values are used as defaults during placeholder re-resolution in U5 Step 2 — the agent pre-fills them and only asks the user to confirm or override, rather than re-running the full interview.
-- **§10 content**: the entire `## §10 — Project-Specific Overrides` section — this is preserved unconditionally and never included in the diff.
+- **Installed version** (semver; `unknown` if absent/invalid), **Applied/Updated dates**
+- **Section fingerprints**: `<!-- section-fingerprints -->` → `§N → stored_fp`. If absent: `fingerprints_available = false`
+- **Setup answers**: `<!-- setup-answers -->` → `PLACEHOLDER → value`. If absent: `{}`
+- **§10 content**: entire `## §10 — Project-Specific Overrides` — preserved unconditionally, never diffed
 
 ### U2 — Fetch the current template version
 
@@ -58,391 +37,153 @@ Extract:
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/VERSION.md
 ```
 
-If the fetched version **equals** the installed version → report:
+If fetched = installed → "Already up to date (vX.Y.Z). Say 'Force check instruction updates' for full comparison." → stop. If installed = `unknown`, proceed regardless.
 
-```text
-Already up to date (version X.Y.Z, applied YYYY-MM-DD). No changes available.
-To run a full comparison anyway, say "Force check instruction updates".
-```
+### U3 — Fetch migration registry and changelog
 
-And stop. No further action.
-
-If the installed version is `unknown`, proceed with a full comparison regardless of the version check.
-
-### U3 — Fetch the migration registry and changelog
-
-> **Parallelization**: U3 and U4 fetches are independent — execute all fetches across both steps in a single parallel batch (up to 4 URLs).
-
-Fetch both files in parallel:
+> **Parallelization**: U3, U3b, and U4 fetches are independent — batch all.
 
 ```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/MIGRATION.md
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/CHANGELOG.md
 ```
 
-From **MIGRATION.md**, extract all version entries **newer than the installed version**. These provide structured metadata: sections changed, companion files added/updated, new placeholders, breaking changes, and manual actions. This data drives the per-version change groups in the Pre-flight Report.
-
-From **CHANGELOG.md**, extract all changelog entries **newer than the installed version** for the "What's new" narrative. If the installed version is `unknown`, include the full changelog.
+From MIGRATION.md: entries newer than installed (sections changed, companions, placeholders, breaking changes, manual actions). From CHANGELOG.md: entries newer than installed for narrative.
 
 ### U3b — GitHub API compare (authoritative file diff)
 
-> **Execute in parallel with U4.** This step queries the GitHub compare API to produce a
-> complete, authoritative list of every template-repo file that changed between the
-> installed version and the latest version. It is the **primary** mechanism for companion
-> file discovery and is independent of MIGRATION.md documentation completeness.
-
-Fetch the compare endpoint:
-
 ```text
 GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/compare/v{INSTALLED_VERSION}...main
-Accept: application/vnd.github+json
 ```
 
-Parse the JSON response. Extract the `files[]` array. For each entry record:
+Parse `files[]` → record `filename`, `status`, `previous_filename`. Store as `API_FILE_DIFF`.
 
-- `filename` — path within the template repository
-- `status` — one of `added`, `modified`, `removed`, `renamed`
-- `previous_filename` — the old path (renamed files only)
-
-Store this as `API_FILE_DIFF`. This is the authoritative change set.
-
-**Fallback A — no git tag for installed version**: If the compare endpoint returns HTTP 404
-(no `v{INSTALLED_VERSION}` tag exists), fetch the full repository tree at `main`:
-
-```text
-GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/git/trees/main?recursive=1
-```
-
-Extract all `blob` entries from `tree[]`. Set `API_FILE_DIFF` to this full list with all
-statuses set to `modified` — the three-way comparison in U5 Step 3 will determine which
-files are `CURRENT` vs `UPDATABLE` vs `USER_CUSTOMISED`.
-
-> **Truncation guard**: if the tree response contains `"truncated": true`, the result is
-> incomplete (repo exceeded the 100,000-entry or 7 MB limit). Log a warning in the Pre-flight
-> Report anomaly list and fall back to the MIGRATION.md-only path (set `API_FILE_DIFF = null`).
-> Do not proceed with a partial tree — a silently incomplete companion file manifest is worse
-> than a conservative MIGRATION.md-only pass.
-
-**Fallback B — API unavailable or rate-limited**: If both requests fail, set
-`API_FILE_DIFF = null` and fall back to the MIGRATION.md-only path in U5 Step 3.
-Log `API_FILE_DIFF = null (fallback: MIGRATION.md only)` in the Pre-flight Report
-anomaly list.
-
-> **Rate limits**: 60 unauthenticated requests/hour; 5,000 authenticated/hour.
-> Copilot's authentication context is sufficient for authenticated requests.
-> The compare call and the optional tree call together count as at most 2 requests.
+**Fallback A** (404 / no tag): fetch `git/trees/main?recursive=1`, set all statuses to `modified`. If `"truncated": true`, set `API_FILE_DIFF = null`.
+**Fallback B** (API unavailable): set `API_FILE_DIFF = null`, use MIGRATION.md-only path.
 
 ### U4 — Fetch templates for three-way merge
 
-Fetch **two** copies of the template:
-
-**A — Old baseline** (template at the installed version):
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/v<INSTALLED_VERSION>/template/copilot-instructions.md
-```
-
-If the installed version has no tag (no `v<INSTALLED_VERSION>` tag exists), or the fetch fails, set `OLD_BASELINE = null`. The protocol will fall back to a two-way diff (new template vs installed file).
-
-**B — New template** (latest):
-
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/copilot-instructions.md
-```
+- **Old baseline**: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/v<INSTALLED_VERSION>/template/copilot-instructions.md` (`OLD_BASELINE = null` if no tag / fetch fails)
+- **New template**: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/copilot-instructions.md`
 
 ### U5 — Build the change manifest (version-walk)
 
 #### Step 1 — Identify intermediate versions
 
-Using the MIGRATION.md entries from U3, list all tagged versions between the installed version (exclusive) and the new version (inclusive), in ascending order. These are the **version steps** the user is traversing.
-
-Example: installed `v1.4.0`, new `v3.0.0` → version steps: `v2.0.0`, `v2.1.0`, `v2.2.0`, `v3.0.0`.
+From MIGRATION.md, list versions between installed (exclusive) and new (inclusive), ascending.
 
 #### Step 2 — Section-by-section comparison
 
-For each section §1–§9 (§10 is excluded entirely):
+For each §1–§9 (§10 excluded):
 
-1. Extract the section from the **installed file** (U1).
-2. Extract the section from the **old baseline** (U4-A), if available.
-3. Extract the section from the **new template** (U4-B).
-
-**Determine user modification** (fingerprint-based, deterministic):
-
-If `fingerprints_available` (from U1), compute the current fingerprint for each section:
-
+**User modification** (fingerprint-based): compute fingerprint if `fingerprints_available`:
 ```bash
 fp=$(awk "/^## §${i} —/{found=1; next} /^## §/{if(found) exit} found{print}" \
   .github/copilot-instructions.md | sha256sum | cut -c1-12)
 ```
+Match = not modified. Mismatch = modified. If unavailable → legacy heuristic.
 
-> **Windows note**: `sha256sum` requires Git Bash, WSL, or equivalent. If neither is available, set `fingerprints_available = false` — the legacy heuristic path will apply.
+**Upstream change**: compare old baseline vs new template (ignore resolved placeholders). If OLD_BASELINE unavailable, compare installed vs new template.
 
-Compare `current_fp` vs `stored_fp` from U1:
-
-- `current_fp = stored_fp` → **user did NOT modify** this section since last setup/update.
-- `current_fp ≠ stored_fp` → **user modified** this section.
-
-If `fingerprints_available = false` (legacy installation): treat all sections as "user modification unknown" — fall back to the heuristic rules in the **Legacy fallback** paragraph below.
-
-**Determine upstream change**:
-
-- If OLD_BASELINE available: compare old baseline section vs new template section (ignoring resolved `{{PLACEHOLDER}}` values).
-- If OLD_BASELINE unavailable: compare installed section vs new template section (ignoring resolved `{{PLACEHOLDER}}` values).
-- Sections are equivalent (`≈`) if they match after stripping resolved placeholder values and normalising whitespace.
-
-**Assign status** using the combined result:
-
-| Status | Condition | Default action |
-|--------|-----------|----------------|
-| `UNCHANGED` | User did not modify AND upstream did not change | Skip silently |
-| `UPDATED` | User did not modify AND upstream changed | Offer to apply |
-| `USER_MODIFIED` | User modified AND upstream changed | Flag explicitly; require user decision |
-| `USER_ONLY` | User modified AND upstream did not change | Skip silently; preserve user's version |
-| `NEW_SECTION` | Section exists in new template but not in installed file | Offer to add |
-| `REMOVED_FROM_TEMPLATE` | Section exists in installed file but not in new template | Warn; preserve by default |
-| `BREAKING` | Section is marked as breaking in any intermediate MIGRATION.md entry | Flag with ⚠ marker; require explicit confirmation |
-
-**Legacy fallback** (when `fingerprints_available = false` AND `OLD_BASELINE = null`): compare installed vs new template directly. A section that differs is `UPDATED` unless the installed version has been substantially modified beyond placeholder resolution (e.g., added paragraphs, changed rules, different table rows), in which case mark `USER_MODIFIED`. This heuristic path is only reached for installations predating fingerprint support.
-
-#### Step 3 — Companion file manifest (API-driven)
-
-**Primary source**: Use `API_FILE_DIFF` from U3b filtered through the Path Mapping Table
-below. If `API_FILE_DIFF = null`, fall back to walking MIGRATION.md entries (legacy path).
-
-**Secondary source**: Walk each intermediate version's MIGRATION.md entry for enriching
-metadata — breaking change notes, new placeholder announcements, manual actions. Do **not**
-rely on MIGRATION.md as the complete source of companion file changes. If `API_FILE_DIFF`
-contains a path not listed in MIGRATION.md, include it in the manifest regardless.
-
-##### Path Mapping Table
-
-| Template repo glob | Consumer destination | Notes |
-|-------------------|---------------------|-------|
-| `.github/agents/*.agent.md` | `.github/agents/*.agent.md` | Verbatim; no placeholders |
-| `template/skills/*/SKILL.md` | `.github/skills/*/SKILL.md` | `template/` → `.github/` |
-| `template/hooks/copilot-hooks.json` | `.github/hooks/copilot-hooks.json` | Hook config |
-| `template/hooks/scripts/*.sh` | `.github/hooks/scripts/*.sh` | Make executable after write |
-| `template/hooks/scripts/*.ps1` | `.github/hooks/scripts/*.ps1` | PowerShell scripts |
-| `template/instructions/*.instructions.md` | `.github/instructions/*.instructions.md` | Path-scoped stubs |
-| `template/prompts/*.prompt.md` | `.github/prompts/*.prompt.md` | Slash commands |
-| `template/workspace/*.md` | `.copilot/workspace/*.md` | Workspace identity |
-| `template/workspace/DOC_INDEX.json` | `.copilot/workspace/DOC_INDEX.json` | Doc index |
-| `template/copilot-instructions.md` | `.github/copilot-instructions.md` | Handled by U5 Step 2 |
-| `template/copilot-setup-steps.yml` | `.github/workflows/copilot-setup-steps.yml` | GitHub Actions workflow |
-| `template/CLAUDE.md` | `CLAUDE.md` | Claude compat file |
-| `starter-kits/<kit>/**` | `.github/starter-kits/<kit>/**` | Only kits already installed |
-
-**Excluded paths** (template-repo internals; never delivered to consumers — ignore in diff):
-`tests/`, `scripts/`, `.github/workflows/`, `.github/copilot-instructions.md`,
-`.github/instructions/`, `.github/prompts/`, `.github/hooks/`, `.github/skills/`,
-`SETUP.md`, `UPDATE.md`, `MIGRATION.md`, `AGENTS.md`, `MODELS.md`, `VERSION.md`,
-`CHANGELOG.md`, `README.md`, `llms.txt`, `release-please-config.json`,
-`CLAUDE.md` (top-level developer copy; consumer version is `template/CLAUDE.md`),
-`.markdownlint*`, `.gitignore`, `.github/copilot-version.md`.
-
-**Roster completeness check** — always run this regardless of `API_FILE_DIFF` content:
-
-Enumerate the complete current agent and skill rosters by fetching the API tree **once**:
-
-```text
-GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/git/trees/main?recursive=1
-```
-
-If this request was already made for U3b Fallback A, reuse that cached response — do not
-fetch again.
-
-From the response, in a single pass:
-
-1. Filter `tree[]` for entries matching `.github/agents/*.agent.md`. Compare against the
-   consumer's `.github/agents/` directory. Add any missing agents to the manifest with
-   status `NEW`.
-
-2. Filter `tree[]` for entries matching `template/skills/*/SKILL.md`. Map each to
-   `.github/skills/<skill-name>/SKILL.md` in the consumer project. Compare against the
-   consumer's `.github/skills/` directory. Add any missing skills to the manifest with
-   status `NEW`.
-
-This ensures every file in both rosters is discovered even when `API_FILE_DIFF` is `null`
-(MIGRATION.md-only fallback) or when a release was made without updating MIGRATION.md.
-
-**Status determination** for each companion file (after mapping template path → consumer path):
+**Status assignment**:
 
 | Status | Condition | Action |
 |--------|-----------|--------|
-| `NEW` | Consumer path does not exist | Offer to create |
-| `UPDATABLE` | Consumer file unmodified from OLD_BASELINE; new template differs | Offer update |
-| `USER_CUSTOMISED` | Consumer file modified from OLD_BASELINE; new template also differs | Flag; let user decide |
-| `CURRENT` | Consumer file matches latest template | Skip silently |
-| `DELETED_FROM_TEMPLATE` | File removed from template in this version range | If consumer has the file: inform and offer to delete. If absent: skip silently. |
+| `UNCHANGED` | No user mod, no upstream change | Skip |
+| `UPDATED` | No user mod, upstream changed | Offer |
+| `USER_MODIFIED` | User mod, upstream changed | Flag; user decides |
+| `USER_ONLY` | User mod, no upstream change | Skip |
+| `NEW_SECTION` | In new template only | Offer |
+| `REMOVED_FROM_TEMPLATE` | In installed only | Warn; preserve |
+| `BREAKING` | Marked breaking in MIGRATION.md | Flag ⚠; confirm |
 
-**Deleted path handling** for each file with `status: "removed"` in `API_FILE_DIFF`:
+**Legacy fallback** (`fingerprints_available = false` AND `OLD_BASELINE = null`): compare installed vs new directly. Substantial modifications → `USER_MODIFIED`, else `UPDATED`.
 
-1. Map the `filename` through the Path Mapping Table to find the consumer destination path. If the path does not match any mapping rule, skip it (it is a template-internal file).
-2. If the consumer destination path does **not** exist: skip silently.
-3. If the consumer destination path **exists**:
-   - Assign status `DELETED_FROM_TEMPLATE`.
-   - Run a three-way comparison against `OLD_BASELINE` to determine whether the consumer has customised the file since installation:
-     - Consumer file matches OLD_BASELINE → unmodified copy → recommend deletion. Default action: **keep** unless the user explicitly accepts.
-     - Consumer file differs from OLD_BASELINE → user-customised → warn that the file is no longer part of the template but contains user changes. Present both options: retain as a standalone custom file, or delete. Default action: **keep**.
-   - Include in the Pre-flight Report under a dedicated "Removed from template" group.
+#### Step 3 — Companion file manifest (API-driven)
 
-> **Preservation rule**: Never delete a consumer file without an explicit user confirmation. The default action for `DELETED_FROM_TEMPLATE` files is always **keep**.
+**Primary**: `API_FILE_DIFF` filtered through Path Mapping Table. **Secondary**: MIGRATION.md for metadata. Include paths from `API_FILE_DIFF` even if absent from MIGRATION.md.
 
-**Three-way comparison** for each file appearing as `modified` or `added` in `API_FILE_DIFF`:
+##### Path Mapping Table
 
-1. Fetch **old template version** of the file (at installed version tag):
+| Template repo glob | Consumer destination |
+|-------------------|---------------------|
+| `.github/agents/*.agent.md` | `.github/agents/*.agent.md` (verbatim) |
+| `template/skills/*/SKILL.md` | `.github/skills/*/SKILL.md` |
+| `template/hooks/**` | `.github/hooks/**` |
+| `template/instructions/*` | `.github/instructions/*` |
+| `template/prompts/*` | `.github/prompts/*` |
+| `template/workspace/*` | `.copilot/workspace/*` |
+| `template/copilot-setup-steps.yml` | `.github/workflows/copilot-setup-steps.yml` |
+| `template/CLAUDE.md` | `CLAUDE.md` |
+| `starter-kits/<kit>/**` | `.github/starter-kits/<kit>/**` (only if installed) |
 
-   ```text
-   https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/v{INSTALLED_VERSION}/{template-source-path}
-   ```
+**Excluded** (template internals): `tests/`, `scripts/`, `.github/workflows/`, `.github/copilot-instructions.md`, `.github/instructions/`, `.github/prompts/`, `.github/hooks/`, `.github/skills/`, `SETUP.md`, `UPDATE.md`, `MIGRATION.md`, `AGENTS.md`, `MODELS.md`, `VERSION.md`, `CHANGELOG.md`, `README.md`, `llms.txt`, `release-please-config.json`, `CLAUDE.md` (dev copy), `.markdownlint*`, `.gitignore`, `.github/copilot-version.md`.
 
-   If the installed version has no tag or the fetch fails, skip to step 3.
+**Roster completeness**: fetch `git/trees/main?recursive=1` (reuse U3b cache). Filter for agents and skills. Add missing items with status `NEW`.
 
-2. Read the **consumer's current file** content.
+**Status per companion file**: `NEW` (absent → create), `UPDATABLE` (unmodified, template differs → update), `USER_CUSTOMISED` (modified, template differs → flag), `CURRENT` (matches template → skip), `DELETED_FROM_TEMPLATE` (removed → inform, default keep, require explicit confirmation).
 
-3. Compare:
-   - `consumer == old_template` → unmodified → status `UPDATABLE`
-   - `consumer != old_template` → possibly user-modified → status `USER_CUSTOMISED`
-   - If old template fetch failed: compare `consumer` vs new template.
-     Identical → `CURRENT`; different → `UPDATABLE` (no baseline; assume unmodified).
+**Three-way comparison**: fetch old template at installed tag, read consumer, compare. If `<!-- file-manifest -->` has stored hash and `sha256(consumer)[0:12]` matches → override to `UPDATABLE`.
 
-4. **File-manifest refinement**: if `copilot-version.md` contains a `<!-- file-manifest -->`
-   block (see Post-update step 1) and the block records a content hash for this file:
-   - Compute `current_hash = sha256(consumer_file_content)[0:12]` (requires terminal)
-   - If `current_hash == stored_manifest_hash` → consumer has **not** modified the file
-     → override to `UPDATABLE` regardless of content comparison result.
-   - If terminal is unavailable, skip this check and rely on content comparison.
+#### Step 4 — Final check
 
-For the **companion extension** (`copilot-profile-tools`), use these statuses instead:
+**Permanently excluded** (never diff/modify): §10 and its subsections (User Preferences, Additional project notes), `<!-- migrated -->` blocks, `<!-- user-added -->` blocks, resolved placeholder values.
 
-| Extension status | Condition | Action |
-|-----------------|-----------|--------|
-| `NOT_INSTALLED` | Extension not present | Offer to install (Marketplace, VSIX fallback) |
-| `INSTALLED_CURRENT` | Installed and up-to-date | Skip silently |
-| `INSTALLED_OUTDATED` | Installed but newer version available | Offer update |
-| `INSTALL_FAILED` | Marketplace and VSIX both failed | Note and continue |
+From MIGRATION.md entries: accumulate breaking changes, new placeholders, manual actions.
 
-Extension version check: run `code --list-extensions --show-versions | grep -i copilot-profile-tools` and compare against the latest release from `https://api.github.com/repos/asafelobotomy/copilot-profile-tools/releases/latest`.
+If zero items need updating → "No applicable changes found" → stop.
 
-#### Step 4 — Accumulate metadata
+#### Step 5 — Fast-path for companion-only updates
 
-From the intermediate MIGRATION.md entries, collect:
+If all §1–§9 are `UNCHANGED`/`USER_ONLY` AND companions need updating AND no breaking changes: show compact summary, then:
 
-- **Breaking changes**: any version with `Breaking = Yes` — list the version and the breaking change description.
-- **New placeholders**: all `{{PLACEHOLDER}}` tokens introduced across the version range — list each with its target section.
-- **Manual actions**: all manual action items from intermediate versions — deduplicate and list.
+```ask_questions
+header: "Companion-only update"
+question: "No instruction changes. Apply all companion file updates?"
+options:
+  - label: "Y — Apply all"
+    description: "Update all listed companion files"
+    recommended: true
+  - label: "N — Skip"
+    description: "No changes will be made"
+  - label: "List — Pick individually"
+    description: "Choose which companion files to update"
+allowFreeformInput: false
+```
 
-#### Step 5 — Final check
+> **Fallback**: If `ask_questions` unavailable, present as Y/N/list in chat.
 
-**Sections permanently excluded from the change manifest** (guardrail — never diff, never modify):
-
-- `## §10 — Project-Specific Overrides` — entire section and all subsections
-- `### User Preferences` — entire subsection
-- `### Additional project notes` — entire subsection
-- Any block containing `<!-- migrated -->`
-- Any block containing `<!-- user-added -->`
-- Any resolved placeholder value (e.g., `bun test` is never reverted to `{{TEST_COMMAND}}`)
-
-If the total count of `UPDATED`, `NEW_SECTION`, `USER_MODIFIED`, and `BREAKING` section items is zero AND no companion files need updating, report "No applicable changes found" and stop.
-
-#### Step 6 — Fast-path for companion-only updates
-
-If **all** §1–§9 sections have status `UNCHANGED` or `USER_ONLY` (no instruction changes from upstream) **and** one or more companion files are `NEW` or `UPDATABLE` **and** no breaking changes exist:
-
-1. Skip the full Pre-flight Report. Instead, show a compact summary:
-
-   ```text
-   COMPANION-ONLY UPDATE — vOLD → vNEW
-
-   No instruction section changes. <N> companion file(s) to update:
-   <list each file with status (NEW / UPDATABLE)>
-   Companion extension: <INSTALLED_CURRENT / INSTALLED_OUTDATED / NOT_INSTALLED>
-   ```
-
-   Then use `ask_questions`:
-
-   ```ask_questions
-   header: "Companion-only update"
-   question: "No instruction changes. Apply all companion file updates?"
-   options:
-     - label: "Y — Apply all"
-       description: "Update all listed companion files"
-       recommended: true
-     - label: "N — Skip"
-       description: "No changes will be made"
-     - label: "List — Pick individually"
-       description: "Choose which companion files to update"
-   allowFreeformInput: false
-   ```
-
-   > **Fallback**: If `ask_questions` is unavailable, present as Y/N/list in chat.
-
-2. If user confirms, write the companion files directly — no section-by-section walkthrough needed.
-3. Update the version file and fingerprints (Post-update step 1).
-4. Append to CHANGELOG.md as normal.
-
-If the user declines or picks individually, proceed to the standard Pre-flight Report.
+If confirmed, write files, update version + CHANGELOG, skip full report.
 
 ---
 
 ## Pre-flight Report
 
-After completing U1–U5, present this report. Do not write anything yet.
-
-Structure the report as plain text with these sections in order:
-
-1. **Header** — installed version, latest version, version steps traversed, status summary
-2. **Breaking changes** — list each breaking version with one-line description, or "None."
-3. **What's new** — grouped by version (newest first) from CHANGELOG, one bullet per notable change
-4. **Section-by-section diff** — table with columns: Status, Section (§1–§10), Result (UNCHANGED/UPDATED/BREAKING/USER_MODIFIED/PROTECTED), Changed in (version). Status icons: ✓ update, ! user-modified, ⚠ breaking, [§10] protected
-5. **Companion files** — table with columns: Status, File, Action (NEW/UPDATABLE/CUSTOM), Since. Icons: + new, ↑ update available, ~ user-customised
-6. **New placeholders** — list `{{PLACEHOLDER}}` tokens introduced, or "None."
-7. **User-modified sections** — list with one-line description, or "None detected."
-8. **Manual actions required** — accumulated from MIGRATION.md across all intermediate versions, or "None."
-9. **Guardrail check** — confirm §10, User Preferences block, migrated/user-added content, and resolved placeholder values are all PROTECTED
-10. **Backup** — note that backup will be created automatically before any writes
-11. **Prompt** — use `ask_questions` to get the user's decision:
+Present after U1–U5. Do not write yet. Include: (1) version header, (2) breaking changes, (3) what's new from CHANGELOG, (4) section diff table, (5) companion files table, (6) new placeholders, (7) user-modified sections, (8) manual actions, (9) guardrail confirmation, (10) backup note. Then:
 
 ```ask_questions
 header: "Update decision"
 question: "How would you like to proceed with this update?"
 options:
   - label: "U — Update all"
-    description: "Apply all changes automatically (user-modified sections are preserved with a note)"
+    description: "Apply all changes (user-modified sections preserved with a note)"
     recommended: true
   - label: "S — Skip"
-    description: "No changes will be made — stay on your current version"
+    description: "No changes — stay on current version"
   - label: "C — Customise"
-    description: "Walk through each change individually and decide per-section"
+    description: "Walk through each change individually"
 allowFreeformInput: false
 ```
 
-> **Fallback**: If `ask_questions` is unavailable, present as U/S/C in chat.
-
-Wait for the user's response before proceeding.
+> **Fallback**: If `ask_questions` unavailable, present as U/S/C in chat.
 
 ---
 
 ## Pre-write Backup
 
-**This step is automatic and mandatory. It runs immediately after the user's first confirmatory response (U, C + final "yes", or any write-triggering input) and before the first file write. It does not run for path S.**
+**Automatic and mandatory.** Runs after user's first confirmatory response, before first write. Not for path S.
 
-### What to back up
-
-1. **`.github/copilot-instructions.md`** — the full installed instructions file, exactly as it exists right now.
-
-2. **Companion files that will be modified** — any companion file with status `UPDATABLE` or `USER_CUSTOMISED` from the change manifest. Copy each to the backup directory preserving its relative path.
-
-For companion files with status `NEW`, no backup is needed (the file does not exist yet).
-
-### Where to store it
-
-Create directory `.github/archive/pre-update-<TODAY>-v<INSTALLED_VERSION>/` (append counter `-2`, `-3` if exists). Inside, create:
-
-1. **`copilot-instructions.md`** — exact copy of current `.github/copilot-instructions.md`
-2. **`BACKUP-MANIFEST.md`** — table with: backup date, installed version, target version, trigger, files backed up. Include list of changed sections and restore instructions (*"Restore instructions from backup"*).
-
-Print `Backup created at .github/archive/pre-update-<TODAY>-v<INSTALLED_VERSION>/` then continue with writes — no user interaction required.
+Back up `.github/copilot-instructions.md` + companion files with status `UPDATABLE`/`USER_CUSTOMISED` to `.github/archive/pre-update-<TODAY>-v<INSTALLED_VERSION>/` (append counter if exists). Include `BACKUP-MANIFEST.md`. Print backup path, then continue.
 
 ---
 
@@ -450,200 +191,59 @@ Print `Backup created at .github/archive/pre-update-<TODAY>-v<INSTALLED_VERSION>
 
 ### U — Update all
 
-> **Pre-write Backup runs before this path begins.**
+> Pre-write Backup runs before this path begins.
 
-Apply all `UPDATED`, `NEW_SECTION`, and `BREAKING` section items, plus all `NEW` and `UPDATABLE` companion files, in one pass.
+**Sections**: `UPDATED`/`BREAKING` → replace with new template, re-apply placeholders, re-insert `<!-- migrated -->`/`<!-- user-added -->` blocks with `<!-- preserved from pre-update version -->`. `NEW_SECTION` → insert at correct position with placeholder resolution. `USER_MODIFIED` → do NOT modify, append `<!-- update-note: template updated to vX.Y.Z but user-modified, preserved -->`. `USER_ONLY` → unchanged.
 
-#### Section updates
+**Companion files**: `NEW` → fetch, write, resolve placeholders. `UPDATABLE` → fetch latest, replace. `USER_CUSTOMISED` → skip, report.
 
-1. For each `UPDATED` or `BREAKING` section:
-   - Replace the installed section with the new template section.
-   - Re-apply resolved placeholder values: scan the installed §10 placeholder table and re-substitute any `{{PLACEHOLDER}}` tokens that appear in the new section text.
-   - If the installed section contained any `<!-- migrated -->` or `<!-- user-added -->` blocks, re-insert them after the updated content with the comment: `<!-- preserved from pre-update version -->`.
+**New placeholders**: use `ask_questions` with `allowFreeformInput: true` (batch ≤4). Add to §10.
 
-2. For each `NEW_SECTION`:
-   - Insert the section into the file at the correct ordinal position.
-   - Apply placeholder resolution from §10.
+> **Fallback**: If `ask_questions` unavailable, present as numbered list in chat.
 
-3. For each `USER_MODIFIED` section:
-   - Do **not** modify the installed content.
-   - Append a comment immediately after the section heading:
-
-     ```html
-     <!-- update-note: template updated this section to vX.Y.Z but your
-          version was user-modified and is preserved. Review UPDATE.md
-          if you want to apply the upstream change manually. -->
-     ```
-
-4. For each `USER_ONLY` section: leave unchanged (no comment needed).
-
-#### Companion file updates
-
-1. For each `NEW` companion file:
-   - Fetch from the template repo at the latest tag:
-     `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<TAG>/<template-source-path>`
-   - Write to the destination path in the user's project.
-   - If the file contains `{{PLACEHOLDER}}` tokens, resolve using §10 values where available.
-
-2. For each `UPDATABLE` companion file:
-   - Fetch the latest version from the template repo.
-   - Replace the file in the user's project. If the file is a skill with user-added content, merge carefully.
-
-3. For each `USER_CUSTOMISED` companion file:
-   - Do **not** modify the installed content.
-   - Report which companion file was skipped and why.
-
-#### New placeholders
-
-1. If any `{{PLACEHOLDER}}` tokens from MIGRATION.md are unresolved in §10:
-   - List each unresolved placeholder with its default value (if known).
-   - Use `ask_questions` with freeform input to collect values:
-
-   ```ask_questions
-   header: "Unresolved placeholder: {{PLACEHOLDER_NAME}}"
-   question: "This update introduces {{PLACEHOLDER_NAME}}. What value should it have? (default: <default_value>)"
-   allowFreeformInput: true
-   ```
-
-   Batch up to 4 unresolved placeholders per `ask_questions` call.
-   - Add resolved values to the §10 placeholder table.
-
-   > **Fallback**: If `ask_questions` is unavailable, present placeholders as a numbered list in chat.
-
-2. Proceed to **Post-update steps**.
+Proceed to Post-update steps.
 
 ### S — Skip
 
-No writes. No backup.
-
-```text
-No changes made. Your instructions remain at version X.Y.Z.
-To apply updates later, say "Update your instructions".
-```
+No writes. No backup. "No changes made. Your instructions remain at version X.Y.Z."
 
 ### C — Customise
 
-Walk through each `UPDATED`, `BREAKING`, `NEW_SECTION`, and `USER_MODIFIED` section item one at a time. For each item, present:
-
-```text
-Section change <N> of <total>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Section:  §<N> <Section name>
-Status:   <UPDATED / BREAKING / NEW_SECTION / USER_MODIFIED>
-Changed in: <version(s) from MIGRATION.md>
-
-WHAT CHANGED:
-<Copilot's one-paragraph plain-English summary of what is different
- between the installed and new template versions of this section.
- For BREAKING sections, explain the breaking change impact.>
-
---- CURRENT (installed) ---
-<Relevant excerpt — up to 20 lines — from the installed instructions.>
-
-+++ NEW (template v X.Y.Z) +++
-<Relevant excerpt — up to 20 lines — from the new template.>
-
-HOW TO HANDLE THIS CHANGE?
-  A — Apply      Replace this section with the new template version.
-  B — Skip       Keep your current version. No change made.
-  C — Customise  I'll show you the full new text so you can tailor
-                 it before it's applied.
-```
-
-Use `ask_questions` for each section decision:
+Walk through each `UPDATED`, `BREAKING`, `NEW_SECTION`, `USER_MODIFIED` item showing: ID, status, versions, summary, excerpts (≤20 lines current + new).
 
 ```ask_questions
 header: "Section §<N>"
-question: "How should I handle §<N> <Section name>? (Status: <STATUS>)"
+question: "How should I handle §<N> <name>? (Status: <STATUS>)"
 options:
   - label: "A — Apply"
-    description: "Replace this section with the new template version"
+    description: "Replace with new template version"
     recommended: true
   - label: "B — Skip"
-    description: "Keep your current version — no change made"
+    description: "Keep current version"
   - label: "C — Customise"
-    description: "View the full new text and tailor it before applying"
+    description: "View full text and tailor before applying"
 allowFreeformInput: false
 ```
 
-> **Fallback**: If `ask_questions` is unavailable, present as A/B/C in chat.
+> **Fallback**: If `ask_questions` unavailable, present as A/B/C in chat.
 
-Wait for the user's response (A, B, or C) before moving to the next item.
-
-**After all section items are reviewed**, walk through companion files:
-
-```text
-Companion file <N> of <total>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-File:     <destination path>
-Status:   <NEW / UPDATABLE / USER_CUSTOMISED>
-Since:    <version that introduced it>
-
-WHAT THIS FILE DOES:
-<One-sentence description of the companion file's purpose.>
-
-  A — Apply      <Create / Update> this companion file.
-  B — Skip       Leave this file unchanged (or uncreated).
-```
-
-Use `ask_questions` for each companion file decision:
+Then companion files:
 
 ```ask_questions
 header: "Companion: <filename>"
-question: "How should I handle <destination path>? (Status: <STATUS>)"
+question: "How should I handle <path>? (Status: <STATUS>)"
 options:
   - label: "A — Apply"
-    description: "<Create / Update> this companion file"
+    description: "<Create/Update> this file"
     recommended: true
   - label: "B — Skip"
-    description: "Leave this file unchanged (or uncreated)"
+    description: "Leave unchanged"
 allowFreeformInput: false
 ```
 
-> **Fallback**: If `ask_questions` is unavailable, present as A/B in chat.
+> **Fallback**: If `ask_questions` unavailable, present as A/B in chat.
 
-Wait for the user's response before moving to the next companion file.
-
-**If the user chooses C (Customise for a specific change)**:
-
-1. Show the full new section text.
-2. Say: *"Describe the adjustments you want, or type your replacement text in full."*
-3. Accept the user's input. If they described changes rather than providing full text, produce the adjusted version and use `ask_questions` to confirm:
-
-   ```ask_questions
-   header: "Confirm customisation"
-   question: "Here is the adjusted version. Shall I apply this?"
-   options:
-     - label: "Yes"
-       description: "Apply the customised version"
-       recommended: true
-     - label: "No"
-       description: "Let me revise further"
-   allowFreeformInput: true
-   ```
-
-   > **Fallback**: If `ask_questions` is unavailable, ask in chat.
-
-4. On confirmation, record the customised version. Say: *"Customised version recorded. Moving to the next change."*
-
-**After all items are reviewed**, present a final confirmation:
-
-```text
-Review complete.
-
-  Sections:
-    Apply:      <list of sections, or "none">
-    Skip:       <list of sections, or "none">
-    Customise:  <list of sections with one-line note, or "none">
-
-  Companion files:
-    Apply:      <list of files, or "none">
-    Skip:       <list of files, or "none">
-
-Shall I write these changes now? (yes / no)
-```
-
-Use `ask_questions` for the final confirmation:
+If **C** chosen: show full text, accept adjustments, confirm via ask_questions (Yes/No, `allowFreeformInput: true`). After all reviewed, summarise and confirm:
 
 ```ask_questions
 header: "Write changes"
@@ -653,327 +253,129 @@ options:
     description: "Apply all confirmed changes"
     recommended: true
   - label: "No"
-    description: "Cancel — no changes will be written"
+    description: "Cancel — no changes written"
 allowFreeformInput: false
 ```
 
-> **Fallback**: If `ask_questions` is unavailable, present as yes/no in chat.
-> **Pre-write Backup runs here — immediately after "yes", before the first write.**
+> **Fallback**: If `ask_questions` unavailable, present as yes/no in chat.
+
+Pre-write Backup runs after "yes", before first write.
 
 ---
 
 ## Applicability guardrails
 
-Apply these checks **before writing any section**, regardless of the decision path:
+Apply before writing any section, regardless of decision path:
 
-| Guardrail | What to check | If triggered |
-|-----------|---------------|--------------|
-| **Placeholder leakage** | New section contains `{{PLACEHOLDER}}` tokens | Re-resolve using the installed §10 placeholder table. If a value is missing from the table, leave the token as-is and add it to the anomaly list. |
-| **§10 collision** | A change would overwrite any content in `## §10 —` | Skip the change automatically. Log in the anomaly list. |
-| **Migrated content** | Section contains `<!-- migrated -->` blocks | Preserve those blocks verbatim; write the update around them. |
-| **User-added content** | Section contains `<!-- user-added -->` blocks | Preserve those blocks verbatim; write the update around them. |
-| **User preference conflict** | New section changes behaviour already configured in `### User Preferences` | Flag to user before applying: show both the new template instruction and the user's current preference. Use `ask_questions` to ask which takes precedence (options: "Keep my preference" / "Use template version"). Fallback: ask in chat. |
-| **Metric threshold conflict** | New section changes default threshold values (LOC warn/high, dep budget) that were already resolved in §10 | Show the current resolved values alongside the new template defaults. Use `ask_questions` to ask which to keep (options: "Keep current values" / "Use template defaults"). Fallback: ask in chat. |
+| Guardrail | Check | Action |
+|-----------|-------|--------|
+| **Placeholder leakage** | New section has `{{PLACEHOLDER}}` tokens | Re-resolve from §10. If missing, leave as-is, log anomaly |
+| **§10 collision** | Change would overwrite §10 | Skip automatically, log anomaly |
+| **Migrated content** | Section has `<!-- migrated -->` blocks | Preserve verbatim; write around them |
+| **User-added content** | Section has `<!-- user-added -->` blocks | Preserve verbatim; write around them |
+| **User preference conflict** | New section changes behaviour in User Preferences | Flag. Use `ask_questions`: "Keep my preference" / "Use template version". Fallback: ask in chat. |
+| **Metric threshold conflict** | New section changes resolved thresholds in §10 | Show current vs defaults. Use `ask_questions`: "Keep current values" / "Use template defaults". Fallback: ask in chat. |
+
+**Items never modified by updates**: §10 (all subsections), `<!-- migrated -->` blocks, `<!-- user-added -->` blocks, resolved placeholder values. **Items flagged for user decision**: `USER_MODIFIED` sections, sections with `<!-- update-note: -->`, differing thresholds, preference conflicts.
 
 ---
 
 ## Post-update steps
 
-After all changes are confirmed and written:
+### 1 — Update version file, fingerprints, and file manifest
 
-### 1 — Update the version file, section fingerprints, and file manifest
-
-Recompute section fingerprints for the updated instructions file:
+Recompute fingerprints and file-manifest hashes:
 
 ```bash
-echo "<!-- section-fingerprints"
+# Section fingerprints
 for i in $(seq 1 9); do
   fp=$(awk "/^## §${i} —/{found=1; next} /^## §/{if(found) exit} found{print}" \
     .github/copilot-instructions.md | sha256sum | cut -c1-12)
   echo "§${i}=${fp}"
 done
-echo "-->"
-```
-
-Compute file-manifest hashes for every companion file that was **written or updated** this
-run (agent files, skills, hook scripts, instruction stubs, prompt files, workspace files):
-
-```bash
-echo "<!-- file-manifest"
-for f in \
-  .github/agents/*.agent.md \
-  .github/skills/*/SKILL.md \
-  .github/hooks/copilot-hooks.json \
-  .github/hooks/scripts/*.sh \
-  .github/hooks/scripts/*.ps1 \
-  .github/instructions/*.instructions.md \
-  .github/prompts/*.prompt.md \
-  .github/workflows/copilot-setup-steps.yml \
-  .copilot/workspace/*.md \
-  .copilot/workspace/DOC_INDEX.json; do
-  [ -f "$f" ] || continue
-  h=$(sha256sum "$f" | cut -c1-12)
-  echo "${f}=${h}"
+# File manifest
+for f in .github/agents/*.agent.md .github/skills/*/SKILL.md \
+  .github/hooks/copilot-hooks.json .github/hooks/scripts/*.sh \
+  .github/hooks/scripts/*.ps1 .github/instructions/*.instructions.md \
+  .github/prompts/*.prompt.md .github/workflows/copilot-setup-steps.yml \
+  .copilot/workspace/*.md .copilot/workspace/workspace-index.json; do
+  [ -f "$f" ] || continue; echo "${f}=$(sha256sum "$f" | cut -c1-12)"
 done
-echo "-->"
 ```
 
-Write to `.github/copilot-version.md`:
-
-```markdown
-# Installed Template Version
-
-<!-- This file is read by the Update agent to compare your installed version against the upstream template. -->
-<!-- Do not edit manually — it is updated automatically during instruction updates. -->
-
-NEW
-Applied: <ORIGINAL-APPLIED-DATE>
-Updated: YYYY-MM-DD
-
-<!-- section-fingerprints
-§1=<fingerprint>
-...
-§9=<fingerprint>
--->
-
-<!-- file-manifest
-.github/agents/coding.agent.md=<hash>
-.github/agents/doctor.agent.md=<hash>
-.github/agents/explore.agent.md=<hash>
-.github/agents/extensions.agent.md=<hash>
-.github/agents/fast.agent.md=<hash>
-.github/agents/researcher.agent.md=<hash>
-.github/agents/review.agent.md=<hash>
-.github/agents/security.agent.md=<hash>
-.github/agents/setup.agent.md=<hash>
-.github/agents/update.agent.md=<hash>
-.github/workflows/copilot-setup-steps.yml=<hash>
-... (one line per installed companion file)
--->
-
-<!-- setup-answers
-LANGUAGE=<resolved value>
-RUNTIME=<resolved value>
-PACKAGE_MANAGER=<resolved value>
-TEST_FRAMEWORK=<resolved value>
-TEST_COMMAND=<resolved value>
-TYPE_CHECK_COMMAND=<resolved value>
-BUILD_COMMAND=<resolved value>
-PROJECT_NAME=<resolved value>
-... (one line per resolved {{PLACEHOLDER}} token — omit any left as {{...}})
--->
-```
-
-Replace `NEW` with the new version string. Preserve the `Applied:` date from the previous
-version file unchanged. Replace `Updated: YYYY-MM-DD` with today's date. Replace each
-`<fingerprint>` and `<hash>` with the computed values.
-
-If the existing `copilot-version.md` already contains a `<!-- setup-answers ... -->` block,
-preserve it unchanged — placeholder values resolved during initial setup remain valid across
-updates unless the user explicitly changes them.
-
-If the terminal is unavailable, omit both the `<!-- section-fingerprints ... -->` and
-`<!-- file-manifest ... -->` blocks — the Update agent will fall back to content comparison.
-
-Do **not** run `scripts/sync-version.sh` — that script is template-repo infrastructure and does not exist in consumer projects.
+Write `.github/copilot-version.md`: version, `Applied:` (preserved), `Updated: YYYY-MM-DD`, `<!-- section-fingerprints -->`, `<!-- file-manifest -->`, `<!-- setup-answers -->` (preserved). Omit fingerprint/manifest blocks if terminal unavailable.
 
 ### 2 — Append to CHANGELOG.md
 
-Add under `## [Unreleased]` (or create that section if absent):
+Under `## [Unreleased]`: version transition, sections updated/skipped, companions applied, backup path.
 
-```markdown
-### Changed
-- Copilot instructions updated from template v<OLD> to v<NEW> (<N> version steps).
-  Sections updated: <list>. Skipped: <list>.
-  Companion files applied: <list, or "none">.
-  Backup at: `.github/archive/pre-update-TODAY-v<OLD>/`
-```
+### 3 — Print confirmation
 
-### 3 — Print the confirmation
-
-```text
-Updated! ✓
-
-  Template version:  vOLD → vNEW (<N> version steps)
-  Sections updated:  <N>
-  Sections skipped:  <N>
-  Sections custom:   <N>
-  Companion files:   <N> created, <N> updated, <N> skipped
-
-  Breaking changes:  <list of breaking versions — or "none">
-
-  Protected (untouched in all cases):
-    §10 Project-Specific Overrides
-    User Preferences block
-    Migrated / user-added content blocks
-    Resolved placeholder values
-
-  Backup:  .github/archive/pre-update-TODAY-v<OLD>/
-           (restore anytime: say "Restore instructions from backup")
-
-  <anomaly list, if any — or omit this block>
-  <manual actions, if any — or omit this block>
-
-  CHANGELOG.md updated.
-```
+Report: version transition, section counts, companion counts, breaking changes, protected items, backup path, anomalies, manual actions.
 
 ---
 
 ## Restore from backup
 
-### Trigger phrases
-
-- *"Restore instructions from backup"*
-- *"Roll back the instructions update"*
-- *"List instruction backups"*
-
-### Restore sequence
-
 #### R1 — List available backups
 
-Scan the `.github/archive/` directory for subdirectories matching the pattern `pre-update-*`.
-
-If none exist, report:
-
-```text
-No instruction backups found in .github/archive/.
-Backups are created automatically when you run "Update your instructions".
-```
-
-And stop.
-
-If backups exist, list them and use `ask_questions`:
+Scan `.github/archive/` for `pre-update-*` dirs. If none: "No backups found." → stop.
 
 ```ask_questions
 header: "Select backup"
 question: "Which backup would you like to restore?"
 options:
-  - label: "pre-update-2026-02-19-v1.0.0/"
-    description: "Installed: 2026-02-19"
-  - label: "pre-update-2026-03-10-v1.1.0/"
-    description: "Installed: 2026-03-10"
+  - label: "pre-update-<DATE>-v<VERSION>/"
+    description: "Installed: <DATE>"
   - label: "Cancel"
-    description: "Do not restore any backup"
+    description: "Do not restore"
 allowFreeformInput: false
 ```
 
-Populate the options dynamically from the scanned backup directories. Include a "Cancel" option.
+> **Fallback**: If `ask_questions` unavailable, list as numbered choices in chat.
 
-> **Fallback**: If `ask_questions` is unavailable, list backups as a numbered list in chat.
+Populate dynamically from scanned directories.
 
-#### R2 — Show the backup manifest
+#### R2 — Show backup manifest and confirm
 
-After the user selects a backup, read `BACKUP-MANIFEST.md` from that directory and show it:
-
-```text
-Selected: pre-update-<DATE>-v<VERSION>/
-
-  Backed up:  <DATE>
-  Version:    <VERSION>
-  Changed sections: <list>
-  Backed-up companion files: <list, or "none">
-
-Restoring this backup will replace your current .github/copilot-instructions.md
-and any backed-up companion files.
-Your current file will be backed up first at:
-  .github/archive/pre-restore-<TODAY>-<CURRENT_VERSION>/
-
-Proceed? (yes / no)
-```
-
-Use `ask_questions` to confirm:
+Read `BACKUP-MANIFEST.md`, show version/date/files. Note current file will be backed up first.
 
 ```ask_questions
 header: "Confirm restore"
-question: "Restoring will replace your current instructions. A pre-restore snapshot will be saved first. Proceed?"
+question: "Restoring replaces current instructions. Pre-restore snapshot saved first. Proceed?"
 options:
   - label: "Yes"
-    description: "Restore from this backup (current files will be backed up first)"
+    description: "Restore (current files backed up first)"
     recommended: true
   - label: "No"
-    description: "Cancel the restore"
+    description: "Cancel"
 allowFreeformInput: false
 ```
 
-> **Fallback**: If `ask_questions` is unavailable, present as yes/no in chat.
+> **Fallback**: If `ask_questions` unavailable, present as yes/no in chat.
 
-Wait for confirmation.
+#### R3 — Back up current file
 
-#### R3 — Back up the current file before restoring
-
-Before overwriting anything, create a new backup of the *current* instructions and any companion files that R4 will overwrite — using the same backup format:
-
-```text
-.github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/
-  copilot-instructions.md    ← copy of the file being replaced
-  <companion files>          ← copies of any companion files that will be restored
-  BACKUP-MANIFEST.md         ← records this as a pre-restore snapshot
-```
-
-This means restoration is always reversible.
+Create `.github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/` with current instructions, affected companion files, and `BACKUP-MANIFEST.md`. Always reversible.
 
 #### R4 — Restore
 
-Copy `copilot-instructions.md` from the selected backup directory to `.github/copilot-instructions.md`, replacing the current file exactly.
-
-For each companion file listed in `BACKUP-MANIFEST.md`, copy it from the backup directory to the corresponding path in the user's project, preserving the relative directory structure. If the companion file's parent directory does not exist, create it.
+Copy `copilot-instructions.md` and companion files from backup to original paths, preserving structure. Create parent dirs as needed.
 
 #### R5 — Record the restoration
 
-Append to `CHANGELOG.md` under `## [Unreleased]`:
-
-```markdown
-### Reverted
-- Copilot instructions restored from backup `pre-update-<DATE>-v<VERSION>`.
-  Files restored: `copilot-instructions.md` + companion files (if any — see BACKUP-MANIFEST.md).
-  Pre-restore snapshot saved at `.github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/`.
-```
+Append to CHANGELOG.md: "Restored from `pre-update-<DATE>-v<VERSION>`. Pre-restore snapshot at `pre-restore-<TODAY>-v<CURRENT>`."
 
 #### R6 — Confirmation
 
-```text
-Restored! ✓
-
-  Restored from: .github/archive/pre-update-<DATE>-v<VERSION>/
-  Files restored: copilot-instructions.md + <N> companion file(s)
-  Pre-restore snapshot saved at:
-    .github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/
-
-  CHANGELOG.md updated.
-  (To undo this restore, say "Restore instructions from backup" and
-   select the pre-restore snapshot.)
-```
-
----
-
-## Guardrail quick reference
-
-**NEVER modified** by an update, regardless of user choice:
-
-| Item | Reason |
-|------|--------|
-| `## §10 — Project-Specific Overrides` (entire section) | Contains project identity — not generic template content |
-| `### User Preferences` (entire subsection) | Set by the user during setup interview; only the user changes these |
-| `### Additional project notes` (entire subsection) | Copilot-discovered conventions for this project specifically |
-| Any block containing `<!-- migrated -->` | Pre-existing conventions migrated from before the template was adopted |
-| Any block containing `<!-- user-added -->` | Explicitly user-authored additions |
-| Resolved placeholder values | `bun test` must never revert to `{{TEST_COMMAND}}` |
-
-**Flagged for user decision** (not automatically modified):
-
-| Item | Reason |
-|------|--------|
-| `USER_MODIFIED` sections | User may have intentionally improved on the template |
-| Sections with `<!-- update-note: ... -->` comments | Previously skipped or user-modified in a past update run |
-| Metric thresholds that differ from template defaults | May have been deliberately tuned for this project |
-| Sections where the update conflicts with a User Preference | User preference takes precedence unless the user explicitly overrides it |
+Report: restored from, files count, pre-restore path, CHANGELOG updated. Note: undo by restoring pre-restore snapshot.
 
 ---
 
 ## Force check
 
-If the user says *"Force check instruction updates"*, bypass the version equality check in U2 and run a full section-by-section comparison even if versions appear equal. This is useful if the user manually edited their version stamp or wants to verify their instructions are in sync.
+If user says *"Force check instruction updates"*, bypass version equality check in U2 and run full comparison.
 
 ---
 
-> **Note for Copilot**: You are a guest reading `asafelobotomy/copilot-instructions-template`. All writes go to the **user's current project**. Do not create, modify, or delete any files in this template repo.
+> **Note for Copilot**: All writes go to the **user's current project**. Do not modify files in the template repo.

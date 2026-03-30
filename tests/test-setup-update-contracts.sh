@@ -155,10 +155,10 @@ for fname in ("SETUP.md", "UPDATE.md"):
 echo ""
 
 # ──────────────────────────────────────────────────────────────
-echo "8. Setup and Update agents list askQuestions in tools"
+echo "8. Setup agent lists askQuestions in tools"
 # ──────────────────────────────────────────────────────────────
 
-for agent in setup update; do
+for agent in setup; do
   assert_file_contains "$agent.agent.md has askQuestions tool" \
     "$REPO_ROOT/.github/agents/${agent}.agent.md" "askQuestions"
 done
@@ -168,7 +168,7 @@ echo ""
 echo "9. Agent files mention ask_questions usage directive"
 # ──────────────────────────────────────────────────────────────
 
-for agent in setup update; do
+for agent in setup; do
   assert_file_contains "$agent.agent.md has ask_questions usage directive" \
     "$REPO_ROOT/.github/agents/${agent}.agent.md" "ask_questions.*for.*ALL.*user-facing"
 done

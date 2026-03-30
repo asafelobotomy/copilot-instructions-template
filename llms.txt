@@ -17,11 +17,10 @@
 
 | Surface | Recommended model | Thinking Effort | Role |
 |---------|-------------------|-----------------|------|
-| `setup.agent.md` | Claude Sonnet 4.6 | Medium | Interactive setup and onboarding |
+| `setup.agent.md` | Claude Sonnet 4.6 | Medium | Template lifecycle (setup, updates, restore) |
 | `coding.agent.md` | GPT-5.1 | High | Implementation, refactoring, multi-step coding |
 | `review.agent.md` | GPT-5.4 | High | Deep review, debugging, architectural analysis |
 | `fast.agent.md` | Claude Haiku 4.5 | Low | Quick lookups and lightweight edits |
-| `update.agent.md` | Claude Sonnet 4.6 | Medium | Upstream instruction updates |
 | `doctor.agent.md` | Claude Sonnet 4.6 | Medium | Read-only health checks |
 | `explore.agent.md` | Claude Haiku 4.5 | Low | Fast read-only codebase exploration and Q&A |
 | `extensions.agent.md` | Claude Sonnet 4.6 | Medium | VS Code extension management and profiles |
@@ -44,7 +43,7 @@ The repo ships 14 skills in `.github/skills/` and `template/skills/`. High-signa
 - `mcp-management`: configure external tool access
 - `plugin-management`: discover and manage agent plugins
 
-Canonical inventory lives in `.copilot/workspace/DOC_INDEX.json`.
+Canonical inventory lives in `.copilot/workspace/workspace-index.json`.
 
 ## Hooks
 
@@ -87,7 +86,7 @@ Max subagent depth is 3 (configurable via `{{SUBAGENT_MAX_DEPTH}}`).
 ## Validation
 
 - Main suite: `bash tests/run-all.sh`
-- Metadata sync: `bash scripts/sync-doc-index.sh --check`
+- Metadata sync: `bash scripts/sync-workspace-index.sh --check`
 - Model registry sync: `bash scripts/sync-models.sh --check`
 
 ## Human documentation

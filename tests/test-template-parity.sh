@@ -71,18 +71,14 @@ for repo_rel, template_rel in expected.items():
 '
 echo ""
 
-echo "3. Known divergent skills remain intentionally distinct from template copies"
-assert_python "intentional skill divergences stay explicit" '
-divergent = {
-    ".github/skills/mcp-management/SKILL.md": "template/skills/mcp-management/SKILL.md",
-}
-for repo_rel, template_rel in divergent.items():
-    repo_path = root / repo_rel
-    template_path = root / template_rel
-    if not repo_path.exists() or not template_path.exists():
-        raise SystemExit(f"missing pair {repo_rel} {template_rel}")
-    if filecmp.cmp(repo_path, template_path, shallow=False):
-        raise SystemExit(f"expected divergence vanished for {repo_rel}")
+echo "3. mcp-management skill exists only in .github/skills/ (no template mirror)"
+assert_python "mcp-management has no template mirror" '
+mcp_template = root / "template/skills/mcp-management"
+mcp_github = root / ".github/skills/mcp-management/SKILL.md"
+if mcp_template.exists():
+    raise SystemExit("template/skills/mcp-management/ should not exist")
+if not mcp_github.exists():
+    raise SystemExit(".github/skills/mcp-management/SKILL.md is missing")
 '
 echo ""
 

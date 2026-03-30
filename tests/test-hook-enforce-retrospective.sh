@@ -8,6 +8,7 @@ set -uo pipefail
 source "$(dirname "$0")/lib/test-helpers.sh"
 init_test_context "$0"
 SCRIPT="$REPO_ROOT/template/hooks/scripts/enforce-retrospective.sh"
+trap cleanup_dirs EXIT
 
 echo "=== enforce-retrospective.sh ==="
 echo ""
@@ -19,29 +20,26 @@ assert_valid_json "valid JSON on active hook" "$output"
 echo ""
 
 echo "2. No transcript blocks the stop"
-TMPDIR_NO_TX=$(mktemp -d)
+TMPDIR_NO_TX=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_NO_TX")
 output=$(cd "$TMPDIR_NO_TX" && printf '{"stop_hook_active": false}' | bash "$SCRIPT" 2>/dev/null)
 assert_matches "no transcript blocks" "$output" '"continue": false'
 assert_valid_json "valid JSON on block" "$output"
-rm -rf "$TMPDIR_NO_TX"
 echo ""
 
 echo "3. Transcript with retrospective keyword passes through"
-TMPDIR_RETRO=$(mktemp -d)
+TMPDIR_RETRO=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_RETRO")
 TRANSCRIPT="$TMPDIR_RETRO/transcript.txt"
 printf 'The agent ran the retrospective successfully.\n' > "$TRANSCRIPT"
 output=$(printf '{"stop_hook_active": false, "transcript_path": "%s"}' "$TRANSCRIPT" | bash "$SCRIPT" 2>/dev/null)
 assert_matches "retrospective keyword continues" "$output" '"continue": true'
-rm -rf "$TMPDIR_RETRO"
 echo ""
 
 echo "4. Fresh HEARTBEAT.md passes through"
-TMPDIR_HB=$(mktemp -d)
+TMPDIR_HB=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_HB")
 mkdir -p "$TMPDIR_HB/.copilot/workspace"
 touch "$TMPDIR_HB/.copilot/workspace/HEARTBEAT.md"
 output=$(cd "$TMPDIR_HB" && printf '{"stop_hook_active": false}' | bash "$SCRIPT" 2>/dev/null)
 assert_matches "fresh heartbeat continues" "$output" '"continue": true'
-rm -rf "$TMPDIR_HB"
 echo ""
 
 echo "5. Malformed JSON input does not crash"
@@ -50,17 +48,16 @@ assert_success "malformed JSON" $?
 echo ""
 
 echo "6. Transcript without retrospective keyword still blocks"
-TMPDIR_NO_RETRO=$(mktemp -d)
+TMPDIR_NO_RETRO=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_NO_RETRO")
 TRANSCRIPT_NORETRO="$TMPDIR_NO_RETRO/transcript.txt"
 printf 'The agent coded features and committed changes.\n' > "$TRANSCRIPT_NORETRO"
 output=$(cd "$TMPDIR_NO_RETRO" && printf '{"stop_hook_active": false, "transcript_path": "%s"}' "$TRANSCRIPT_NORETRO" | bash "$SCRIPT" 2>/dev/null)
 assert_matches "missing retrospective keyword blocks" "$output" '"continue": false'
 assert_valid_json "valid JSON when blocking" "$output"
-rm -rf "$TMPDIR_NO_RETRO"
 echo ""
 
 echo "7. Stale HEARTBEAT.md blocks"
-TMPDIR_STALE=$(mktemp -d)
+TMPDIR_STALE=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_STALE")
 mkdir -p "$TMPDIR_STALE/.copilot/workspace"
 STALE_HB="$TMPDIR_STALE/.copilot/workspace/HEARTBEAT.md"
 touch "$STALE_HB"
@@ -69,6 +66,5 @@ touch -d "10 minutes ago" "$STALE_HB" 2>/dev/null \
   || true
 output=$(cd "$TMPDIR_STALE" && printf '{"stop_hook_active": false}' | bash "$SCRIPT" 2>/dev/null)
 assert_matches "stale heartbeat blocks" "$output" '"continue": false'
-rm -rf "$TMPDIR_STALE"
 
 finish_tests

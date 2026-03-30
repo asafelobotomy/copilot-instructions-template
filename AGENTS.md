@@ -6,7 +6,7 @@ This file is read by AI agents (GitHub Copilot and compatible agents) to underst
 
 ## Trigger phrases
 
-### Setup (first time)
+### Setup and update
 
 When a user says any of the following in a Copilot chat:
 
@@ -15,14 +15,22 @@ When a user says any of the following in a Copilot chat:
 - *"Use the Lean/Kaizen Copilot template to set up this project"*
 - *"Initialise this project with asafelobotomy/copilot-instructions-template"*
 - *"Run the copilot-instructions-template setup"*
+- *"Update your instructions"*
+- *"Check for instruction updates"*
+- *"Update from copilot-instructions-template"*
+- *"Sync instructions with the template"*
+- *"Force check instruction updates"*
+- *"Restore instructions from backup"*
 
-...perform the **Remote Bootstrap Sequence** below. No manual file copying is required from the user.
+...the Setup agent handles both first-time setup and updates. It auto-detects
+which mode to use based on whether `.github/copilot-instructions.md` exists.
 
-### Update (already set up)
+For first-time setup, perform the **Remote Bootstrap Sequence** below.
+For updates, perform the **Remote Update Sequence** below.
 
 Canonical source for inventory:
 
-- `.copilot/workspace/DOC_INDEX.json` — canonical machine-readable metadata index
+- `.copilot/workspace/workspace-index.json` — canonical machine-readable metadata index
 
 ---
 

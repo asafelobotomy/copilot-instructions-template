@@ -7,53 +7,25 @@ set -uo pipefail
 # shellcheck source=tests/lib/test-helpers.sh
 source "$(dirname "$0")/lib/test-helpers.sh"
 init_test_context "$0"
-SCRIPT="$REPO_ROOT/template/hooks/scripts/guard-destructive.sh"
+GUARD_SCRIPT="$REPO_ROOT/template/hooks/scripts/guard-destructive.sh"
 
-# ── Helpers ────────────────────────────────────────────────────────────────────
+# ── Local aliases for backward-compat (delegate to shared helpers) ─────────
 
-make_input() {
-  local tool_name="$1" command="$2"
-  printf '{"tool_name": "%s", "tool_input": {"command": "%s"}}' "$tool_name" "$command"
-}
-
-make_input_with_agent() {
-  local tool_name="$1" command="$2" agent_name="$3"
-  printf '{"tool_name": "%s", "tool_input": {"command": "%s"}, "agentName": "%s"}' "$tool_name" "$command" "$agent_name"
-}
+make_input() { make_guard_input "$@"; }
+make_input_with_agent() { make_guard_input_with_agent "$@"; }
 
 make_input_non_terminal() {
   local tool_name="$1"
   printf '{"tool_name": "%s", "tool_input": {"filePath": "/tmp/test.ts"}}' "$tool_name"
 }
 
-run_guard() {
-  echo "$1" | bash "$SCRIPT" 2>/dev/null
-}
-
-assert_decision() {
-  local desc="$1" input="$2" expected_decision="$3"
-  local output
-  output=$(run_guard "$input")
-  if grep -q "\"permissionDecision\": \"$expected_decision\"" <<< "$output"; then
-    pass_note "$desc"
-  else
-    fail_note "$desc" "     expected permissionDecision=$expected_decision
-     got: $output"
-  fi
-}
-
-assert_continue() {
-  local desc="$1" input="$2"
-  local output
-  output=$(run_guard "$input")
-  assert_matches "$desc" "$output" '"continue": true'
-}
+assert_decision() { assert_guard_decision "$@"; }
+assert_continue() { assert_guard_continue "$@"; }
 
 assert_no_crash() {
   local desc="$1" input="$2"
   run_guard "$input" >/dev/null 2>&1
   local exit_code=$?
-  # Script should always produce output and exit 0 (denials are not crashes)
   assert_success "$desc" "$exit_code"
 }
 

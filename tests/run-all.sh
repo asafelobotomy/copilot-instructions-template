@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # tests/run-all.sh -- canonical local test entrypoint for the template repo.
-set -euo pipefail
+set -uo pipefail
+
+FAILED_SUITES=0
+FAILED_LIST=()
+TOTAL_SUITES=0
 
 run_phase() {
   local label="$1"
@@ -8,8 +12,16 @@ run_phase() {
   echo ""
   echo "## $label"
   for test_script in "$@"; do
+    ((TOTAL_SUITES++))
     echo "==> $test_script"
-    bash "$test_script"
+    local start=$SECONDS
+    if bash "$test_script"; then
+      echo "  (${SECONDS-start}s)"
+    else
+      echo "  (${SECONDS-start}s) FAILED"
+      ((FAILED_SUITES++))
+      FAILED_LIST+=("$test_script")
+    fi
   done
 }
 
@@ -32,8 +44,16 @@ run_optional_phase() {
   fi
 
   for test_script in "$@"; do
+    ((TOTAL_SUITES++))
     echo "==> $test_script"
-    bash "$test_script"
+    local start=$SECONDS
+    if bash "$test_script"; then
+      echo "  (${SECONDS-start}s)"
+    else
+      echo "  (${SECONDS-start}s) FAILED"
+      ((FAILED_SUITES++))
+      FAILED_LIST+=("$test_script")
+    fi
   done
 }
 
@@ -53,12 +73,14 @@ run_optional_phase "Hook Behavior (PowerShell parity)" "pwsh" "pwsh" \
 run_phase "Script Behavior" \
   "tests/test-sync-version.sh" \
   "tests/test-stub-migration.sh" \
-  "tests/test-sync-doc-index.sh" \
+  "tests/test-sync-workspace-index.sh" \
   "tests/test-sync-models.sh" \
   "tests/test-validate-agent-frontmatter.sh" \
   "tests/test-sync-template-parity.sh" \
   "tests/test-security-edge-cases.sh" \
-  "tests/test-copilot-audit.sh"
+  "tests/test-copilot-audit.sh" \
+  "tests/test-mcp-launchers.sh" \
+  "tests/test-permission-resilience.sh"
 
 run_phase "Documentation And Contracts" \
   "tests/test-customization-contracts.sh" \
@@ -66,4 +88,13 @@ run_phase "Documentation And Contracts" \
   "tests/test-starter-kits.sh" \
   "tests/test-setup-update-contracts.sh"
 
-echo "All test suites passed."
+echo ""
+if [[ $FAILED_SUITES -gt 0 ]]; then
+  echo "## FAILED ($FAILED_SUITES of $TOTAL_SUITES suites)"
+  for f in "${FAILED_LIST[@]}"; do
+    echo "  - $f"
+  done
+  exit 1
+fi
+
+echo "All $TOTAL_SUITES test suites passed."

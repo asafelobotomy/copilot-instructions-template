@@ -7,6 +7,7 @@ set -uo pipefail
 # shellcheck source=tests/lib/test-helpers.sh
 source "$(dirname "$0")/lib/test-helpers.sh"
 init_test_context "$0"
+trap 'teardown_sandbox' EXIT
 
 SCRIPT="$REPO_ROOT/scripts/stub-migration.sh"
 
@@ -59,7 +60,7 @@ SANDBOX=$(mktemp -d)
   bash "$SCRIPT" "v2.0.0" >/dev/null 2>&1
 )
 assert_failure "missing MIGRATION.md exits non-zero" $?
-rm -rf "$SANDBOX"
+teardown_sandbox
 echo ""
 
 echo "3. Inserts new tag block and updates Available tags"

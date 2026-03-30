@@ -16,42 +16,15 @@ set -uo pipefail
 # shellcheck source=tests/lib/test-helpers.sh
 source "$(dirname "$0")/lib/test-helpers.sh"
 init_test_context "$0"
-GUARD="$REPO_ROOT/template/hooks/scripts/guard-destructive.sh"
+GUARD_SCRIPT="$REPO_ROOT/template/hooks/scripts/guard-destructive.sh"
 SYNC="$REPO_ROOT/scripts/sync-version.sh"
+trap cleanup_dirs EXIT
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+# ── Local aliases (delegate to shared helpers) ────────────────────────────────
 
-make_input() {
-  local tool_name="$1" command="$2"
-  printf '{"tool_name": "%s", "tool_input": {"command": "%s"}}' "$tool_name" "$command"
-}
-
-make_input_key() {
-  # Use "input" field key rather than the default "command" key
-  local tool_name="$1" input_val="$2"
-  printf '{"tool_name": "%s", "tool_input": {"input": "%s"}}' "$tool_name" "$input_val"
-}
-
-run_guard() {
-  echo "$1" | bash "$GUARD" 2>/dev/null
-}
-
-run_guard_exitcode() {
-  echo "$1" | bash "$GUARD" 2>/dev/null
-  echo "$?"
-}
-
-assert_decision() {
-  local desc="$1" input="$2" expected_decision="$3"
-  local output
-  output=$(run_guard "$input")
-  if grep -q "\"permissionDecision\": \"$expected_decision\"" <<< "$output"; then
-    pass_note "$desc"
-  else
-    fail_note "$desc" "     expected permissionDecision=$expected_decision
-     got: $output"
-  fi
-}
+make_input() { make_guard_input "$@"; }
+make_input_key() { make_guard_input_key "$@"; }
+assert_decision() { assert_guard_decision "$@"; }
 
 assert_continue() {
   local desc="$1" input="$2"
@@ -60,18 +33,23 @@ assert_continue() {
   assert_matches "$desc" "$output" '"continue": true'
 }
 
+run_guard_exitcode() {
+  run_guard "$1" >/dev/null 2>&1
+  echo "$?"
+}
+
 # ── 1. Exit-code contract ─────────────────────────────────────────────────────
 # Claude Code hooks use JSON output for decisions; a non-zero exit code means
 # the hook itself crashed.  guard-destructive must exit 0 for ALL paths.
 echo "=== guard-destructive edge-case and security tests ==="
 echo ""
 echo "1. Exit-code contract — script must exit 0 for every decision path"
-make_input 'bash' 'rm -rf /' | bash "$GUARD" >/dev/null 2>&1; assert_success "deny path exits 0" $?
-make_input 'bash' 'rm -rf ./tmp' | bash "$GUARD" >/dev/null 2>&1; assert_success "ask path exits 0" $?
-make_input 'bash' 'ls -la' | bash "$GUARD" >/dev/null 2>&1; assert_success "continue path exits 0" $?
-make_input 'read_file' 'ls' | bash "$GUARD" >/dev/null 2>&1; assert_success "passthrough path exits 0" $?
-echo '' | bash "$GUARD" >/dev/null 2>&1; assert_success "empty input exits 0" $?
-echo 'not-json-at-all' | bash "$GUARD" >/dev/null 2>&1; assert_success "malformed JSON exits 0" $?
+make_input 'bash' 'rm -rf /' | bash "$GUARD_SCRIPT" >/dev/null 2>&1; assert_success "deny path exits 0" $?
+make_input 'bash' 'rm -rf ./tmp' | bash "$GUARD_SCRIPT" >/dev/null 2>&1; assert_success "ask path exits 0" $?
+make_input 'bash' 'ls -la' | bash "$GUARD_SCRIPT" >/dev/null 2>&1; assert_success "continue path exits 0" $?
+make_input 'read_file' 'ls' | bash "$GUARD_SCRIPT" >/dev/null 2>&1; assert_success "passthrough path exits 0" $?
+echo '' | bash "$GUARD_SCRIPT" >/dev/null 2>&1; assert_success "empty input exits 0" $?
+echo 'not-json-at-all' | bash "$GUARD_SCRIPT" >/dev/null 2>&1; assert_success "malformed JSON exits 0" $?
 echo ""
 
 # ── 2. JSON output validity ───────────────────────────────────────────────────
@@ -130,8 +108,7 @@ echo ""
 echo "6. sync-version.sh idempotency"
 
 TMPDIR_SYNC=$(mktemp -d)
-cleanup_sync() { rm -rf "$TMPDIR_SYNC"; }
-trap cleanup_sync EXIT
+CLEANUP_DIRS+=("$TMPDIR_SYNC")
 
 # Mirror the two files sync-version.sh operates on
 cp "$REPO_ROOT/VERSION.md" "$TMPDIR_SYNC/"

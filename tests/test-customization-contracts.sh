@@ -143,10 +143,10 @@ assert_python "doctor has D13 companion file completeness check" '
 text = (root / ".github/agents/doctor.agent.md").read_text(encoding="utf-8")
 if "### D13" not in text:
     raise SystemExit("doctor.agent.md missing D13 check definition")
-if "DOC_INDEX.json" not in text:
-    raise SystemExit("D13 must reference DOC_INDEX.json as canonical inventory")
-if "raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/workspace/DOC_INDEX.json" not in text:
-    raise SystemExit("D13 must contain the upstream DOC_INDEX.json fetch URL")
+if "workspace-index.json" not in text:
+    raise SystemExit("D13 must reference workspace-index.json as canonical inventory")
+if "raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/workspace/workspace-index.json" not in text:
+    raise SystemExit("D13 must contain the upstream workspace-index.json fetch URL")
 '
 
 assert_python "doctor report format covers D1-D14" '

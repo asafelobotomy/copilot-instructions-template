@@ -81,6 +81,24 @@ assert_file_not_contains() {
   fi
 }
 
+assert_file_exists() {
+  local desc="$1" path="$2"
+  if [[ -f "$path" ]]; then
+    pass_note "$desc"
+  else
+    fail_note "$desc" "     file not found: $path"
+  fi
+}
+
+assert_dir_exists() {
+  local desc="$1" path="$2"
+  if [[ -d "$path" ]]; then
+    pass_note "$desc"
+  else
+    fail_note "$desc" "     dir not found: $path"
+  fi
+}
+
 assert_valid_json() {
   local desc="$1" payload="$2"
   if python3 -c "import json,sys; json.load(sys.stdin)" <<< "$payload" 2>/dev/null; then
@@ -88,6 +106,78 @@ assert_valid_json() {
   else
     fail_note "$desc" "     output: $payload"
   fi
+}
+
+# ── Guard-destructive test helpers ─────────────────────────────────────────────
+# Shared by test-guard-destructive.sh, test-security-edge-cases.sh, etc.
+# Require GUARD_SCRIPT to be set before calling.
+
+make_guard_input() {
+  local tool_name="$1" command="$2"
+  printf '{"tool_name": "%s", "tool_input": {"command": "%s"}}' "$tool_name" "$command"
+}
+
+make_guard_input_with_agent() {
+  local tool_name="$1" command="$2" agent_name="$3"
+  printf '{"tool_name": "%s", "tool_input": {"command": "%s"}, "agentName": "%s"}' "$tool_name" "$command" "$agent_name"
+}
+
+make_guard_input_key() {
+  local tool_name="$1" command="$2"
+  printf '{"tool_name": "%s", "tool_input": {"input": "%s"}}' "$tool_name" "$command"
+}
+
+run_guard() {
+  echo "$1" | bash "${GUARD_SCRIPT:?GUARD_SCRIPT must be set}" 2>/dev/null
+}
+
+assert_guard_decision() {
+  local desc="$1" input="$2" expected_decision="$3"
+  local output
+  output=$(run_guard "$input")
+  if grep -q "\"permissionDecision\": \"$expected_decision\"" <<< "$output"; then
+    pass_note "$desc"
+  else
+    fail_note "$desc" "     expected permissionDecision=$expected_decision
+     got: $output"
+  fi
+}
+
+assert_guard_continue() {
+  local desc="$1" input="$2"
+  local output
+  output=$(run_guard "$input")
+  assert_matches "$desc" "$output" '"continue": true'
+}
+
+# ── Git sandbox helper ─────────────────────────────────────────────────────────
+# Creates a temp dir with a git repo containing one committed README.
+# Prints the temp dir path. Caller should add it to CLEANUP_DIRS.
+
+make_git_sandbox() {
+  local dir
+  dir=$(mktemp -d)
+  (
+    cd "$dir" || exit 1
+    git init -q
+    git config user.email "test@test.com"
+    git config user.name "test"
+    echo "clean" > README.md
+    git add README.md && git commit -q -m "init"
+  )
+  echo "$dir"
+}
+
+# ── Cleanup helper ─────────────────────────────────────────────────────────────
+# Tracks temp directories for automatic cleanup via trap.
+# Usage: CLEANUP_DIRS=(); trap cleanup_dirs EXIT; dir=$(mktemp -d); CLEANUP_DIRS+=("$dir")
+
+CLEANUP_DIRS=()
+
+cleanup_dirs() {
+  for d in "${CLEANUP_DIRS[@]:-}"; do
+    [[ -n "$d" ]] && rm -rf "$d"
+  done
 }
 
 _run_python() {

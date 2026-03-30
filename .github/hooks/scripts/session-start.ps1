@@ -6,6 +6,48 @@
 
 $ErrorActionPreference = 'SilentlyContinue'
 
+# Detect operating system
+if ($IsLinux) {
+    $osRelease = @{}
+    if (Test-Path '/etc/os-release') {
+        Get-Content '/etc/os-release' | ForEach-Object {
+            if ($_ -match '^(\w+)=(.*)$') {
+                $osRelease[$Matches[1]] = $Matches[2].Trim('"')
+            }
+        }
+    }
+    $osId       = $osRelease['ID']         ?? 'unknown'
+    $osVersion  = $osRelease['VERSION_ID'] ?? 'unknown'
+    $osVariant  = $osRelease['VARIANT_ID'] ?? ''
+    $osArch     = try { (uname -m) } catch { 'unknown' }
+    $immutable  = (Test-Path '/run/ostree-booted') -or
+                  (($osRelease.Values -join ' ') -match 'ostree|atomic|immutable')
+    $pkgMgr     = if (Get-Command apt   -ErrorAction Ignore) { 'apt' }
+             elseif (Get-Command pacman -ErrorAction Ignore) { 'pacman' }
+             elseif (Get-Command dnf    -ErrorAction Ignore) { 'dnf' }
+             elseif (Get-Command rpm-ostree -ErrorAction Ignore) { 'rpm-ostree' }
+             else { 'unknown' }
+    $variantTag = if ($osVariant) { "/$osVariant" } else { '' }
+    $osDisplay  = "${osId}${variantTag} ${osVersion} ($osArch)"
+} elseif ($IsMacOS) {
+    $osId      = 'macos'
+    $osVersion = try { (sw_vers -productVersion) } catch { 'unknown' }
+    $osArch    = try { (uname -m) } catch { 'unknown' }
+    $immutable = $false
+    $pkgMgr    = if (Get-Command brew -ErrorAction Ignore) { 'brew' } else { 'unknown' }
+    $osDisplay = "macOS $osVersion ($osArch)"
+} else {
+    $osId      = 'windows'
+    $osVersion = [System.Environment]::OSVersion.Version.ToString()
+    $osArch    = $env:PROCESSOR_ARCHITECTURE ?? 'unknown'
+    $immutable = $false
+    $pkgMgr    = if (Get-Command winget -ErrorAction Ignore) { 'winget' }
+            elseif (Get-Command choco  -ErrorAction Ignore) { 'choco' }
+            elseif (Get-Command scoop  -ErrorAction Ignore) { 'scoop' }
+            else { 'unknown' }
+    $osDisplay = "Windows $osVersion ($osArch)"
+}
+
 function Invoke-Git {
     param([string[]]$Args)
     try { & git @Args 2>$null } catch { 'unknown' }
@@ -44,6 +86,6 @@ if (Test-Path '.copilot/workspace/HEARTBEAT.md') {
 [PSCustomObject]@{
     hookSpecificOutput = [PSCustomObject]@{
         hookEventName     = 'SessionStart'
-        additionalContext = "Project: $projectName v$projectVer | Branch: $branch ($commit) | Node: $nodeVer | Python: $pyVer | Heartbeat: $pulse"
+        additionalContext = "OS: $osDisplay | Pkg: $pkgMgr | Immutable: $immutable | Project: $projectName v$projectVer | Branch: $branch ($commit) | Node: $nodeVer | Python: $pyVer | Heartbeat: $pulse"
     }
 } | ConvertTo-Json -Depth 5

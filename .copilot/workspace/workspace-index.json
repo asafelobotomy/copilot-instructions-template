@@ -1,12 +1,13 @@
 {
+  "$schema": "https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/schema/workspace-index.schema.json",
   "schemaVersion": "1.0",
-  "updated": "2026-03-19",
+  "updated": "2026-03-30",
   "purpose": "Canonical machine-readable inventory for repository metadata.",
   "counts": {
-    "agents": 8,
+    "agents": 9,
     "skillsRepo": 15,
     "skillsTemplate": 15,
-    "hookScriptsShell": 9,
+    "hookScriptsShell": 11,
     "hookScriptsPowerShell": 8
   },
   "agents": [
@@ -14,10 +15,11 @@
     "coding.agent.md",
     "review.agent.md",
     "fast.agent.md",
-    "update.agent.md",
     "doctor.agent.md",
     "researcher.agent.md",
-    "explore.agent.md"
+    "explore.agent.md",
+    "extensions.agent.md",
+    "security.agent.md"
   ],
   "skills": {
     "repo": [
@@ -49,7 +51,6 @@
       "issue-triage",
       "tool-protocol",
       "skill-management",
-      "mcp-management",
       "plugin-management",
       "extension-review",
       "test-coverage-review"
@@ -65,7 +66,9 @@
       "enforce-retrospective.sh",
       "save-context.sh",
       "subagent-start.sh",
-      "subagent-stop.sh"
+      "subagent-stop.sh",
+      "mcp-npx.sh",
+      "mcp-uvx.sh"
     ],
     "powershell": [
       "scan-secrets.ps1",
@@ -80,6 +83,8 @@
   },
   "notes": [
     "This index is the canonical metadata source for drift checks.",
-    "Human-facing docs live on the docs branch."
+    "Human-facing docs live on the docs branch.",
+    "Consumer template: template/copilot-instructions.md (with {{PLACEHOLDER}} tokens).",
+    "Developer instructions: .github/copilot-instructions.md (zero placeholder tokens, developer-only)."
   ]
 }

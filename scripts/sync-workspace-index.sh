@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
-# sync-doc-index.sh — keep .copilot/workspace/DOC_INDEX.json aligned with repo state.
+# sync-workspace-index.sh — keep .copilot/workspace/workspace-index.json aligned with repo state.
 #
 # Usage:
-#   bash scripts/sync-doc-index.sh --write   # rewrite DOC_INDEX.json from filesystem
-#   bash scripts/sync-doc-index.sh --check   # fail if DOC_INDEX.json is out of sync
+#   bash scripts/sync-workspace-index.sh --write   # rewrite workspace-index.json from filesystem
+#   bash scripts/sync-workspace-index.sh --check   # fail if workspace-index.json is out of sync
 set -euo pipefail
 
 ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
-DOC_INDEX_PATH="$ROOT_DIR/.copilot/workspace/DOC_INDEX.json"
+WORKSPACE_INDEX_PATH="$ROOT_DIR/.copilot/workspace/workspace-index.json"
 MODE="${1:---check}"
 
 # shellcheck source=scripts/lib.sh
 source "$(dirname "$0")/lib.sh"
-require_python_check_write "sync-doc-index.sh" "$MODE"
+require_python_check_write "sync-workspace-index.sh" "$MODE"
 
-python3 - "$ROOT_DIR" "$DOC_INDEX_PATH" "$MODE" <<'PY'
+python3 - "$ROOT_DIR" "$WORKSPACE_INDEX_PATH" "$MODE" <<'PY'
 import datetime
 import json
 import pathlib
 import sys
 
 root = pathlib.Path(sys.argv[1])
-doc_index_path = pathlib.Path(sys.argv[2])
+index_path = pathlib.Path(sys.argv[2])
 mode = sys.argv[3]
 
 preferred_agents = [
@@ -29,7 +29,6 @@ preferred_agents = [
     "coding.agent.md",
     "review.agent.md",
     "fast.agent.md",
-    "update.agent.md",
     "doctor.agent.md",
     "researcher.agent.md",
     "explore.agent.md",
@@ -97,6 +96,7 @@ shell_hooks = ordered(shell_hooks_existing, preferred_shell_hooks)
 ps_hooks = ordered(ps_hooks_existing, preferred_ps_hooks)
 
 generated = {
+    "$schema": "https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/schema/workspace-index.schema.json",
     "schemaVersion": "1.0",
     "updated": datetime.date.today().isoformat(),
     "purpose": "Canonical machine-readable inventory for repository metadata.",
@@ -125,19 +125,19 @@ generated = {
 }
 
 if mode == "--write":
-    doc_index_path.parent.mkdir(parents=True, exist_ok=True)
-    with doc_index_path.open("w", encoding="utf-8") as f:
+    index_path.parent.mkdir(parents=True, exist_ok=True)
+    with index_path.open("w", encoding="utf-8") as f:
         json.dump(generated, f, indent=2)
         f.write("\n")
-    print(f"OK: wrote {doc_index_path}")
+    print(f"OK: wrote {index_path}")
     sys.exit(0)
 
-if not doc_index_path.exists():
-    print(f"FAIL: missing {doc_index_path}")
-    print("Run: bash scripts/sync-doc-index.sh --write")
+if not index_path.exists():
+    print(f"FAIL: missing {index_path}")
+    print("Run: bash scripts/sync-workspace-index.sh --write")
     sys.exit(1)
 
-with doc_index_path.open(encoding="utf-8") as f:
+with index_path.open(encoding="utf-8") as f:
     current = json.load(f)
 
 # Ignore 'updated' field in check mode to avoid daily drift noise.
@@ -145,9 +145,9 @@ current_no_date = dict(current)
 current_no_date["updated"] = generated["updated"]
 
 if current_no_date != generated:
-    print("FAIL: DOC_INDEX.json is out of sync")
-    print("Run: bash scripts/sync-doc-index.sh --write")
+    print("FAIL: workspace-index.json is out of sync")
+    print("Run: bash scripts/sync-workspace-index.sh --write")
     sys.exit(1)
 
-print("OK: DOC_INDEX.json is in sync")
+print("OK: workspace-index.json is in sync")
 PY

@@ -16,7 +16,6 @@ This workspace was scaffolded on **2026-02-27** using the [copilot-instructions-
 - `.github/agents/coding.agent.md` — model-pinned Coding agent (GPT-5.3-Codex)
 - `.github/agents/review.agent.md` — model-pinned Review agent (GPT-5.4)
 - `.github/agents/fast.agent.md` — model-pinned Fast agent (Claude Haiku 4.5)
-- `.github/agents/update.agent.md` — model-pinned Update agent (Claude Sonnet 4.6)
 - `.github/agents/doctor.agent.md` — model-pinned Doctor agent (Claude Sonnet 4.6)
 - `.github/skills/` — reusable agent skill library (§12)
 - `.copilot/workspace/` — all seven identity files

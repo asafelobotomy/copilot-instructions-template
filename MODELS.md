@@ -34,8 +34,7 @@ Recommended effort levels per agent:
 | doctor | Medium | Mechanical checklist inspection; adaptive reasoning sufficient |
 | fast | Low | Speed is the goal; minimal thinking overhead |
 | review | High | Deep architectural analysis requires maximum reasoning |
-| setup | Medium | Structured interview; decisions are sequential, not complex |
-| update | Medium | Mechanical diff-and-merge; adaptive reasoning sufficient |
+| setup | Medium | Structured interview + mechanical diff-and-merge; adaptive reasoning sufficient |
 | explore | Low | Read-only lookup; speed over depth |
 | extensions | Medium | Evaluation involves trade-offs but not deep reasoning |
 | researcher | High | Research synthesis benefits from deep analytical thinking |
@@ -88,21 +87,13 @@ GPT-5.4 is the primary; Claude Opus 4.6 provides Agent Teams capability.
 
 ## setup
 
-First-time project setup and onboarding. Requires interactive question capability
-(never use Codex/autonomous models for this agent).
+Template lifecycle — first-time setup, upstream updates, and backup restore.
+Requires interactive question capability (never use Codex/autonomous models).
 
 - Claude Sonnet 4.6
 - Claude Sonnet 4.5
 - GPT-5.1
 - GPT-5 mini
-
-## update
-
-Upstream instruction updates and restore-from-backup operations.
-
-- Claude Sonnet 4.6
-- Claude Sonnet 4.5
-- GPT-5.1
 
 ## explore
 

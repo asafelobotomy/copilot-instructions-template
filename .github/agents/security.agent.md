@@ -69,282 +69,84 @@ Scan the entire codebase. Prioritise:
 
 ### S1 — Secret Detection
 
-Scan all files for leaked secrets using high-confidence regex patterns:
+Scan all files for leaked secrets using high-confidence regex patterns.
 
-**Critical patterns (flag immediately):**
+**Critical** (flag immediately): AWS keys (`AKIA...`), GitHub PATs (`ghp_`, `github_pat_`, `gho_/ghs_/ghu_/ghr_`), Google Cloud keys (`AIza...`), Stripe live keys (`sk_live_`), SendGrid keys (`SG.`), NPM tokens (`npm_`), Slack tokens (`xox[baprs]-`), PEM private key blocks.
 
-- `AKIA[0-9A-Z]{16}` — AWS Access Key ID
-- `ghp_[A-Za-z0-9]{36}` — GitHub PAT (classic)
-- `github_pat_[A-Za-z0-9_]{82}` — GitHub Fine-Grained PAT
-- `(gho|ghs|ghu|ghr)_[A-Za-z0-9]{36}` — GitHub OAuth/App tokens
-- `AIza[0-9A-Za-z_-]{35}` — Google Cloud API Key
-- `sk_live_[0-9a-zA-Z]{24,}` — Stripe Live Secret Key
-- `SG\.[a-zA-Z0-9]{22}\.[a-zA-Z0-9]{43}` — SendGrid API Key
-- `npm_[A-Za-z0-9]{36}` — NPM Token
-- `xox[baprs]-[0-9]{10,}-[0-9A-Za-z-]+` — Slack Bot Token
-- `-----BEGIN (RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY` — Private Key PEM block
+**Medium** (review context): generic password/secret assignments with hardcoded values, connection strings with embedded credentials, embedded JWTs (not test fixtures), base64 secrets after keyword context.
 
-**Medium patterns (review context):**
+**Exclusions:** `*.example`, `*.sample`, `*.template`, test fixtures, strings containing `YOUR_`, `REPLACE_ME`, `CHANGEME`, `example`, `placeholder`, `dummy`, `fake`, `test_key`.
 
-- Generic password/secret assignments with hardcoded values
-- Connection strings with embedded credentials
-- JWT tokens embedded in source (not test fixtures)
-- Base64-encoded secrets after keyword context
-
-**Exclusions:** Skip files matching `*.example`, `*.sample`, `*.template`,
-test fixtures, and strings containing `YOUR_`, `REPLACE_ME`, `CHANGEME`,
-`example`, `placeholder`, `dummy`, `fake`, `test_key`.
-
-Use `runCommands` with `grep -rnE -- '<pattern>' . --include='*.<ext>'` to scan.
-Use `--` before patterns that start with dashes.
-
-Flag: `[CRITICAL]` for high-confidence secret matches.
-Flag: `[HIGH]` for medium-confidence matches requiring review.
+Flag: `[CRITICAL]` high-confidence. `[HIGH]` medium-confidence.
 
 ### S2 — Injection Patterns
 
-Scan source code for injection vulnerabilities:
+Scan source code for: SQL injection (string concat in `execute()`/`query()`/`raw()`), OS command injection (`subprocess` with `shell=True`, `os.system()`, `child_process.exec()` with user input), XSS (`.innerHTML`, `dangerouslySetInnerHTML`, `eval()`, unescaped template output), path traversal (file ops with request params, `../` in URL handlers), SSRF (HTTP clients with user-supplied URLs).
 
-**SQL injection:**
-
-- String concatenation or template literals in `execute()`, `query()`, `raw()` calls
-- ORM `raw()` methods with interpolated variables
-
-**OS command injection:**
-
-- `subprocess` with `shell=True` and external input
-- `os.system()`, `os.popen()` with variables
-- `exec()`, `system()`, `passthru()` with user input (PHP)
-- `child_process.exec()` with `req.` parameters (Node.js)
-
-**Cross-site scripting (XSS):**
-
-- `.innerHTML =`, `document.write()`, `.insertAdjacentHTML()`
-- `dangerouslySetInnerHTML` in React
-- Unescaped template output (`{{{ }}}` in Handlebars, `|safe` in Jinja2)
-- `eval()` with potentially user-controlled input
-
-**Path traversal:**
-
-- File operations (`open()`, `fs.readFile()`) with request parameters
-- `include`/`require` with user input (PHP)
-- `../` sequences in URL handlers
-
-**SSRF:**
-
-- HTTP client calls (`requests.get()`, `fetch()`, `axios.get()`) with user-supplied URLs
-
-Flag: `[CRITICAL]` for injection with clear user input path.
-Flag: `[HIGH]` for injection patterns without confirmed user input.
+Flag: `[CRITICAL]` with clear user input path. `[HIGH]` without confirmed user input.
 
 ### S3 — Cryptographic Weaknesses
 
-Scan for weak or misused cryptography:
+Scan for: MD5/SHA1 for password hashing, ECB mode, hardcoded IVs/nonces, non-crypto PRNG for security (`Math.random()`, `random.random()`), disabled TLS verification (`verify=False`), weak TLS protocols (TLSv1.0/1.1, SSLv2/v3), `Cipher.getInstance("AES")` in Java (defaults to ECB).
 
-- MD5/SHA1 used for password hashing (should use bcrypt, argon2, scrypt, PBKDF2)
-- ECB mode for symmetric encryption (pattern-leaking)
-- Hardcoded IVs or nonces (defeats purpose)
-- Non-cryptographic PRNG for security (`Math.random()`, `random.random()`, `rand()`)
-- Disabled TLS certificate verification (`verify=False`, `ssl=False`)
-- Weak TLS protocols in config (`TLSv1.0`, `TLSv1.1`, `SSLv2`, `SSLv3`)
-- `Cipher.getInstance("AES")` in Java (defaults to ECB)
-
-Flag: `[CRITICAL]` for disabled TLS verification or weak password hashing.
-Flag: `[HIGH]` for ECB mode, weak PRNG in security context, hardcoded crypto material.
+Flag: `[CRITICAL]` disabled TLS verification or weak password hashing. `[HIGH]` ECB mode, weak PRNG, hardcoded crypto material.
 
 ### S4 — Supply Chain Security
 
-Check dependency management and CI/CD integrity:
+**Lock files:** Verify presence of `package-lock.json`/`pnpm-lock.yaml`/`yarn.lock` (Node), `Pipfile.lock`/`poetry.lock`/pinned `requirements.txt` (Python), `go.sum`, `Cargo.lock`, `Gemfile.lock`.
 
-**Lock file presence:**
+**Dependency pinning:** Flag unpinned versions (`^`, `~`, `*`, `>=`), bare package names, `git+` dependencies, `:latest` Docker tags.
 
-- `package-lock.json` or `pnpm-lock.yaml` or `yarn.lock` for Node.js projects
-- `Pipfile.lock` or `poetry.lock` or `requirements.txt` with pinned versions for Python
-- `go.sum` for Go
-- `Cargo.lock` for Rust
-- `Gemfile.lock` for Ruby
+**GitHub Actions:** Flag actions not pinned to full SHA, third-party actions, `pull_request_target` with code checkout (privilege escalation), script injection via `${{ github.event.*.title }}` in `run:` steps, `permissions: write-all`, secrets echoed to logs.
 
-**Dependency pinning:**
+**Dependabot/Renovate:** Flag absence of `.github/dependabot.yml` or `renovate.json`.
 
-- Unpinned versions in `package.json` (ranges like `^`, `~`, `*`, `>=`)
-- Bare package names in `requirements.txt` (no `==version`)
-- `git+` dependencies (bypass SCA)
-- `:latest` tags in Dockerfiles
-
-**GitHub Actions security:**
-
-- Actions NOT pinned to full SHA (`uses: action/name@v1` instead of `@<sha>`)
-- Third-party actions (non `actions/` or `github/` namespace)
-- `pull_request_target` with code checkout (privilege escalation)
-- Script injection via `${{ github.event.*.title }}` in `run:` steps
-- `permissions: write-all` or absent permissions block
-- Secrets echoed to logs
-
-**SBOM / Dependabot / Renovate:**
-
-- Check for `.github/dependabot.yml` or `renovate.json`
-- Flag absence as a finding
-
-Flag: `[CRITICAL]` for Actions script injection or `pull_request_target` with checkout.
-Flag: `[HIGH]` for unpinned Actions, missing lock files, missing Dependabot config.
-Flag: `[WARN]` for unpinned dependency ranges, missing SBOM.
+Flag: `[CRITICAL]` Actions script injection, `pull_request_target` with checkout. `[HIGH]` unpinned Actions, missing lock files, missing Dependabot. `[WARN]` unpinned ranges, missing SBOM.
 
 ### S5 — Configuration Security
 
-Check for dangerous configurations:
+Scan for: debug mode in production (`DEBUG = True`, `NODE_ENV=development`), default credentials, CORS wildcard with credentials, missing security headers (CSP with `unsafe-inline`/`unsafe-eval`, missing `X-Frame-Options`/HSTS), wildcard `script-src *`.
 
-**Debug mode in production configs:**
-
-- `DEBUG = True` (Django), `debug=True` (Flask), `NODE_ENV=development`
-- `display_errors = On` (PHP), actuator exposure (Spring Boot)
-
-**Default credentials:**
-
-- `password`, `admin`, `root`, `changeme`, `secret`, `123456` as credential values
-- Default database connection strings (`postgres:postgres@`, `root:root@`)
-
-**CORS misconfiguration:**
-
-- `Access-Control-Allow-Origin: *` with credentials
-- Reflective CORS (origin echoed from request)
-
-**Missing security headers** (in server configs):
-
-- CSP with `unsafe-inline` or `unsafe-eval`
-- Missing `X-Frame-Options`, `X-Content-Type-Options`, HSTS
-- Wildcard `script-src *`
-
-Flag: `[HIGH]` for debug mode in non-development configs.
-Flag: `[HIGH]` for CORS wildcard with credentials.
-Flag: `[WARN]` for missing security headers, default credentials in templates.
+Flag: `[HIGH]` debug mode, CORS wildcard with credentials. `[WARN]` missing headers, default credentials in templates.
 
 ### S6 — Shell Script Security
 
-Scan all `.sh` and `.bash` files:
+**Safety:** Every `.sh`/`.bash` script must have `set -euo pipefail` (or equivalent) in first 15 lines.
 
-**Safety options:**
+**Dangerous patterns:** Unquoted variables in `rm`/`chmod`/`chown`/`mv`/`cp`, `eval` with variable content, fetch-and-execute piping, static `/tmp/filename` (use `mktemp`), `source` with variable paths, backtick substitution (prefer `$()`), `chmod 777`/`chmod a+w`, `sudo` with variable commands.
 
-```bash
-# Every script must have: set -euo pipefail (or set -Eeuo pipefail)
-# Check first 15 lines of each script with a shebang
-```
+**If `shellcheck` is available**, run `shellcheck -f json <script>` and map SC codes to severity.
 
-**Dangerous patterns:**
-
-- Unquoted variable expansion in `rm`, `chmod`, `chown`, `mv`, `cp` commands
-- `eval` with variable content (`eval "$var"`, `eval $(...)`)
-- Fetch-and-execute patterns piping download output to a shell interpreter
-- Insecure temp files (static `/tmp/filename` instead of `mktemp`)
-- `source`/`.` with variable paths (attacker-controlled include)
-- Backtick command substitution (prefer `$()`)
-- `chmod 777` or `chmod a+w` (world-writable)
-- `sudo` with variable commands
-
-**If `shellcheck` is available** (`which shellcheck`), run it:
-
-```bash
-shellcheck -f json <script>
-```
-
-Parse JSON output for SC codes and map to severity.
-
-Flag: `[CRITICAL]` for `eval` with external data, fetch-and-execute piping.
-Flag: `[HIGH]` for missing `set -euo pipefail`, unquoted variables in destructive commands.
-Flag: `[WARN]` for static temp files, backtick substitution.
+Flag: `[CRITICAL]` `eval` with external data, fetch-and-execute. `[HIGH]` missing `set -euo pipefail`, unquoted destructive commands. `[WARN]` static temp files, backtick substitution.
 
 ### S7 — GitHub Repository Security
 
-Check repository security posture:
+**File presence:** `SECURITY.md` (`[HIGH]` if absent), `.github/CODEOWNERS` (`[HIGH]`), `.github/dependabot.yml` (`[WARN]`), CodeQL workflow (`[WARN]`).
 
-**File presence audit:**
+**`.gitignore` coverage:** Verify patterns for `.env`, `*.pem`, `*.key`, private key files, `*.credentials`, `secrets.yml`, `.aws/credentials`.
 
-| File | Finding if absent |
-|------|------------------|
-| `SECURITY.md` or `.github/SECURITY.md` | No security disclosure policy |
-| `.github/CODEOWNERS` | No code ownership enforcement |
-| `.github/dependabot.yml` | No automated dependency updates |
-| `.github/workflows/codeql*.yml` | No SAST in CI pipeline |
+**Actions hardening:** Check for `permissions:` block, flag `runs-on: self-hosted` and `workflow_run` triggers.
 
-**`.gitignore` coverage** — verify these patterns are present:
-
-```text
-.env, .env.*, *.pem, *.key, *.p12, *.pfx, id_rsa, id_dsa, id_ecdsa,
-id_ed25519, *.credentials, secrets.yml, secrets.yaml, .aws/credentials
-```
-
-**GitHub Actions workflow hardening:**
-
-- Check for `permissions:` block in each workflow
-- Flag `runs-on: self-hosted` (higher attack surface)
-- Flag `workflow_run` triggers (privilege escalation vector)
-
-**If GitHub API is available** (via `githubRepo` tool), also check:
-
-- Branch protection rules on default branch
-- Open secret scanning alerts
-- Open Dependabot alerts (high/critical severity)
-- Webhook configurations without secrets
-
-Flag: `[HIGH]` for missing SECURITY.md, missing CODEOWNERS.
-Flag: `[WARN]` for missing CodeQL, insufficient `.gitignore` coverage.
+**If GitHub API available:** Check branch protection, open secret scanning alerts, open Dependabot alerts (high/critical), webhook configs without secrets.
 
 ### S8 — Insecure Deserialization
 
-Scan for unsafe deserialization patterns:
+Flag unsafe patterns: Python `pickle.loads()`/`yaml.load()` without SafeLoader, PHP `unserialize()` with user input, Java `ObjectInputStream.readObject()` without type filtering, Ruby `Marshal.load()`, .NET `BinaryFormatter`/`LosFormatter`, Node.js `node-serialize`/`cryo` with user input.
 
-- Python: `pickle.loads()`, `pickle.load()` with non-literal input
-- Python: `yaml.load()` without `Loader=yaml.SafeLoader` (use `yaml.safe_load()`)
-- PHP: `unserialize()` with user input (`$_GET`, `$_POST`, `$_REQUEST`)
-- Java: `new ObjectInputStream()`, `.readObject()` without type filtering
-- Ruby: `Marshal.load()`, `Marshal.restore()` with external data
-- .NET: `BinaryFormatter`, `LosFormatter`, `NetDataContractSerializer`
-- Node.js: `node-serialize`, `cryo`, or similar libraries with user input
-
-Flag: `[CRITICAL]` for deserialization of user-controlled data.
-Flag: `[HIGH]` for deserialization without safe loader/type filter.
+Flag: `[CRITICAL]` deserialization of user-controlled data. `[HIGH]` without safe loader/type filter.
 
 ### S9 — Dependency CVE Scan
 
-Parse lock files and query for known vulnerabilities:
+Parse lock files and query OSV.dev API (`POST https://api.osv.dev/v1/query`) for each direct dependency. Limit ≤ 50 queries per audit.
 
-**If Fetch MCP is available**, query the OSV.dev API for each dependency:
-
-```text
-POST https://api.osv.dev/v1/query
-{"package": {"name": "<pkg>", "ecosystem": "<npm|PyPI|Go|crates.io>"}, "version": "<ver>"}
-```
-
-OSV.dev is free and requires no authentication.
-
-**Priority order:**
-
-1. Parse `package-lock.json` → extract name + version → query OSV.dev
-2. Parse `requirements.txt` or `poetry.lock` → query OSV.dev
-3. Parse `Cargo.lock`, `go.sum`, `Gemfile.lock` similarly
-
-**Scope control:** Query only direct dependencies (not the full transitive tree)
-to stay within reasonable API limits.
-
-Flag: `[CRITICAL]` for CVEs with CVSS ≥ 9.0 or in CISA KEV catalogue.
-Flag: `[HIGH]` for CVEs with CVSS ≥ 7.0.
-Flag: `[WARN]` for CVEs with CVSS ≥ 4.0.
-
-Skip S9 if no lock files exist or Fetch tool is unavailable. Note the skip in the report.
+Flag: `[CRITICAL]` CVSS ≥ 9.0 or in CISA KEV. `[HIGH]` CVSS ≥ 7.0. `[WARN]` CVSS ≥ 4.0.
+Skip if no lock files or Fetch tool unavailable.
 
 ### S10 — Information Exposure
 
-Scan for information leakage patterns:
+Scan for: stack traces in error handlers, verbose error configs, sensitive data in log statements, log injection, source maps in production, version/technology disclosure headers, comments with credentials or internal URLs.
 
-- Stack traces in error handlers (printing full traceback to response)
-- Verbose error configs (`display_errors`, `FLASK_DEBUG`, `DEBUG=True` for prod)
-- Sensitive data in log statements (`logging.*password`, `console.log.*token`)
-- Log injection patterns (user input directly in log format strings)
-- Source maps deployed to production (`*.map` files in build output dirs)
-- Version/technology disclosure headers (`X-Powered-By`, `Server:` headers)
-- Comments containing credentials, internal URLs, or TODO items with secrets
-
-Flag: `[HIGH]` for stack traces exposed to users, sensitive data in logs.
-Flag: `[WARN]` for source maps in production, technology disclosure headers.
+Flag: `[HIGH]` stack traces exposed, sensitive data in logs. `[WARN]` source maps, technology disclosure.
 
 ---
 
