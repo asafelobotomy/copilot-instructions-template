@@ -25,8 +25,8 @@ $command = $ti.command ?? $ti.input ?? ''
 
 # Blocked patterns — hard deny
 $blockedPatterns = @(
-    'rm\s+-rf\s+/',
-    'rm\s+-rf\s+~',
+    'rm\s+-rf\s+/([^a-zA-Z0-9._-]|$)',
+    'rm\s+-rf\s+~([^a-zA-Z0-9._/-]|$)',
     'rm\s+-rf\s+\.($|\s)',
     'DROP\s+TABLE',
     'DROP\s+DATABASE',
@@ -35,7 +35,7 @@ $blockedPatterns = @(
     'mkfs\.',
     'dd\s+if=.+of=/dev/',
     ':\(\)\{:\|:&\};:',
-    'chmod\s+-R\s+777\s+/',
+    'chmod\s+-R\s+777\s+/([^a-zA-Z0-9._-]|$)',
     'curl\s+.+\|\s*sh',
     'wget\s+.+\|\s*sh'
 )
@@ -57,6 +57,7 @@ foreach ($pattern in $blockedPatterns) {
 $cautionPatterns = @(
     'rm\s+-rf',
     'rm\s+-r\s+',
+    'chmod\s+-R\s+777',
     'DROP\s+',
     'DELETE\s+FROM',
     'git\s+push.*--force',

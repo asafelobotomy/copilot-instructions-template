@@ -100,6 +100,13 @@ assert_continue "echo"         "$(make_input 'bash' 'echo hello world')"
 assert_continue "git log"      "$(make_input 'bash' 'git log --oneline -5')"
 echo ""
 
+# ── 4a. Subdirectory paths → caution (ask) not deny ──────────────────────────
+echo "4a. Subdirectory paths demoted from deny to caution (ask)"
+assert_decision "rm -rf /tmp → ask"       "$(make_input 'bash' 'rm -rf /tmp/junk')"      "ask"
+assert_decision "rm -rf ~/old → ask"      "$(make_input 'bash' 'rm -rf ~/old-backup')"   "ask"
+assert_decision "chmod 777 /var → ask"    "$(make_input 'bash' 'chmod -R 777 /var/app')" "ask"
+echo ""
+
 # ── 4b. Regression — commands containing "sh" not false-positive blocked ──────
 echo "4b. Commands containing 'sh' not falsely blocked by curl|sh fix"
 assert_continue "bash script"          "$(make_input 'bash' 'bash tests/run-all.sh')"
