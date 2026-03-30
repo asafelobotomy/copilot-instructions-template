@@ -17,3 +17,7 @@ Thumbs.db
 *.bak
 *.orig
 *~
+
+# Python bytecode cache
+__pycache__/
+*.pyc
