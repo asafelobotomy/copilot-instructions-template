@@ -16,9 +16,9 @@ run_phase() {
     echo "==> $test_script"
     local start=$SECONDS
     if bash "$test_script"; then
-      echo "  (${SECONDS-start}s)"
+      echo "  ($((SECONDS - start))s)"
     else
-      echo "  (${SECONDS-start}s) FAILED"
+      echo "  ($((SECONDS - start))s) FAILED"
       ((FAILED_SUITES++))
       FAILED_LIST+=("$test_script")
     fi
@@ -48,9 +48,9 @@ run_optional_phase() {
     echo "==> $test_script"
     local start=$SECONDS
     if bash "$test_script"; then
-      echo "  (${SECONDS-start}s)"
+      echo "  ($((SECONDS - start))s)"
     else
-      echo "  (${SECONDS-start}s) FAILED"
+      echo "  ($((SECONDS - start))s) FAILED"
       ((FAILED_SUITES++))
       FAILED_LIST+=("$test_script")
     fi

@@ -7,7 +7,7 @@ set -uo pipefail
 # shellcheck source=tests/lib/test-helpers.sh
 source "$(dirname "$0")/lib/test-helpers.sh"
 init_test_context "$0"
-GUARD_SCRIPT="$REPO_ROOT/template/hooks/scripts/guard-destructive.sh"
+export GUARD_SCRIPT="$REPO_ROOT/template/hooks/scripts/guard-destructive.sh"
 
 # ── Local aliases for backward-compat (delegate to shared helpers) ─────────
 
