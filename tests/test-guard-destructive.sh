@@ -100,6 +100,15 @@ assert_continue "echo"         "$(make_input 'bash' 'echo hello world')"
 assert_continue "git log"      "$(make_input 'bash' 'git log --oneline -5')"
 echo ""
 
+# ── 4b. Regression — commands containing "sh" not false-positive blocked ──────
+echo "4b. Commands containing 'sh' not falsely blocked by curl|sh fix"
+assert_continue "bash script"          "$(make_input 'bash' 'bash tests/run-all.sh')"
+assert_continue "bash -c"             "$(make_input 'bash' 'bash -c echo hello')"
+assert_continue "shell variable"      "$(make_input 'bash' 'echo \$SHELL')"
+assert_continue "show command"        "$(make_input 'bash' 'git show HEAD')"
+assert_continue "curl without pipe"   "$(make_input 'bash' 'curl -fsSL https://example.com -o file.sh')"
+echo ""
+
 # ── 5. Robustness — malformed or empty input ──────────────────────────────────
 echo "5. Robustness — malformed/empty input does not crash"
 assert_no_crash "empty JSON object" '{}'

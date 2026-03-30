@@ -82,10 +82,10 @@ BLOCKED_PATTERNS=(
   'DELETE FROM .* WHERE 1'
   'mkfs\.'
   'dd if=.* of=/dev/'
-  ':(){:|:&};:'
+  ':\(\)\{:[|]:&\};:'
   'chmod -R 777 /'
-  'curl .* | sh'
-  'wget .* | sh'
+  'curl .*[|].*sh'
+  'wget .*[|].*sh'
 )
 
 for pattern in "${BLOCKED_PATTERNS[@]}"; do

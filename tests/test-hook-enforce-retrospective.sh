@@ -21,7 +21,7 @@ echo ""
 echo "2. No transcript blocks the stop"
 TMPDIR_NO_TX=$(mktemp -d)
 output=$(cd "$TMPDIR_NO_TX" && printf '{"stop_hook_active": false}' | bash "$SCRIPT" 2>/dev/null)
-assert_matches "no transcript blocks" "$output" '"decision": "block"'
+assert_matches "no transcript blocks" "$output" '"continue": false'
 assert_valid_json "valid JSON on block" "$output"
 rm -rf "$TMPDIR_NO_TX"
 echo ""
@@ -54,7 +54,7 @@ TMPDIR_NO_RETRO=$(mktemp -d)
 TRANSCRIPT_NORETRO="$TMPDIR_NO_RETRO/transcript.txt"
 printf 'The agent coded features and committed changes.\n' > "$TRANSCRIPT_NORETRO"
 output=$(cd "$TMPDIR_NO_RETRO" && printf '{"stop_hook_active": false, "transcript_path": "%s"}' "$TRANSCRIPT_NORETRO" | bash "$SCRIPT" 2>/dev/null)
-assert_matches "missing retrospective keyword blocks" "$output" '"decision": "block"'
+assert_matches "missing retrospective keyword blocks" "$output" '"continue": false'
 assert_valid_json "valid JSON when blocking" "$output"
 rm -rf "$TMPDIR_NO_RETRO"
 echo ""
@@ -68,7 +68,7 @@ touch -d "10 minutes ago" "$STALE_HB" 2>/dev/null \
   || python3 -c "import os,time; os.utime('$STALE_HB', (time.time()-600, time.time()-600))" 2>/dev/null \
   || true
 output=$(cd "$TMPDIR_STALE" && printf '{"stop_hook_active": false}' | bash "$SCRIPT" 2>/dev/null)
-assert_matches "stale heartbeat blocks" "$output" '"decision": "block"'
+assert_matches "stale heartbeat blocks" "$output" '"continue": false'
 rm -rf "$TMPDIR_STALE"
 
 finish_tests

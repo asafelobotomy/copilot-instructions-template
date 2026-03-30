@@ -52,9 +52,9 @@ fi
 if [[ "$RETRO_RAN" == "false" ]]; then
   cat <<EOF
 {
+  "continue": false,
   "hookSpecificOutput": {
     "hookEventName": "Stop",
-    "decision": "block",
     "reason": "The retrospective has not been run this session. Before stopping, run the Retrospective section of HEARTBEAT.md (§8 procedure step 3) and persist insights to workspace files."
   }
 }

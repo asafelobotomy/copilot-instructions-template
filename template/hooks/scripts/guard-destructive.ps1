@@ -86,8 +86,20 @@ foreach ($pattern in $cautionPatterns) {
 # mutating terminal operations without explicit user approval.
 $agentName = ''
 try {
-    $agentName = $data.copilot_agent ?? ''
-    if (-not $agentName) { $agentName = $env:COPILOT_AGENT ?? '' }
+    $candidates = @(
+        $data.agentName,
+        $data.agent_name,
+        $data.context.agentName,
+        $data.context.agent_name,
+        $data.session.agentName,
+        $data.session.agent_name
+    )
+    foreach ($c in $candidates) {
+        if ($c -is [string] -and $c.Trim()) {
+            $agentName = $c.Trim()
+            break
+        }
+    }
 } catch { $agentName = '' }
 
 if ($agentName -match '^(Doctor|Review|Explore)$') {
