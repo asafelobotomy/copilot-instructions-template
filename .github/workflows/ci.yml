@@ -328,13 +328,23 @@ jobs:
         run: bash tests/test-hook-scan-secrets.sh
 
       - name: Hook behavior | hooks PowerShell parity
-        run: bash tests/test-hooks-powershell.sh
+        run: |
+          if command -v pwsh >/dev/null 2>&1; then
+            bash tests/test-hooks-powershell.sh
+          else
+            echo "Skipping PowerShell parity: pwsh not installed on runner"
+          fi
 
       - name: Hook behavior | guard-destructive.sh
         run: bash tests/test-guard-destructive.sh
 
       - name: Hook behavior | guard-destructive PowerShell parity
-        run: bash tests/test-guard-destructive-powershell.sh
+        run: |
+          if command -v pwsh >/dev/null 2>&1; then
+            bash tests/test-guard-destructive-powershell.sh
+          else
+            echo "Skipping guard-destructive PowerShell parity: pwsh not installed on runner"
+          fi
 
       - name: Script behavior | sync-version.sh
         run: bash tests/test-sync-version.sh
