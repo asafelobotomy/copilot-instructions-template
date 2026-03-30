@@ -17,7 +17,7 @@ if (-not $Trigger) {
     exit 0
 }
 
-$inputJson = $input | Out-String
+$inputJson = [Console]::In.ReadToEnd()
 try {
     $payload = if ($inputJson.Trim()) { $inputJson | ConvertFrom-Json } else { [PSCustomObject]@{} }
 } catch {

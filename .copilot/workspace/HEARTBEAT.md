@@ -53,9 +53,9 @@ python3 - <<'PY'
 from pathlib import Path
 p = Path('.copilot/workspace/.heartbeat-session')
 if p.exists():
-	parts = p.read_text(encoding='utf-8').strip().split('|')
-	if len(parts) >= 3:
-		p.write_text(f"{parts[0]}|{parts[1]}|complete\n", encoding='utf-8')
+    parts = p.read_text(encoding='utf-8').strip().split('|')
+    if len(parts) >= 3:
+        p.write_text(f"{parts[0]}|{parts[1]}|complete\n", encoding='utf-8')
 PY
 ```
 

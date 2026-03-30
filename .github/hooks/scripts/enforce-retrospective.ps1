@@ -5,7 +5,7 @@
 # risk:     safe
 
 $ErrorActionPreference = 'SilentlyContinue'
-$inputJson = $input | Out-String
+$inputJson = [Console]::In.ReadToEnd()
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $pulsePath = Join-Path $scriptDir 'pulse.ps1'
 
