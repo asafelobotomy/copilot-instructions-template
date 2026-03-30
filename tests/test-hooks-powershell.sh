@@ -75,7 +75,7 @@ echo "5. enforce-retrospective.ps1 blocks when no transcript or recent heartbeat
 TMP_BLOCK=$(mktemp -d)
 output=$(cd "$TMP_BLOCK" && run_ps_script "$ENFORCE_RETRO" '{"stop_hook_active": false}')
 assert_valid_json "enforce-retrospective block emits JSON" "$output"
-assert_contains "enforce-retrospective blocks missing retrospective" "$output" '"decision": "block"'
+assert_contains "enforce-retrospective blocks missing retrospective" "$output" '"continue": false'
 rm -rf "$TMP_BLOCK"
 echo ""
 
