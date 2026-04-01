@@ -10,7 +10,7 @@ model:
 tools: [codebase, runCommands, githubRepo, fetch, search, webSearch]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Setup', 'Researcher', 'Explore', 'Review', 'Extensions']
+agents: ['Code', 'Setup', 'Researcher', 'Explore', 'Review', 'Extensions', 'Organise']
 handoffs:
   - label: Apply fixes
     agent: Code
@@ -34,6 +34,9 @@ Your role: perform comprehensive, read-only diagnostics across two domains:
 2. **Security audits** (OWASP Top 10, secret detection, injection patterns, supply chain, shell hardening)
 
 Do not modify any files — diagnosis only. Surface findings and use handoffs for remediation.
+
+- Use `Organise` when the remediation path is mainly directory cleanup, file moves,
+  or path repair rather than general implementation.
 
 - Apply the Structured Thinking Discipline (§5): run each check sequentially.
   If a check requires data from a prior check, reuse it — do not re-read or

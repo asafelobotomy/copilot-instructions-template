@@ -165,4 +165,47 @@ if "fetch" not in fm:
     raise SystemExit("audit frontmatter must include fetch tool for upstream checks")
 '
 echo ""
+
+echo "7. Organise stays hidden and coordinator agents can invoke it"
+assert_python "organise agent stays subagent-only with nested delegation" '
+path = root / ".github/agents/organise.agent.md"
+text = path.read_text(encoding="utf-8")
+if not text.startswith("---\n"):
+    raise SystemExit("missing frontmatter in organise.agent.md")
+end = text.find("\n---\n", 4)
+if end == -1:
+    raise SystemExit("unterminated frontmatter in organise.agent.md")
+fm = text[4:end]
+required = [
+    "name: Organise",
+    "user-invocable: false",
+    "disable-model-invocation: false",
+    "tools: [editFiles, runCommands, codebase, search]",
+]
+for needle in required:
+    if needle not in fm:
+        raise SystemExit("organise.agent.md missing: " + needle)
+agents_line = next((line for line in fm.splitlines() if line.startswith("agents:")), None)
+if agents_line is None:
+    raise SystemExit("organise.agent.md missing agents: frontmatter line")
+if "Explore" not in agents_line:
+    raise SystemExit("organise.agent.md must allow Explore for nested read-only inventory work")
+'
+
+assert_python "coordinator allow-lists include Organise" '
+for agent_name in ("coding", "setup", "audit", "review", "extensions"):
+    text = (root / ".github/agents" / f"{agent_name}.agent.md").read_text(encoding="utf-8")
+    if "Organise" not in text:
+        raise SystemExit(f"{agent_name}.agent.md missing Organise allow-list entry")
+'
+echo ""
+
+echo "8. Nested subagent invocation stays enabled in VS Code settings"
+assert_python "repo and template settings keep nested subagents enabled" '
+for rel in (".vscode/settings.json", "template/vscode/settings.json"):
+    data = json.loads((root / rel).read_text(encoding="utf-8"))
+    if data.get("chat.subagents.allowInvocationsFromSubagents") is not True:
+        raise SystemExit(rel + " must set chat.subagents.allowInvocationsFromSubagents=true")
+'
+echo ""
 finish_tests

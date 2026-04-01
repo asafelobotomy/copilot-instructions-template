@@ -10,7 +10,7 @@ model:
 tools: [codebase, githubRepo, runCommands, search]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Fast', 'Researcher', 'Audit', 'Explore']
+agents: ['Code', 'Fast', 'Researcher', 'Audit', 'Explore', 'Organise']
 handoffs:
   - label: Implement fixes
     agent: Code
@@ -30,6 +30,8 @@ This is a read-only role — do not modify files unless explicitly instructed.
 Guidelines:
 
 - Follow §2 Review Mode in `.github/copilot-instructions.md`.
+- Prefer `Organise` over general `Code` when a finding is primarily about
+  repository structure, file placement, or broken pathing after moves.
 - Tag every finding with a waste category from §6 (Muda).
 - Reference specific file paths and line numbers for every finding.
 - Structure output per finding: [severity] | [file:line] | [waste category] | [description]

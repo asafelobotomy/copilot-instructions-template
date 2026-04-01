@@ -16,11 +16,7 @@ This workspace was scaffolded on **{{SETUP_DATE}}** using the [copilot-instructi
 | File | Action |
 |------|--------|
 | `.github/copilot-instructions.md` | Created from template + placeholders filled |
-| `.github/agents/setup.agent.md` | Created — model-pinned Setup agent (Claude Sonnet 4.6) |
-| `.github/agents/coding.agent.md` | Created — model-pinned Coding agent (see MODELS.md for current primary/fallback lineup) |
-| `.github/agents/review.agent.md` | Created — model-pinned Review agent (GPT-5.4) |
-| `.github/agents/fast.agent.md` | Created — model-pinned Fast agent (Claude Haiku 4.5) |
-| `.github/agents/audit.agent.md` | Created — model-pinned Audit agent (GPT-5.4) |
+| `.github/agents/*.agent.md` | Created — model-pinned agent roster; exact inventory is tracked in `.copilot/workspace/workspace-index.json` |
 | `.github/skills/*/SKILL.md` | Created — reusable skill library (exact inventory tracked in `.copilot/workspace/workspace-index.json`) |
 | `.copilot/workspace/IDENTITY.md` | Created |
 | `.copilot/workspace/SOUL.md` | Created |

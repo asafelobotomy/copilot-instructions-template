@@ -27,6 +27,7 @@
 |---------|-------------------|-----------------|------|
 | `setup.agent.md` | Claude Sonnet 4.6 | Medium | Template lifecycle (setup, updates, restore) |
 | `coding.agent.md` | GPT-5.1 | High | Implementation, refactoring, multi-step coding |
+| `organise.agent.md` | GPT-5.1 | Medium | Subagent-only structural cleanup, file moves, path repair, and directory layout normalization |
 | `review.agent.md` | GPT-5.4 | High | Deep review, debugging, architectural analysis |
 | `fast.agent.md` | Claude Haiku 4.5 | Low | Quick lookups and lightweight edits |
 | `audit.agent.md` | GPT-5.4 | High | Read-only health check and security audit (structural, OWASP, secrets, supply chain) |
@@ -81,8 +82,8 @@ Each agent declares an `agents:` allow-list in `.github/agents/*.agent.md` front
 Treat each agent file as the source of truth for permitted subagents.
 Max subagent depth is 3 (configurable via `{{SUBAGENT_MAX_DEPTH}}`).
 
-Current agents: Setup, Code, Review, Fast, Audit, Explore, Extensions,
-Researcher.
+Current agents: Setup, Code, Organise, Review, Fast, Audit, Explore,
+Extensions, Researcher, Commit.
 
 Exact handoff permissions can evolve. Read `.github/agents/*.agent.md` frontmatter for authoritative `agents:` allow-lists.
 

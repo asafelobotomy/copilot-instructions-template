@@ -1,24 +1,26 @@
 {
   "$schema": "https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/schema/workspace-index.schema.json",
   "schemaVersion": "1.0",
-  "updated": "2026-03-30",
+  "updated": "2026-04-01",
   "purpose": "Canonical machine-readable inventory for repository metadata.",
   "counts": {
-    "agents": 8,
+    "agents": 10,
     "skillsRepo": 15,
-    "skillsTemplate": 15,
+    "skillsTemplate": 14,
     "hookScriptsShell": 11,
     "hookScriptsPowerShell": 8
   },
   "agents": [
     "setup.agent.md",
     "coding.agent.md",
+    "organise.agent.md",
     "review.agent.md",
     "fast.agent.md",
     "audit.agent.md",
-    "researcher.agent.md",
     "explore.agent.md",
-    "extensions.agent.md"
+    "extensions.agent.md",
+    "researcher.agent.md",
+    "commit.agent.md"
   ],
   "skills": {
     "repo": [
@@ -62,22 +64,22 @@
       "session-start.sh",
       "guard-destructive.sh",
       "post-edit-lint.sh",
-      "enforce-retrospective.sh",
       "save-context.sh",
       "subagent-start.sh",
       "subagent-stop.sh",
       "mcp-npx.sh",
-      "mcp-uvx.sh"
+      "mcp-uvx.sh",
+      "pulse.sh"
     ],
     "powershell": [
       "scan-secrets.ps1",
       "session-start.ps1",
       "guard-destructive.ps1",
       "post-edit-lint.ps1",
-      "enforce-retrospective.ps1",
       "save-context.ps1",
       "subagent-start.ps1",
-      "subagent-stop.ps1"
+      "subagent-stop.ps1",
+      "pulse.ps1"
     ]
   },
   "notes": [

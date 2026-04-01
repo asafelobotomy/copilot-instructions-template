@@ -31,6 +31,7 @@ Recommended effort levels per agent:
 | Agent | Effort | Rationale |
 |-------|--------|-----------|
 | coding | High | Complex multi-step implementation needs full reasoning depth |
+| organise | Medium | Structural moves and path repair need planning, but not the full depth of architectural review |
 | audit | High | Health checks + vulnerability analysis require thorough reasoning |
 | fast | Low | Speed is the goal; minimal thinking overhead |
 | review | High | Deep architectural analysis requires maximum reasoning |
@@ -57,6 +58,14 @@ Implementation, refactoring, and multi-step coding tasks.
 - GPT-5.3-Codex
 - GPT-5.2-Codex
 - GPT-5.1-Codex
+
+## organise
+
+Structural cleanup, directory reorganisation, file moves, and path repair.
+
+- GPT-5.1
+- Claude Sonnet 4.6
+- GPT-5 mini
 
 ## audit
 

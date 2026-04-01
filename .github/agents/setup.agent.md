@@ -10,7 +10,7 @@ model:
 tools: [editFiles, fetch, githubRepo, codebase, askQuestions, runCommands, search]
 user-invocable: true
 disable-model-invocation: true
-agents: ['Audit', 'Code', 'Extensions', 'Researcher', 'Explore']
+agents: ['Audit', 'Code', 'Extensions', 'Researcher', 'Explore', 'Organise']
 handoffs:
   - label: Run health check
     agent: Audit
@@ -99,6 +99,8 @@ Source of truth: `UPDATE.md` (fetched from upstream).
   problem, gather context once, do not re-fetch URLs already in memory.
 - Do not modify files in `asafelobotomy/copilot-instructions-template` — all
   writes go to the consumer project.
+- Use `Organise` for structural cleanup when setup or update work requires file
+  moves, path repair, or directory normalisation after writing template assets.
 
 ## Skill activation map
 

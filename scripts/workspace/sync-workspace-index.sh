@@ -27,11 +27,14 @@ mode = sys.argv[3]
 preferred_agents = [
     "setup.agent.md",
     "coding.agent.md",
+    "organise.agent.md",
     "review.agent.md",
     "fast.agent.md",
     "audit.agent.md",
-    "researcher.agent.md",
     "explore.agent.md",
+    "extensions.agent.md",
+    "researcher.agent.md",
+    "commit.agent.md",
 ]
 
 preferred_skills = [

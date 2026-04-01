@@ -9,7 +9,7 @@ model:
 tools: [codebase, runCommands, fetch, editFiles, askQuestions]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Researcher', 'Audit', 'Fast', 'Explore']
+agents: ['Code', 'Researcher', 'Audit', 'Fast', 'Explore', 'Organise']
 handoffs:
   - label: Apply changes
     agent: Code
@@ -45,6 +45,8 @@ Extensions agent — scanning workspace…
    (no Code handoff needed for simple recommendation changes)
 7. **User confirmation** — use `askQuestions` to confirm install/uninstall
    actions and profile changes before executing
+8. **Structural cleanup** — use `Organise` when extension or workspace config
+  work requires moving files, normalising directories, or repairing paths
 
 ---
 

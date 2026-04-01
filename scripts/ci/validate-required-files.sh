@@ -8,12 +8,14 @@ for f in \
   ".github/copilot-instructions.md" \
   ".github/agents/setup.agent.md" \
   ".github/agents/coding.agent.md" \
+  ".github/agents/organise.agent.md" \
   ".github/agents/review.agent.md" \
   ".github/agents/fast.agent.md" \
   ".github/agents/audit.agent.md" \
   ".github/agents/explore.agent.md" \
   ".github/agents/extensions.agent.md" \
   ".github/agents/researcher.agent.md" \
+  ".github/agents/commit.agent.md" \
   "SETUP.md" "UPDATE.md" "MIGRATION.md" "AGENTS.md" "VERSION.md" "CHANGELOG.md" \
   "scripts/release/plan-release.sh" \
   "scripts/release/stub-migration.sh" \
@@ -51,22 +53,22 @@ for f in \
   "template/hooks/scripts/session-start.sh" \
   "template/hooks/scripts/guard-destructive.sh" \
   "template/hooks/scripts/post-edit-lint.sh" \
-  "template/hooks/scripts/enforce-retrospective.sh" \
   "template/hooks/scripts/save-context.sh" \
   "template/hooks/scripts/subagent-start.sh" \
   "template/hooks/scripts/subagent-stop.sh" \
   "template/hooks/scripts/mcp-npx.sh" \
   "template/hooks/scripts/mcp-uvx.sh" \
+  "template/hooks/scripts/pulse.sh" \
   "template/hooks/scripts/heartbeat-policy.json" \
   "template/hooks/scripts/heartbeat_clock_summary.py" \
   "template/hooks/scripts/session-start.ps1" \
   "template/hooks/scripts/post-edit-lint.ps1" \
-  "template/hooks/scripts/enforce-retrospective.ps1" \
   "template/hooks/scripts/save-context.ps1" \
   "template/hooks/scripts/scan-secrets.ps1" \
   "template/hooks/scripts/guard-destructive.ps1" \
   "template/hooks/scripts/subagent-start.ps1" \
   "template/hooks/scripts/subagent-stop.ps1" \
+  "template/hooks/scripts/pulse.ps1" \
   "template/CHANGELOG.md" \
   "template/CLAUDE.md" \
   "template/workspace/IDENTITY.md" "template/workspace/SOUL.md" \

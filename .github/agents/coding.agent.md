@@ -12,7 +12,7 @@ model:
 tools: [editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Review', 'Audit', 'Fast', 'Researcher', 'Explore', 'Extensions', 'Commit']
+agents: ['Review', 'Audit', 'Fast', 'Researcher', 'Explore', 'Extensions', 'Commit', 'Organise']
 handoffs:
   - label: Review changes
     agent: Review
@@ -42,6 +42,8 @@ Guidelines:
 - Apply the Structured Thinking Discipline (§5) before starting any complex task.
   Frame the problem → gather minimal context → decide → act → verify. If stuck
   after 3 attempts at the same approach, reformulate or ask the user.
+- Delegate to `Organise` when the task is primarily about moving files,
+  fixing path references, or reshaping directory structure.
 
 ## Skill activation map
 
