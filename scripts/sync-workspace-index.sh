@@ -29,7 +29,7 @@ preferred_agents = [
     "coding.agent.md",
     "review.agent.md",
     "fast.agent.md",
-    "doctor.agent.md",
+    "audit.agent.md",
     "researcher.agent.md",
     "explore.agent.md",
 ]

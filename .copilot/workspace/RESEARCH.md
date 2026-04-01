@@ -51,6 +51,18 @@
 | <https://github.com/release-drafter/release-drafter> | release-drafter — draft-only, human publishes; include-paths filters changelog entries (not release gating) | 2026-03-30 | release, changelog |
 | <https://github.com/tj-actions/changed-files> | Changed-files action — glob patterns, any_changed boolean output; requires sha: input for workflow_run context | 2026-03-30 | actions, path-filter |
 
+## VS Code Copilot — Hooks, Skills, Agents Schema (2026-04)
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://code.visualstudio.com/docs/copilot/customization/hooks> | Hooks: all 8 lifecycle events, common input fields (sessionId, transcript_path on all events), per-event input/output schemas, `hookSpecificOutput.additionalContext` for context injection, `systemMessage` is user-facing warning only, Stop `decision:"block"` via hookSpecificOutput | 2026-04-01 | hooks, agents, customisation |
+| <https://code.visualstudio.com/docs/copilot/customization/agent-skills> | SKILL.md VS Code-specific frontmatter: name, description, argument-hint, user-invocable, disable-model-invocation. No stack/tags metadata. Agent loads by description relevance only. | 2026-04-01 | skills, customisation |
+| <https://agentskills.io/specification> | Agent Skills open spec: frontmatter fields include metadata (arbitrary key-value map), compatibility, allowed-tools (experimental). No stacks field in spec. | 2026-04-01 | skills, spec, agentskills |
+| <https://code.visualstudio.com/updates/v1_111> | v1.111 March 9 2026 — first weekly stable; Autopilot/agent permissions; agent-scoped hooks Preview (`hooks` field in .agent.md, requires chat.useCustomAgentHooks); debug events snapshot | 2026-04-01 | release-notes, agents, hooks |
+| <https://code.visualstudio.com/updates/v1_112> | v1.112 March 18 2026 — /troubleshoot skill (debug logs), sandbox MCP servers, image/binary file agents, monorepo parent-repo discovery (chat.useCustomizationsInParentRepositories) | 2026-04-01 | release-notes, mcp, agents |
+| <https://code.visualstudio.com/updates/v1_113> | v1.113 March 25 2026 — Chat Customizations editor Preview; configurable thinking effort in model picker (deprecated: anthropic.thinking.effort, responsesApiReasoningEffort settings); nested subagents | 2026-04-01 | release-notes, agents, thinking-effort |
+| <https://code.visualstudio.com/updates/v1_114> | v1.114 April 1 2026 (latest stable) — copy final response, /troubleshoot previous sessions, workspace search simplification (#codebase now pure semantic only) | 2026-04-01 | release-notes, latest |
+
 ## Shell Testing Frameworks
 
 | URL | Summary | Date | Tags |

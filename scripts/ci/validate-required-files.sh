@@ -10,11 +10,10 @@ for f in \
   ".github/agents/coding.agent.md" \
   ".github/agents/review.agent.md" \
   ".github/agents/fast.agent.md" \
-  ".github/agents/doctor.agent.md" \
+  ".github/agents/audit.agent.md" \
   ".github/agents/explore.agent.md" \
   ".github/agents/extensions.agent.md" \
   ".github/agents/researcher.agent.md" \
-  ".github/agents/security.agent.md" \
   "SETUP.md" "UPDATE.md" "MIGRATION.md" "AGENTS.md" "VERSION.md" "CHANGELOG.md" \
   "scripts/sync-version.sh" \
   "scripts/sync-workspace-index.sh" \

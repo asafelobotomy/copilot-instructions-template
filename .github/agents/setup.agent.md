@@ -10,11 +10,11 @@ model:
 tools: [editFiles, fetch, githubRepo, codebase, askQuestions, runCommands, search]
 user-invocable: true
 disable-model-invocation: true
-agents: ['Doctor', 'Code', 'Extensions', 'Researcher', 'Explore']
+agents: ['Audit', 'Code', 'Extensions', 'Researcher', 'Explore']
 handoffs:
   - label: Run health check
-    agent: Doctor
-    prompt: Lifecycle operation complete. Run a full Doctor health check to verify all instruction files are well-formed, within budget, and have no placeholder leakage.
+    agent: Audit
+    prompt: Lifecycle operation complete. Run a full health check to verify all instruction files are well-formed, within budget, and have no placeholder leakage.
     send: true
 ---
 

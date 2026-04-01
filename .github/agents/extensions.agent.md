@@ -9,15 +9,15 @@ model:
 tools: [codebase, runCommands, fetch, editFiles, askQuestions]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Researcher', 'Doctor', 'Fast', 'Explore', 'Security']
+agents: ['Code', 'Researcher', 'Audit', 'Fast', 'Explore']
 handoffs:
   - label: Apply changes
     agent: Code
     prompt: The Extensions agent has prepared extension or profile changes. Apply the recommended modifications now.
     send: false
   - label: Run health check
-    agent: Doctor
-    prompt: Run a full Doctor health check to verify extension configuration and agent files are well-formed.
+    agent: Audit
+    prompt: Run a full health check to verify extension configuration and agent files are well-formed.
     send: true
 ---
 

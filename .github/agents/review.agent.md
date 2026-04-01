@@ -10,14 +10,14 @@ model:
 tools: [codebase, githubRepo, runCommands, search]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Fast', 'Researcher', 'Doctor', 'Explore', 'Security']
+agents: ['Code', 'Fast', 'Researcher', 'Audit', 'Explore']
 handoffs:
   - label: Implement fixes
     agent: Code
     prompt: Implement the fixes and improvements identified in the review. Address critical and major findings first.
     send: false
   - label: Security scan
-    agent: Security
+    agent: Audit
     prompt: Run a security audit alongside this code review. Focus on any vulnerability patterns found during the review.
     send: false
 ---

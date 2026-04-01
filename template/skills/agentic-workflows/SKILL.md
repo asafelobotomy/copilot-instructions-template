@@ -2,6 +2,7 @@
 name: agentic-workflows
 description: Set up and manage GitHub Actions workflows that use Copilot coding agents for automated PR handling and issue resolution
 compatibility: ">=3.2"
+stacks: [all]
 ---
 
 # Agentic Workflows

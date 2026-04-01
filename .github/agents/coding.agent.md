@@ -12,15 +12,15 @@ model:
 tools: [editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Review', 'Doctor', 'Fast', 'Researcher', 'Explore', 'Extensions', 'Security']
+agents: ['Review', 'Audit', 'Fast', 'Researcher', 'Explore', 'Extensions']
 handoffs:
   - label: Review changes
     agent: Review
     prompt: Review the changes just made for quality, correctness, and Lean/Kaizen alignment. Tag all findings with waste categories.
     send: true
-  - label: Security check
-    agent: Security
-    prompt: Run a security audit on the changes just made. Flag any vulnerabilities introduced.
+  - label: Audit changes
+    agent: Audit
+    prompt: Run a full audit on the changes just made. Check structural health and flag any vulnerabilities introduced.
     send: false
 ---
 

@@ -29,11 +29,10 @@
 | `coding.agent.md` | GPT-5.1 | High | Implementation, refactoring, multi-step coding |
 | `review.agent.md` | GPT-5.4 | High | Deep review, debugging, architectural analysis |
 | `fast.agent.md` | Claude Haiku 4.5 | Low | Quick lookups and lightweight edits |
-| `doctor.agent.md` | Claude Sonnet 4.6 | Medium | Read-only health checks |
+| `audit.agent.md` | GPT-5.4 | High | Read-only health check and security audit (structural, OWASP, secrets, supply chain) |
 | `explore.agent.md` | Claude Haiku 4.5 | Low | Fast read-only codebase exploration and Q&A |
 | `extensions.agent.md` | Claude Sonnet 4.6 | Medium | VS Code extension management and profiles |
 | `researcher.agent.md` | Claude Sonnet 4.6 | High | Online/offline research and documentation |
-| `security.agent.md` | GPT-5.4 | High | Read-only security audit (OWASP, secrets, supply chain) |
 
 > **Thinking Effort** is a per-user, per-model setting in the VS Code model picker.
 > Low = fast/cheap, Medium = balanced, High = deep reasoning. See `MODELS.md`
@@ -81,8 +80,8 @@ Each agent declares an `agents:` allow-list in `.github/agents/*.agent.md` front
 Treat each agent file as the source of truth for permitted subagents.
 Max subagent depth is 3 (configurable via `{{SUBAGENT_MAX_DEPTH}}`).
 
-Current agents: Setup, Code, Review, Fast, Doctor, Explore, Extensions,
-Researcher, Security.
+Current agents: Setup, Code, Review, Fast, Audit, Explore, Extensions,
+Researcher.
 
 Exact handoff permissions can evolve. Read `.github/agents/*.agent.md` frontmatter for authoritative `agents:` allow-lists.
 

@@ -83,7 +83,7 @@ foreach ($pattern in $cautionPatterns) {
     }
 }
 
-# Read-only agent guardrails — Doctor, Review, and Explore should not perform
+# Read-only agent guardrails — Audit, Review, and Explore should not perform
 # mutating terminal operations without explicit user approval.
 $agentName = ''
 try {
@@ -103,7 +103,7 @@ try {
     }
 } catch { $agentName = '' }
 
-if ($agentName -match '^(Doctor|Review|Explore)$') {
+if ($agentName -match '^(Audit|Review|Explore)$') {
     $readonlyWritePatterns = @(
         '(^|[;&|]\s*)(mkdir|touch|cp|mv|truncate|install)\s',
         '(^|[;&|]\s*)(sed\s+-i|perl\s+-i|tee\s)',

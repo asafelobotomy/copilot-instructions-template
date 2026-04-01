@@ -2,6 +2,7 @@
 name: plugin-management
 description: Discover, evaluate, install, test, and manage agent plugins for VS Code Copilot
 compatibility: ">=3.2"
+stacks: [all]
 ---
 
 # Plugin Management

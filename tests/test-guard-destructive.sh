@@ -126,10 +126,10 @@ echo ""
 
 # ── 10. Read-only agent guardrails ───────────────────────────────────────────
 echo "10. Read-only agents require confirmation for mutating commands"
-assert_decision "Doctor write command asks" "$(make_input_with_agent 'bash' 'mkdir tmp-report' 'Doctor')" "ask"
+assert_decision "Audit write command asks" "$(make_input_with_agent 'bash' 'mkdir tmp-report' 'Audit')" "ask"
 assert_decision "Review git commit asks"    "$(make_input_with_agent 'bash' 'git commit -m test' 'Review')" "ask"
 assert_decision "Explore npm add asks"      "$(make_input_with_agent 'bash' 'npm add zod' 'Explore')" "ask"
-assert_continue "Doctor read command continues" "$(make_input_with_agent 'bash' 'ls -la' 'Doctor')"
+assert_continue "Audit read command continues" "$(make_input_with_agent 'bash' 'ls -la' 'Audit')"
 echo ""
 
 # ── Summary ───────────────────────────────────────────────────────────────────

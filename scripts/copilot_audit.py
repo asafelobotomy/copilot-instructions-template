@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # purpose:  Thin wrapper — delegates to the copilot_audit package.
-# when:     CI validation; Doctor agent D14 check; manual developer audits.
+# when:     CI validation; Audit agent D14 check; manual developer audits.
 # inputs:   --root PATH (default: repo root via script location)
 #           --output md|json (default: md)
 # outputs:  Markdown or JSON report on stdout; structured findings array.

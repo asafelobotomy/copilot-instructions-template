@@ -115,6 +115,53 @@ and skill files.
 
 **Manual actions**: None
 
+## v5.2.0
+
+| Breaking | Sections changed | Sections added | Includes |
+|----------|-----------------|----------------|----------|
+| Yes | §8, §9 | — | v5.1.0 |
+
+**What changed**: Fixes critical heartbeat system defects. The `SessionStart` hook now injects its instruction to the agent via `hookSpecificOutput.additionalContext` (model context) instead of `systemMessage` (UI-only banner — the model never received it). The transcript-fallback retrospective gate regex is tightened to require specific Q-answer evidence patterns rather than the bare word "retrospective". Session IDs now use a stable local fallback (`local-XXXX`) instead of always resolving to "unknown". The `HEARTBEAT.md` Response Contract is rewritten to be unambiguous: three explicit rules replace two contradictory bullets. Removes dead `enforce-retrospective.sh`/`.ps1` scripts (enforcement was already performed by `pulse.sh`). Adds `SubagentStop` hook commentary and documents `UserPromptSubmit` model-injection limitation.
+
+**Breaking**: Yes — the `HEARTBEAT.md` Response Contract section must be manually updated in each consumer workspace (it is consumer-owned and cannot be auto-merged). Consumers who do not update will continue to get an empty History because the old Contract's rule 1 ("omit row if all checks pass") overrides rule 2 ("append on session start").
+
+**New placeholders**: none
+
+**Companion files added**: none
+
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/hooks/scripts/pulse.sh` | `template/hooks/scripts/pulse.sh` | Updated (F1–F5 heartbeat fixes) |
+| `.github/hooks/scripts/pulse.ps1` | `template/hooks/scripts/pulse.ps1` | Updated (F1–F5 heartbeat fixes, PowerShell parity) |
+
+**Manual actions**:
+
+**Action 1 — Update `HEARTBEAT.md` Response Contract** (required — fixes empty History)
+
+In `.copilot/workspace/HEARTBEAT.md`, replace the `## Response Contract` section with:
+
+```markdown
+## Response Contract
+
+- Always append a History row when the trigger is Session start or Explicit — regardless of check results.
+- For all other triggers, append a History row only if a check raised an alert or retrospective output was persisted to SOUL.md / MEMORY.md / USER.md.
+- If checks pass and nothing was persisted on a non-explicit trigger, keep Pulse as `HEARTBEAT_OK` and omit the History row.
+```
+
+**Action 2 — Rename `DOC_INDEX.json` if present** (one-time cleanup for consumers set up before v5.0.0)
+
+If `.copilot/workspace/DOC_INDEX.json` exists, rename it:
+
+```bash
+mv .copilot/workspace/DOC_INDEX.json .copilot/workspace-index.json 2>/dev/null || true
+```
+
+Then update any agent count or skill count references inside the file to match the current `.github/agents/` and `.github/skills/` directories.
+
+---
+
 ## v5.1.0
 
 | Breaking | Sections changed | Sections added | Includes |

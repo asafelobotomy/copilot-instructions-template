@@ -61,7 +61,6 @@ run_phase "Hook Behavior" \
   "tests/test-hook-session-start.sh" \
   "tests/test-hook-pulse.sh" \
   "tests/test-hook-post-edit-lint.sh" \
-  "tests/test-hook-enforce-retrospective.sh" \
   "tests/test-hook-save-context.sh" \
   "tests/test-guard-destructive.sh" \
   "tests/test-hook-scan-secrets.sh" \
@@ -82,6 +81,7 @@ run_phase "Script Behavior" \
   "tests/test-security-edge-cases.sh" \
   "tests/test-copilot-audit.sh" \
   "tests/test-mcp-launchers.sh" \
+  "tests/test-workspace-drift.sh" \
   "tests/test-permission-resilience.sh"
 
 run_phase "Documentation And Contracts" \

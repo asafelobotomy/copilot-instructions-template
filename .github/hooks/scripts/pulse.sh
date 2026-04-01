@@ -139,7 +139,14 @@ def print_json(payload: dict) -> None:
 payload = parse_input(RAW_INPUT)
 state = load_state()
 
-session_id = str(payload.get("sessionId") or state.get("session_id") or "unknown")
+_provided_id = str(payload.get("sessionId") or "")
+if _provided_id:
+    session_id = _provided_id
+elif TRIGGER == "session_start":
+    # Fallback: generate a local ID if VS Code does not provide one (should be rare).
+    session_id = f"local-{os.urandom(4).hex()}"
+else:
+    session_id = state.get("session_id") or "unknown"
 state["session_id"] = session_id
 state["last_trigger"] = TRIGGER
 
@@ -149,7 +156,13 @@ if TRIGGER == "session_start":
     set_sentinel(session_id, "pending")
     append_event(TRIGGER)
     save_state(state)
-    print_json({"continue": True})
+    print_json({
+        "continue": True,
+        "hookSpecificOutput": {
+            "hookEventName": "SessionStart",
+            "additionalContext": "Session started. Open .copilot/workspace/HEARTBEAT.md, run all checks, answer Retrospective Q1-Q8, persist insights to SOUL.md / MEMORY.md / USER.md, mark the sentinel complete, and append a History row."
+        }
+    })
     raise SystemExit(0)
 
 if TRIGGER == "soft_post_tool":
@@ -180,9 +193,12 @@ if TRIGGER in ("user_prompt", "explicit"):
         state["last_write_epoch"] = NOW
         append_event("explicit_prompt")
         save_state(state)
+        # Note: UserPromptSubmit has no hookSpecificOutput injection — systemMessage is a
+        # UI-only chat banner; the model does not receive it. Model context injection is
+        # only available on SessionStart via hookSpecificOutput.additionalContext.
         print_json({
             "continue": True,
-            "systemMessage": "Heartbeat trigger detected. Run HEARTBEAT.md protocol now and update history only for alerts or explicit findings.",
+            "systemMessage": "Heartbeat trigger detected. Run HEARTBEAT.md protocol now: run all checks, answer Retrospective Q1-Q8, persist insights to SOUL.md / MEMORY.md / USER.md, mark the sentinel complete, and append a History row.",
         })
     else:
         print_json({"continue": True})
@@ -203,7 +219,7 @@ if TRIGGER == "stop":
                 transcript = tpath.read_text(encoding="utf-8", errors="ignore")
             except Exception:
                 transcript = ""
-            if re.search(r"retrospective|Q[1-8].*SOUL|Q[1-8].*MEMORY|Q[1-8].*USER|heartbeat-session.*complete", transcript, flags=re.IGNORECASE):
+            if re.search(r"Q[1-8].*SOUL|Q[1-8].*MEMORY|Q[1-8].*USER|heartbeat-session.*complete", transcript, flags=re.IGNORECASE):
                 retro_ran = True
 
     # Backward-compatible fallback for repos that do not have sentinel state.

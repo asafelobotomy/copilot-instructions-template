@@ -2,6 +2,7 @@
 name: extension-review
 description: Audit VS Code extensions against the current project stack and recommend keep/add/remove actions
 compatibility: ">=3.2"
+stacks: [all]
 ---
 
 # Extension Review

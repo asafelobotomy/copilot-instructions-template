@@ -76,7 +76,7 @@ These files are created in the consumer project during setup, not in this templa
 | Update instructions | *"Update your instructions"* / *"Check for instruction updates"* / *"Update from copilot-instructions-template"* / *"Sync instructions with the template"* / *"Check the template for updates"* |
 | Force update check | *"Force check instruction updates"* |
 | Restore backup | *"Restore instructions from backup"* |
-| Health check | *"Run health check"* / *"Doctor check"* |
+| Health check | *"Run health check"* / *"Doctor check"* / *"Full audit"* |
 | Heartbeat | *"Check your heartbeat"* |
 | Retrospective | *"Run retrospective"* |
 | Show/build/save tools | *"Show me the toolbox"* / *"Build a tool for ..."* |
@@ -88,4 +88,4 @@ These files are created in the consumer project during setup, not in this templa
 | Starter kits (install/list/remove) | *"Install a starter kit"* / *"Show starter kits"* / *"What starter kits are available?"* |
 | Plugins (list/find/test) | *"Show plugins"* / *"Find a plugin for ..."* |
 | Research (find/report/track) | *"Research [topic]"* / *"Find documentation for [topic]"* / *"Build a research report on [topic]"* / *"Update the URL tracker"* |
-| Security audit | *"Security audit"* / *"Scan for secrets"* / *"Check for vulnerabilities"* / *"Review security posture"* / *"Run security check"* |
+| Security audit | *"Security audit"* / *"Scan for secrets"* / *"Check for vulnerabilities"* / *"Review security posture"* / *"Run security check"* / *"Full audit"* |

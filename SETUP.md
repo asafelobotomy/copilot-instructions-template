@@ -188,7 +188,7 @@ Create `.github/skills/`. Follow manifests.md § Skill files (dynamic discovery 
 
 ## § 2.7 — Scaffold path-specific instruction files
 
-Follow manifests.md § Path instruction stubs. Write to `.github/instructions/`. Validate no `{{PLACEHOLDER}}` tokens remain.
+Follow manifests.md § Path instruction stubs. For each stub, evaluate the `exists:GLOB` condition against the workspace before installing. Skip stubs whose conditions are not satisfied. Write matching stubs to `.github/instructions/`. Validate no `{{PLACEHOLDER}}` tokens remain.
 
 ---
 
@@ -280,7 +280,7 @@ Fetch current version: `https://raw.githubusercontent.com/asafelobotomy/copilot-
 
 Compute section fingerprints and file-manifest hashes (see `manifests.md` § Version file template for commands). Write to `.github/copilot-version.md` with version, date, fingerprints, manifest, and setup-answers blocks.
 
-If terminal unavailable, omit fingerprint and manifest blocks. Always write setup-answers.
+If terminal unavailable, use the Python fallback in `manifests.md § Version file template`. Omit fingerprint/manifest blocks only if neither `sha256sum` nor Python is available. Always write setup-answers.
 
 ---
 
@@ -363,10 +363,10 @@ If confirmed, delete `SETUP.md` from the user's project (never the template repo
 
 ```ask_questions
 header: "Health check"
-question: "Would you like me to hand off to the Doctor agent for a full health check?"
+question: "Would you like me to hand off to the Audit agent for a full health check?"
 options:
   - label: "Yes"
-    description: "Run a Doctor health check now"
+    description: "Run an Audit health check now"
     recommended: true
   - label: "No"
     description: "Skip the health check"

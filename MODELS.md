@@ -31,14 +31,13 @@ Recommended effort levels per agent:
 | Agent | Effort | Rationale |
 |-------|--------|-----------|
 | coding | High | Complex multi-step implementation needs full reasoning depth |
-| doctor | Medium | Mechanical checklist inspection; adaptive reasoning sufficient |
+| audit | High | Health checks + vulnerability analysis require thorough reasoning |
 | fast | Low | Speed is the goal; minimal thinking overhead |
 | review | High | Deep architectural analysis requires maximum reasoning |
 | setup | Medium | Structured interview + mechanical diff-and-merge; adaptive reasoning sufficient |
 | explore | Low | Read-only lookup; speed over depth |
 | extensions | Medium | Evaluation involves trade-offs but not deep reasoning |
 | researcher | High | Research synthesis benefits from deep analytical thinking |
-| security | High | Vulnerability analysis requires thorough reasoning chains |
 
 > **User override**: these are recommendations. Users set thinking effort per model
 > in the VS Code model picker (click `>` next to the model name). The setting
@@ -58,14 +57,16 @@ Implementation, refactoring, and multi-step coding tasks.
 - GPT-5.2-Codex
 - GPT-5.1-Codex
 
-## doctor
+## audit
 
-Read-only health checks. Sonnet is accurate and 3× cheaper than Opus for
-mechanical inspection tasks; Opus remains as a capability fallback.
+Read-only health check and security audit — structural validation, upstream
+comparison, OWASP Top 10, secrets, injection patterns, supply chain, shell
+hardening. GPT-5.4 for deep analytical capability; Opus as fallback.
 
-- Claude Sonnet 4.6
+- GPT-5.4
 - Claude Opus 4.6
-- Claude Opus 4.5
+- Claude Sonnet 4.6
+- GPT-5.1
 
 ## fast
 
@@ -120,13 +121,3 @@ structured research output.
 - Claude Sonnet 4.6
 - Claude Sonnet 4.5
 - GPT-5 mini
-
-## security
-
-Read-only security audit — OWASP Top 10, secrets, injection patterns, supply
-chain, shell hardening. GPT-5.4 for deep analytical capability; Opus as fallback.
-
-- GPT-5.4
-- Claude Opus 4.6
-- Claude Sonnet 4.6
-- GPT-5.1

@@ -159,9 +159,28 @@ If confirmed, write files, update version + CHANGELOG, skip full report.
 
 ---
 
+### U5b — Workspace drift check
+
+Scan `.copilot/workspace/` for structural sentinel drift using `scripts/check-workspace-drift.sh`. Sentinels are HTML comments embedded in template workspace files; their absence indicates a structural section that has been updated in the template but not yet applied to this consumer's workspace.
+
+If `scripts/check-workspace-drift.sh` is available locally:
+
+```bash
+bash scripts/check-workspace-drift.sh .copilot/workspace
+```
+
+If unavailable (consumer hasn't pulled the script): fetch the script first from:
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/scripts/check-workspace-drift.sh
+```
+
+Record each drifted section as a **workspace drift item** to report in the Pre-flight Report. These items are always shown to the user and always listed under manual actions — workspace files are consumer-owned and cannot be auto-updated.
+
+---
+
 ## Pre-flight Report
 
-Present after U1–U5. Do not write yet. Include: (1) version header, (2) breaking changes, (3) what's new from CHANGELOG, (4) section diff table, (5) companion files table, (6) new placeholders, (7) user-modified sections, (8) manual actions, (9) guardrail confirmation, (10) backup note. Then:
+Present after U1–U5b. Do not write yet. Include: (1) version header, (2) breaking changes, (3) what’s new from CHANGELOG, (4) section diff table, (5) companion files table, (6) new placeholders, (7) user-modified sections, (8) manual actions, (9) workspace drift items (from U5b), (10) guardrail confirmation, (11) backup note. Then:
 
 ```ask_questions
 header: "Update decision"
@@ -305,7 +324,33 @@ for f in .github/agents/*.agent.md .github/skills/*/SKILL.md \
 done
 ```
 
-Write `.github/copilot-version.md`: version, `Applied:` (preserved), `Updated: YYYY-MM-DD`, `<!-- section-fingerprints -->`, `<!-- file-manifest -->`, `<!-- setup-answers -->` (preserved). Omit fingerprint/manifest blocks if terminal unavailable.
+If `sha256sum` is unavailable, use this Python fallback:
+
+```python
+import hashlib, pathlib, glob, re
+
+# Section fingerprints
+text = pathlib.Path('.github/copilot-instructions.md').read_text(encoding='utf-8')
+for i in range(1, 10):
+    match = re.search(rf'(?m)^## §{i} —.*?(?=^## §|\Z)', text, re.DOTALL)
+    body = match.group(0) if match else ''
+    fp = hashlib.sha256(body.encode()).hexdigest()[:12]
+    print(f'§{i}={fp}')
+
+# File manifest
+for pattern in [
+    '.github/agents/*.agent.md', '.github/skills/*/SKILL.md',
+    '.github/hooks/copilot-hooks.json', '.github/hooks/scripts/*.sh',
+    '.github/hooks/scripts/*.ps1', '.github/instructions/*.instructions.md',
+    '.github/prompts/*.prompt.md', '.github/workflows/copilot-setup-steps.yml',
+    '.copilot/workspace/*.md', '.copilot/workspace/workspace-index.json',
+]:
+    for f in sorted(glob.glob(pattern)):
+        h = hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()[:12]
+        print(f'{f}={h}')
+```
+
+Write `.github/copilot-version.md`: version, `Applied:` (preserved), `Updated: YYYY-MM-DD`, `<!-- section-fingerprints -->`, `<!-- file-manifest -->`, `<!-- setup-answers -->` (preserved). Omit fingerprint/manifest blocks only if neither `sha256sum` nor Python is available.
 
 ### 2 — Append to CHANGELOG.md
 

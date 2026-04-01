@@ -2,6 +2,7 @@
 name: test-coverage-review
 description: Audit test coverage, identify gaps, and recommend local tests plus CI workflows
 compatibility: ">=3.2"
+stacks: [all]
 ---
 
 # Test Coverage Review

@@ -9,14 +9,14 @@ model:
 tools: [fetch, webSearch, codebase, search, editFiles, runCommands]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Doctor', 'Explore', 'Security']
+agents: ['Code', 'Audit', 'Explore']
 handoffs:
   - label: Implement findings
     agent: Code
     prompt: The research is complete. Implement the findings documented in the research output.
     send: false
   - label: Run health check
-    agent: Doctor
+    agent: Audit
     prompt: Research complete. Run a health check to verify any files written during this session are well-formed.
     send: false
 ---

@@ -15,7 +15,6 @@ PARITY_DIR="$REPO_ROOT/.github/hooks/scripts"
 
 # Exhaustive list of shell hook scripts that must be executable.
 HOOK_SCRIPTS=(
-  enforce-retrospective.sh
   guard-destructive.sh
   lib-hooks.sh
   mcp-npx.sh
@@ -146,6 +145,7 @@ echo ""
 # The repo's own utility scripts must also be executable for CI and local use.
 echo "7. Repo utility scripts are executable"
 UTIL_SCRIPTS=(
+  scripts/check-workspace-drift.sh
   scripts/sync-version.sh
   scripts/sync-workspace-index.sh
   scripts/sync-models.sh

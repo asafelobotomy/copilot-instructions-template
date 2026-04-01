@@ -37,7 +37,6 @@ echo ""
 
 SESSION_START="$SCRIPTS_DIR/session-start.ps1"
 POST_LINT="$SCRIPTS_DIR/post-edit-lint.ps1"
-ENFORCE_RETRO="$SCRIPTS_DIR/enforce-retrospective.ps1"
 SAVE_CTX="$SCRIPTS_DIR/save-context.ps1"
 PULSE="$SCRIPTS_DIR/pulse.ps1"
 
@@ -85,36 +84,6 @@ output=$(run_ps_script "$POST_LINT" "{\"tool_name\":\"edit_file\",\"tool_input\"
 status=$?
 assert_success "post-edit-lint edit payload exits zero" "$status"
 assert_contains "post-edit-lint edit payload continues" "$output" '"continue": true'
-echo ""
-
-echo "5. enforce-retrospective.ps1 blocks when no transcript or recent heartbeat exists"
-TMP_BLOCK=$(mktemp -d); CLEANUP_DIRS+=("$TMP_BLOCK")
-output=$(cd "$TMP_BLOCK" && run_ps_script "$ENFORCE_RETRO" '{"stop_hook_active": false}')
-assert_valid_json "enforce-retrospective block emits JSON" "$output"
-assert_matches "enforce-retrospective blocks missing retrospective" "$output" '"decision"\s*:\s*"block"'
-echo ""
-
-echo "6. enforce-retrospective.ps1 passes with retrospective transcript or fresh heartbeat"
-TMP_RETRO=$(mktemp -d); CLEANUP_DIRS+=("$TMP_RETRO")
-printf 'retrospective complete\n' > "$TMP_RETRO/transcript.txt"
-output=$(cd "$TMP_RETRO" && run_ps_script "$ENFORCE_RETRO" "{\"stop_hook_active\": false, \"transcript_path\": \"$TMP_RETRO/transcript.txt\"}")
-assert_matches "transcript keyword allows continuation" "$output" '"continue"\s*:\s*true'
-TMP_HB=$(mktemp -d); CLEANUP_DIRS+=("$TMP_HB")
-mkdir -p "$TMP_HB/.copilot/workspace"
-touch "$TMP_HB/.copilot/workspace/HEARTBEAT.md"
-output=$(cd "$TMP_HB" && run_ps_script "$ENFORCE_RETRO" '{"stop_hook_active": false}')
-assert_matches "fresh heartbeat allows continuation" "$output" '"continue"\s*:\s*true'
-echo ""
-
-echo "6a. enforce-retrospective.ps1 honors heartbeat sentinel states"
-TMP_SENT=$(mktemp -d); CLEANUP_DIRS+=("$TMP_SENT")
-mkdir -p "$TMP_SENT/.copilot/workspace"
-printf 'abc|2026-03-30T00:00:00Z|pending\n' > "$TMP_SENT/.copilot/workspace/.heartbeat-session"
-output=$(cd "$TMP_SENT" && run_ps_script "$ENFORCE_RETRO" '{"stop_hook_active": false}')
-assert_matches "pending sentinel blocks" "$output" '"decision"\s*:\s*"block"'
-printf 'abc|2026-03-30T00:00:00Z|complete\n' > "$TMP_SENT/.copilot/workspace/.heartbeat-session"
-output=$(cd "$TMP_SENT" && run_ps_script "$ENFORCE_RETRO" '{"stop_hook_active": false}')
-assert_matches "complete sentinel allows continuation" "$output" '"continue"\s*:\s*true'
 echo ""
 
 echo "6b. pulse.ps1 blocks stop when retrospective is incomplete"

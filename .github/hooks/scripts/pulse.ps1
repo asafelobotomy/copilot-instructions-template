@@ -105,7 +105,15 @@ function Test-HeartbeatFresh([int]$minutes) {
 }
 
 $state = Get-State
-$sessionId = if ($payload.sessionId) { [string]$payload.sessionId } elseif ($state.session_id) { [string]$state.session_id } else { 'unknown' }
+$providedId = if ($payload.sessionId) { [string]$payload.sessionId } else { '' }
+$sessionId = if ($providedId) {
+    $providedId
+} elseif ($Trigger -eq 'session_start') {
+    # Fallback: generate a local ID if VS Code does not provide one (should be rare).
+    'local-' + [System.Guid]::NewGuid().ToString('N').Substring(0, 8)
+} else {
+    if ($state.session_id) { [string]$state.session_id } else { 'unknown' }
+}
 $state.session_id = $sessionId
 $state.last_trigger = $Trigger
 
@@ -115,7 +123,7 @@ if ($Trigger -eq 'session_start') {
     Set-Sentinel $sessionId 'pending'
     Append-Event $Trigger
     Save-State $state
-    Emit-Json @{ continue = $true }
+    Emit-Json @{ continue = $true; hookSpecificOutput = @{ hookEventName = 'SessionStart'; additionalContext = 'Session started. Open .copilot/workspace/HEARTBEAT.md, run all checks, answer Retrospective Q1-Q8, persist insights to SOUL.md / MEMORY.md / USER.md, mark the sentinel complete, and append a History row.' } }
     exit 0
 }
 
@@ -149,7 +157,10 @@ if ($Trigger -in @('user_prompt', 'explicit')) {
         $state.last_write_epoch = $now
         Append-Event 'explicit_prompt'
         Save-State $state
-        Emit-Json @{ continue = $true; systemMessage = 'Heartbeat trigger detected. Run HEARTBEAT.md protocol now and update history only for alerts or explicit findings.' }
+        # Note: UserPromptSubmit has no hookSpecificOutput injection — systemMessage is a
+        # UI-only chat banner; the model does not receive it. Model context injection is
+        # only available on SessionStart via hookSpecificOutput.additionalContext.
+        Emit-Json @{ continue = $true; systemMessage = 'Heartbeat trigger detected. Run HEARTBEAT.md protocol now: run all checks, answer Retrospective Q1-Q8, persist insights to SOUL.md / MEMORY.md / USER.md, mark the sentinel complete, and append a History row.' }
     } else {
         Emit-Json @{ continue = $true }
     }
@@ -166,7 +177,7 @@ if ($Trigger -eq 'stop') {
 
     if (-not $retroRan -and $payload.transcript_path -and (Test-Path $payload.transcript_path)) {
         $content = Get-Content $payload.transcript_path -Raw -ErrorAction SilentlyContinue
-        if ($content -match '(?i)retrospective|Q[1-8].*SOUL|Q[1-8].*MEMORY|Q[1-8].*USER|heartbeat-session.*complete') {
+        if ($content -match '(?i)Q[1-8].*SOUL|Q[1-8].*MEMORY|Q[1-8].*USER|heartbeat-session.*complete') {
             $retroRan = $true
         }
     }

@@ -27,12 +27,14 @@ Dynamic discovery: filter API tree for `template/skills/*/SKILL.md`. If truncate
 
 ## Path instruction stubs (§ 2.7)
 
-| Stub | When to copy |
-|------|-------------|
-| `tests.instructions.md` | Test files present |
-| `api-routes.instructions.md` | API routes present |
-| `config.instructions.md` | Config files present |
-| `docs.instructions.md` | Markdown/docs present |
+For each stub, evaluate the `condition` before installing. A condition `exists:GLOB` is satisfied when at least one file in the workspace matches the glob. Install the stub if any listed condition is true.
+
+| Stub | Install conditions |
+|------|-------------------|
+| `tests.instructions.md` | `exists:**/*.test.*` OR `exists:**/*.spec.*` OR `exists:**/tests/**` OR `exists:**/test/**` OR `exists:**/__tests__/**` |
+| `api-routes.instructions.md` | `exists:**/api/**` OR `exists:**/routes/**` OR `exists:**/controllers/**` OR `exists:**/handlers/**` |
+| `config.instructions.md` | `exists:**/*.config.*` OR `exists:**/.eslintrc*` OR `exists:**/.prettierrc*` OR `exists:**/.stylelintrc*` OR language detected as JavaScript/TypeScript/Python |
+| `docs.instructions.md` | `exists:**/*.md` (true for almost every project) |
 
 Fetch pattern: `{BASE_URL}/template/instructions/{name}`
 
@@ -250,7 +252,35 @@ for f in .github/agents/*.agent.md .github/skills/*/SKILL.md \
 done
 ```
 
-Write to `.github/copilot-version.md`:
+If `sha256sum` is unavailable, use this Python fallback instead:
+
+```python
+import hashlib, pathlib, glob
+
+# Section fingerprints
+text = pathlib.Path('.github/copilot-instructions.md').read_text(encoding='utf-8')
+import re
+for i in range(1, 10):
+    match = re.search(rf'(?m)^## §{i} —.*?(?=^## §|\Z)', text, re.DOTALL)
+    body = match.group(0) if match else ''
+    fp = hashlib.sha256(body.encode()).hexdigest()[:12]
+    print(f'§{i}={fp}')
+
+# File manifest
+patterns = [
+    '.github/agents/*.agent.md', '.github/skills/*/SKILL.md',
+    '.github/hooks/copilot-hooks.json', '.github/hooks/scripts/*.sh',
+    '.github/hooks/scripts/*.ps1', '.github/instructions/*.instructions.md',
+    '.github/prompts/*.prompt.md', '.github/workflows/copilot-setup-steps.yml',
+    '.copilot/workspace/*.md', '.copilot/workspace/workspace-index.json',
+]
+for pattern in patterns:
+    for f in sorted(glob.glob(pattern)):
+        h = hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()[:12]
+        print(f'{f}={h}')
+```
+
+Omit fingerprint/manifest blocks only if neither `sha256sum` nor Python is available. Always write setup-answers.
 
 ```markdown
 # Installed Template Version

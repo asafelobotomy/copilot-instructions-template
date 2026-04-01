@@ -62,9 +62,11 @@ PY
 <!-- Add custom retrospective questions below this line -->
 
 ## Response Contract
+<!-- template-section: heartbeat-response-contract v2 -->
 
-- If all checks pass and no new issues were found, keep Pulse as `HEARTBEAT_OK` and do not append a History row.
-- Append a History row only when trigger is Explicit or Session start, a check raised an alert, or retrospective output was persisted to SOUL.md / MEMORY.md / USER.md.
+- Always append a History row when the trigger is Session start or Explicit — regardless of check results.
+- For all other triggers, append a History row only if a check raised an alert or retrospective output was persisted to SOUL.md / MEMORY.md / USER.md.
+- If checks pass and nothing was persisted on a non-explicit trigger, keep Pulse as `HEARTBEAT_OK` and omit the History row.
 
 ## Agent Notes
 

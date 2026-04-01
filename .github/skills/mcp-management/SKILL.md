@@ -2,6 +2,7 @@
 name: mcp-management
 description: Configure and manage Model Context Protocol servers for external tool access
 compatibility: ">=1.4"
+stacks: [all]
 ---
 
 # MCP Management

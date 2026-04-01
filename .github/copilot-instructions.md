@@ -113,7 +113,7 @@ Before acting on any medium-to-complex task:
 | `template/workspace/` | Consumer workspace identity stubs |
 | `template/instructions/` | Consumer path-instruction stubs (with `{{}}` tokens) |
 | `template/prompts/` | Consumer prompt stubs (with `{{}}` tokens) |
-| `.github/agents/` | Model-pinned VS Code agents (Code, Review, Fast, Doctor, Setup, Researcher, Explore, Extensions, Security) |
+| `.github/agents/` | Model-pinned VS Code agents (Code, Review, Fast, Audit, Setup, Researcher, Explore, Extensions) |
 | `.github/skills/` | Skill library (repo-live copies, mirrors template) |
 | `.github/hooks/` | Hook scripts (repo-live copies, mirrors template) |
 | `.github/instructions/` | Developer path-instructions (resolved, no `{{}}`) |

@@ -2,6 +2,7 @@
 name: tool-protocol
 description: Find, build, or adapt automation tools following the Tool Protocol decision tree
 compatibility: ">=1.4"
+stacks: [all]
 ---
 
 # Tool Protocol

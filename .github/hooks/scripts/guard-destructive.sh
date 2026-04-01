@@ -137,9 +137,9 @@ EOF
   fi
 done
 
-# Read-only agent guardrails — Doctor, Review, and Explore should not perform
+# Read-only agent guardrails — Audit, Review, and Explore should not perform
 # mutating terminal operations without explicit user approval.
-if [[ "$AGENT_NAME" =~ ^(Doctor|Review|Explore)$ ]]; then
+if [[ "$AGENT_NAME" =~ ^(Audit|Review|Explore)$ ]]; then
   READONLY_WRITE_PATTERNS=(
     '(^|[;&|][[:space:]]*)(mkdir|touch|cp|mv|truncate|install)[[:space:]]'
     '(^|[;&|][[:space:]]*)(sed[[:space:]]+-i|perl[[:space:]]+-i|tee[[:space:]])'

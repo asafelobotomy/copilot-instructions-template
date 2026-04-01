@@ -313,8 +313,8 @@ Recommended thinking effort levels per agent role (set in VS Code model picker):
 
 | Agent role | Effort | Rationale |
 |------------|--------|-----------|
-| Coding, Review, Research, Security | **High** | Complex reasoning benefits from deep thinking |
-| Setup, Doctor, Extensions | **Medium** | Mechanical/structured tasks; adaptive reasoning sufficient |
+| Coding, Review, Research, Audit | **High** | Complex reasoning benefits from deep thinking |
+| Setup, Extensions | **Medium** | Mechanical/structured tasks; adaptive reasoning sufficient |
 | Fast, Explore | **Low** | Speed over depth for lookups and navigation |
 
 > Override: open the model picker → click `>` next to the model → select effort

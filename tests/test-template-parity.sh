@@ -16,7 +16,6 @@ assert_python "hook mirrors remain exact" '
 expected = {
     ".github/hooks/copilot-hooks.json": "template/hooks/copilot-hooks.json",
     ".github/hooks/scripts/lib-hooks.sh": "template/hooks/scripts/lib-hooks.sh",
-    ".github/hooks/scripts/enforce-retrospective.sh": "template/hooks/scripts/enforce-retrospective.sh",
     ".github/hooks/scripts/guard-destructive.sh": "template/hooks/scripts/guard-destructive.sh",
     ".github/hooks/scripts/post-edit-lint.sh": "template/hooks/scripts/post-edit-lint.sh",
     ".github/hooks/scripts/pulse.sh": "template/hooks/scripts/pulse.sh",
@@ -25,7 +24,6 @@ expected = {
     ".github/hooks/scripts/session-start.sh": "template/hooks/scripts/session-start.sh",
     ".github/hooks/scripts/subagent-start.sh": "template/hooks/scripts/subagent-start.sh",
     ".github/hooks/scripts/subagent-stop.sh": "template/hooks/scripts/subagent-stop.sh",
-    ".github/hooks/scripts/enforce-retrospective.ps1": "template/hooks/scripts/enforce-retrospective.ps1",
     ".github/hooks/scripts/guard-destructive.ps1": "template/hooks/scripts/guard-destructive.ps1",
     ".github/hooks/scripts/post-edit-lint.ps1": "template/hooks/scripts/post-edit-lint.ps1",
     ".github/hooks/scripts/pulse.ps1": "template/hooks/scripts/pulse.ps1",

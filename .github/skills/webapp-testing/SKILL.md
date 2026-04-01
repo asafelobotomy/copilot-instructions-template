@@ -2,6 +2,7 @@
 name: webapp-testing
 description: Set up browser testing — dual path with built-in browser tools (interactive) or Playwright (CI); detect framework, scaffold, verify
 compatibility: ">=2.0"
+stacks: [web]
 ---
 
 # Web Application Testing

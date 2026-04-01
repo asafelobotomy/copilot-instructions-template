@@ -2,6 +2,7 @@
 name: skill-creator
 description: Create a new agent skill following the Agent Skills open standard
 compatibility: ">=1.4"
+stacks: [all]
 ---
 
 # Skill Creator

@@ -2,6 +2,7 @@
 name: mcp-builder
 description: Create a new MCP server — clarify purpose, choose transport, scaffold, implement, test, and register
 compatibility: ">=2.0"
+stacks: [all]
 ---
 
 # MCP Server Builder
