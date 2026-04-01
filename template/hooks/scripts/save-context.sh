@@ -9,6 +9,15 @@ set -euo pipefail
 # shellcheck source=.github/hooks/scripts/lib-hooks.sh
 source "$(dirname "$0")/lib-hooks.sh"
 
+clock_summary() {
+  local script_dir
+  command -v python3 >/dev/null 2>&1 || return 0
+  [[ -f .copilot/workspace/state.json || -f .copilot/workspace/.heartbeat-events.jsonl ]] || return 0
+
+  script_dir="$(cd "$(dirname "$0")" && pwd)"
+  python3 "$script_dir/heartbeat_clock_summary.py" 2>/dev/null || true
+}
+
 # Read workspace files and create a compact summary to survive compaction
 SUMMARY=""
 
@@ -16,6 +25,11 @@ SUMMARY=""
 if [[ -f .copilot/workspace/HEARTBEAT.md ]]; then
   PULSE=$(grep -m1 'HEARTBEAT' .copilot/workspace/HEARTBEAT.md 2>/dev/null || echo "unknown")
   SUMMARY="${SUMMARY}Heartbeat: ${PULSE}. "
+fi
+
+CLOCK_SUMMARY=$(clock_summary 2>/dev/null || echo "")
+if [[ -n "$CLOCK_SUMMARY" ]]; then
+  SUMMARY="${SUMMARY}Clock: ${CLOCK_SUMMARY}. "
 fi
 
 # Recent MEMORY.md entries

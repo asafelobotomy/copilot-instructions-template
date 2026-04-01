@@ -35,16 +35,24 @@ Run each check; prepend `[!]` to Pulse if any fails:
 
 ## Retrospective
 
-After completing a task, reflect on these questions. Write insights to the indicated workspace files. Surface Q4 and Q5 to $USER directly — all other answers are silent.
+Retrospective is optional. Do not run it on every task.
 
-1. **Approach review** — Were there any errors, corrections, or backtracking during this task? What concrete signal caused the course change? → *SOUL.md*
-2. **Scope audit** — Did the task scope grow or shrink during execution? Were any user requests deferred, simplified, or left incomplete? → *MEMORY.md (Known Gotchas)*
-3. **Gap analysis** — Review the original request and the delivered result. Is there any explicit requirement I did not address, or any file I modified without updating its tests or docs? → *MEMORY.md*
-4. **Issue report** — Did I spot any issues to report to $USER? (e.g. security concerns, tech debt, broken assumptions, stale dependencies) → *Surface to $USER*
-5. **Agent questions** — Do I have questions, suggestions, or things I misunderstood? → *Surface to $USER*
-6. **User profile** — What explicit preferences, corrections, or working patterns did $USER demonstrate? (Only record directly observable signals; do not infer emotion or intent.) → *USER.md*
-7. **Lessons learned** — State as concrete rules: "When [situation], do [action] instead of [what usually fails]." Only record lessons grounded in this session's events. → *MEMORY.md + SOUL.md*
-8. **Correction log** — Did $USER correct, reject, or redirect anything I produced? What was my original output and what did $USER want instead? → *MEMORY.md (Recurring Error Patterns) + SOUL.md*
+Use it only when:
+
+- the user explicitly asks for a retrospective; or
+- a medium/large task has just completed and you first ask the user: "That was a large change to the codebase, would you like me to run a retrospective?"
+
+Skip retrospective entirely for small, localized, or low-risk tasks. If the user declines, stop normally and do not force it.
+
+Treat medium/large as a heuristic. Suggest retrospective when the task hits one strong signal (8+ modified files or 30+ minutes) or two supporting signals (5+ modified files, 15+ minutes, context compaction).
+
+When you do run a retrospective, reflect on these questions. Write insights to the indicated workspace files. Surface Q4 and Q5 to $USER directly — all other answers are silent.
+
+1. **Execution review** — Were there any errors, backtracking, scope changes, or near-misses on explicit requirements? What concrete signal changed course? → *SOUL.md*
+2. **Coverage audit** — Compare the original request with the delivered result. Did I defer, simplify, or leave anything incomplete? Did any modified file miss a matching test or doc update? → *MEMORY.md*
+3. **User profile** — What explicit preferences, corrections, or working patterns did $USER demonstrate? Record only directly observable signals. → *USER.md*
+4. **Issue report** — What should I report to $USER now? (e.g. security concerns, tech debt, broken assumptions, stale dependencies, validation gaps) → *Surface to $USER*
+5. **Carry-forward** — What follow-up questions, recommendations, durable lessons, or user corrections should I carry forward from this task? State lessons as: "When [situation], do [action] instead of [what usually fails]." → *Surface to $USER + MEMORY.md + SOUL.md*
 
 After completing retrospective steps, mark the current session sentinel complete:
 

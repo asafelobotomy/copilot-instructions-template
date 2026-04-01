@@ -1,27 +1,27 @@
 """MCP checks (M1–M3) for the Copilot Audit tool."""
 from __future__ import annotations
 
-import json
 import pathlib
 import re
 
+from .context import AuditContext, ensure_context
 from .models import Finding, CheckResult, HIGH, INFO, CRITICAL
 
 
-def check_m1_mcp_valid_json(root: pathlib.Path) -> CheckResult:
+def check_m1_mcp_valid_json(root: pathlib.Path | AuditContext) -> CheckResult:
     """M1 — .vscode/mcp.json: file is valid JSON with a servers key."""
+    ctx = ensure_context(root)
     result = CheckResult("M1", "MCP config: valid JSON + servers key")
-    mcp_file = root / ".vscode" / "mcp.json"
+    mcp_file = ctx.root / ".vscode" / "mcp.json"
     if not mcp_file.exists():
         result.findings.append(Finding("M1", ".vscode/mcp.json", INFO,
                                        "File not found — MCP not configured"))
         return result
-    rel = str(mcp_file.relative_to(root))
-    try:
-        data = json.loads(mcp_file.read_text(encoding="utf-8", errors="replace"))
-    except json.JSONDecodeError as exc:
+    rel = ctx.rel(mcp_file)
+    data, error = ctx.load_json(mcp_file)
+    if error is not None:
         result.findings.append(Finding("M1", rel, CRITICAL,
-                                       f"Invalid JSON: {exc}"))
+                                       f"Invalid JSON: {error}"))
         return result
     if "servers" not in data:
         result.findings.append(Finding("M1", rel, HIGH,
@@ -29,16 +29,16 @@ def check_m1_mcp_valid_json(root: pathlib.Path) -> CheckResult:
     return result
 
 
-def check_m2_mcp_no_npm_antipatterns(root: pathlib.Path) -> CheckResult:
+def check_m2_mcp_no_npm_antipatterns(root: pathlib.Path | AuditContext) -> CheckResult:
     """M2 — mcp.json: npx+mcp-server-git/fetch anti-pattern; deprecated references."""
+    ctx = ensure_context(root)
     result = CheckResult("M2", "MCP config: no npm anti-patterns")
-    mcp_file = root / ".vscode" / "mcp.json"
+    mcp_file = ctx.root / ".vscode" / "mcp.json"
     if not mcp_file.exists():
         return result
-    rel = str(mcp_file.relative_to(root))
-    try:
-        data = json.loads(mcp_file.read_text(encoding="utf-8", errors="replace"))
-    except json.JSONDecodeError:
+    rel = ctx.rel(mcp_file)
+    data, error = ctx.load_json(mcp_file)
+    if error is not None:
         return result  # M1 already flagged this
     servers = data.get("servers", {})
     if not isinstance(servers, dict):
@@ -62,16 +62,16 @@ def check_m2_mcp_no_npm_antipatterns(root: pathlib.Path) -> CheckResult:
     return result
 
 
-def check_m3_mcp_no_secrets(root: pathlib.Path) -> CheckResult:
+def check_m3_mcp_no_secrets(root: pathlib.Path | AuditContext) -> CheckResult:
     """M3 — mcp.json: no literal secrets in env values."""
+    ctx = ensure_context(root)
     result = CheckResult("M3", "MCP config: no literal secrets")
-    mcp_file = root / ".vscode" / "mcp.json"
+    mcp_file = ctx.root / ".vscode" / "mcp.json"
     if not mcp_file.exists():
         return result
-    rel = str(mcp_file.relative_to(root))
-    try:
-        data = json.loads(mcp_file.read_text(encoding="utf-8", errors="replace"))
-    except json.JSONDecodeError:
+    rel = ctx.rel(mcp_file)
+    data, error = ctx.load_json(mcp_file)
+    if error is not None:
         return result
     secret_pattern = re.compile(
         r"(_KEY|_TOKEN|_SECRET|_PASSWORD|_APIKEY|_API_KEY)\Z", re.IGNORECASE

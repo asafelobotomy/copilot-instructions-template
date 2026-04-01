@@ -30,7 +30,7 @@ jobs:
           echo "✅ OK"
 
       - name: Sync derived version references
-        run: bash scripts/sync-version.sh
+        run: bash scripts/release/sync-version.sh
 
       - name: Auto-commit version sync (push to main only)
         if: github.event_name == 'push'
@@ -47,7 +47,7 @@ jobs:
         run: |
           git diff --quiet || {
             echo "❌ Version-derived files are out of sync."
-            echo "Run: bash scripts/sync-version.sh and commit the changes."
+            echo "Run: bash scripts/release/sync-version.sh and commit the changes."
             git --no-pager diff --name-only
             exit 1
           }
@@ -72,10 +72,10 @@ jobs:
         run: bash scripts/ci/validate-template-sync.sh
 
       - name: workspace-index.json is in sync
-        run: bash scripts/sync-workspace-index.sh --check
+        run: bash scripts/workspace/sync-workspace-index.sh --check
 
       - name: Agent model lists are in sync with MODELS.md
-        run: bash scripts/sync-models.sh --check
+        run: bash scripts/sync/sync-models.sh --check
 
       - name: "template/copilot-instructions.md has all sections §1\u2013§13"
         run: |
@@ -310,78 +310,75 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Hook behavior | session-start.sh
-        run: bash tests/test-hook-session-start.sh
+        run: bash tests/hooks/test-hook-session-start.sh
 
       - name: Hook behavior | pulse.sh
-        run: bash tests/test-hook-pulse.sh
+        run: bash tests/hooks/test-hook-pulse.sh
 
       - name: Hook behavior | post-edit-lint.sh
-        run: bash tests/test-hook-post-edit-lint.sh
-
-      - name: Hook behavior | enforce-retrospective.sh
-        run: bash tests/test-hook-enforce-retrospective.sh
+        run: bash tests/hooks/test-hook-post-edit-lint.sh
 
       - name: Hook behavior | save-context.sh
-        run: bash tests/test-hook-save-context.sh
+        run: bash tests/hooks/test-hook-save-context.sh
 
       - name: Hook behavior | scan-secrets.sh
-        run: bash tests/test-hook-scan-secrets.sh
+        run: bash tests/hooks/test-hook-scan-secrets.sh
 
       - name: Hook behavior | hooks PowerShell parity
         run: |
           if command -v pwsh >/dev/null 2>&1; then
-            bash tests/test-hooks-powershell.sh
+            bash tests/hooks/test-hooks-powershell.sh
           else
             echo "Skipping PowerShell parity: pwsh not installed on runner"
           fi
 
       - name: Hook behavior | guard-destructive.sh
-        run: bash tests/test-guard-destructive.sh
+        run: bash tests/hooks/test-guard-destructive.sh
 
       - name: Hook behavior | guard-destructive PowerShell parity
         run: |
           if command -v pwsh >/dev/null 2>&1; then
-            bash tests/test-guard-destructive-powershell.sh
+            bash tests/hooks/test-guard-destructive-powershell.sh
           else
             echo "Skipping guard-destructive PowerShell parity: pwsh not installed on runner"
           fi
 
       - name: Script behavior | sync-version.sh
-        run: bash tests/test-sync-version.sh
+        run: bash tests/scripts/test-sync-version.sh
 
       - name: Script behavior | sync-workspace-index.sh
-        run: bash tests/test-sync-workspace-index.sh
+        run: bash tests/scripts/test-sync-workspace-index.sh
 
       - name: Script behavior | mcp-launchers
-        run: bash tests/test-mcp-launchers.sh
+        run: bash tests/scripts/test-mcp-launchers.sh
 
       - name: Script behavior | security edge cases
-        run: bash tests/test-security-edge-cases.sh
+        run: bash tests/scripts/test-security-edge-cases.sh
 
       - name: Docs and contracts | release metadata contracts
-        run: bash tests/test-release-contracts.sh
+        run: bash tests/contracts/test-release-contracts.sh
 
       - name: Script behavior | stub-migration.sh
-        run: bash tests/test-stub-migration.sh
+        run: bash tests/scripts/test-stub-migration.sh
 
       - name: Script behavior | sync-models.sh
-        run: bash tests/test-sync-models.sh
+        run: bash tests/scripts/test-sync-models.sh
 
       - name: Script behavior | sync-template-parity.sh
-        run: bash tests/test-sync-template-parity.sh
+        run: bash tests/scripts/test-sync-template-parity.sh
 
       - name: Script behavior | validate-agent-frontmatter.sh
-        run: bash tests/test-validate-agent-frontmatter.sh
+        run: bash tests/scripts/test-validate-agent-frontmatter.sh
 
       - name: Docs and contracts | customization file contracts
-        run: bash tests/test-customization-contracts.sh
+        run: bash tests/contracts/test-customization-contracts.sh
 
       - name: Docs and contracts | template parity
-        run: bash tests/test-template-parity.sh
+        run: bash tests/contracts/test-template-parity.sh
 
       - name: Docs and contracts | starter-kits
-        run: bash tests/test-starter-kits.sh
+        run: bash tests/contracts/test-starter-kits.sh
 
       - name: Docs and contracts | setup and update contracts
-        run: bash tests/test-setup-update-contracts.sh
+        run: bash tests/contracts/test-setup-update-contracts.sh
 

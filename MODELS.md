@@ -7,13 +7,13 @@ first available model and falls back down the list. Edit this file to change any
 assignment, then propagate with:
 
 ```bash
-bash scripts/sync-models.sh --write
+bash scripts/sync/sync-models.sh --write
 ```
 
 Verify sync (run automatically by CI):
 
 ```bash
-bash scripts/sync-models.sh --check
+bash scripts/sync/sync-models.sh --check
 ```
 
 ---
@@ -38,6 +38,7 @@ Recommended effort levels per agent:
 | explore | Low | Read-only lookup; speed over depth |
 | extensions | Medium | Evaluation involves trade-offs but not deep reasoning |
 | researcher | High | Research synthesis benefits from deep analytical thinking |
+| commit | Low | Commit operations are low-context; fast responses preferred |
 
 > **User override**: these are recommendations. Users set thinking effort per model
 > in the VS Code model picker (click `>` next to the model name). The setting
@@ -120,4 +121,13 @@ structured research output.
 
 - Claude Sonnet 4.6
 - Claude Sonnet 4.5
+- GPT-5 mini
+
+## commit
+
+Stage, commit, push, tag, and manage releases. Low-context operations; fast
+models are preferred for commit message formatting.
+
+- GPT-5.1
+- Claude Sonnet 4.6
 - GPT-5 mini

@@ -40,8 +40,8 @@ This repo has two distinct layers that must never be mixed:
 |------|---------|
 | Run all tests | `bash tests/run-all.sh` |
 | Type check | `echo "no type check configured"` |
-| Sync version | `bash scripts/sync-version.sh` |
-| Sync workspace-index | `bash scripts/sync-workspace-index.sh --check` |
+| Sync version | `bash scripts/release/sync-version.sh` |
+| Sync workspace-index | `bash scripts/workspace/sync-workspace-index.sh --check` |
 | LOC count | `find . \( -name '*.sh' -o -name '*.md' \) -not -path './node_modules/*' \| xargs wc -l \| tail -1` |
 
 Run `bash tests/run-all.sh` before marking any task done.
@@ -100,8 +100,8 @@ Before acting on any medium-to-complex task:
 - `template/copilot-instructions.md` must contain ≥ 3 `{{PLACEHOLDER}}` tokens (CI enforced).
 - `.github/copilot-instructions.md` *(this file)* must contain **zero** `{{}}` tokens (CI enforced).
 - Parity: `.github/skills/` must mirror `template/skills/` (except `mcp-management`). `.github/hooks/` must mirror `template/hooks/` exactly. CI enforces.
-- Version source of truth: `VERSION.md`. Run `bash scripts/sync-version.sh` after bumping — it updates `template/copilot-instructions.md` and `.release-please-manifest.json`.
-- `workspace-index.json` must stay in sync: `bash scripts/sync-workspace-index.sh --write` then commit.
+- Version source of truth: `VERSION.md`. Run `bash scripts/release/sync-version.sh` after bumping — it updates `template/copilot-instructions.md` and `.release-please-manifest.json`.
+- `workspace-index.json` must stay in sync: `bash scripts/workspace/sync-workspace-index.sh --write` then commit.
 
 ## File Inventory
 
@@ -145,7 +145,7 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 - Skills: `.github/skills/` — loaded on demand. Read `SKILL.md` when description matches task.
 - Agents: `.github/agents/` — each pins a model.
 - Tool Protocol: activate `.github/skills/tool-protocol/SKILL.md` before building any script.
-- Heartbeat: `.copilot/workspace/HEARTBEAT.md` — run at session start, after >5 file changes, after task completion. Silent when healthy.
+- Heartbeat: `.copilot/workspace/HEARTBEAT.md` — run at session start and when the medium/large heuristic trips (one strong signal: 8+ modified files or 30+ minutes; or two supporting signals: 5+ modified files, 15+ minutes, context compaction). Retrospective is opt-in after user confirmation. Silent when healthy.
 
 ## User Preferences
 

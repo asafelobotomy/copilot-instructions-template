@@ -373,19 +373,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `tests/run-all.sh` added as the canonical local test entrypoint for the template repository.
 - `tests/test-sync-doc-index.sh` added to cover `scripts/sync-doc-index.sh` argument validation, write mode, ordering, missing-file recovery, and drift detection.
 - `tests/test-sync-llms-context.sh` added to cover `scripts/sync-llms-context.sh` argument validation, deterministic generation, missing outputs, and drift detection.
-- `tests/test-hooks-powershell.sh` and `tests/test-guard-destructive-powershell.sh` added to cover the PowerShell hook counterparts on Linux via `pwsh`, closing the largest remaining executable coverage gap.
+- `tests/hooks/test-hooks-powershell.sh` and `tests/hooks/test-guard-destructive-powershell.sh` added to cover the PowerShell hook counterparts on Linux via `pwsh`, closing the largest remaining executable coverage gap.
 - `scripts/report-script-coverage.sh`, `tests/coverage/bash-prelude.sh`, `tests/coverage/invoke-powershell-with-coverage.ps1`, and `tests/coverage/run-powershell-coverage.sh` added to collect runtime bash and PowerShell coverage, emit JSON/Markdown summaries, and make script coverage measurable in CI.
 - `tests/test-inventory-files.sh` added to turn bibliography and metrics drift into executable checks by comparing `BIBLIOGRAPHY.md` against the actual workspace file set, current LOC values, summary totals, and the latest `METRICS.md` row.
 - `tests/test-markdown-contracts.sh` added to validate local Markdown links, core `CHANGELOG.md` sections, ADR structure in `JOURNAL.md`, and high-signal navigation sections in `README.md` and `AGENTS.md`.
-- `tests/test-release-contracts.sh` added to validate `VERSION.md`, release-please manifest/config alignment, current-version coverage in `CHANGELOG.md` and `MIGRATION.md`, and retained release markers in managed files.
-- `tests/test-customization-contracts.sh` added to validate prompt frontmatter, instruction frontmatter, and the human docs that describe those customization surfaces.
+- `tests/contracts/test-release-contracts.sh` added to validate `VERSION.md`, release-please manifest/config alignment, current-version coverage in `CHANGELOG.md` and `MIGRATION.md`, and retained release markers in managed files.
+- `tests/contracts/test-customization-contracts.sh` added to validate prompt frontmatter, instruction frontmatter, and the human docs that describe those customization surfaces.
 - `tests/test-agent-skill-contracts.sh` added to validate the expected agent and skill inventories, required frontmatter fields, body metadata markers, and the guide documents that advertise those Copilot customization surfaces.
-- `tests/test-template-parity.sh` added to enforce exact parity for the repo/template hook mirrors and the stable mirrored skills, while keeping the intentionally divergent `mcp-management` and `webapp-testing` skills explicit.
+- `tests/contracts/test-template-parity.sh` added to enforce exact parity for the repo/template hook mirrors and the stable mirrored skills, while keeping the intentionally divergent `mcp-management` and `webapp-testing` skills explicit.
 - `tests/lib/test-helpers.sh` added to centralize common shell-test counters, string assertions, JSON validation, and embedded Python execution helpers for the growing contract-test layer.
-- `tests/test-hook-session-start.sh`, `tests/test-hook-post-edit-lint.sh`, `tests/test-hook-enforce-retrospective.sh`, and `tests/test-hook-save-context.sh` added to split the former monolithic bash hook suite into per-hook files with finer-grained ownership and reporting.
+- `tests/hooks/test-hook-session-start.sh`, `tests/hooks/test-hook-post-edit-lint.sh`, a dedicated enforce-retrospective suite, and `tests/hooks/test-hook-save-context.sh` added to split the former monolithic bash hook suite into per-hook files with finer-grained ownership and reporting.
 - `tests/test-doc-discoverability.sh` and `tests/test-doc-platform-contracts.sh` added to replace the old all-in-one documentation drift suite with smaller checks for summary discoverability versus generated-context/platform contracts.
 - `tests/test-report-script-coverage.sh` added to validate `scripts/report-script-coverage.sh --list-bash-tests`, so the coverage harness's test discovery has a direct contract of its own.
-- `tests/test-security-edge-cases.sh` — 29-assertion security and contract edge-case suite for `guard-destructive.sh` and `sync-version.sh`. Covers six gap categories identified by online research (OWASP Command Injection cheat sheet, BATS testing best practices): exit-code contract (hook must always exit 0), JSON output validity (every response parseable), `tool_input.input` field alias support, OWASP-sourced chained/embedded command detection (`;`, `&&`, `||`, subshell), SQL keyword case-insensitivity, and `sync-version.sh` idempotency.
+- `tests/scripts/test-security-edge-cases.sh` — 29-assertion security and contract edge-case suite for `guard-destructive.sh` and `sync-version.sh`. Covers six gap categories identified by online research (OWASP Command Injection cheat sheet, BATS testing best practices): exit-code contract (hook must always exit 0), JSON output validity (every response parseable), `tool_input.input` field alias support, OWASP-sourced chained/embedded command detection (`;`, `&&`, `||`, subshell), SQL keyword case-insensitivity, and `sync-version.sh` idempotency.
 - Copilot instructions scaffolded from [copilot-instructions-template](https://github.com/asafelobotomy/copilot-instructions-template) — populated `.github/copilot-instructions.md`, workspace identity files, skills, hooks, MCP config, and documentation stubs.
 - `description` field added to all 4 path-specific instruction files (`.github/instructions/*.instructions.md`) for VS Code 1.102+ on-demand loading.
 - YAML frontmatter (`description`, `mode`, `tools`) added to all 5 prompt files (`.github/prompts/*.prompt.md`) for VS Code prompt integration.
@@ -440,8 +440,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `tests/test-doc-consistency.sh` extended to guard `llms.txt`, `llms-ctx.txt`, `llms-ctx-full.txt`, and the new review skills against drift.
 - `tests/run-all.sh` and `.github/workflows/ci.yml` now run `tests/test-inventory-files.sh`, extending executable coverage from scripts into Markdown inventory artifacts.
 - `tests/run-all.sh` and `.github/workflows/ci.yml` now run `tests/test-markdown-contracts.sh`, extending executable coverage from inventory files into structural Markdown contracts.
-- `tests/run-all.sh` and `.github/workflows/ci.yml` now run `tests/test-release-contracts.sh` and `tests/test-customization-contracts.sh`, extending executable coverage into release metadata and Copilot customization-file contracts.
-- `tests/run-all.sh` and `.github/workflows/ci.yml` now also run `tests/test-agent-skill-contracts.sh` and `tests/test-template-parity.sh`, extending executable coverage into agent/skill manifests and repo/template mirror guarantees.
+- `tests/run-all.sh` and `.github/workflows/ci.yml` now run `tests/contracts/test-release-contracts.sh` and `tests/contracts/test-customization-contracts.sh`, extending executable coverage into release metadata and Copilot customization-file contracts.
+- `tests/run-all.sh` and `.github/workflows/ci.yml` now also run `tests/test-agent-skill-contracts.sh` and `tests/contracts/test-template-parity.sh`, extending executable coverage into agent/skill manifests and repo/template mirror guarantees.
 - The newer contract and direct-script tests now share `tests/lib/test-helpers.sh` instead of carrying repeated assertion boilerplate, making the test layer easier to extend and audit.
 - The older legacy suites (`test-hooks.sh`, `test-guard-destructive.sh`, `test-sync-version.sh`, and `test-security-edge-cases.sh`) now also use the shared helper layer, and `tests/run-all.sh` is grouped into labeled phases so local runs are easier to scan.
 - The former `tests/test-hooks.sh` suite is now split into four per-hook files, `tests/run-all.sh` reflects that split in its Hook Behavior phase, and the CI `script-tests` job names now use the same Hook/Script/Docs phase vocabulary as the local runner.
@@ -470,7 +470,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `README.md` — "Four model-pinned agents" heading and table updated to reflect all six agents (setup, coding, review, fast, update, doctor); added `update.agent.md` and `doctor.agent.md` rows; scaffolding table row updated to "Six model-pinned agents".
 - `docs/AGENTS-GUIDE.md` — "four agent files" prose corrected to "six agent files"; Doctor agent model column corrected from Claude Opus 4.6 to Claude Sonnet 4.6 (primary model; Opus 4.6 is the fallback).
 - `docs/SETUP-GUIDE.md` — "Four agent files" prose in Step 2.5 corrected to "Six agent files".
-- `AGENTS.md` — file map expanded with 15 missing entries: `VERSION.md`, `scripts/sync-version.sh`, `.github/instructions/*.instructions.md` (4 files), `.github/prompts/*.prompt.md` (5 files), `template/skills/issue-triage/SKILL.md`, `template/hooks/scripts/*.ps1` (5 Windows counterparts), `template/copilot-setup-steps.yml`, and all 15 `docs/*.md` human-readable guides.
+- `AGENTS.md` — file map expanded with 15 missing entries: `VERSION.md`, `scripts/release/sync-version.sh`, `.github/instructions/*.instructions.md` (4 files), `.github/prompts/*.prompt.md` (5 files), `template/skills/issue-triage/SKILL.md`, `template/hooks/scripts/*.ps1` (5 Windows counterparts), `template/copilot-setup-steps.yml`, and all 15 `docs/*.md` human-readable guides.
 - `README.md`, `docs/SETUP-GUIDE.md`, and `docs/SECURITY-GUIDE.md` — stale setup-interview references corrected after the E19 removal: Full tier is 23 direct questions, and Global autonomy is now derived from S5 instead of being asked as a separate question.
 - `AGENTS.md`, `template/BIBLIOGRAPHY.md`, `template/workspace/BOOTSTRAP.md`, and `BIBLIOGRAPHY.md` — inventory records corrected to match the current review model and the actual scaffolded file set.
 - `MIGRATION.md` — available-tags list refreshed to include `v3.2.0`, keeping the release registry aligned with the current template version.
@@ -508,7 +508,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `.github/workflows/ci.yml` — auto-commit step now stages `README.md` alongside `template/copilot-instructions.md` and `.release-please-manifest.json`.
 - `.github/workflows/release-please.yml` — workflow_run trigger name was stored as a Unicode escape sequence instead of a literal em dash, causing the release job to silently never fire; corrected to the literal character.
 - `release-please-config.json` — `README.md` added to `extra-files` so release-please keeps the version badge in sync on every release.
-- `tests/test-release-contracts.sh` — test 5 added to verify the `release-please.yml` workflow_run trigger name matches the CI workflow `name:` field exactly, preventing recurrence of encoding bugs.
+- `tests/contracts/test-release-contracts.sh` — test 5 added to verify the `release-please.yml` workflow_run trigger name matches the CI workflow `name:` field exactly, preventing recurrence of encoding bugs.
 
 ---
 
@@ -717,7 +717,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 ### Changed
 
 - Version source-of-truth migrated from `VERSION` to `VERSION.md`; CI/release workflows, setup/update docs, and templates now read `VERSION.md`.
-- Added `scripts/sync-version.sh` to propagate `VERSION.md` into derived references (`.github/copilot-instructions.md` stamp, `README.md` version badge, `.release-please-manifest.json`). CI now enforces these derived files are synced.
+- Added `scripts/release/sync-version.sh` to propagate `VERSION.md` into derived references (`.github/copilot-instructions.md` stamp, `README.md` version badge, `.release-please-manifest.json`). CI now enforces these derived files are synced.
 
 - `template/skills/skill-creator/SKILL.md` — trimmed `description` field to a concise one-sentence form matching the §12 recommendation for reliable agent discovery.
 - `template/skills/conventional-commit/SKILL.md` — expanded opaque `§10` and `§4`/`§10` references in "When NOT to use" to include `of their project's Copilot instructions`, improving readability when the skill is used outside the template context.

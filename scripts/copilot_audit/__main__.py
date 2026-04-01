@@ -5,8 +5,7 @@ import argparse
 import pathlib
 import sys
 
-from . import run_audit
-from .output import format_markdown, format_json, _summary_counts, _overall_status
+from . import format_json, format_markdown, overall_status, run_audit, summary_counts
 
 
 def main() -> int:
@@ -38,8 +37,8 @@ def main() -> int:
     else:
         print(format_markdown(results))
 
-    counts = _summary_counts(results)
-    return 1 if (_overall_status(counts) == "CRITICAL") else 0
+    counts = summary_counts(results)
+    return 1 if (overall_status(counts) == "CRITICAL") else 0
 
 
 if __name__ == "__main__":

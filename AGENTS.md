@@ -89,3 +89,7 @@ These files are created in the consumer project during setup, not in this templa
 | Plugins (list/find/test) | *"Show plugins"* / *"Find a plugin for ..."* |
 | Research (find/report/track) | *"Research [topic]"* / *"Find documentation for [topic]"* / *"Build a research report on [topic]"* / *"Update the URL tracker"* |
 | Security audit | *"Security audit"* / *"Scan for secrets"* / *"Check for vulnerabilities"* / *"Review security posture"* / *"Run security check"* / *"Full audit"* |
+| Commit (stage/commit) | *"Commit my changes"* / *"Stage and commit"* / *"Write a commit message"* |
+| Commit (push) | *"Push my changes"* / *"Push to origin"* |
+| Commit (tag/release) | *"Tag this version"* / *"Create a release"* / *"Tag as v..."* |
+| Commit style onboarding | *"Set up my commit style"* / *"Onboard commit preferences"* / *"Configure commit style"* |

@@ -161,17 +161,17 @@ If confirmed, write files, update version + CHANGELOG, skip full report.
 
 ### U5b — Workspace drift check
 
-Scan `.copilot/workspace/` for structural sentinel drift using `scripts/check-workspace-drift.sh`. Sentinels are HTML comments embedded in template workspace files; their absence indicates a structural section that has been updated in the template but not yet applied to this consumer's workspace.
+Scan `.copilot/workspace/` for structural sentinel drift using `scripts/workspace/check-workspace-drift.sh`. Sentinels are HTML comments embedded in template workspace files; their absence indicates a structural section that has been updated in the template but not yet applied to this consumer's workspace.
 
-If `scripts/check-workspace-drift.sh` is available locally:
+If `scripts/workspace/check-workspace-drift.sh` is available locally:
 
 ```bash
-bash scripts/check-workspace-drift.sh .copilot/workspace
+bash scripts/workspace/check-workspace-drift.sh .copilot/workspace
 ```
 
 If unavailable (consumer hasn't pulled the script): fetch the script first from:
 ```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/scripts/check-workspace-drift.sh
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/scripts/workspace/check-workspace-drift.sh
 ```
 
 Record each drifted section as a **workspace drift item** to report in the Pre-flight Report. These items are always shown to the user and always listed under manual actions — workspace files are consumer-owned and cannot be auto-updated.

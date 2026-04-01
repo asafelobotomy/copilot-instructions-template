@@ -514,7 +514,7 @@ esac
 
 ## Section 8 — Testing Blueprint
 
-### 8.1  Unit tests per trigger path (`tests/test-hook-pulse.sh`)
+### 8.1  Unit tests per trigger path (`tests/hooks/test-hook-pulse.sh`)
 
 ```bash
 test_session_start_writes_sentinel()        # AC-1
@@ -563,7 +563,7 @@ Add to `tests/run-all.sh` after Phase 2.
 1. `session-start.sh` writes `state.json` (schema v1) in addition to `.heartbeat-session`.
 2. `enforce-retrospective.sh` reads `state.json["session_state"]` as a secondary check (`.heartbeat-session` remains primary).
 3. Add `.copilot/workspace/state.json` to `.gitignore`.
-4. Write `tests/test-hook-pulse.sh` with `test_session_start_writes_sentinel` and `test_corrupt_state_json_fallback`.
+4. Write `tests/hooks/test-hook-pulse.sh` with `test_session_start_writes_sentinel` and `test_corrupt_state_json_fallback`.
 
 **Rollback**: Remove `state.json` writes from both scripts.  No behaviour change externally.
 

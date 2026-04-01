@@ -7,11 +7,54 @@
 $ErrorActionPreference = 'SilentlyContinue'
 $summary = ''
 
+function Get-PythonCommand {
+    foreach ($candidate in @('python3', 'python', 'py')) {
+        if (Get-Command $candidate -ErrorAction SilentlyContinue) {
+            return $candidate
+        }
+    }
+    return $null
+}
+
+function Get-ClockSummary {
+    $statePath = '.copilot/workspace/state.json'
+    $eventsPath = '.copilot/workspace/.heartbeat-events.jsonl'
+    if (-not (Test-Path $statePath) -and -not (Test-Path $eventsPath)) {
+        return ''
+    }
+
+    $pythonCommand = Get-PythonCommand
+    if ($null -eq $pythonCommand) {
+        return ''
+    }
+
+    $helperPath = Join-Path $PSScriptRoot 'heartbeat_clock_summary.py'
+    if (-not (Test-Path $helperPath)) {
+        return ''
+    }
+
+    if ($pythonCommand -eq 'py') {
+        $output = & py -3 $helperPath 2>$null
+        if (-not $output) {
+            $output = & py $helperPath 2>$null
+        }
+    } else {
+        $output = & $pythonCommand $helperPath 2>$null
+    }
+
+    return ($output | Out-String).Trim()
+}
+
 # Heartbeat pulse
 if (Test-Path '.copilot/workspace/HEARTBEAT.md') {
     $pulse = (Select-String -Path '.copilot/workspace/HEARTBEAT.md' -Pattern 'HEARTBEAT' |
               Select-Object -First 1).Line
     if ($pulse) { $summary += "Heartbeat: $pulse. " }
+}
+
+$clockSummary = Get-ClockSummary
+if ($clockSummary) {
+    $summary += "Clock: $clockSummary. "
 }
 
 # Recent MEMORY.md entries

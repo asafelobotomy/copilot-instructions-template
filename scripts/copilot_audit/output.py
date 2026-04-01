@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 from .models import CRITICAL, HIGH, WARN, INFO, OK
 
 
-def _summary_counts(results: list[CheckResult]) -> dict[str, int]:
+def summary_counts(results: list[CheckResult]) -> dict[str, int]:
     counts: dict[str, int] = {CRITICAL: 0, HIGH: 0, WARN: 0, INFO: 0, OK: 0}
     for r in results:
         if not r.findings:
@@ -21,7 +21,7 @@ def _summary_counts(results: list[CheckResult]) -> dict[str, int]:
     return counts
 
 
-def _overall_status(counts: dict[str, int]) -> str:
+def overall_status(counts: dict[str, int]) -> str:
     if counts[CRITICAL] > 0 or counts[HIGH] > 0:
         return "CRITICAL"
     if counts[WARN] > 0:
@@ -31,8 +31,8 @@ def _overall_status(counts: dict[str, int]) -> str:
 
 def format_markdown(results: list[CheckResult]) -> str:
     lines = ["# Copilot Audit Report", ""]
-    counts = _summary_counts(results)
-    status = _overall_status(counts)
+    counts = summary_counts(results)
+    status = overall_status(counts)
     lines += [
         f"**Status**: {status}",
         "",
@@ -66,9 +66,9 @@ def format_markdown(results: list[CheckResult]) -> str:
 
 
 def format_json(results: list[CheckResult]) -> str:
-    counts = _summary_counts(results)
+    counts = summary_counts(results)
     payload = {
-        "status": _overall_status(counts),
+        "status": overall_status(counts),
         "summary": counts,
         "checks": [
             {
@@ -89,3 +89,8 @@ def format_json(results: list[CheckResult]) -> str:
         ],
     }
     return json.dumps(payload, indent=2)
+
+
+# Backward-compatible aliases for existing imports.
+_summary_counts = summary_counts
+_overall_status = overall_status

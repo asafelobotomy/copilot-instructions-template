@@ -137,10 +137,46 @@ teardown_sandbox() {
   [[ -n "${SANDBOX:-}" ]] && rm -rf "$SANDBOX"
 }
 
+write_sandbox_file() {
+  local rel_path="$1"
+  local target="$SANDBOX/$rel_path"
+  mkdir -p "$(dirname "$target")"
+  cat > "$target"
+}
+
+append_sandbox_file() {
+  local rel_path="$1"
+  local target="$SANDBOX/$rel_path"
+  mkdir -p "$(dirname "$target")"
+  cat >> "$target"
+}
+
+remove_sandbox_path() {
+  local rel_path="$1"
+  rm -rf "$SANDBOX/$rel_path"
+}
+
 run_audit() {
   python3 "$SCRIPT" --root "$SANDBOX" --output json 2>&1
 }
 
 run_audit_md() {
   python3 "$SCRIPT" --root "$SANDBOX" --output md 2>&1
+}
+
+run_audit_case() {
+  local format="${1:-json}" mutator="${2:-}"
+  CASE_OUTPUT=""
+  CASE_STATUS=0
+  setup_sandbox
+  if [[ -n "$mutator" ]]; then
+    "$mutator"
+  fi
+  if [[ "$format" == "md" ]]; then
+    CASE_OUTPUT=$(run_audit_md)
+  else
+    CASE_OUTPUT=$(run_audit)
+  fi
+  CASE_STATUS=$?
+  teardown_sandbox
 }

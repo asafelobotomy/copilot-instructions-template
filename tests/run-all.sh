@@ -6,6 +6,17 @@ FAILED_SUITES=0
 FAILED_LIST=()
 TOTAL_SUITES=0
 
+# ── Pre-flight: structural lint checks ────────────────────────────────────────
+echo "## Pre-flight"
+if bash scripts/ci/validate-test-output.sh; then
+  echo "  pre-flight: validate-test-output OK"
+else
+  echo "  pre-flight: validate-test-output FAILED"
+  FAILED_SUITES=1
+  FAILED_LIST+=("scripts/ci/validate-test-output.sh")
+fi
+echo ""
+
 run_phase() {
   local label="$1"
   shift
@@ -58,37 +69,37 @@ run_optional_phase() {
 }
 
 run_phase "Hook Behavior" \
-  "tests/test-hook-session-start.sh" \
-  "tests/test-hook-pulse.sh" \
-  "tests/test-hook-post-edit-lint.sh" \
-  "tests/test-hook-save-context.sh" \
-  "tests/test-guard-destructive.sh" \
-  "tests/test-hook-scan-secrets.sh" \
-  "tests/test-release-contracts.sh"
+  "tests/hooks/test-hook-session-start.sh" \
+  "tests/hooks/test-hook-pulse.sh" \
+  "tests/hooks/test-hook-post-edit-lint.sh" \
+  "tests/hooks/test-hook-save-context.sh" \
+  "tests/hooks/test-guard-destructive.sh" \
+  "tests/hooks/test-hook-scan-secrets.sh"
 
 run_optional_phase "Hook Behavior (PowerShell parity)" "pwsh" "pwsh" \
-  "tests/test-hooks-powershell.sh" \
-  "tests/test-guard-destructive-powershell.sh"
+  "tests/hooks/test-hooks-powershell.sh" \
+  "tests/hooks/test-guard-destructive-powershell.sh"
 
 run_phase "Script Behavior" \
-  "tests/test-release-plan.sh" \
-  "tests/test-sync-version.sh" \
-  "tests/test-stub-migration.sh" \
-  "tests/test-sync-workspace-index.sh" \
-  "tests/test-sync-models.sh" \
-  "tests/test-validate-agent-frontmatter.sh" \
-  "tests/test-sync-template-parity.sh" \
-  "tests/test-security-edge-cases.sh" \
-  "tests/test-copilot-audit.sh" \
-  "tests/test-mcp-launchers.sh" \
-  "tests/test-workspace-drift.sh" \
-  "tests/test-permission-resilience.sh"
+  "tests/scripts/test-release-plan.sh" \
+  "tests/scripts/test-sync-version.sh" \
+  "tests/scripts/test-stub-migration.sh" \
+  "tests/scripts/test-sync-workspace-index.sh" \
+  "tests/scripts/test-sync-models.sh" \
+  "tests/scripts/test-validate-agent-frontmatter.sh" \
+  "tests/scripts/test-sync-template-parity.sh" \
+  "tests/scripts/test-security-edge-cases.sh" \
+  "tests/scripts/test-copilot-audit.sh" \
+  "tests/scripts/test-mcp-launchers.sh" \
+  "tests/scripts/test-workspace-drift.sh" \
+  "tests/scripts/test-permission-resilience.sh"
 
 run_phase "Documentation And Contracts" \
-  "tests/test-customization-contracts.sh" \
-  "tests/test-template-parity.sh" \
-  "tests/test-starter-kits.sh" \
-  "tests/test-setup-update-contracts.sh"
+  "tests/contracts/test-release-contracts.sh" \
+  "tests/contracts/test-customization-contracts.sh" \
+  "tests/contracts/test-template-parity.sh" \
+  "tests/contracts/test-starter-kits.sh" \
+  "tests/contracts/test-setup-update-contracts.sh"
 
 echo ""
 if [[ $FAILED_SUITES -gt 0 ]]; then

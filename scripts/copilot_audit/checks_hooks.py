@@ -5,53 +5,46 @@ import json
 import pathlib
 import re
 import subprocess
-from typing import Iterator
 
+from .context import AuditContext, ensure_context
 from .models import Finding, CheckResult, CRITICAL, HIGH, WARN, INFO
-from .helpers import has_command, iter_shell_scripts, iter_ps_scripts
+from .helpers import has_command
 
 
-def check_h1_hooks_valid_json(root: pathlib.Path) -> CheckResult:
+def check_h1_hooks_valid_json(root: pathlib.Path | AuditContext) -> CheckResult:
     """H1 — copilot-hooks.json: exists and is valid JSON."""
+    ctx = ensure_context(root)
     result = CheckResult("H1", "Hooks config: exists and valid JSON")
-    paths = [
-        root / "template" / "hooks" / "copilot-hooks.json",
-        root / ".github"  / "hooks" / "copilot-hooks.json",
-    ]
     checked = False
-    for hooks_file in paths:
+    for hooks_file in ctx.hook_config_files:
         if not hooks_file.exists():
             continue
         checked = True
-        rel = str(hooks_file.relative_to(root))
-        try:
-            json.loads(hooks_file.read_text(encoding="utf-8", errors="replace"))
-        except json.JSONDecodeError as exc:
+        rel = ctx.rel(hooks_file)
+        _, error = ctx.load_json(hooks_file)
+        if error is not None:
             result.findings.append(Finding("H1", rel, CRITICAL,
-                                           f"Invalid JSON: {exc}"))
+                                           f"Invalid JSON: {error}"))
     if not checked:
         result.findings.append(Finding("H1", ".github/hooks/copilot-hooks.json",
                                        HIGH, "hooks config not found — hooks will not run"))
     return result
 
 
-def check_h2_hooks_scripts_exist(root: pathlib.Path) -> CheckResult:
+def check_h2_hooks_scripts_exist(root: pathlib.Path | AuditContext) -> CheckResult:
     """H2 — Every script path referenced in copilot-hooks.json exists on disk."""
+    ctx = ensure_context(root)
     result = CheckResult("H2", "Hooks config: all referenced scripts exist")
-    for hooks_file in [
-        root / "template" / "hooks" / "copilot-hooks.json",
-        root / ".github"  / "hooks" / "copilot-hooks.json",
-    ]:
+    for hooks_file in ctx.hook_config_files:
         if not hooks_file.exists():
             continue
-        rel = str(hooks_file.relative_to(root))
-        try:
-            data = json.loads(hooks_file.read_text(encoding="utf-8", errors="replace"))
-        except json.JSONDecodeError:
+        rel = ctx.rel(hooks_file)
+        data, error = ctx.load_json(hooks_file)
+        if error is not None:
             continue  # H1 already flagged this
         raw = json.dumps(data)
         for script_path in re.findall(r'"([^"]+\.sh)"', raw):
-            candidate = root / script_path.lstrip("/")
+            candidate = ctx.root / script_path.lstrip("/")
             if not candidate.exists():
                 result.findings.append(Finding(
                     "H2", rel, HIGH,
@@ -62,7 +55,7 @@ def check_h2_hooks_scripts_exist(root: pathlib.Path) -> CheckResult:
             rel_path = norm.lstrip("/")
             if rel_path.startswith("./"):
                 rel_path = rel_path[2:]
-            candidate = root / rel_path
+            candidate = ctx.root / rel_path
             if not candidate.exists():
                 result.findings.append(Finding(
                     "H2", rel, WARN,
@@ -71,14 +64,15 @@ def check_h2_hooks_scripts_exist(root: pathlib.Path) -> CheckResult:
     return result
 
 
-def check_sh1_shebang(root: pathlib.Path) -> CheckResult:
+def check_sh1_shebang(root: pathlib.Path | AuditContext) -> CheckResult:
     """SH1 — Hook shell scripts: shebang present."""
+    ctx = ensure_context(root)
     result = CheckResult("SH1", "Hook scripts: shebang present")
     found = False
-    for sh in iter_shell_scripts(root):
+    for sh in ctx.shell_scripts:
         found = True
-        rel = str(sh.relative_to(root))
-        first_line = sh.read_text(encoding="utf-8", errors="replace").split("\n")[0]
+        rel = ctx.rel(sh)
+        first_line = ctx.read_text(sh).split("\n")[0]
         if not first_line.startswith("#!/"):
             result.findings.append(Finding("SH1", rel, HIGH,
                                            "Missing shebang line"))
@@ -88,17 +82,18 @@ def check_sh1_shebang(root: pathlib.Path) -> CheckResult:
     return result
 
 
-def check_sh2_pipefail(root: pathlib.Path) -> CheckResult:
+def check_sh2_pipefail(root: pathlib.Path | AuditContext) -> CheckResult:
     """SH2 — Hook shell scripts: set -euo pipefail present.
 
     lib-hooks.sh is a sourced library and is intentionally excluded.
     """
+    ctx = ensure_context(root)
     result = CheckResult("SH2", "Hook scripts: set -euo pipefail")
-    for sh in iter_shell_scripts(root):
+    for sh in ctx.shell_scripts:
         if sh.name == "lib-hooks.sh":
             continue
-        rel = str(sh.relative_to(root))
-        text = sh.read_text(encoding="utf-8", errors="replace")
+        rel = ctx.rel(sh)
+        text = ctx.read_text(sh)
         if not re.search(r"set\s+-[a-z]*e[a-z]*u[a-z]*o\s+pipefail"
                          r"|set\s+-euo\s+pipefail"
                          r"|set\s+-uo\s+pipefail"
@@ -112,15 +107,16 @@ def check_sh2_pipefail(root: pathlib.Path) -> CheckResult:
     return result
 
 
-def check_sh3_bash_syntax(root: pathlib.Path) -> CheckResult:
+def check_sh3_bash_syntax(root: pathlib.Path | AuditContext) -> CheckResult:
     """SH3 — Hook shell scripts: bash -n syntax check passes."""
+    ctx = ensure_context(root)
     result = CheckResult("SH3", "Hook scripts: bash syntax check")
     if not has_command("bash"):
         result.findings.append(Finding("SH3", "", INFO,
                                        "bash not found in PATH — syntax check skipped"))
         return result
-    for sh in iter_shell_scripts(root):
-        rel = str(sh.relative_to(root))
+    for sh in ctx.shell_scripts:
+        rel = ctx.rel(sh)
         proc = subprocess.run(
             ["bash", "-n", str(sh)],
             capture_output=True, text=True
@@ -131,15 +127,16 @@ def check_sh3_bash_syntax(root: pathlib.Path) -> CheckResult:
     return result
 
 
-def check_ps1_basic_sanity(root: pathlib.Path) -> CheckResult:
+def check_ps1_basic_sanity(root: pathlib.Path | AuditContext) -> CheckResult:
     """PS1 — PowerShell hook scripts: basic sanity checks."""
+    ctx = ensure_context(root)
     result = CheckResult("PS1", "PowerShell hook scripts: basic sanity")
     found = False
     has_pwsh = has_command("pwsh")
-    for ps1 in iter_ps_scripts(root):
+    for ps1 in ctx.ps_scripts:
         found = True
-        rel = str(ps1.relative_to(root))
-        text = ps1.read_text(encoding="utf-8", errors="replace")
+        rel = ctx.rel(ps1)
+        text = ctx.read_text(ps1)
         if not text.strip():
             result.findings.append(Finding("PS1", rel, HIGH,
                                            "Script is empty"))

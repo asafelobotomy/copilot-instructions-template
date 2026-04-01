@@ -12,7 +12,7 @@ model:
 tools: [editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Review', 'Audit', 'Fast', 'Researcher', 'Explore', 'Extensions']
+agents: ['Review', 'Audit', 'Fast', 'Researcher', 'Explore', 'Extensions', 'Commit']
 handoffs:
   - label: Review changes
     agent: Review
@@ -21,6 +21,10 @@ handoffs:
   - label: Audit changes
     agent: Audit
     prompt: Run a full audit on the changes just made. Check structural health and flag any vulnerabilities introduced.
+    send: false
+  - label: Commit changes
+    agent: Commit
+    prompt: Stage and commit the changes just implemented. Apply commit-style.md preferences.
     send: false
 ---
 

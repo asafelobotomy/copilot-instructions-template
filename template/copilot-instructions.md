@@ -196,18 +196,19 @@ This file is loaded into the LLM context on every interaction. To prevent instru
 
 Event-triggered health checks that keep the agent aligned with real project state. The heartbeat checklist lives in `.copilot/workspace/HEARTBEAT.md`.
 
-**When to fire**: session start; after modifying >5 files; after any refactor, migration, or restructure task; after dependency manifest changes; after CI failure resolution; after completing any user-requested task; on the trigger phrase "Check your heartbeat"; or on any custom trigger defined in `HEARTBEAT.md`.
+**When to fire**: session start; after a task that trips the medium/large heuristic (one strong signal: 8+ modified files or 30+ minutes; or two supporting signals: 5+ modified files, 15+ minutes, context compaction); after any refactor, migration, or restructure task; after dependency manifest changes; after CI failure resolution; when a medium/large task completes; on the trigger phrase "Check your heartbeat"; or on any custom trigger defined in `HEARTBEAT.md`.
 
 **Procedure**:
 
 1. Read `HEARTBEAT.md` — follow it strictly. Do not infer tasks from prior sessions.
 2. Run every check in the Checks section. Cross-reference: MEMORY.md (consolidation), TOOLS.md (dependency audit), SOUL.md (reasoning alignment), §10 (settings drift).
-3. If the trigger is **task completion** or **explicit**, run the Retrospective section: answer each question internally, persist insights to the indicated workspace files (SOUL.md, USER.md, MEMORY.md), and surface Q4/Q5 to the user if non-empty.
-4. Update Pulse: `HEARTBEAT_OK` if all checks pass; prepend `[!]` with a one-line alert for each failure.
-5. Append a row to History (keep last 5).
-6. Write observations to Agent Notes for the next heartbeat.
-7. Report to user only if alerts exist — silent when healthy (exception: retrospective Q4/Q5 always surface when non-empty).
-8. **Context limit**: if context pressure is high, run `save-context.sh`, append a resume note to Agent Notes, then continue — never abandon a task mid-flight.
+3. If the trigger is **explicit** and the user asked for a retrospective, run the Retrospective section.
+4. If a **medium/large task** has completed, ask the user: "That was a large change to the codebase, would you like me to run a retrospective?" Run it only if they agree. Treat medium/large as one strong signal (8+ modified files or 30+ minutes) or two supporting signals (5+ modified files, 15+ minutes, context compaction). Skip it for small/localized tasks.
+5. Update Pulse: `HEARTBEAT_OK` if all checks pass; prepend `[!]` with a one-line alert for each failure.
+6. Append a row to History (keep last 5).
+7. Write observations to Agent Notes for the next heartbeat.
+8. Report to user only if alerts exist — silent when healthy (exception: retrospective Q4/Q5 always surface when non-empty).
+9. **Context limit**: if context pressure is high, run `save-context.sh`, append a resume note to Agent Notes, then continue — never abandon a task mid-flight.
 
 ### Agent Hooks
 
@@ -221,7 +222,7 @@ Hook configuration lives in `.github/hooks/copilot-hooks.json`. VS Code supports
 | `UserPromptSubmit` | `pulse.sh --trigger user_prompt` | Detect explicit heartbeat and retrospective prompts |
 | `PreToolUse` | `guard-destructive.sh` | Block dangerous commands; flag caution patterns for user confirmation (§5 enforcement) |
 | `PostToolUse` | `post-edit-lint.sh`, `pulse.sh --trigger soft_post_tool` | Auto-format edited files and debounce heartbeat soft triggers |
-| `Stop` | `scan-secrets.sh`, `pulse.sh --trigger stop` | Run secret scan and retrospective gate |
+| `Stop` | `scan-secrets.sh`, `pulse.sh --trigger stop` | Run secret scan and recommend retrospective only for medium/large completed tasks |
 | `PreCompact` | `save-context.sh`, `pulse.sh --trigger compaction` | Preserve workspace state before context compaction |
 | `SubagentStart` | `subagent-start.sh` | Inject governance context (depth limit, inherited protocols) when a subagent spawns |
 | `SubagentStop` | `subagent-stop.sh` | Log subagent completion and prompt result review |

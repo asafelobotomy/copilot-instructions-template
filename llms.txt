@@ -21,7 +21,7 @@
 ## Model strategy
 
 > **Single source of truth**: [MODELS.md](MODELS.md) — edit there, then run
-> `bash scripts/sync-models.sh --write` to propagate to agent files.
+> `bash scripts/sync/sync-models.sh --write` to propagate to agent files.
 
 | Surface | Recommended model | Thinking Effort | Role |
 |---------|-------------------|-----------------|------|
@@ -33,6 +33,7 @@
 | `explore.agent.md` | Claude Haiku 4.5 | Low | Fast read-only codebase exploration and Q&A |
 | `extensions.agent.md` | Claude Sonnet 4.6 | Medium | VS Code extension management and profiles |
 | `researcher.agent.md` | Claude Sonnet 4.6 | High | Online/offline research and documentation |
+| `commit.agent.md` | GPT-5.1 | Low | Stage, commit, push, tag, and release management |
 
 > **Thinking Effort** is a per-user, per-model setting in the VS Code model picker.
 > Low = fast/cheap, Medium = balanced, High = deep reasoning. See `MODELS.md`
@@ -102,8 +103,8 @@ Exact handoff permissions can evolve. Read `.github/agents/*.agent.md` frontmatt
 ## Validation
 
 - Main suite: `bash tests/run-all.sh`
-- Metadata sync: `bash scripts/sync-workspace-index.sh --check`
-- Model registry sync: `bash scripts/sync-models.sh --check`
+- Metadata sync: `bash scripts/workspace/sync-workspace-index.sh --check`
+- Model registry sync: `bash scripts/sync/sync-models.sh --check`
 
 ## Human documentation
 

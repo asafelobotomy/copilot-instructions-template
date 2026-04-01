@@ -5,7 +5,10 @@ init_test_context() {
   local script_path="$1"
   PASS=0
   FAIL=0
-  REPO_ROOT=$(cd "$(dirname "$script_path")/.." && pwd)
+  FAIL_LINES=()
+  SUITE_NAME=$(basename "$script_path")
+  TESTS_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+  REPO_ROOT=$(cd "$TESTS_ROOT/.." && pwd)
 }
 
 pass_note() {
@@ -17,8 +20,10 @@ pass_note() {
 fail_note() {
   local desc="$1" details="${2:-}"
   echo "  FAIL: ${desc}"
+  FAIL_LINES+=("  FAIL: ${desc}")
   if [[ -n "$details" ]]; then
     printf '%s\n' "$details"
+    FAIL_LINES+=("$details")
   fi
   ((FAIL++))
 }
@@ -105,6 +110,15 @@ assert_valid_json() {
     pass_note "$desc"
   else
     fail_note "$desc" "     output: $payload"
+  fi
+}
+
+assert_json_has() {
+  local desc="$1" json="$2" key="$3"
+  if KEY="$key" python3 -c "import json,os,sys; d=json.loads(sys.stdin.read()); assert os.environ['KEY'] in d" <<< "$json" 2>/dev/null; then
+    pass_note "$desc"
+  else
+    fail_note "$desc" "     key '$key' not found in: $json"
   fi
 }
 
@@ -227,6 +241,12 @@ assert_python_in_root() {
 
 finish_tests() {
   echo ""
-  echo "Results: $PASS passed, $FAIL failed"
-  [[ $FAIL -eq 0 ]]
+  echo "Results: ${PASS} passed, ${FAIL} failed (${SUITE_NAME:-})"
+  if [[ ${FAIL} -gt 0 ]]; then
+    echo "--- Failures ---"
+    for line in "${FAIL_LINES[@]}"; do
+      echo "${line}"
+    done
+  fi
+  [[ ${FAIL} -eq 0 ]]
 }

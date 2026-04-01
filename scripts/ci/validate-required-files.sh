@@ -15,12 +15,15 @@ for f in \
   ".github/agents/extensions.agent.md" \
   ".github/agents/researcher.agent.md" \
   "SETUP.md" "UPDATE.md" "MIGRATION.md" "AGENTS.md" "VERSION.md" "CHANGELOG.md" \
-  "scripts/sync-version.sh" \
-  "scripts/sync-workspace-index.sh" \
-  "scripts/sync-models.sh" \
-  "scripts/sync-template-parity.sh" \
-  "scripts/validate-agent-frontmatter.sh" \
-  "scripts/stub-migration.sh" \
+  "scripts/release/plan-release.sh" \
+  "scripts/release/stub-migration.sh" \
+  "scripts/release/sync-version.sh" \
+  "scripts/workspace/check-workspace-drift.sh" \
+  "scripts/workspace/sync-workspace-index.sh" \
+  "scripts/sync/sync-models.sh" \
+  "scripts/sync/sync_models.py" \
+  "scripts/sync/sync-template-parity.sh" \
+  "scripts/validate/validate-agent-frontmatter.sh" \
   "scripts/lib.sh" \
   "MODELS.md" \
   "CLAUDE.md" \
@@ -35,6 +38,7 @@ for f in \
   "template/prompts/context-map.prompt.md" \
   "template/prompts/explain.prompt.md" \
   "template/prompts/review-file.prompt.md" \
+  "template/prompts/onboard-commit-style.prompt.md" \
   "template/instructions/api-routes.instructions.md" \
   "template/instructions/config.instructions.md" \
   "template/instructions/docs.instructions.md" \
@@ -53,6 +57,8 @@ for f in \
   "template/hooks/scripts/subagent-stop.sh" \
   "template/hooks/scripts/mcp-npx.sh" \
   "template/hooks/scripts/mcp-uvx.sh" \
+  "template/hooks/scripts/heartbeat-policy.json" \
+  "template/hooks/scripts/heartbeat_clock_summary.py" \
   "template/hooks/scripts/session-start.ps1" \
   "template/hooks/scripts/post-edit-lint.ps1" \
   "template/hooks/scripts/enforce-retrospective.ps1" \
@@ -66,7 +72,7 @@ for f in \
   "template/workspace/IDENTITY.md" "template/workspace/SOUL.md" \
   "template/workspace/USER.md" "template/workspace/TOOLS.md" \
   "template/workspace/MEMORY.md" "template/workspace/workspace-index.json" "template/workspace/BOOTSTRAP.md" \
-  "template/workspace/HEARTBEAT.md" "template/workspace/RESEARCH.md" \
+  "template/workspace/HEARTBEAT.md" "template/workspace/RESEARCH.md" "template/workspace/commit-style.md" \
   "template/vscode/extensions.json"; do
   if [[ ! -f "$f" ]]; then
     echo "❌ Missing: $f"; missing=1

@@ -1,29 +1,29 @@
 """VS Code settings checks (VS1) for the Copilot Audit tool."""
 from __future__ import annotations
 
-import json
 import pathlib
 
+from .context import AuditContext, ensure_context
 from .models import Finding, CheckResult, CRITICAL, WARN, INFO
 
 
-def check_vs1_settings_plugins(root: pathlib.Path) -> CheckResult:
+def check_vs1_settings_plugins(root: pathlib.Path | AuditContext) -> CheckResult:
     """VS1 — .vscode/settings.json: valid JSON + customization paths resolve."""
+    ctx = ensure_context(root)
     result = CheckResult("VS1", "VS Code settings: JSON valid + customization paths resolve")
-    settings_file = root / ".vscode" / "settings.json"
+    settings_file = ctx.root / ".vscode" / "settings.json"
     if not settings_file.exists():
         result.findings.append(Finding("VS1", ".vscode/settings.json", INFO,
                                        "File not found — skip"))
         return result
-    rel = str(settings_file.relative_to(root))
-    try:
-        data = json.loads(settings_file.read_text(encoding="utf-8", errors="replace"))
-    except json.JSONDecodeError as exc:
+    rel = ctx.rel(settings_file)
+    data, error = ctx.load_json(settings_file)
+    if error is not None:
         result.findings.append(Finding("VS1", rel, CRITICAL,
-                                       f"Invalid JSON: {exc}"))
+                                       f"Invalid JSON: {error}"))
         return result
 
-    def _check_path_list(key: str, base: pathlib.Path = root) -> None:
+    def _check_path_list(key: str, base: pathlib.Path = ctx.root) -> None:
         paths = data.get(key, [])
         if not isinstance(paths, list):
             return
