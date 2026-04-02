@@ -24,7 +24,7 @@ See [`AGENTS.md`](AGENTS.md) for the full list of commands (health check, retros
 
 ## Version
 
-Current template version: **5.1.0** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md) and [`MIGRATION.md`](MIGRATION.md).
+Current template version: **5.2.0** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md) and [`MIGRATION.md`](MIGRATION.md).
 
 ## Release automation
 
