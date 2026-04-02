@@ -7,6 +7,25 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [5.2.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.1.0...v5.2.0) (2026-04-02)
+
+
+### Features
+
+* add pulse script for heartbeat orchestration and retrospective gating ([544e490](https://github.com/asafelobotomy/copilot-instructions-template/commit/544e490fbe3d890e840c2e605ca39275f7d3243e))
+* introduce Organise agent for structural cleanup and directory management ([b30903e](https://github.com/asafelobotomy/copilot-instructions-template/commit/b30903e64c3bf35558bdfc7e375b4590d7bdacb8))
+* update agent tools to include 'agent' and remove unsupported 'stacks' frontmatter in skills ([7162dc1](https://github.com/asafelobotomy/copilot-instructions-template/commit/7162dc182f284a535ade43e06920775c1136b89d))
+
+
+### Bug Fixes
+
+* **ci:** add checks for PowerShell availability in hook tests ([da08510](https://github.com/asafelobotomy/copilot-instructions-template/commit/da085109e366c913e0bf179eaabaaa777e61aedd))
+* **release:** format conditional for release job execution ([da08510](https://github.com/asafelobotomy/copilot-instructions-template/commit/da085109e366c913e0bf179eaabaaa777e61aedd))
+* **release:** gate releases to consumer-facing changes ([85c8076](https://github.com/asafelobotomy/copilot-instructions-template/commit/85c80767d2e62b39e32514afc35e961f7e4e85a5))
+* **release:** repair workflow yaml syntax ([a50a89f](https://github.com/asafelobotomy/copilot-instructions-template/commit/a50a89f4ee979a0bf47d7153e8bf5faa6dddb590))
+* simplify input handling in enforce-retrospective script ([0980718](https://github.com/asafelobotomy/copilot-instructions-template/commit/0980718b6dba164105f9b68b06b90b60ad6e3cbd))
+* update input handling in PowerShell scripts for consistency ([60b589c](https://github.com/asafelobotomy/copilot-instructions-template/commit/60b589c73753d05344df9dd23057ed738394ab5e))
+
 ## [5.1.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.0.1...v5.1.0) (2026-03-30)
 
 
