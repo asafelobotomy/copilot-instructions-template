@@ -381,4 +381,3 @@ jobs:
 
       - name: Docs and contracts | setup and update contracts
         run: bash tests/contracts/test-setup-update-contracts.sh
-
