@@ -43,6 +43,7 @@ Your role: manage the full git commit lifecycle — staging, committing, pushing
 ## Push workflow
 
 Only execute when the user requests a push. Steps:
+
 1. Run `git log origin/<branch>..HEAD --oneline` to show unpushed commits.
 2. Confirm the target branch and remote.
 3. Execute `git push` (or `git push --set-upstream origin <branch>` for new branches).
@@ -51,6 +52,7 @@ Only execute when the user requests a push. Steps:
 ## Tag / Release workflow
 
 Only execute when the user requests a tag or release.
+
 1. Confirm the version string (semver preferred).
 2. For a tag only: `git tag -a v<version> -m "<subject>"` → `git push origin v<version>`.
 3. For a GitHub release: show a draft of the release title and body, wait for approval, then use `gh release create`.

@@ -170,6 +170,7 @@ bash scripts/workspace/check-workspace-drift.sh .copilot/workspace
 ```
 
 If unavailable (consumer hasn't pulled the script): fetch the script first from:
+
 ```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/scripts/workspace/check-workspace-drift.sh
 ```
