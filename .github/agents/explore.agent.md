@@ -6,7 +6,7 @@ model:
   - Claude Haiku 4.5
   - GPT-5 mini
   - Claude Sonnet 4.6
-tools: [codebase, search, runCommands]
+tools: [agent, codebase, search, runCommands]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Researcher']

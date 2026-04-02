@@ -2,12 +2,11 @@
 name: extension-review
 description: Audit VS Code extensions against the current project stack and recommend keep/add/remove actions
 compatibility: ">=3.2"
-stacks: [all]
 ---
 
 # Extension Review
 
-> Skill metadata: version "1.1"; license MIT; tags [extensions, vscode, audit, tooling, review, plugins]; compatibility ">=3.2"; recommended tools [codebase, fetch].
+> Skill metadata: version "1.1"; license MIT; tags [extensions, vscode, audit, tooling, review, plugins]; compatibility ">=3.2"; recommended tools [codebase, fetch, runCommands].
 
 Review the current project's VS Code extensions and recommend what to keep, add, or remove based on the actual stack in the repository.
 
@@ -34,7 +33,8 @@ Review the current project's VS Code extensions and recommend what to keep, add,
 
 2. **Profile check** - Check whether a repo-specific VS Code Profile is active:
    - Run `code --list-extensions | grep -i copilot-profile-tools` to detect the companion extension.
-   - **If installed**: use the `get_active_profile` Language Model Tool. If the user is on the Default Profile, recommend creating a dedicated Empty Profile (`code . --profile "ProjectName"`) before proceeding.
+   - **If installed and the current runtime exposes an active-profile helper tool**: use it. If the user is on the Default Profile, recommend creating a dedicated Empty Profile (`code . --profile "ProjectName"`) before proceeding.
+   - **If installed but no helper tool is available**: ask the user to confirm the active profile from the Profiles UI before drawing conclusions.
    - **If not installed**: note that profile detection is limited. Recommend creating a repo-specific profile to isolate extensions from other projects.
 
 3. **Read workspace recommendations** - Inspect `.vscode/extensions.json` and `.vscode/settings.json` if they exist.

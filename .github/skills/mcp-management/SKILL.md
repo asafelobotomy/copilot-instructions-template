@@ -2,7 +2,6 @@
 name: mcp-management
 description: Configure and manage Model Context Protocol servers for external tool access
 compatibility: ">=1.4"
-stacks: [all]
 ---
 
 # MCP Management
@@ -36,7 +35,7 @@ MCP (Model Context Protocol) is GA in VS Code as of v1.102. MCP servers provide 
 | Tier | Default servers | When to enable | Configuration |
 |------|----------------|-----------------|---------------|
 | Always-on | filesystem, git | Every project — core development tools | Enabled by default in `.vscode/mcp.json` |
-| Credentials-required | github, fetch | When external API access is needed | `github` uses VS Code OAuth (HTTP remote, no PAT required); `fetch` needs no credentials |
+| External access | github, fetch | When GitHub or web access is needed | `github` uses VS Code OAuth (HTTP remote, no PAT required); `fetch` needs no credentials |
 | Documentation | context7 | Any project using third-party libraries | HTTP remote, free tier requires no auth; optional API key for higher rate limits |
 
 ## Available servers

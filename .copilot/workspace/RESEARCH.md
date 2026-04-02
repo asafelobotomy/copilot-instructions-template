@@ -51,6 +51,13 @@
 | <https://github.com/release-drafter/release-drafter> | release-drafter — draft-only, human publishes; include-paths filters changelog entries (not release gating) | 2026-03-30 | release, changelog |
 | <https://github.com/tj-actions/changed-files> | Changed-files action — glob patterns, any_changed boolean output; requires sha: input for workflow_run context | 2026-03-30 | actions, path-filter |
 
+## VS Code Copilot — LM Tool API and Built-in Tool Names
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://code.visualstudio.com/api/extension-guides/ai/tools> | LM Tool naming convention: `{verb}_{noun}`; contributed via `contributes.languageModelTools` in package.json; `canBeReferencedInPrompt`, `toolReferenceName`, `modelDescription` fields | 2026-04-02 | tools, lm-api, extensions |
+| <https://code.visualstudio.com/docs/copilot/reference/copilot-vscode-features#_chat-tools> | Complete built-in tool table (April 2026): `#search/usages`, `#read/problems`, `#web/fetch` — NOT `list_code_usages`, `get_errors`, `fetch_webpage` in user-facing names | 2026-04-02 | tools, built-in, reference |
+
 ## VS Code Copilot — Hooks, Skills, Agents Schema (2026-04)
 
 | URL | Summary | Date | Tags |

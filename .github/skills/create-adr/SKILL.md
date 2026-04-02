@@ -2,7 +2,6 @@
 name: create-adr
 description: Create an Architectural Decision Record (ADR) to document a significant design or technology choice
 compatibility: ">=1.4"
-stacks: [all]
 ---
 
 # Create Architectural Decision Record

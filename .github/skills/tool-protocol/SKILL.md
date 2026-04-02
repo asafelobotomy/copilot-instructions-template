@@ -2,7 +2,6 @@
 name: tool-protocol
 description: Find, build, or adapt automation tools following the Tool Protocol decision tree
 compatibility: ">=1.4"
-stacks: [all]
 ---
 
 # Tool Protocol
@@ -28,11 +27,12 @@ Need a tool for task X
  │     └─ No match     → ↓
  │
  ├─ 1.5 BUILT-IN — check VS Code's native tool capabilities
- │     ├─ `list_code_usages`  → find all references, implementations, callers of a symbol
- │     ├─ `get_errors`        → get compile/lint errors for a file or the entire workspace
- │     ├─ `fetch_webpage`     → fetch web pages, docs, APIs (use for documentation lookups)
- │     ├─ `semantic_search`   → natural language search across the codebase
- │     ├─ `grep_search`       → fast text/regex search in workspace files
+ │     ├─ Use the exact tool names surfaced by the active runtime; identifiers differ across clients
+ │     ├─ Symbol/reference lookup → find all references, implementations, callers of a symbol
+ │     ├─ Problems/errors lookup  → get compile or lint errors for a file or the entire workspace
+ │     ├─ Web fetch               → fetch web pages, docs, or API references
+ │     ├─ Semantic search         → natural language search across the codebase
+ │     ├─ Text/regex search       → fast exact-match or pattern search in workspace files
  │     ├─ Sufficient → USE built-in tool
  │     └─ Not sufficient → ↓
  │

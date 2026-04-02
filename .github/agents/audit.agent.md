@@ -7,7 +7,7 @@ model:
   - Claude Opus 4.6
   - Claude Sonnet 4.6
   - GPT-5.1
-tools: [codebase, runCommands, githubRepo, fetch, search, webSearch]
+tools: [agent, codebase, runCommands, githubRepo, fetch, search, webSearch]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Setup', 'Researcher', 'Explore', 'Review', 'Extensions', 'Organise']
@@ -46,7 +46,7 @@ Do not modify any files — diagnosis only. Surface findings and use handoffs fo
 
 Detect which suite to run based on the user's request:
 
-- **"health check"**, **"doctor check"**, **"check attention budget"**, **"check MCP config"**, **"check agent files"** → run Health checks (D1–D14)
+- **"health check"**, **"check attention budget"**, **"check MCP config"**, **"check agent files"** → run Health checks (D1–D14)
 - **"security audit"**, **"scan for secrets"**, **"check for vulnerabilities"**, **"review security posture"** → run Security checks (S1–S10)
 - **"full audit"**, **"audit"**, or ambiguous → run both suites
 

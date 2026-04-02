@@ -76,7 +76,7 @@ These files are created in the consumer project during setup, not in this templa
 | Update instructions | *"Update your instructions"* / *"Check for instruction updates"* / *"Update from copilot-instructions-template"* / *"Sync instructions with the template"* / *"Check the template for updates"* |
 | Force update check | *"Force check instruction updates"* |
 | Restore backup | *"Restore instructions from backup"* |
-| Health check | *"Run health check"* / *"Doctor check"* / *"Full audit"* |
+| Health check | *"Run health check"* / *"Full audit"* |
 | Heartbeat | *"Check your heartbeat"* |
 | Retrospective | *"Run retrospective"* |
 | Show/build/save tools | *"Show me the toolbox"* / *"Build a tool for ..."* |

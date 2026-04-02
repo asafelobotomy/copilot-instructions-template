@@ -7,7 +7,7 @@ model:
   - Claude Opus 4.6
   - Claude Sonnet 4.6
   - GPT-5.1
-tools: [codebase, githubRepo, runCommands, search]
+tools: [agent, codebase, githubRepo, runCommands, search]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Fast', 'Researcher', 'Audit', 'Explore', 'Organise']

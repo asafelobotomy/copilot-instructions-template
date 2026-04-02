@@ -2,7 +2,6 @@
 name: skill-creator
 description: Create a new agent skill following the Agent Skills open standard
 compatibility: ">=1.4"
-stacks: [all]
 ---
 
 # Skill Creator
@@ -45,6 +44,8 @@ Create a new agent skill that follows the [Agent Skills](https://agentskills.io)
    | `disable-model-invocation` | Set to `true` to require manual `/` invocation only |
    | `allowed-tools` | Space-delimited pre-approved tools (experimental) |
    | `compatibility` | Environment requirements (e.g., `">=3.2"`, `"Requires Python 3.14+"`) |
+
+   Do not add unsupported top-level keys such as `stacks`. If you want human-readable stack hints, put them in the description or the `Skill metadata` note instead.
 
    Then add a note immediately after the `# <Name>` heading:
 

@@ -9,7 +9,7 @@ model:
   - GPT-5.3-Codex
   - GPT-5.2-Codex
   - GPT-5.1-Codex
-tools: [editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
+tools: [agent, editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Review', 'Audit', 'Fast', 'Researcher', 'Explore', 'Extensions', 'Commit', 'Organise']

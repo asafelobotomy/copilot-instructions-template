@@ -6,7 +6,7 @@ model:
   - Claude Haiku 4.5
   - GPT-5 mini
   - GPT-4.1
-tools: [codebase, editFiles, runCommands]
+tools: [agent, codebase, editFiles, runCommands]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Explore']

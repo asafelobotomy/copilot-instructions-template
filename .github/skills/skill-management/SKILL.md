@@ -2,7 +2,6 @@
 name: skill-management
 description: Discover, activate, and manage agent skills following the Skill Protocol
 compatibility: ">=1.4"
-stacks: [all]
 ---
 
 # Skill Management
@@ -12,6 +11,8 @@ stacks: [all]
 Skills are reusable markdown-based **behavioural instructions** that teach the agent *how* to perform a specific workflow. Unlike tools (§11) which are executable scripts, skills are declarative — they shape the agent's approach rather than running code.
 
 Skills follow the [Agent Skills](https://agentskills.io) open standard. Each skill is a `SKILL.md` file with minimal YAML frontmatter (`name`, `description`) plus a markdown body that includes a `Skill metadata` note and step-by-step workflow instructions.
+
+Use the `description` field as the discovery surface. Do not rely on custom top-level keys such as `stacks`; VS Code does not use them when selecting a skill.
 
 ## When to use
 

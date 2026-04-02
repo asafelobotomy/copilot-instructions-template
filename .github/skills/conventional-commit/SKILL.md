@@ -2,7 +2,6 @@
 name: conventional-commit
 description: Write a commit message following the Conventional Commits specification with scope and body
 compatibility: ">=1.4"
-stacks: [all]
 ---
 
 # Conventional Commit

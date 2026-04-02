@@ -21,7 +21,7 @@ make_models_md() {
 - ModelA
 - ModelB
 
-## doctor
+## audit
 - ModelC
 
 ## fast
@@ -34,9 +34,6 @@ make_models_md() {
 ## setup
 - ModelG
 - ModelH
-
-## update
-- ModelI
 MODELS
 }
 
@@ -72,7 +69,7 @@ make_llms_txt() {
 | `coding.agent.md` | ModelA | coding |
 | `review.agent.md` | ModelF | review |
 | `fast.agent.md` | ModelD | fast |
-| `doctor.agent.md` | ModelC | doctor |
+| `audit.agent.md` | ModelC | audit |
 LLMS
 }
 
@@ -81,7 +78,7 @@ make_fixture() {
   mkdir -p "$root"
   make_models_md "$root"
   make_agent "$root" coding ModelA ModelB
-  make_agent "$root" doctor ModelC
+  make_agent "$root" audit ModelC
   make_agent "$root" fast ModelD ModelE
   make_agent "$root" review ModelF
   make_agent "$root" setup ModelG ModelH
@@ -149,8 +146,8 @@ echo ""
 echo "6. Drift in llms.txt is detected"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_fixture "$TMP"
-# Tamper: wrong primary in llms.txt for doctor
-sed -i 's/| `doctor\.agent\.md` | ModelC /| `doctor.agent.md` | WrongModel /' \
+# Tamper: wrong primary in llms.txt for audit
+sed -i 's/| `audit\.agent\.md` | ModelC /| `audit.agent.md` | WrongModel /' \
   "$TMP/llms.txt"
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1) || true
 assert_contains "llms.txt drift detected" "$output" "llms.txt"

@@ -95,7 +95,50 @@ if m:
 '
 echo ""
 
-echo "5. Researcher and Explore agent files are well-formed"
+echo "5. Skill files have no unresolved placeholder tokens"
+assert_python "no unresolved {{PLACEHOLDER}} tokens in repo or template skills" '
+for rel in (".github/skills", "template/skills"):
+    for path in sorted((root / rel).rglob("SKILL.md")):
+        text = path.read_text(encoding="utf-8")
+        match = re.search(r"(?<!\$)\{\{[A-Z_]+\}\}", text)
+        if match:
+            raise SystemExit(
+                f"unresolved placeholder {match.group()} in {path.relative_to(root).as_posix()}"
+            )
+'
+echo ""
+
+echo "5a. Repo and template skills avoid unsupported stacks frontmatter"
+assert_python "repo and template skills do not declare stacks frontmatter" '
+for rel in (".github/skills", "template/skills"):
+    for path in sorted((root / rel).rglob("SKILL.md")):
+        text = path.read_text(encoding="utf-8")
+        end = text.find("\n---\n", 4)
+        if end == -1:
+            raise SystemExit("unterminated frontmatter in " + path.relative_to(root).as_posix())
+        frontmatter = text[4:end]
+        if re.search(r"^stacks:\s*", frontmatter, re.M):
+            raise SystemExit("unsupported stacks frontmatter in " + path.relative_to(root).as_posix())
+'
+echo ""
+
+echo "5b. Key skills avoid stale hardcoded tool identifiers"
+assert_python "tool and extension skills avoid stale tool-name guidance" '
+checks = {
+    ".github/skills/tool-protocol/SKILL.md": ["list_code_usages"],
+    "template/skills/tool-protocol/SKILL.md": ["list_code_usages"],
+    ".github/skills/extension-review/SKILL.md": ["`get_active_profile` Language Model Tool"],
+    "template/skills/extension-review/SKILL.md": ["`get_active_profile` Language Model Tool"],
+}
+for rel, forbidden in checks.items():
+    text = (root / rel).read_text(encoding="utf-8")
+    for needle in forbidden:
+        if needle in text:
+            raise SystemExit(rel + " contains stale tool guidance: " + needle)
+'
+echo ""
+
+echo "6. Researcher and Explore agent files are well-formed"
 assert_python "researcher and explore agents have required frontmatter and tools" '
 for agent_name, required_tool in (("researcher", "fetch"), ("explore", "codebase")):
     path = root / ".github/agents" / (agent_name + ".agent.md")
@@ -119,7 +162,7 @@ if "RESEARCH.md" not in researcher_text:
 '
 echo ""
 
-echo "6. Audit agent defines D11-D13 upstream baseline checks"
+echo "7. Audit agent defines D11-D13 upstream baseline checks"
 assert_python "audit has D11 upstream version check" '
 text = (root / ".github/agents/audit.agent.md").read_text(encoding="utf-8")
 if "### D11" not in text:
@@ -166,7 +209,7 @@ if "fetch" not in fm:
 '
 echo ""
 
-echo "7. Organise stays hidden and coordinator agents can invoke it"
+echo "8. Organise stays hidden and coordinator agents can invoke it"
 assert_python "organise agent stays subagent-only with nested delegation" '
 path = root / ".github/agents/organise.agent.md"
 text = path.read_text(encoding="utf-8")
@@ -180,7 +223,7 @@ required = [
     "name: Organise",
     "user-invocable: false",
     "disable-model-invocation: false",
-    "tools: [editFiles, runCommands, codebase, search]",
+    "tools: [agent, editFiles, runCommands, codebase, search]",
 ]
 for needle in required:
     if needle not in fm:
@@ -200,7 +243,64 @@ for agent_name in ("coding", "setup", "audit", "review", "extensions"):
 '
 echo ""
 
-echo "8. Nested subagent invocation stays enabled in VS Code settings"
+echo "9. Agents with allow-lists include the agent tool"
+assert_python "agents allow-list implies agent tool" '
+def normalize_items(raw):
+    return [item.strip().replace(chr(39), "").replace(chr(34), "") for item in raw.split(",") if item.strip()]
+
+for path in sorted((root / ".github/agents").glob("*.agent.md")):
+    text = path.read_text(encoding="utf-8")
+    end = text.find("\n---\n", 4)
+    if end == -1:
+        raise SystemExit("unterminated frontmatter in " + path.name)
+    fm = text[4:end]
+    agents_match = re.search(r"^agents:\s*\[(.*)\]\s*$", fm, re.M)
+    if not agents_match:
+        continue
+    agents = normalize_items(agents_match.group(1))
+    if not agents:
+        continue
+    tools_match = re.search(r"^tools:\s*\[(.*)\]\s*$", fm, re.M)
+    if not tools_match:
+        raise SystemExit(path.name + " missing tools line")
+    tools = normalize_items(tools_match.group(1))
+    if "agent" not in tools:
+        raise SystemExit(path.name + " declares agents: but omits agent tool")
+'
+echo ""
+
+echo "10. Extensions agent grants the profile tools it references"
+assert_python "extensions agent tools match profile workflow" '
+def normalize_items(raw):
+    return {item.strip().replace(chr(39), "").replace(chr(34), "") for item in raw.split(",") if item.strip()}
+
+path = root / ".github/agents/extensions.agent.md"
+text = path.read_text(encoding="utf-8")
+end = text.find("\n---\n", 4)
+if end == -1:
+    raise SystemExit("unterminated frontmatter in extensions.agent.md")
+fm = text[4:end]
+tools_match = re.search(r"^tools:\s*\[(.*)\]\s*$", fm, re.M)
+if not tools_match:
+    raise SystemExit("extensions.agent.md missing tools line")
+tools = normalize_items(tools_match.group(1))
+required = {
+    "get_active_profile",
+    "list_profiles",
+    "get_workspace_profile_association",
+    "ensure_repo_profile",
+    "get_installed_extensions",
+    "install_extension",
+    "uninstall_extension",
+    "sync_extensions_with_recommendations",
+}
+missing = sorted(required - tools)
+if missing:
+    raise SystemExit("extensions.agent.md missing profile tools: " + ", ".join(missing))
+'
+echo ""
+
+echo "11. Nested subagent invocation stays enabled in VS Code settings"
 assert_python "repo and template settings keep nested subagents enabled" '
 for rel in (".vscode/settings.json", "template/vscode/settings.json"):
     data = json.loads((root / rel).read_text(encoding="utf-8"))

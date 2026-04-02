@@ -155,7 +155,7 @@ In `.copilot/workspace/HEARTBEAT.md`, replace the `## Response Contract` section
 If `.copilot/workspace/DOC_INDEX.json` exists, rename it:
 
 ```bash
-mv .copilot/workspace/DOC_INDEX.json .copilot/workspace-index.json 2>/dev/null || true
+mv .copilot/workspace/DOC_INDEX.json .copilot/workspace/workspace-index.json 2>/dev/null || true
 ```
 
 Then update any agent count or skill count references inside the file to match the current `.github/agents/` and `.github/skills/` directories.

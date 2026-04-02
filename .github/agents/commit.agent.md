@@ -6,7 +6,7 @@ model:
   - GPT-5.1
   - Claude Sonnet 4.6
   - GPT-5 mini
-tools: [editFiles, runCommands, codebase, githubRepo]
+tools: [agent, editFiles, runCommands, codebase, githubRepo]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Review', 'Fast']

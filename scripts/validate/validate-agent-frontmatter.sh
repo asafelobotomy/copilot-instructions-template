@@ -43,6 +43,11 @@ for agent_file in sorted(agents_dir.glob("*.agent.md")):
         if not re.search(rf'^{field}:', fm, re.M):
             errors.append(f"{agent_file.name}: missing required field '{field}'")
 
+    tools_match = re.search(r'^tools:\s*\[(.*)\]\s*$', fm, re.M)
+    tools = []
+    if tools_match:
+        tools = [item.strip().strip("'\"") for item in tools_match.group(1).split(",") if item.strip()]
+
     # model list must have at least one entry
     model_match = re.search(r'^model:\s*$', fm, re.M)
     if model_match:
@@ -50,6 +55,12 @@ for agent_file in sorted(agents_dir.glob("*.agent.md")):
         lines_after = fm[model_match.end():]
         if not lines_after.startswith("\n  - ") and not lines_after.startswith("  - "):
             errors.append(f"{agent_file.name}: model list is empty")
+
+    agents_match = re.search(r'^agents:\s*\[(.*)\]\s*$', fm, re.M)
+    if agents_match:
+        agents = [item.strip().strip("'\"") for item in agents_match.group(1).split(",") if item.strip()]
+        if agents and "agent" not in tools:
+            errors.append(f"{agent_file.name}: agents allow-list requires 'agent' in tools")
 
 if count == 0:
     errors.append("no *.agent.md files found in .github/agents/")
