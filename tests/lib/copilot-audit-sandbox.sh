@@ -153,7 +153,7 @@ append_sandbox_file() {
 
 remove_sandbox_path() {
   local rel_path="$1"
-  rm -rf "$SANDBOX/$rel_path"
+  rm -rf "${SANDBOX:?}/$rel_path"
 }
 
 run_audit() {
@@ -166,17 +166,22 @@ run_audit_md() {
 
 run_audit_case() {
   local format="${1:-json}" mutator="${2:-}"
+  # shellcheck disable=SC2034
   CASE_OUTPUT=""
+  # shellcheck disable=SC2034
   CASE_STATUS=0
   setup_sandbox
   if [[ -n "$mutator" ]]; then
     "$mutator"
   fi
   if [[ "$format" == "md" ]]; then
+    # shellcheck disable=SC2034
     CASE_OUTPUT=$(run_audit_md)
   else
+    # shellcheck disable=SC2034
     CASE_OUTPUT=$(run_audit)
   fi
+  # shellcheck disable=SC2034
   CASE_STATUS=$?
   teardown_sandbox
 }

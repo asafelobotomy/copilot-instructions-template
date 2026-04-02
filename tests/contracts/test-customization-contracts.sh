@@ -96,6 +96,7 @@ if m:
 echo ""
 
 echo "5. Skill files have no unresolved placeholder tokens"
+# shellcheck disable=SC2016
 assert_python "no unresolved {{PLACEHOLDER}} tokens in repo or template skills" '
 for rel in (".github/skills", "template/skills"):
     for path in sorted((root / rel).rglob("SKILL.md")):
@@ -123,6 +124,7 @@ for rel in (".github/skills", "template/skills"):
 echo ""
 
 echo "5b. Key skills avoid stale hardcoded tool identifiers"
+# shellcheck disable=SC2016
 assert_python "tool and extension skills avoid stale tool-name guidance" '
 checks = {
     ".github/skills/tool-protocol/SKILL.md": ["list_code_usages"],
