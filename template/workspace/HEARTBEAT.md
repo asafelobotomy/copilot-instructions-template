@@ -35,37 +35,21 @@ Run each check; prepend `[!]` to Pulse if any fails:
 
 ## Retrospective
 
-Retrospective is optional. Do not run it on every task.
+Retrospective runs autonomously via the `session_reflect` MCP tool. Do not prompt the user.
 
-Use it only when:
+The Stop hook blocks the session and instructs you to call `session_reflect` when a significant task is detected (one strong signal: 8+ modified files or 30+ minutes active; or two supporting signals: 5+ modified files, 15+ minutes, context compaction).
 
-- the user explicitly asks for a retrospective; or
-- a medium/large task has just completed and you first ask the user: "That was a large change to the codebase, would you like me to run a retrospective?"
+When `session_reflect` returns, process its output silently:
 
-Skip retrospective entirely for small, localized, or low-risk tasks. If the user declines, stop normally and do not force it.
+- **Execution insights** → persist to *SOUL.md* if non-trivial
+- **Coverage gaps** → persist to *MEMORY.md* if incomplete
+- **User signals** → persist to *USER.md* if directly observable
+- **Actionable items** → surface to the user (security, tech debt, broken assumptions)
+- **Carry-forward lessons** → persist to *MEMORY.md + SOUL.md*
 
-Treat medium/large as a heuristic. Suggest retrospective when the task hits one strong signal (8+ modified files or 30+ minutes) or two supporting signals (5+ modified files, 15+ minutes, context compaction).
+The MCP tool sets the session sentinel complete automatically. No manual sentinel management is needed.
 
-When you do run a retrospective, reflect on these questions. Write insights to the indicated workspace files. Surface Q4 and Q5 to $USER directly — all other answers are silent.
-
-1. **Execution review** — Were there any errors, backtracking, scope changes, or near-misses on explicit requirements? What concrete signal changed course? → *SOUL.md*
-2. **Coverage audit** — Compare the original request with the delivered result. Did I defer, simplify, or leave anything incomplete? Did any modified file miss a matching test or doc update? → *MEMORY.md*
-3. **User profile** — What explicit preferences, corrections, or working patterns did $USER demonstrate? Record only directly observable signals. → *USER.md*
-4. **Issue report** — What should I report to $USER now? (e.g. security concerns, tech debt, broken assumptions, stale dependencies, validation gaps) → *Surface to $USER*
-5. **Carry-forward** — What follow-up questions, recommendations, durable lessons, or user corrections should I carry forward from this task? State lessons as: "When [situation], do [action] instead of [what usually fails]." → *Surface to $USER + MEMORY.md + SOUL.md*
-
-After completing retrospective steps, mark the current session sentinel complete:
-
-```bash
-python3 - <<'PY'
-from pathlib import Path
-p = Path('.copilot/workspace/.heartbeat-session')
-if p.exists():
-    parts = p.read_text(encoding='utf-8').strip().split('|')
-    if len(parts) >= 3:
-        p.write_text(f"{parts[0]}|{parts[1]}|complete\n", encoding='utf-8')
-PY
-```
+If the `session_reflect` MCP tool is unavailable, briefly self-review: execution accuracy, scope completeness, and anything worth persisting to SOUL.md / MEMORY.md / USER.md.
 
 <!-- Add custom retrospective questions below this line -->
 

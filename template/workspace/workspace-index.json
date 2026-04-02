@@ -1,14 +1,14 @@
 {
   "$schema": "https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/schema/workspace-index.schema.json",
   "schemaVersion": "1.0",
-  "updated": "2026-04-01",
+  "updated": "2026-04-02",
   "purpose": "Canonical machine-readable inventory for repository metadata.",
   "counts": {
     "agents": 10,
-    "skillsRepo": 15,
-    "skillsTemplate": 14,
+    "skillsRepo": 16,
+    "skillsTemplate": 15,
     "hookScriptsShell": 11,
-    "hookScriptsPowerShell": 8
+    "hookScriptsPowerShell": 12
   },
   "agents": [
     "setup.agent.md",
@@ -38,7 +38,8 @@
       "mcp-management",
       "plugin-management",
       "extension-review",
-      "test-coverage-review"
+      "test-coverage-review",
+      "commit-preflight"
     ],
     "template": [
       "skill-creator",
@@ -54,7 +55,8 @@
       "skill-management",
       "plugin-management",
       "extension-review",
-      "test-coverage-review"
+      "test-coverage-review",
+      "commit-preflight"
     ]
   },
   "hookScripts": {
@@ -79,7 +81,11 @@
       "save-context.ps1",
       "subagent-start.ps1",
       "subagent-stop.ps1",
-      "pulse.ps1"
+      "pulse.ps1",
+      "pulse_intent.ps1",
+      "pulse_paths.ps1",
+      "pulse_runtime.ps1",
+      "pulse_state.ps1"
     ]
   },
   "notes": [

@@ -22,6 +22,10 @@ Copilot fetches [`UPDATE.md`](UPDATE.md) and performs a version-aware three-way 
 
 See [`AGENTS.md`](AGENTS.md) for the full list of commands (health check, retrospective, skills, MCP, hooks, and more).
 
+## Keep delegation narrow
+
+Agent delegation stays narrow by design. See [`AGENTS.md`](AGENTS.md) for the entrypoint rules and [`template/copilot-instructions.md`](template/copilot-instructions.md) for the consumer runtime policy. Keep each `agents:` allow-list limited to explicit workflow handoffs rather than speculative convenience delegates.
+
 ## Version
 
 Current template version: **5.2.0** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md) and [`MIGRATION.md`](MIGRATION.md).

@@ -16,7 +16,7 @@ for f in \
   ".github/agents/extensions.agent.md" \
   ".github/agents/researcher.agent.md" \
   ".github/agents/commit.agent.md" \
-  "SETUP.md" "UPDATE.md" "MIGRATION.md" "AGENTS.md" "VERSION.md" "CHANGELOG.md" \
+  "SETUP.md" "UPDATE.md" "MIGRATION.md" "MIGRATION.archive.md" "AGENTS.md" "VERSION.md" "CHANGELOG.md" \
   "scripts/release/plan-release.sh" \
   "scripts/release/stub-migration.sh" \
   "scripts/release/sync-version.sh" \

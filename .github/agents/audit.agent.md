@@ -10,7 +10,7 @@ model:
 tools: [agent, codebase, runCommands, githubRepo, fetch, search, webSearch]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Setup', 'Researcher', 'Explore', 'Review', 'Extensions', 'Organise']
+agents: ['Code', 'Setup', 'Researcher', 'Extensions', 'Organise']
 handoffs:
   - label: Apply fixes
     agent: Code
@@ -37,6 +37,8 @@ Do not modify any files — diagnosis only. Surface findings and use handoffs fo
 
 - Use `Organise` when the remediation path is mainly directory cleanup, file moves,
   or path repair rather than general implementation.
+- Use `Extensions` when a finding is specifically about VS Code extension,
+  recommendation, or profile configuration rather than general code changes.
 
 - Apply the Structured Thinking Discipline (§5): run each check sequentially.
   If a check requires data from a prior check, reuse it — do not re-read or
@@ -44,10 +46,10 @@ Do not modify any files — diagnosis only. Surface findings and use handoffs fo
 
 ## Mode detection
 
-Detect which suite to run based on the user's request:
+Detect which suite to run from the user's request:
 
-- **"health check"**, **"check attention budget"**, **"check MCP config"**, **"check agent files"** → run Health checks (D1–D14)
-- **"security audit"**, **"scan for secrets"**, **"check for vulnerabilities"**, **"review security posture"** → run Security checks (S1–S10)
+- **"health check"**, **"check attention budget"**, **"check MCP config"**, **"check agent files"** → run Health checks (D1-D14)
+- **"security audit"**, **"scan for secrets"**, **"check for vulnerabilities"**, **"review security posture"** → run Security checks (S1-S10)
 - **"full audit"**, **"audit"**, or ambiguous → run both suites
 
 **Announce at session start:**
@@ -56,46 +58,30 @@ Detect which suite to run based on the user's request:
 Audit agent — running <health check|security audit|full audit>…
 ```
 
----
-
 # Part 1 — Health Checks
+
+Print a structured health report with sections D1-D14 showing findings or "OK". End with counts for CRITICAL/HIGH/WARN/INFO/OK and an overall health status.
 
 ## Files to inspect
 
-Run every check below. Use the `runCommands` tool to count lines and grep for
-patterns. Use `codebase` to read file contents. Use `fetch` to check upstream
-template version (for D6 version comparison). Use `githubRepo` to check
-repository metadata when relevant.
-
-### Core instructions
+Use `codebase` for file contents, `fetch` for upstream version checks, and `githubRepo` for repository metadata when relevant.
 
 - `.github/copilot-instructions.md` — developer instructions for this repo (must have zero `{{` tokens)
 - `template/copilot-instructions.md` — consumer template (must retain `{{PLACEHOLDER}}` tokens)
-
-### Agent files
-
 - `.github/agents/*.agent.md` — all files in this directory
-
-### Workspace memory files
-
 - `.copilot/workspace/IDENTITY.md`
 - `.copilot/workspace/HEARTBEAT.md`
-- `.copilot/workspace/MEMORY.md`
-- `.copilot/workspace/SOUL.md`
 - `.copilot/workspace/TOOLS.md`
 - `.copilot/workspace/USER.md`
 - `.copilot/workspace/BOOTSTRAP.md`
-
-### Project tracking files
-
 - `.github/copilot-version.md`
 - `AGENTS.md`
-- `CHANGELOG.md`
-
-### VS Code config
-
 - `.vscode/mcp.json`
 - `.vscode/extensions.json`
+
+If CRITICAL or HIGH: use "Apply fixes" for file issues, or "Update instructions" if behind template version. This agent stays read-only.
+
+Checks S1-S8 and S10 use only file reads and `grep` patterns. Check S9 via OSV.dev. Check S7 via GitHub metadata. If `shellcheck`, `semgrep`, or `gitleaks` are on PATH, use them for deeper security coverage.
 
 ### Lifecycle files
 

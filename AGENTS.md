@@ -32,6 +32,14 @@ Canonical source for inventory:
 
 - `.copilot/workspace/workspace-index.json` — canonical machine-readable metadata index
 
+## Delegation policy
+
+Keep subagent delegation narrow.
+
+- Treat each `.github/agents/*.agent.md` `agents:` list as a hard boundary.
+- Add a delegate only when the agent body defines a concrete handoff for it.
+- Prefer the lightest valid handoff: `Explore` for read-only repo scans, `Researcher` for current external docs, `Audit` for residual-risk checks, and `Organise` for structural moves or path fixes.
+
 ---
 
 ## Remote Bootstrap Sequence

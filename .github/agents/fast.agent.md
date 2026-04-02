@@ -6,10 +6,10 @@ model:
   - Claude Haiku 4.5
   - GPT-5 mini
   - GPT-4.1
-tools: [agent, codebase, editFiles, runCommands]
+tools: [agent, codebase, editFiles, runCommands, search]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Explore']
+agents: ['Code', 'Explore', 'Researcher']
 handoffs:
   - label: Hand off to Code
     agent: Code
@@ -26,11 +26,17 @@ Guidelines:
 
 - Follow `.github/copilot-instructions.md`.
 - Keep responses concise — code first, one-line explanation.
+- If the question expands beyond a single file but stays read-only, use
+  `Explore` before escalating to `Code`.
 - If the task spans more than 2 files or has architectural impact, say so and
   suggest switching to the Code agent using the handoff button.
+- If the answer depends on current external documentation or version-specific
+  library behavior, use `Researcher` instead of guessing.
 - Do not run the full PDCA cycle for simple edits — just make the change and
   summarise in one line.
 - Use `runCommands` for quick lookups (`wc -l`, `grep`, `ls`) before opening files.
+- Use `search` for fast exact-match or regex lookups when a terminal grep would
+  add unnecessary noise.
 
 ## Skill activation map
 

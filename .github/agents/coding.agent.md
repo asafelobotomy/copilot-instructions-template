@@ -12,7 +12,7 @@ model:
 tools: [agent, editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Review', 'Audit', 'Fast', 'Researcher', 'Explore', 'Extensions', 'Commit', 'Organise']
+agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Extensions', 'Commit', 'Organise']
 handoffs:
   - label: Review changes
     agent: Review
@@ -42,6 +42,12 @@ Guidelines:
 - Apply the Structured Thinking Discipline (§5) before starting any complex task.
   Frame the problem → gather minimal context → decide → act → verify. If stuck
   after 3 attempts at the same approach, reformulate or ask the user.
+- Use `Explore` for read-only codebase inventory across multiple files before
+  you start changing implementation.
+- Use `Researcher` when a task depends on current external documentation or
+  API behavior.
+- Use `Extensions` when the work shifts into VS Code extension recommendations,
+  profile isolation, or extension configuration rather than repo code changes.
 - Delegate to `Organise` when the task is primarily about moving files,
   fixing path references, or reshaping directory structure.
 

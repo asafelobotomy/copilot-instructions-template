@@ -18,6 +18,9 @@ expected = {
     ".github/hooks/scripts/lib-hooks.sh": "template/hooks/scripts/lib-hooks.sh",
     ".github/hooks/scripts/heartbeat-policy.json": "template/hooks/scripts/heartbeat-policy.json",
     ".github/hooks/scripts/heartbeat_clock_summary.py": "template/hooks/scripts/heartbeat_clock_summary.py",
+    ".github/hooks/scripts/mcp-heartbeat-server.py": "template/hooks/scripts/mcp-heartbeat-server.py",
+    ".github/hooks/scripts/mcp-npx.sh": "template/hooks/scripts/mcp-npx.sh",
+    ".github/hooks/scripts/mcp-uvx.sh": "template/hooks/scripts/mcp-uvx.sh",
     ".github/hooks/scripts/guard-destructive.sh": "template/hooks/scripts/guard-destructive.sh",
     ".github/hooks/scripts/post-edit-lint.sh": "template/hooks/scripts/post-edit-lint.sh",
     ".github/hooks/scripts/pulse.sh": "template/hooks/scripts/pulse.sh",
@@ -28,7 +31,11 @@ expected = {
     ".github/hooks/scripts/subagent-stop.sh": "template/hooks/scripts/subagent-stop.sh",
     ".github/hooks/scripts/guard-destructive.ps1": "template/hooks/scripts/guard-destructive.ps1",
     ".github/hooks/scripts/post-edit-lint.ps1": "template/hooks/scripts/post-edit-lint.ps1",
+    ".github/hooks/scripts/pulse_intent.ps1": "template/hooks/scripts/pulse_intent.ps1",
+    ".github/hooks/scripts/pulse_paths.ps1": "template/hooks/scripts/pulse_paths.ps1",
     ".github/hooks/scripts/pulse.ps1": "template/hooks/scripts/pulse.ps1",
+    ".github/hooks/scripts/pulse_runtime.ps1": "template/hooks/scripts/pulse_runtime.ps1",
+    ".github/hooks/scripts/pulse_state.ps1": "template/hooks/scripts/pulse_state.ps1",
     ".github/hooks/scripts/save-context.ps1": "template/hooks/scripts/save-context.ps1",
     ".github/hooks/scripts/scan-secrets.ps1": "template/hooks/scripts/scan-secrets.ps1",
     ".github/hooks/scripts/session-start.ps1": "template/hooks/scripts/session-start.ps1",
@@ -48,6 +55,7 @@ echo ""
 echo "2. Mirrorable skills stay in exact sync with their template copies"
 assert_python "skill mirrors remain exact" '
 expected = {
+    ".github/skills/commit-preflight/SKILL.md": "template/skills/commit-preflight/SKILL.md",
     ".github/skills/conventional-commit/SKILL.md": "template/skills/conventional-commit/SKILL.md",
     ".github/skills/create-adr/SKILL.md": "template/skills/create-adr/SKILL.md",
     ".github/skills/agentic-workflows/SKILL.md": "template/skills/agentic-workflows/SKILL.md",
@@ -93,6 +101,7 @@ exact = {
     ".github/prompts/commit-msg.prompt.md": "template/prompts/commit-msg.prompt.md",
     ".github/prompts/context-map.prompt.md": "template/prompts/context-map.prompt.md",
     ".github/prompts/explain.prompt.md": "template/prompts/explain.prompt.md",
+    ".github/prompts/onboard-commit-style.prompt.md": "template/prompts/onboard-commit-style.prompt.md",
     ".github/prompts/review-file.prompt.md": "template/prompts/review-file.prompt.md",
 }
 for repo_rel, template_rel in exact.items():

@@ -1,5 +1,7 @@
 # Update Protocol — copilot-instructions-template
 
+<!-- markdownlint-disable MD022 MD031 MD032 MD058 -->
+
 > **For Copilot**: Follow every step precisely. Do **not** write until the user confirms after the Pre-flight Report — except the automatic backup (always created silently before first write).
 >
 > **For the human**: Say one of the trigger phrases below in a Copilot chat.
@@ -9,7 +11,6 @@
 ---
 
 ## Trigger phrases
-
 - *"Update your instructions"* / *"Check for instruction updates"* / *"Update from copilot-instructions-template"* / *"Sync instructions with the template"* / *"Check the template for updates"*
 - *"Force check instruction updates"* (bypasses version equality — see Force check section)
 - *"Restore instructions from backup"* / *"Roll back the instructions update"* / *"List instruction backups"*
@@ -19,11 +20,9 @@ All update phrases check `https://github.com/asafelobotomy/copilot-instructions-
 ---
 
 ## Pre-flight Sequence
-
 Complete all steps before presenting anything. Do not write yet.
 
 ### U1 — Read the installed instructions
-
 Read `.github/copilot-instructions.md` and `.github/copilot-version.md`. Extract:
 
 - **Installed version** (semver; `unknown` if absent/invalid), **Applied/Updated dates**
@@ -32,7 +31,6 @@ Read `.github/copilot-instructions.md` and `.github/copilot-version.md`. Extract
 - **§10 content**: entire `## §10 — Project-Specific Overrides` — preserved unconditionally, never diffed
 
 ### U2 — Fetch the current template version
-
 ```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/VERSION.md
 ```
@@ -40,18 +38,21 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 If fetched = installed → "Already up to date (vX.Y.Z). Say 'Force check instruction updates' for full comparison." → stop. If installed = `unknown`, proceed regardless.
 
 ### U3 — Fetch migration registry and changelog
-
 > **Parallelization**: U3, U3b, and U4 fetches are independent — batch all.
 
+Always fetch:
 ```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/MIGRATION.md
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/CHANGELOG.md
 ```
-
-From MIGRATION.md: entries newer than installed (sections changed, companions, placeholders, breaking changes, manual actions). From CHANGELOG.md: entries newer than installed for narrative.
+If the installed version is earlier than `v3.4.0`, also fetch:
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/MIGRATION.archive.md
+```
+Merge `MIGRATION.md` with `MIGRATION.archive.md` before the version-walk when the archive is fetched.
+From `MIGRATION.md` and, when fetched, `MIGRATION.archive.md`: entries newer than installed (sections changed, companions, placeholders, breaking changes, manual actions). From `CHANGELOG.md`: entries newer than installed for narrative.
 
 ### U3b — GitHub API compare (authoritative file diff)
-
 ```text
 GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/compare/v{INSTALLED_VERSION}...main
 ```
@@ -59,21 +60,16 @@ GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/com
 Parse `files[]` → record `filename`, `status`, `previous_filename`. Store as `API_FILE_DIFF`.
 
 **Fallback A** (404 / no tag): fetch `git/trees/main?recursive=1`, set all statuses to `modified`. If `"truncated": true`, set `API_FILE_DIFF = null`.
-**Fallback B** (API unavailable): set `API_FILE_DIFF = null`, use MIGRATION.md-only path.
+**Fallback B** (API unavailable): set `API_FILE_DIFF = null`, use the fetched migration registries only.
 
 ### U4 — Fetch templates for three-way merge
-
 - **Old baseline**: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/v<INSTALLED_VERSION>/template/copilot-instructions.md` (`OLD_BASELINE = null` if no tag / fetch fails)
 - **New template**: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/copilot-instructions.md`
 
 ### U5 — Build the change manifest (version-walk)
-
 #### Step 1 — Identify intermediate versions
-
-From MIGRATION.md, list versions between installed (exclusive) and new (inclusive), ascending.
-
+From the fetched migration registries, list versions between installed (exclusive) and new (inclusive), ascending.
 #### Step 2 — Section-by-section comparison
-
 For each §1–§9 (§10 excluded):
 
 **User modification** (fingerprint-based): compute fingerprint if `fingerprints_available`:
@@ -100,13 +96,10 @@ Match = not modified. Mismatch = modified. If unavailable → legacy heuristic.
 | `BREAKING` | Marked breaking in MIGRATION.md | Flag ⚠; confirm |
 
 **Legacy fallback** (`fingerprints_available = false` AND `OLD_BASELINE = null`): compare installed vs new directly. Substantial modifications → `USER_MODIFIED`, else `UPDATED`.
-
 #### Step 3 — Companion file manifest (API-driven)
-
-**Primary**: `API_FILE_DIFF` filtered through Path Mapping Table. **Secondary**: MIGRATION.md for metadata. Include paths from `API_FILE_DIFF` even if absent from MIGRATION.md.
+**Primary**: `API_FILE_DIFF` filtered through Path Mapping Table. **Secondary**: the fetched migration registries for metadata. Include paths from `API_FILE_DIFF` even if absent from the migration entries.
 
 ##### Path Mapping Table
-
 | Template repo glob | Consumer destination |
 |-------------------|---------------------|
 | `.github/agents/*.agent.md` | `.github/agents/*.agent.md` (verbatim) |
@@ -128,15 +121,13 @@ Match = not modified. Mismatch = modified. If unavailable → legacy heuristic.
 **Three-way comparison**: fetch old template at installed tag, read consumer, compare. If `<!-- file-manifest -->` has stored hash and `sha256(consumer)[0:12]` matches → override to `UPDATABLE`.
 
 #### Step 4 — Final check
-
 **Permanently excluded** (never diff/modify): §10 and its subsections (User Preferences, Additional project notes), `<!-- migrated -->` blocks, `<!-- user-added -->` blocks, resolved placeholder values.
 
-From MIGRATION.md entries: accumulate breaking changes, new placeholders, manual actions.
+From the fetched migration entries: accumulate breaking changes, new placeholders, manual actions.
 
 If zero items need updating → "No applicable changes found" → stop.
 
 #### Step 5 — Fast-path for companion-only updates
-
 If all §1–§9 are `UNCHANGED`/`USER_ONLY` AND companions need updating AND no breaking changes: show compact summary, then:
 
 ```ask_questions
@@ -160,7 +151,6 @@ If confirmed, write files, update version + CHANGELOG, skip full report.
 ---
 
 ### U5b — Workspace drift check
-
 Scan `.copilot/workspace/` for structural sentinel drift using `scripts/workspace/check-workspace-drift.sh`. Sentinels are HTML comments embedded in template workspace files; their absence indicates a structural section that has been updated in the template but not yet applied to this consumer's workspace.
 
 If `scripts/workspace/check-workspace-drift.sh` is available locally:
@@ -180,7 +170,6 @@ Record each drifted section as a **workspace drift item** to report in the Pre-f
 ---
 
 ## Pre-flight Report
-
 Present after U1–U5b. Do not write yet. Include: (1) version header, (2) breaking changes, (3) what’s new from CHANGELOG, (4) section diff table, (5) companion files table, (6) new placeholders, (7) user-modified sections, (8) manual actions, (9) workspace drift items (from U5b), (10) guardrail confirmation, (11) backup note. Then:
 
 ```ask_questions
@@ -202,7 +191,6 @@ allowFreeformInput: false
 ---
 
 ## Pre-write Backup
-
 **Automatic and mandatory.** Runs after user's first confirmatory response, before first write. Not for path S.
 
 Back up `.github/copilot-instructions.md` + companion files with status `UPDATABLE`/`USER_CUSTOMISED` to `.github/archive/pre-update-<TODAY>-v<INSTALLED_VERSION>/` (append counter if exists). Include `BACKUP-MANIFEST.md`. Print backup path, then continue.
@@ -210,9 +198,7 @@ Back up `.github/copilot-instructions.md` + companion files with status `UPDATAB
 ---
 
 ## Decision paths
-
 ### U — Update all
-
 > Pre-write Backup runs before this path begins.
 
 **Sections**: `UPDATED`/`BREAKING` → replace with new template, re-apply placeholders, re-insert `<!-- migrated -->`/`<!-- user-added -->` blocks with `<!-- preserved from pre-update version -->`. `NEW_SECTION` → insert at correct position with placeholder resolution. `USER_MODIFIED` → do NOT modify, append `<!-- update-note: template updated to vX.Y.Z but user-modified, preserved -->`. `USER_ONLY` → unchanged.
@@ -226,11 +212,9 @@ Back up `.github/copilot-instructions.md` + companion files with status `UPDATAB
 Proceed to Post-update steps.
 
 ### S — Skip
-
 No writes. No backup. "No changes made. Your instructions remain at version X.Y.Z."
 
 ### C — Customise
-
 Walk through each `UPDATED`, `BREAKING`, `NEW_SECTION`, `USER_MODIFIED` item showing: ID, status, versions, summary, excerpts (≤20 lines current + new).
 
 ```ask_questions
@@ -286,7 +270,6 @@ Pre-write Backup runs after "yes", before first write.
 ---
 
 ## Applicability guardrails
-
 Apply before writing any section, regardless of decision path:
 
 | Guardrail | Check | Action |
@@ -303,9 +286,7 @@ Apply before writing any section, regardless of decision path:
 ---
 
 ## Post-update steps
-
 ### 1 — Update version file, fingerprints, and file manifest
-
 Recompute fingerprints and file-manifest hashes:
 
 ```bash
@@ -354,19 +335,15 @@ for pattern in [
 Write `.github/copilot-version.md`: version, `Applied:` (preserved), `Updated: YYYY-MM-DD`, `<!-- section-fingerprints -->`, `<!-- file-manifest -->`, `<!-- setup-answers -->` (preserved). Omit fingerprint/manifest blocks only if neither `sha256sum` nor Python is available.
 
 ### 2 — Append to CHANGELOG.md
-
 Under `## [Unreleased]`: version transition, sections updated/skipped, companions applied, backup path.
 
 ### 3 — Print confirmation
-
 Report: version transition, section counts, companion counts, breaking changes, protected items, backup path, anomalies, manual actions.
 
 ---
 
 ## Restore from backup
-
 ### R1 — List available backups
-
 Scan `.github/archive/` for `pre-update-*` dirs. If none: "No backups found." → stop.
 
 ```ask_questions
@@ -385,7 +362,6 @@ allowFreeformInput: false
 Populate dynamically from scanned directories.
 
 #### R2 — Show backup manifest and confirm
-
 Read `BACKUP-MANIFEST.md`, show version/date/files. Note current file will be backed up first.
 
 ```ask_questions
@@ -403,25 +379,20 @@ allowFreeformInput: false
 > **Fallback**: If `ask_questions` unavailable, present as yes/no in chat.
 
 #### R3 — Back up current file
-
 Create `.github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/` with current instructions, affected companion files, and `BACKUP-MANIFEST.md`. Always reversible.
 
 #### R4 — Restore
-
 Copy `copilot-instructions.md` and companion files from backup to original paths, preserving structure. Create parent dirs as needed.
 
 #### R5 — Record the restoration
-
 Append to CHANGELOG.md: "Restored from `pre-update-<DATE>-v<VERSION>`. Pre-restore snapshot at `pre-restore-<TODAY>-v<CURRENT>`."
 
 #### R6 — Confirmation
-
 Report: restored from, files count, pre-restore path, CHANGELOG updated. Note: undo by restoring pre-restore snapshot.
 
 ---
 
 ## Force check
-
 If user says *"Force check instruction updates"*, bypass version equality check in U2 and run full comparison.
 
 ---

@@ -13,6 +13,7 @@ trap cleanup_dirs EXIT
 make_fixture() {
   local root="$1"
   mkdir -p \
+    "$root/.copilot/workspace" \
     "$root/.github/agents" \
     "$root/.github/skills/skill-creator" \
     "$root/.github/skills/extension-review" \
@@ -20,6 +21,7 @@ make_fixture() {
     "$root/template/skills/skill-creator" \
     "$root/template/skills/test-coverage-review" \
     "$root/template/skills/aaa-extra" \
+    "$root/template/workspace" \
     "$root/template/hooks/scripts"
 
   : > "$root/.github/agents/setup.agent.md"
@@ -68,28 +70,38 @@ make_fixture "$TMP_WRITE"
 output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --write 2>&1)
 status=$?
 assert_success "write mode exits zero" "$status"
-assert_contains "write mode reports target" "$output" "OK: wrote"
+assert_contains "write mode reports repo target" "$output" ".copilot/workspace/workspace-index.json"
+assert_contains "write mode reports template target" "$output" "template/workspace/workspace-index.json"
 assert_python_in_root "workspace-index.json is valid JSON" "$TMP_WRITE" "
 path = root / '.copilot/workspace/workspace-index.json'
 json.load(path.open())
 "
+assert_python_in_root "template workspace-index.json is valid JSON" "$TMP_WRITE" "
+path = root / 'template/workspace/workspace-index.json'
+json.load(path.open())
+"
 assert_python_in_root "counts match fixture contents" "$TMP_WRITE" "
-path = root / '.copilot/workspace/workspace-index.json'
-data = json.load(path.open())
-assert data['counts']['agents'] == 3
-assert data['counts']['skillsRepo'] == 3
-assert data['counts']['skillsTemplate'] == 3
-assert data['counts']['hookScriptsShell'] == 3
-assert data['counts']['hookScriptsPowerShell'] == 3
+for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/workspace-index.json'):
+  data = json.load((root / rel).open())
+  assert data['counts']['agents'] == 3
+  assert data['counts']['skillsRepo'] == 3
+  assert data['counts']['skillsTemplate'] == 3
+  assert data['counts']['hookScriptsShell'] == 3
+  assert data['counts']['hookScriptsPowerShell'] == 3
 "
 assert_python_in_root "preferred items come first and extras sort after them" "$TMP_WRITE" "
-path = root / '.copilot/workspace/workspace-index.json'
-data = json.load(path.open())
-assert data['agents'] == ['setup.agent.md', 'review.agent.md', 'z-last.agent.md']
-assert data['skills']['repo'] == ['skill-creator', 'extension-review', 'zzz-extra']
-assert data['skills']['template'] == ['skill-creator', 'test-coverage-review', 'aaa-extra']
-assert data['hookScripts']['shell'] == ['session-start.sh', 'guard-destructive.sh', 'save-context.sh']
-assert data['hookScripts']['powershell'] == ['session-start.ps1', 'guard-destructive.ps1', 'save-context.ps1']
+for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/workspace-index.json'):
+  data = json.load((root / rel).open())
+  assert data['agents'] == ['setup.agent.md', 'review.agent.md', 'z-last.agent.md']
+  assert data['skills']['repo'] == ['skill-creator', 'extension-review', 'zzz-extra']
+  assert data['skills']['template'] == ['skill-creator', 'test-coverage-review', 'aaa-extra']
+  assert data['hookScripts']['shell'] == ['session-start.sh', 'guard-destructive.sh', 'save-context.sh']
+  assert data['hookScripts']['powershell'] == ['session-start.ps1', 'guard-destructive.ps1', 'save-context.ps1']
+"
+assert_python_in_root "repo and template indices match exactly" "$TMP_WRITE" "
+repo_data = json.load((root / '.copilot/workspace/workspace-index.json').open())
+template_data = json.load((root / 'template/workspace/workspace-index.json').open())
+assert repo_data == template_data
 "
 echo ""
 
@@ -97,7 +109,7 @@ echo "4. Check mode passes when file is in sync"
 output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --check 2>&1)
 status=$?
 assert_success "check mode passes on synced file" "$status"
-assert_contains "check mode success message" "$output" "OK: workspace-index.json is in sync"
+assert_contains "check mode success message" "$output" "OK: workspace-index.json files are in sync"
 echo ""
 
 echo "5. Drift is detected after manual modification"
@@ -115,7 +127,7 @@ PY
 output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --check 2>&1)
 status=$?
 assert_failure "check mode fails on drift" "$status"
-assert_contains "drift message is printed" "$output" "FAIL: workspace-index.json is out of sync"
+assert_contains "drift message is printed" "$output" ".copilot/workspace/workspace-index.json is out of sync"
 assert_contains "drift includes repair hint" "$output" "Run: bash scripts/workspace/sync-workspace-index.sh --write"
 echo ""
 
@@ -126,6 +138,13 @@ assert_success "write repairs drift" "$status"
 output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --check 2>&1)
 status=$?
 assert_success "check passes after repair" "$status"
+echo ""
+
+echo "7. Real repo and template indices stay aligned"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" --check 2>&1)
+status=$?
+assert_success "real repo indices are in sync" "$status"
+assert_contains "real repo reports both indices are in sync" "$output" "OK: workspace-index.json files are in sync"
 echo ""
 
 finish_tests

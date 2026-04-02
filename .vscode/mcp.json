@@ -32,6 +32,15 @@
 		"context7": {
 			"type": "http",
 			"url": "https://mcp.context7.com/mcp"
+		},
+		"heartbeat": {
+			"type": "stdio",
+			"command": "${workspaceFolder}/.github/hooks/scripts/mcp-uvx.sh",
+			"args": [
+				"--from", "mcp[cli]",
+				"mcp", "run",
+				"${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py"
+			]
 		}
 	}
 }

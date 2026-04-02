@@ -202,12 +202,12 @@ Event-triggered health checks that keep the agent aligned with real project stat
 
 1. Read `HEARTBEAT.md` — follow it strictly. Do not infer tasks from prior sessions.
 2. Run every check in the Checks section. Cross-reference: MEMORY.md (consolidation), TOOLS.md (dependency audit), SOUL.md (reasoning alignment), §10 (settings drift).
-3. If the trigger is **explicit** and the user asked for a retrospective, run the Retrospective section.
-4. If a **medium/large task** has completed, ask the user: "That was a large change to the codebase, would you like me to run a retrospective?" Run it only if they agree. Treat medium/large as one strong signal (8+ modified files or 30+ minutes) or two supporting signals (5+ modified files, 15+ minutes, context compaction). Skip it for small/localized tasks.
+3. If the trigger is **explicit** and the user asked for a retrospective, call the `session_reflect` MCP tool and process its output silently.
+4. If the session is **medium/large**, call the `session_reflect` MCP tool when the Stop hook instructs you to do so. Treat medium/large as one strong signal (8+ modified files or 30+ minutes active) or two supporting signals (5+ modified files, 15+ active minutes, context compaction). Skip it for small/localized tasks.
 5. Update Pulse: `HEARTBEAT_OK` if all checks pass; prepend `[!]` with a one-line alert for each failure.
 6. Append a row to History (keep last 5).
 7. Write observations to Agent Notes for the next heartbeat.
-8. Report to user only if alerts exist — silent when healthy (exception: retrospective Q4/Q5 always surface when non-empty).
+8. Report to user only if alerts or actionable retrospective findings exist — silent when healthy.
 9. **Context limit**: if context pressure is high, run `save-context.sh`, append a resume note to Agent Notes, then continue — never abandon a task mid-flight.
 
 ### Agent Hooks
@@ -234,6 +234,8 @@ Hook configuration lives in `.github/hooks/copilot-hooks.json`. VS Code supports
 When spawning subagents:
 
 - Each `.github/agents/*.agent.md` declares an `agents:` allow-list restricting which subagents it may invoke. Respect these boundaries.
+- Keep allow-lists narrow. Add a subagent only when the agent body defines a concrete workflow for using it. Do not keep speculative delegates "just in case".
+- Prefer the lightest valid handoff: use `Explore` for read-only repo scans, `Researcher` for current external docs, `Audit` for residual-risk or security checks, and `Organise` for pathing or file moves.
 - Pass the full contents of this file as system context.
 - Set `max_depth = {{SUBAGENT_MAX_DEPTH}}`. Stop and surface to user if reached.
 - Each subagent must run the three-check ritual before reporting done.

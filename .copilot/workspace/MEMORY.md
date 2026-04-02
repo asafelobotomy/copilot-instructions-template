@@ -17,8 +17,14 @@ VS Code's built-in memory tool (`/memories/`) has three scopes: user (persistent
 |--------|--------------|-------|
 | Test count baseline | 2026-03-19 | 222 tests, 0 failures |
 | Starter-kit count | 2026-03-19 | 8 kits in REGISTRY.json |
-| Skill count | 2026-03-19 | 14 in .github/skills/, 14 in template/skills/ |
-| Agent count | 2026-04-01 | 8 agents in .github/agents/ (merged Doctor+Security→Audit) |
+| Skill count | 2026-04-02 | 16 in .github/skills/, 15 in template/skills/ |
+| Agent count | 2026-04-02 | 10 agents in .github/agents/ |
+
+## Known Gotchas — Hooks System
+
+- **Stop hook output schema (confirmed 2026-04-01 docs)**: only `hookSpecificOutput.decision: "block"` and `reason` (string). No button, confirmation title, follow-up chip, or any interactive UI output. Source: `https://code.visualstudio.com/docs/copilot/customization/hooks`.
+- **PostToolUse input (confirmed)**: payload includes `tool_name` (camelCase in VS Code, e.g. `create_file`, `replace_string_in_file`) and `tool_input`. This is usable for tracking Copilot edit activity in `soft_post_tool`.
+- **Approved design**: active-work-time model for retrospective gating — track `task_window_start_epoch`, `active_work_seconds`, `session_start_git_count`, `copilot_edit_count`, and `tool_call_counter` in state.json. Implemented in shell and PowerShell pulse hooks with autonomous `session_reflect` stop guidance.
 
 ## Known Gotchas
 

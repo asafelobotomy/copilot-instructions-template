@@ -1,20 +1,21 @@
 #!/usr/bin/env bash
-# sync-workspace-index.sh — keep .copilot/workspace/workspace-index.json aligned with repo state.
+# sync-workspace-index.sh — keep repo and template workspace-index.json files aligned with repo state.
 #
 # Usage:
-#   bash scripts/workspace/sync-workspace-index.sh --write   # rewrite workspace-index.json from filesystem
-#   bash scripts/workspace/sync-workspace-index.sh --check   # fail if workspace-index.json is out of sync
+#   bash scripts/workspace/sync-workspace-index.sh --write   # rewrite repo and template workspace-index.json files from filesystem
+#   bash scripts/workspace/sync-workspace-index.sh --check   # fail if either workspace-index.json copy is out of sync
 set -euo pipefail
 
 ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
 WORKSPACE_INDEX_PATH="$ROOT_DIR/.copilot/workspace/workspace-index.json"
+TEMPLATE_WORKSPACE_INDEX_PATH="$ROOT_DIR/template/workspace/workspace-index.json"
 MODE="${1:---check}"
 
 # shellcheck source=../lib.sh
 source "$(dirname "$0")/../lib.sh"
 require_python_check_write "workspace/sync-workspace-index.sh" "$MODE"
 
-python3 - "$ROOT_DIR" "$WORKSPACE_INDEX_PATH" "$MODE" <<'PY'
+python3 - "$ROOT_DIR" "$WORKSPACE_INDEX_PATH" "$TEMPLATE_WORKSPACE_INDEX_PATH" "$MODE" <<'PY'
 import datetime
 import json
 import pathlib
@@ -22,7 +23,8 @@ import sys
 
 root = pathlib.Path(sys.argv[1])
 index_path = pathlib.Path(sys.argv[2])
-mode = sys.argv[3]
+template_index_path = pathlib.Path(sys.argv[3])
+mode = sys.argv[4]
 
 preferred_agents = [
     "setup.agent.md",
@@ -53,6 +55,7 @@ preferred_skills = [
     "plugin-management",
     "extension-review",
     "test-coverage-review",
+    "commit-preflight",
 ]
 
 preferred_shell_hooks = [
@@ -61,10 +64,12 @@ preferred_shell_hooks = [
     "session-start.sh",
     "guard-destructive.sh",
     "post-edit-lint.sh",
-    "enforce-retrospective.sh",
     "save-context.sh",
     "subagent-start.sh",
     "subagent-stop.sh",
+    "mcp-npx.sh",
+    "mcp-uvx.sh",
+    "pulse.sh",
 ]
 
 preferred_ps_hooks = [
@@ -72,10 +77,10 @@ preferred_ps_hooks = [
     "session-start.ps1",
     "guard-destructive.ps1",
     "post-edit-lint.ps1",
-    "enforce-retrospective.ps1",
     "save-context.ps1",
     "subagent-start.ps1",
     "subagent-stop.ps1",
+    "pulse.ps1",
 ]
 
 
@@ -128,29 +133,32 @@ generated = {
 }
 
 if mode == "--write":
-    index_path.parent.mkdir(parents=True, exist_ok=True)
-    with index_path.open("w", encoding="utf-8") as f:
-        json.dump(generated, f, indent=2)
-        f.write("\n")
-    print(f"OK: wrote {index_path}")
+    for path in (index_path, template_index_path):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("w", encoding="utf-8") as f:
+            json.dump(generated, f, indent=2)
+            f.write("\n")
+        print(f"OK: wrote {path}")
     sys.exit(0)
 
-if not index_path.exists():
-    print(f"FAIL: missing {index_path}")
-    print("Run: bash scripts/workspace/sync-workspace-index.sh --write")
-    sys.exit(1)
+for path in (index_path, template_index_path):
+    if not path.exists():
+        print(f"FAIL: missing {path}")
+        print("Run: bash scripts/workspace/sync-workspace-index.sh --write")
+        sys.exit(1)
 
-with index_path.open(encoding="utf-8") as f:
-    current = json.load(f)
+for path in (index_path, template_index_path):
+    with path.open(encoding="utf-8") as f:
+        current = json.load(f)
 
-# Ignore 'updated' field in check mode to avoid daily drift noise.
-current_no_date = dict(current)
-current_no_date["updated"] = generated["updated"]
+    # Ignore 'updated' field in check mode to avoid daily drift noise.
+    current_no_date = dict(current)
+    current_no_date["updated"] = generated["updated"]
 
-if current_no_date != generated:
-    print("FAIL: workspace-index.json is out of sync")
-    print("Run: bash scripts/workspace/sync-workspace-index.sh --write")
-    sys.exit(1)
+    if current_no_date != generated:
+        print(f"FAIL: {path.relative_to(root).as_posix()} is out of sync")
+        print("Run: bash scripts/workspace/sync-workspace-index.sh --write")
+        sys.exit(1)
 
-print("OK: workspace-index.json is in sync")
+print("OK: workspace-index.json files are in sync")
 PY

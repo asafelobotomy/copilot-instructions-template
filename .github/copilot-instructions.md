@@ -145,7 +145,7 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 - Skills: `.github/skills/` — loaded on demand. Read `SKILL.md` when description matches task.
 - Agents: `.github/agents/` — each pins a model.
 - Tool Protocol: activate `.github/skills/tool-protocol/SKILL.md` before building any script.
-- Heartbeat: `.copilot/workspace/HEARTBEAT.md` — run at session start and when the medium/large heuristic trips (one strong signal: 8+ modified files or 30+ minutes; or two supporting signals: 5+ modified files, 15+ minutes, context compaction). Retrospective is opt-in after user confirmation. Silent when healthy.
+- Heartbeat: `.copilot/workspace/HEARTBEAT.md` — run at session start. Health digest emits on meaningful phase transitions and overlay changes, not a fixed tool-call cadence. On significant sessions (8+ files or 30+ active minutes), the Stop hook instructs the model to call the `session_reflect` MCP tool autonomously. Silent when healthy.
 
 ## User Preferences
 
@@ -159,7 +159,7 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 - **Self-editing**: Free to update this file. Report changes.
 - **Global autonomy**: High (4). Pause for: deletions, overwrites, config changes, architecture.
 - **Tone**: Professional only. No humour, emoji, or casual language.
-- **MCP**: Full config. All 4 default servers. Suggest new MCP servers proactively.
+- **MCP**: Full config. Default servers configured. Suggest new MCP servers proactively.
 
 ## Graduated Trust Model
 
