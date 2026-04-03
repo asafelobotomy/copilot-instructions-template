@@ -105,6 +105,17 @@ For deeper audits, activate the matching skill (§12) instead of expanding §2:
 - Read before claiming — never describe, reference, or modify a file not opened this session.
   `semantic_search` or `grep_search` confirms existence; reading the file confirms content.
 
+**Terminal discipline**:
+
+- For high-volume commands, capture the full output to a log file and print only a bounded tail instead of streaming everything.
+- If the repo documents a terminal-safe wrapper for a noisy command, prefer it over the raw command when using terminal tools.
+- Prefer repo scripts or bash wrappers over ad hoc shell control flow when a command needs exit-status plumbing, redirection, or retries.
+- Never run `set -euo pipefail` or `setopt errexit nounset pipefail` as a standalone terminal command in the persistent zsh session. Shell integration hooks can inherit that global state and terminate the session on the next prompt cycle.
+- For ad hoc strict-mode one-liners, prefer a repo wrapper if one exists. Otherwise run the snippet through a child Bash process with strict mode enabled instead of mutating the parent zsh session.
+- For multi-line strict-mode snippets, prefer a dedicated stdin or here-doc wrapper when the repo provides one. Otherwise run the snippet through a child Bash process with strict mode enabled instead of mutating the parent zsh session.
+- In zsh workspaces, avoid reserved variable names such as `status`; use `rc`, `exit_code`, or `command_rc` instead.
+- If a failure is caused by shell semantics rather than the underlying command, stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation.
+
 ---
 
 ## §5 — PDCA Cycle

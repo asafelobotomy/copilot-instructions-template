@@ -132,6 +132,7 @@ output = {
     "broadening_reasons": unique(broadening_reasons),
     "unmapped_paths": unmapped_paths,
     "final_gate": "bash tests/run-all.sh",
+    "terminal_safe_final_gate": "bash scripts/tests/run-all-captured.sh",
 }
 
 print(json.dumps(output, indent=2))

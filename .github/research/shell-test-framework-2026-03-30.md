@@ -13,6 +13,23 @@ execution — but both require an installation step and carry a learning curve. 
 high-value, low-risk improvements are **trap-based cleanup guards**, **a shared git-repo fixture
 helper**, and **TAP-format summary output** — all achievable without migrating frameworks.
 
+When these shell snippets are run through terminal tools in a zsh workspace, use the repo's strict
+mode wrappers instead of issuing top-level `set -euo pipefail` into the persistent session.
+
+One-line strict snippet:
+
+```bash
+bash scripts/tests/run-strict-bash.sh --command 'printf "framework-note\n"'
+```
+
+Multi-line strict snippet:
+
+```bash
+bash scripts/tests/run-strict-bash-stdin.sh <<'EOF'
+printf 'framework-note\n'
+EOF
+```
+
 ---
 
 ## Part 1 — Current State Audit

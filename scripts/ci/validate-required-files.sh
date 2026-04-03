@@ -20,6 +20,7 @@ for f in \
   "scripts/release/plan-release.sh" \
   "scripts/release/stub-migration.sh" \
   "scripts/release/sync-version.sh" \
+  "scripts/tests/run-all-captured.sh" \
   "scripts/workspace/check-workspace-drift.sh" \
   "scripts/workspace/sync-workspace-index.sh" \
   "scripts/sync/sync-models.sh" \

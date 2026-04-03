@@ -83,13 +83,18 @@ run_optional_phase "Hook Behavior (PowerShell parity)" "pwsh" "pwsh" \
 
 run_phase "Script Behavior" \
   "tests/scripts/test-release-plan.sh" \
+  "tests/scripts/test-run-strict-bash.sh" \
+  "tests/scripts/test-run-strict-bash-stdin.sh" \
+  "tests/scripts/test-audit-release-settings.sh" \
   "tests/scripts/test-select-targeted-tests.sh" \
+  "tests/scripts/test-run-all-captured.sh" \
   "tests/scripts/test-sync-version.sh" \
   "tests/scripts/test-stub-migration.sh" \
   "tests/scripts/test-sync-workspace-index.sh" \
   "tests/scripts/test-sync-models.sh" \
   "tests/scripts/test-validate-agent-frontmatter.sh" \
   "tests/scripts/test-sync-template-parity.sh" \
+  "tests/scripts/test-validate-template-sync.sh" \
   "tests/scripts/test-security-edge-cases.sh" \
   "tests/scripts/test-copilot-audit.sh" \
   "tests/scripts/test-mcp-launchers.sh" \

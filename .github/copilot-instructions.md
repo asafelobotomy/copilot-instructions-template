@@ -39,9 +39,10 @@ This repo has two distinct layers that must never be mixed:
 | Task | Command |
 |------|---------|
 | Run all tests | `bash tests/run-all.sh` |
+| Run all tests (captured) | `bash scripts/tests/run-all-captured.sh` |
 | Select targeted tests | `bash scripts/tests/select-targeted-tests.sh <paths...>` |
 | Type check | `echo "no type check configured"` |
-| Sync version | `bash scripts/release/sync-version.sh` |
+| Verify release-managed versions | `bash scripts/release/sync-version.sh` |
 | Sync workspace-index | `bash scripts/workspace/sync-workspace-index.sh --check` |
 | LOC count | `find . \( -name '*.sh' -o -name '*.md' \) -not -path './node_modules/*' \| xargs wc -l \| tail -1` |
 
@@ -58,6 +59,17 @@ Run deterministic targeted suites during intermediate phases when the repo has a
 - No silent error swallowing — log or re-throw.
 - No commented-out code — git history is the undo stack.
 - Read before claiming — never describe or modify a file not opened this session.
+
+**Terminal discipline**:
+
+- For high-volume commands, capture the full output to a log file and print only a bounded tail.
+- In this repo, prefer `bash scripts/tests/run-all-captured.sh` when the full-suite gate is executed through terminal tools.
+- Prefer repo bash scripts over ad hoc zsh control flow when a command needs exit-status plumbing, redirection, or retries.
+- Never run `set -euo pipefail` or `setopt errexit nounset pipefail` as a standalone terminal command in the persistent zsh session. VS Code shell integration prompt hooks inherit that global state and can terminate the session on the next prompt cycle.
+- For ad hoc strict-mode one-liners, prefer `bash scripts/tests/run-strict-bash.sh --command '...'` instead of mutating the parent zsh session.
+- For multi-line strict-mode snippets, prefer `bash scripts/tests/run-strict-bash-stdin.sh <<'EOF'` or pipe the snippet on stdin to that wrapper instead of mutating the parent zsh session.
+- In zsh workspaces, avoid reserved variable names such as `status`; use `rc`, `exit_code`, or `command_rc` instead.
+- If a failure is caused by shell semantics rather than the underlying command, stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation.
 
 ## PDCA Cycle
 
@@ -110,7 +122,7 @@ Before acting on any medium-to-complex task:
 - `template/copilot-instructions.md` must contain ≥ 3 `{{PLACEHOLDER}}` tokens (CI enforced).
 - `.github/copilot-instructions.md` *(this file)* must contain **zero** `{{}}` tokens (CI enforced).
 - Parity: `.github/skills/` must mirror `template/skills/`. `.github/hooks/` must mirror `template/hooks/` exactly. CI enforces.
-- Version source of truth: `VERSION.md`. Run `bash scripts/release/sync-version.sh` after bumping — it updates `template/copilot-instructions.md` and `.release-please-manifest.json`.
+- Version source of truth: `VERSION.md`. Release-please owns version bumps, the manifest, and version markers. Do not bump release files manually; `bash scripts/release/sync-version.sh` is read-only and verifies the managed files if you suspect drift.
 - `workspace-index.json` must stay in sync: `bash scripts/workspace/sync-workspace-index.sh --write` then commit.
 
 ## File Inventory

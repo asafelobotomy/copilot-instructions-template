@@ -185,7 +185,77 @@ for needle in required:
 '
 echo ""
 
-echo "7. Agent allow-lists stay minimal and workflow-aligned"
+echo "7. Instruction files encode terminal discipline for truncation and zsh shells"
+assert_python "instruction files include terminal discipline guidance" '
+required_by_file = {
+    ".github/copilot-instructions.md": [
+        "Run all tests (captured)",
+        "bash scripts/tests/run-all-captured.sh",
+        "For high-volume commands, capture the full output to a log file and print only a bounded tail",
+        "Prefer repo bash scripts over ad hoc zsh control flow",
+        "Never run `set -euo pipefail` or `setopt errexit nounset pipefail` as a standalone terminal command",
+        "scripts/tests/run-strict-bash.sh",
+        "scripts/tests/run-strict-bash-stdin.sh",
+        "--command",
+        "EOF",
+        "avoid reserved variable names such as `status`",
+        "stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation",
+    ],
+    "template/copilot-instructions.md": [
+        "For high-volume commands, capture the full output to a log file and print only a bounded tail instead of streaming everything",
+        "If the repo documents a terminal-safe wrapper for a noisy command, prefer it",
+        "Prefer repo scripts or bash wrappers over ad hoc shell control flow",
+        "Never run `set -euo pipefail` or `setopt errexit nounset pipefail` as a standalone terminal command",
+        "prefer a repo wrapper if one exists",
+        "prefer a dedicated stdin or here-doc wrapper when the repo provides one",
+        "run the snippet through a child Bash process with strict mode enabled",
+        "avoid reserved variable names such as `status`",
+        "stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation",
+    ],
+}
+for rel, needles in required_by_file.items():
+    text = " ".join((root / rel).read_text(encoding="utf-8").split())
+    for needle in needles:
+        if " ".join(needle.split()) not in text:
+            raise SystemExit(rel + " missing terminal discipline guidance: " + needle)
+template_text = (root / "template/copilot-instructions.md").read_text(encoding="utf-8")
+if "scripts/tests/run-strict-bash.sh" in template_text:
+    raise SystemExit("template/copilot-instructions.md must not reference repo-only strict wrapper paths")
+if "scripts/tests/run-strict-bash-stdin.sh" in template_text:
+    raise SystemExit("template/copilot-instructions.md must not reference repo-only stdin wrapper paths")
+search_roots = [
+    root / ".github/agents",
+    root / ".github/prompts",
+    root / ".github/instructions",
+    root / "template/prompts",
+    root / "template/instructions",
+]
+for search_root in search_roots:
+    for path in search_root.rglob("*.md"):
+        text = path.read_text(encoding="utf-8")
+        if "setopt errexit nounset pipefail" in text:
+            raise SystemExit(str(path.relative_to(root)) + " must not suggest top-level zsh strict-mode mutation")
+'
+echo ""
+
+echo "8. Agent and prompt surfaces avoid top-level zsh strict-mode mutation guidance"
+assert_python "prompt and agent surfaces avoid raw zsh strict-mode mutation" '
+search_roots = [
+    root / ".github/agents",
+    root / ".github/prompts",
+    root / ".github/instructions",
+    root / "template/prompts",
+    root / "template/instructions",
+]
+for search_root in search_roots:
+    for path in search_root.rglob("*.md"):
+        text = path.read_text(encoding="utf-8")
+        if "setopt errexit nounset pipefail" in text:
+            raise SystemExit(str(path.relative_to(root)) + " must not suggest top-level zsh strict-mode mutation")
+'
+echo ""
+
+echo "9. Agent allow-lists stay minimal and workflow-aligned"
 assert_python "agent allow-lists match documented delegation policy" '
 def parse_tools_or_agents(frontmatter, field):
     match = re.search(rf"^{field}:\s*\[(.*)\]\s*$", frontmatter, re.M)

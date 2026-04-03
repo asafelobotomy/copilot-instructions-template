@@ -48,7 +48,7 @@ assert_failure() {
 
 assert_contains() {
   local desc="$1" haystack="$2" needle="$3"
-  if grep -Fq "$needle" <<< "$haystack"; then
+  if grep -Fq -- "$needle" <<< "$haystack"; then
     pass_note "$desc"
   else
     fail_note "$desc" "     expected to find: $needle
@@ -58,7 +58,7 @@ assert_contains() {
 
 assert_matches() {
   local desc="$1" haystack="$2" pattern="$3"
-  if grep -Eq "$pattern" <<< "$haystack"; then
+  if grep -Eq -- "$pattern" <<< "$haystack"; then
     pass_note "$desc"
   else
     fail_note "$desc" "     expected pattern: $pattern
@@ -68,7 +68,7 @@ assert_matches() {
 
 assert_file_contains() {
   local desc="$1" file_path="$2" pattern="$3"
-  if grep -Eq "$pattern" "$file_path" 2>/dev/null; then
+  if grep -Eq -- "$pattern" "$file_path" 2>/dev/null; then
     pass_note "$desc"
   else
     fail_note "$desc" "     expected pattern: $pattern
@@ -78,7 +78,7 @@ assert_file_contains() {
 
 assert_file_not_contains() {
   local desc="$1" file_path="$2" pattern="$3"
-  if ! grep -Eq "$pattern" "$file_path" 2>/dev/null; then
+  if ! grep -Eq -- "$pattern" "$file_path" 2>/dev/null; then
     pass_note "$desc"
   else
     fail_note "$desc" "     unexpected pattern: $pattern

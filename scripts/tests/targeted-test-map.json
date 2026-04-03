@@ -15,6 +15,30 @@
       "reason": "The selector script has a dedicated unit suite."
     },
     {
+      "id": "run-all-captured-script",
+      "matchType": "exact",
+      "pattern": "scripts/tests/run-all-captured.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-run-all-captured.sh"],
+      "reason": "run-all-captured has a dedicated wrapper behavior suite."
+    },
+    {
+      "id": "run-strict-bash-script",
+      "matchType": "exact",
+      "pattern": "scripts/tests/run-strict-bash.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-run-strict-bash.sh"],
+      "reason": "run-strict-bash has a dedicated wrapper behavior suite."
+    },
+    {
+      "id": "run-strict-bash-stdin-script",
+      "matchType": "exact",
+      "pattern": "scripts/tests/run-strict-bash-stdin.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-run-strict-bash-stdin.sh"],
+      "reason": "run-strict-bash-stdin has a dedicated stdin and here-doc wrapper behavior suite."
+    },
+    {
       "id": "selector-map",
       "matchType": "exact",
       "pattern": "scripts/tests/targeted-test-map.json",
@@ -129,6 +153,14 @@
       "reason": "plan-release is covered by a dedicated behavior suite."
     },
     {
+      "id": "release-audit-settings",
+      "matchType": "exact",
+      "pattern": "scripts/release/audit-release-settings.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-audit-release-settings.sh"],
+      "reason": "audit-release-settings is covered by a dedicated GitHub-settings behavior suite."
+    },
+    {
       "id": "release-stub-migration",
       "matchType": "exact",
       "pattern": "scripts/release/stub-migration.sh",
@@ -167,6 +199,14 @@
       "phaseStrategy": "targeted",
       "tests": ["tests/scripts/test-sync-template-parity.sh"],
       "reason": "sync-template-parity has a dedicated behavior suite."
+    },
+    {
+      "id": "validate-template-sync-script",
+      "matchType": "exact",
+      "pattern": "scripts/ci/validate-template-sync.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-validate-template-sync.sh"],
+      "reason": "validate-template-sync delegates to the canonical parity check and has a dedicated behavior suite."
     },
     {
       "id": "validate-agent-frontmatter-script",
@@ -573,7 +613,7 @@
       "pattern": ".github/workflows/*.yml",
       "phaseStrategy": "targeted",
       "tests": ["tests/contracts/test-release-contracts.sh"],
-      "reason": "Release workflow contracts validate CI and release-please workflow coupling."
+      "reason": "Release workflow contracts validate the CI-integrated release flow."
     }
   ]
 }

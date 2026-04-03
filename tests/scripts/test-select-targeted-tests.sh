@@ -42,6 +42,8 @@ if payload["normalized_paths"] != ["scripts/release/sync-version.sh"]:
     raise SystemExit(str(payload["normalized_paths"]))
 if payload["run_full_suite_at_completion"] is not True:
     raise SystemExit("final full-suite gate missing")
+if payload["terminal_safe_final_gate"] != "bash scripts/tests/run-all-captured.sh":
+    raise SystemExit(payload["terminal_safe_final_gate"])
 '
 echo ""
 
@@ -191,6 +193,45 @@ SELECTOR_OUTPUT="$output" assert_python "selector assets map to the selector sui
 payload = json.loads(os.environ["SELECTOR_OUTPUT"])
 if payload["selected_tests"] != ["tests/scripts/test-select-targeted-tests.sh"]:
     raise SystemExit(str(payload["selected_tests"]))
+'
+echo ""
+
+echo "13. validate-template-sync maps to its dedicated suite"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/ci/validate-template-sync.sh")
+status=$?
+assert_success "selector exits zero on validate-template-sync" "$status"
+SELECTOR_OUTPUT="$output" assert_python "validate-template-sync maps to its dedicated suite" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if payload["selected_tests"] != ["tests/scripts/test-validate-template-sync.sh"]:
+    raise SystemExit(str(payload["selected_tests"]))
+if payload["intermediate_phase_strategy"] != "targeted":
+    raise SystemExit(payload["intermediate_phase_strategy"])
+'
+echo ""
+
+echo "14. run-all-captured maps to its dedicated suite"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/tests/run-all-captured.sh")
+status=$?
+assert_success "selector exits zero on run-all-captured" "$status"
+SELECTOR_OUTPUT="$output" assert_python "run-all-captured maps to its dedicated suite" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if payload["selected_tests"] != ["tests/scripts/test-run-all-captured.sh"]:
+    raise SystemExit(str(payload["selected_tests"]))
+if payload["intermediate_phase_strategy"] != "targeted":
+    raise SystemExit(payload["intermediate_phase_strategy"])
+'
+echo ""
+
+echo "15. run-strict-bash-stdin maps to its dedicated suite"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/tests/run-strict-bash-stdin.sh")
+status=$?
+assert_success "selector exits zero on run-strict-bash-stdin" "$status"
+SELECTOR_OUTPUT="$output" assert_python "run-strict-bash-stdin maps to its dedicated suite" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if payload["selected_tests"] != ["tests/scripts/test-run-strict-bash-stdin.sh"]:
+    raise SystemExit(str(payload["selected_tests"]))
+if payload["intermediate_phase_strategy"] != "targeted":
+    raise SystemExit(payload["intermediate_phase_strategy"])
 '
 echo ""
 

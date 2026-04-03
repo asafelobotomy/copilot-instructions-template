@@ -70,6 +70,22 @@
 | <https://code.visualstudio.com/updates/v1_113> | v1.113 March 25 2026 — Chat Customizations editor Preview; configurable thinking effort in model picker (deprecated: anthropic.thinking.effort, responsesApiReasoningEffort settings); nested subagents | 2026-04-01 | release-notes, agents, thinking-effort |
 | <https://code.visualstudio.com/updates/v1_114> | v1.114 April 1 2026 (latest stable) — copy final response, /troubleshoot previous sessions, workspace search simplification (#codebase now pure semantic only) | 2026-04-01 | release-notes, latest |
 
+## zsh Shell Options — ERR_EXIT, NOUNSET, LOCAL_OPTIONS, emulate -L
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://zsh.sourceforge.io/Doc/Release/Options.html> | Canonical zsh options reference — ERR_EXIT (-e): exits shell on non-zero status; LOCAL_OPTIONS (<K>): restores options on function return; `emulate -L` activates LOCAL_OPTIONS, LOCAL_PATTERNS, LOCAL_TRAPS | 2026-04-03 | zsh, options, errexit, localoptions |
+| <https://zsh.sourceforge.io/Doc/Release/Shell-Builtin-Commands.html> | `emulate [-lLR] [shell [flags...]]`: -L activates LOCAL_OPTIONS/LOCAL_PATTERNS/LOCAL_TRAPS, scoping all option changes to the enclosing function; `emulate -L zsh` is canonical pattern for safe option scoping | 2026-04-03 | zsh, emulate, builtins |
+| <https://zsh.sourceforge.io/Doc/Release/Functions.html> | Anonymous functions `() { ... }` provide local variable/option scope; paired with `emulate -L zsh` is the recommended way to scope options in zsh without function definitions | 2026-04-03 | zsh, functions, anonymous |
+| <https://www.gnu.org/software/bash/manual/html_node/The-Set-Builtin.html> | bash `set -e` / `set -u` / `set -o pipefail` reference; -e does NOT apply to the outer shell when a subshell is used — subshell exits, but the parent continues | 2026-04-03 | bash, set-e, nounset, pipefail |
+
+## VS Code Shell Integration — zsh Hook Scripts
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://code.visualstudio.com/docs/terminal/shell-integration> | VS Code shell integration: zsh support via shellIntegration-rc.zsh injected at $ZDOTDIR; adds precmd/preexec hooks and OSC 633 sentinel sequences; shell integration quality levels (Rich/Basic/None) | 2026-04-03 | vscode, terminal, shell-integration, zsh |
+| <file:///opt/visual-studio-code-insiders/resources/app/out/vs/workbench/contrib/terminal/common/scripts/shellIntegration-rc.zsh> | Local VS Code Insiders shell integration script — adds `__vsc_precmd`/`__vsc_preexec` hooks; `__vsc_update_prompt` references `$RPROMPT` without `${RPROMPT-}` guard; NOUNSET check at load-time only; `__vsc_escape_value` uses `emulate -L zsh` but other hooks do NOT | 2026-04-03 | vscode, zsh, shell-integration, internal |
+
 ## Shell Testing Frameworks
 
 | URL | Summary | Date | Tags |
