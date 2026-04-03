@@ -7,6 +7,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [5.3.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.2.0...v5.3.0) (2026-04-03)
+
+
+### Features
+
+* add phase test selection and consumer audit mode ([1920756](https://github.com/asafelobotomy/copilot-instructions-template/commit/192075696748e8529b482ed282d7d28fc99ea041))
+
 ## [5.2.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.1.0...v5.2.0) (2026-04-02)
 
 
