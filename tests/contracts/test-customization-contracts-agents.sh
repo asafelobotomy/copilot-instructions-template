@@ -72,6 +72,35 @@ if "D1\u2013D14" not in text and "D1-D14" not in text:
     raise SystemExit("report format section must reference D1-D14 range")
 '
 
+assert_python "audit detects repo shape before health checks" '
+text = (root / ".github/agents/audit.agent.md").read_text(encoding="utf-8")
+required = [
+    "## Repo shape detection",
+    "Developer template repo",
+    "Consumer repo",
+    "default to the consumer-safe subset",
+]
+for needle in required:
+    if needle not in text:
+        raise SystemExit("audit.agent.md missing repo-shape guidance: " + needle)
+'
+
+assert_python "audit D4 and D14 mention delegation matrix enforcement" '
+text = " ".join((root / ".github/agents/audit.agent.md").read_text(encoding="utf-8").split())
+required = [
+    "### D4 — Agent file validity and delegation policy",
+    "specialist delegation allow-lists match the repo policy",
+    "Consumer repos: skip repo-policy allow-list matching",
+    "Covers: A1–A4 (agents)",
+    "I1–I4 (instructions)",
+    "--profile consumer",
+    "intentionally skips repo-only A4, I4, K1, and K2",
+]
+for needle in required:
+    if needle not in text:
+        raise SystemExit("audit.agent.md missing delegation audit detail: " + needle)
+'
+
 assert_python "audit has fetch tool for upstream checks" '
 text = (root / ".github/agents/audit.agent.md").read_text(encoding="utf-8")
 end = text.find("\n---\n", 4)

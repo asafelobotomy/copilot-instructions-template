@@ -1,4 +1,4 @@
-"""Instruction checks (I1–I3) for the Copilot Audit tool."""
+"""Instruction checks (I1–I4) for the Copilot Audit tool."""
 from __future__ import annotations
 
 import pathlib
@@ -6,6 +6,36 @@ import pathlib
 from .context import AuditContext, ensure_context
 from .models import Finding, CheckResult, HIGH, WARN, INFO, CRITICAL
 from .helpers import estimate_tokens, strip_code_spans, PLACEHOLDER_RE
+
+
+DELEGATION_POLICY_SNIPPETS: dict[str, tuple[str, ...]] = {
+    ".github/copilot-instructions.md": (
+        "Main/default agent delegation:",
+        "delegate instead of absorbing",
+        "Preferred specialist map:",
+        "`Explore` for read-only repo scans",
+        "`Researcher` for current external docs",
+        "`Review` for formal code review or architectural critique",
+        "`Audit` for health, security, or residual-risk checks",
+        "`Extensions` for VS Code extension, profile, or workspace recommendation",
+        "`Commit` for staging, commits, pushes, tags, or releases",
+        "`Setup` for template bootstrap, instruction update, or backup restore",
+        "`Organise` for file moves, path repair, or repository reshaping",
+    ),
+    "template/copilot-instructions.md": (
+        "The parent/default agent follows this protocol too:",
+        "delegate to the matching agent instead of absorbing",
+        "Preferred specialist map:",
+        "`Explore` for read-only repo scans",
+        "`Researcher` for current external docs",
+        "`Review` for formal code review or architectural critique",
+        "`Audit` for health, security, or residual-risk checks",
+        "`Extensions` for VS Code extension, profile, or workspace recommendation",
+        "`Commit` for staging, commits, pushes, tags, or releases",
+        "`Setup` for template bootstrap, instruction update, or backup restore",
+        "`Organise` for file moves, path repair, or repository reshaping",
+    ),
+}
 
 
 def check_i1_instructions_placeholders(root: pathlib.Path | AuditContext) -> CheckResult:
@@ -77,4 +107,32 @@ def check_i3_instruction_stubs(root: pathlib.Path | AuditContext) -> CheckResult
             result.findings.append(Finding("I3", rel, WARN,
                                            "Missing or empty 'applyTo' field — "
                                            "instructions will not auto-attach to files"))
+    return result
+
+
+def check_i4_delegation_policy(root: pathlib.Path | AuditContext) -> CheckResult:
+    """I4 — main instruction files must define specialist-first delegation."""
+    ctx = ensure_context(root)
+    result = CheckResult("I4", "Main-agent delegation policy")
+    files = (
+        ctx.root / ".github" / "copilot-instructions.md",
+        ctx.root / "template" / "copilot-instructions.md",
+    )
+
+    for path in files:
+        if not path.exists():
+            result.findings.append(Finding("I4", ctx.rel(path), INFO, "File not found — skip"))
+            continue
+        rel = ctx.rel(path)
+        text = " ".join(ctx.read_text(path).split())
+        snippets = DELEGATION_POLICY_SNIPPETS.get(rel, ())
+        missing = [snippet for snippet in snippets if " ".join(snippet.split()) not in text]
+        if missing:
+            result.findings.append(Finding(
+                "I4",
+                rel,
+                HIGH,
+                "Missing delegation policy guidance: " + ", ".join(missing[:3]),
+            ))
+
     return result

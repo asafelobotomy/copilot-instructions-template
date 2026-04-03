@@ -4,7 +4,7 @@
 >
 > **⚡ Critical Reminders** — every session, every task:
 >
-> 1. **Test** — run `bash tests/run-all.sh` before marking any task done.
+> 1. **Test** — use deterministic targeted suites during intermediate phases; run `bash tests/run-all.sh` before marking a full task done end-to-end.
 > 2. **PDCA** — Plan→Do→Check→Act for every non-trivial change.
 > 3. **Read first** — never claim or modify a file not opened this session.
 > 4. **Additive** — never delete existing rules without explicit user instruction.
@@ -39,12 +39,13 @@ This repo has two distinct layers that must never be mixed:
 | Task | Command |
 |------|---------|
 | Run all tests | `bash tests/run-all.sh` |
+| Select targeted tests | `bash scripts/tests/select-targeted-tests.sh <paths...>` |
 | Type check | `echo "no type check configured"` |
 | Sync version | `bash scripts/release/sync-version.sh` |
 | Sync workspace-index | `bash scripts/workspace/sync-workspace-index.sh --check` |
 | LOC count | `find . \( -name '*.sh' -o -name '*.md' \) -not -path './node_modules/*' \| xargs wc -l \| tail -1` |
 
-Run `bash tests/run-all.sh` before marking any task done.
+Run deterministic targeted suites during intermediate phases when the repo has a reliable path-to-test mapping. Run `bash tests/run-all.sh` only before marking a full task done end-to-end.
 
 ## Coding Conventions
 
@@ -64,8 +65,17 @@ Every non-trivial change:
 
 1. **Plan** — state the goal, list files, estimate LOC delta.
 2. **Do** — implement; write tests alongside.
-3. **Check** — run `bash tests/run-all.sh`. Fix before continuing.
+3. **Check** — during intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites for the touched paths when available. If the blast radius includes shared helpers, broad contract surfaces, or no reliable mapping exists, broaden aggressively. Run `bash tests/run-all.sh` only before marking the full user task complete end-to-end. Fix before continuing.
 4. **Act** — address any baseline breach; summarise.
+
+### Test Scope Policy
+
+- **Task complete** means the full user-visible task is finished end-to-end, not that one phase of a larger plan is done and not that one item in a multi-part TODO list is done.
+- During intermediate phases, prefer deterministic path-based targeted suites tied to the files or directories actually touched.
+- Use `bash scripts/tests/select-targeted-tests.sh <paths...>` to choose deterministic phase checks from changed paths when the mapping exists.
+- If multiple sub-parts are still in progress, do not treat a passing targeted subset as permission to declare the whole task complete.
+- Broaden early when changes touch shared helpers, broad policy surfaces, parity mirrors, or any area without a reliable targeted test mapping.
+- Final gate: before marking the full task complete, run the full suite with `bash tests/run-all.sh`.
 
 ### Structured Thinking Discipline
 
@@ -99,7 +109,7 @@ Before acting on any medium-to-complex task:
 - `template/copilot-instructions.md` must contain §1–§13 and ≤ 800 lines (CI enforced).
 - `template/copilot-instructions.md` must contain ≥ 3 `{{PLACEHOLDER}}` tokens (CI enforced).
 - `.github/copilot-instructions.md` *(this file)* must contain **zero** `{{}}` tokens (CI enforced).
-- Parity: `.github/skills/` must mirror `template/skills/` (except `mcp-management`). `.github/hooks/` must mirror `template/hooks/` exactly. CI enforces.
+- Parity: `.github/skills/` must mirror `template/skills/`. `.github/hooks/` must mirror `template/hooks/` exactly. CI enforces.
 - Version source of truth: `VERSION.md`. Run `bash scripts/release/sync-version.sh` after bumping — it updates `template/copilot-instructions.md` and `.release-please-manifest.json`.
 - `workspace-index.json` must stay in sync: `bash scripts/workspace/sync-workspace-index.sh --write` then commit.
 
@@ -144,6 +154,15 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 
 - Skills: `.github/skills/` — loaded on demand. Read `SKILL.md` when description matches task.
 - Agents: `.github/agents/` — each pins a model.
+- Main/default agent delegation: when the request is primarily specialist work,
+  delegate instead of absorbing the workflow inline.
+- Preferred specialist map: `Explore` for read-only repo scans, `Researcher`
+  for current external docs, `Review` for formal code review or architectural
+  critique, `Audit` for health, security, or residual-risk checks,
+  `Extensions` for VS Code extension, profile, or workspace recommendation
+  work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for
+  template bootstrap, instruction update, or backup restore work, and
+  `Organise` for file moves, path repair, or repository reshaping.
 - Tool Protocol: activate `.github/skills/tool-protocol/SKILL.md` before building any script.
 - Heartbeat: `.copilot/workspace/HEARTBEAT.md` — run at session start. Health digest emits on meaningful phase transitions and overlay changes, not a fixed tool-call cadence. On significant sessions (8+ files or 30+ active minutes), the Stop hook instructs the model to call the `session_reflect` MCP tool autonomously. Silent when healthy.
 
@@ -174,6 +193,9 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 - **Tool Protocol**: Check `.copilot/tools/INDEX.md` before building. Follow `.github/skills/tool-protocol/SKILL.md`.
 - **Skill Protocol**: Skills loaded on demand from `.github/skills/`. Follow `.github/skills/skill-management/SKILL.md`.
 - **MCP Protocol**: Config in `.vscode/mcp.json`. Always-on: filesystem, git. Credentials-required: github, fetch.
+- **Delegation Protocol**: The top-level agent follows the same specialist-first
+  delegation rule as subagents. If a request clearly belongs to a specialist
+  agent, hand it off rather than attempting the specialist workflow inline.
 - **Subagent depth**: max 3. Stop and surface to user if reached. Subagents inherit all protocols including the Structured Thinking Discipline and anti-loop rules.
 
 *See also: `template/copilot-instructions.md` (consumer template) · `.github/agents/` · `.github/skills/` · `AGENTS.md` · `UPDATE.md` · `MIGRATION.md`*

@@ -24,12 +24,17 @@ setup_sandbox() {
   cat > "$SANDBOX/.github/copilot-instructions.md" <<'MD'
 # Developer Instructions
 > Role: AI developer.
+Main/default agent delegation: when the request is primarily specialist work,
+delegate instead of absorbing the workflow inline.
+Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for current external docs, `Review` for formal code review or architectural critique, `Audit` for health, security, or residual-risk checks, `Extensions` for VS Code extension, profile, or workspace recommendation work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for template bootstrap, instruction update, or backup restore work, and `Organise` for file moves, path repair, or repository reshaping.
 MD
 
   # Consumer template — must have ≥ 3 {{PLACEHOLDER}} tokens
   cat > "$SANDBOX/template/copilot-instructions.md" <<'MD'
 # Template
 {{REPO_OWNER}} {{REPO_NAME}} {{LANGUAGE}}
+The parent/default agent follows this protocol too: if a request is primarily specialist work, delegate to the matching agent instead of absorbing the specialist workflow inline.
+Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for current external docs, `Review` for formal code review or architectural critique, `Audit` for health, security, or residual-risk checks, `Extensions` for VS Code extension, profile, or workspace recommendation work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for template bootstrap, instruction update, or backup restore work, and `Organise` for file moves, path repair, or repository reshaping.
 MD
 
   # Valid agent
@@ -39,8 +44,8 @@ name: Code
 description: Coding agent
 model:
   - Claude Sonnet 4.6
-tools:
-  - codebase
+tools: [agent, codebase]
+agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Extensions', 'Commit', 'Setup', 'Organise']
 ---
 # Code Agent
 AGENT
@@ -157,15 +162,17 @@ remove_sandbox_path() {
 }
 
 run_audit() {
-  python3 "$SCRIPT" --root "$SANDBOX" --output json 2>&1
+  local profile="${1:-developer}"
+  python3 "$SCRIPT" --root "$SANDBOX" --profile "$profile" --output json 2>&1
 }
 
 run_audit_md() {
-  python3 "$SCRIPT" --root "$SANDBOX" --output md 2>&1
+  local profile="${1:-developer}"
+  python3 "$SCRIPT" --root "$SANDBOX" --profile "$profile" --output md 2>&1
 }
 
 run_audit_case() {
-  local format="${1:-json}" mutator="${2:-}"
+  local format="${1:-json}" mutator="${2:-}" profile="${3:-developer}"
   # shellcheck disable=SC2034
   CASE_OUTPUT=""
   # shellcheck disable=SC2034
@@ -176,10 +183,10 @@ run_audit_case() {
   fi
   if [[ "$format" == "md" ]]; then
     # shellcheck disable=SC2034
-    CASE_OUTPUT=$(run_audit_md)
+    CASE_OUTPUT=$(run_audit_md "$profile")
   else
     # shellcheck disable=SC2034
-    CASE_OUTPUT=$(run_audit)
+    CASE_OUTPUT=$(run_audit "$profile")
   fi
   # shellcheck disable=SC2034
   CASE_STATUS=$?

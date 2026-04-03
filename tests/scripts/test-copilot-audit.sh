@@ -47,6 +47,20 @@ model:
 AGENT
 }
 
+mutate_a4_missing_delegate() {
+  write_sandbox_file ".github/agents/code.agent.md" <<'AGENT'
+---
+name: Code
+description: Coding agent
+model:
+  - Claude Sonnet 4.6
+tools: [agent, codebase]
+agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Extensions', 'Commit', 'Organise']
+---
+# Code Agent
+AGENT
+}
+
 mutate_i1_dev_placeholder() {
   append_sandbox_file ".github/copilot-instructions.md" <<'MD'
 Oops {{PLACEHOLDER_TOKEN}} left in.
@@ -63,6 +77,13 @@ MD
 mutate_i1_backtick_placeholder() {
   append_sandbox_file ".github/copilot-instructions.md" <<'MD'
 Contains \`{{PLACEHOLDER}}\` tokens — purely descriptive.
+MD
+}
+
+mutate_i4_missing_delegation_policy() {
+  write_sandbox_file ".github/copilot-instructions.md" <<'MD'
+# Developer Instructions
+> Role: AI developer.
 MD
 }
 
@@ -92,6 +113,11 @@ mutate_m2_npx_git() {
   }
 }
 JSON
+}
+
+mutate_consumer_layout() {
+  remove_sandbox_path "template"
+  remove_sandbox_path "starter-kits"
 }
 
 mutate_m3_literal_secret() {
@@ -227,70 +253,86 @@ assert_failure "exits non-zero" "$CASE_STATUS"
 assert_contains "A3 finds placeholder" "$CASE_OUTPUT" 'placeholder token'
 echo ""
 
-# ── 6. I1 — developer file has placeholder ───────────────────────────────────
-echo "6. I1: developer instructions with {{PLACEHOLDER}} triggers CRITICAL"
+# ── 6. A4 — missing required delegate ────────────────────────────────────────
+echo "6. A4: missing required delegate triggers HIGH"
+run_audit_case json mutate_a4_missing_delegate
+assert_failure "exits non-zero" "$CASE_STATUS"
+assert_contains "A4 HIGH" "$CASE_OUTPUT" '"check_id": "A4"'
+assert_contains "A4 missing delegate" "$CASE_OUTPUT" 'Missing required delegate(s): Setup'
+echo ""
+
+# ── 7. I1 — developer file has placeholder ───────────────────────────────────
+echo "7. I1: developer instructions with {{PLACEHOLDER}} triggers CRITICAL"
 run_audit_case json mutate_i1_dev_placeholder
 assert_failure "exits non-zero" "$CASE_STATUS"
 assert_contains "I1 CRITICAL" "$CASE_OUTPUT" '"check_id": "I1"'
 echo ""
 
-# ── 7. I1 — consumer template too few placeholders ───────────────────────────
-echo "7. I1: consumer template with < 3 placeholders triggers HIGH"
+# ── 8. I1 — consumer template too few placeholders ───────────────────────────
+echo "8. I1: consumer template with < 3 placeholders triggers HIGH"
 run_audit_case json mutate_i1_consumer_too_few_placeholders
 assert_failure "exits non-zero" "$CASE_STATUS"
 assert_contains "I1 HIGH for consumer" "$CASE_OUTPUT" 'Consumer template'
 echo ""
 
-# ── 8. I1 — prose mentions of {{PLACEHOLDER}} in backticks are not flagged ───
-echo "8. I1: backtick-wrapped {{PLACEHOLDER}} prose not flagged"
+# ── 9. I1 — prose mentions of {{PLACEHOLDER}} in backticks are not flagged ───
+echo "9. I1: backtick-wrapped {{PLACEHOLDER}} prose not flagged"
 run_audit_case json mutate_i1_backtick_placeholder
 assert_success "exits 0 — backtick placeholder not flagged" "$CASE_STATUS"
 assert_contains "still HEALTHY" "$CASE_OUTPUT" '"status": "HEALTHY"'
 echo ""
 
-# ── 9. S1 — skill name mismatch ──────────────────────────────────────────────
-echo "9. S1: skill name not matching directory triggers HIGH"
+# ── 10. I4 — main-agent delegation policy missing ───────────────────────────
+echo "10. I4: missing main-agent delegation policy triggers HIGH"
+run_audit_case json mutate_i4_missing_delegation_policy
+assert_failure "exits non-zero" "$CASE_STATUS"
+assert_contains "I4 HIGH" "$CASE_OUTPUT" '"check_id": "I4"'
+assert_contains "I4 policy guidance" "$CASE_OUTPUT" 'Missing delegation policy guidance'
+echo ""
+
+# ── 11. S1 — skill name mismatch ─────────────────────────────────────────────
+echo "11. S1: skill name not matching directory triggers HIGH"
 run_audit_case json mutate_s1_wrong_skill_name
 assert_failure "exits non-zero" "$CASE_STATUS"
 assert_contains "S1 mismatch" "$CASE_OUTPUT" 'does not match directory'
 echo ""
 
-# ── 10. M1 — invalid JSON in mcp.json ────────────────────────────────────────
-echo "10. M1: invalid JSON in mcp.json triggers CRITICAL"
+# ── 12. M1 — invalid JSON in mcp.json ────────────────────────────────────────
+echo "12. M1: invalid JSON in mcp.json triggers CRITICAL"
 run_audit_case json mutate_m1_invalid_json
 assert_failure "exits non-zero" "$CASE_STATUS"
 assert_contains "M1 CRITICAL" "$CASE_OUTPUT" 'Invalid JSON'
 echo ""
 
-# ── 11. M2 — npx + mcp-server-git anti-pattern ───────────────────────────────
-echo "11. M2: npx mcp-server-git triggers CRITICAL"
+# ── 13. M2 — npx + mcp-server-git anti-pattern ───────────────────────────────
+echo "13. M2: npx mcp-server-git triggers CRITICAL"
 run_audit_case json mutate_m2_npx_git
 assert_failure "exits non-zero" "$CASE_STATUS"
 assert_contains "M2 npx flagged" "$CASE_OUTPUT" 'npx'
 echo ""
 
-# ── 12. M3 — literal secret in mcp env ───────────────────────────────────────
-echo "12. M3: literal secret value in mcp env triggers HIGH"
+# ── 14. M3 — literal secret in mcp env ───────────────────────────────────────
+echo "14. M3: literal secret value in mcp env triggers HIGH"
 run_audit_case json mutate_m3_literal_secret
 assert_failure "exits non-zero" "$CASE_STATUS"
 assert_contains "M3 secret flagged" "$CASE_OUTPUT" '"severity": "HIGH"'
 echo ""
 
-# ── 13. H1 — missing hooks config ────────────────────────────────────────────
-echo "13. H1: missing copilot-hooks.json triggers HIGH"
+# ── 15. H1 — missing hooks config ────────────────────────────────────────────
+echo "15. H1: missing copilot-hooks.json triggers HIGH"
 run_audit_case json mutate_h1_missing_hooks
 assert_failure "exits non-zero" "$CASE_STATUS"
 assert_contains "H1 HIGH" "$CASE_OUTPUT" 'hooks config not found'
 echo ""
 
-# ── 14. SH1 — missing shebang ────────────────────────────────────────────────
-echo "14. SH1: hook script without shebang triggers HIGH"
+# ── 16. SH1 — missing shebang ────────────────────────────────────────────────
+echo "16. SH1: hook script without shebang triggers HIGH"
 run_audit_case json mutate_sh1_missing_shebang
 assert_contains "SH1 shebang missing" "$CASE_OUTPUT" 'shebang'
 echo ""
 
-# ── 15. SH3 — bash syntax error ──────────────────────────────────────────────
-echo "15. SH3: bash syntax error in hook script triggers HIGH"
+# ── 17. SH3 — bash syntax error ──────────────────────────────────────────────
+echo "17. SH3: bash syntax error in hook script triggers HIGH"
 run_audit_case json mutate_sh3_broken_shell
 # If bash is available, SH3 should flag it
 if command -v bash >/dev/null 2>&1; then
@@ -300,41 +342,76 @@ else
 fi
 echo ""
 
-# ── 16. Real repo passes audit ────────────────────────────────────────────────
-echo "16. Real repo passes the audit (HEALTHY)"
+# ── 18. Real repo passes audit ────────────────────────────────────────────────
+echo "18. Real repo passes the audit (HEALTHY)"
 out=$(python3 "$SCRIPT" --root "$REPO_ROOT" --output json 2>&1)
 exit_code=$?
 assert_success "real repo exits 0" "$exit_code"
 assert_contains "real repo HEALTHY" "$out" '"status": "HEALTHY"'
 echo ""
 
-# ── 17. H2 — missing PowerShell hook script ──────────────────────────────────
-echo "17. H2: missing PowerShell hook script triggers WARN"
+# ── 19. H2 — missing PowerShell hook script ──────────────────────────────────
+echo "19. H2: missing PowerShell hook script triggers WARN"
 run_audit_case json mutate_h2_missing_powershell_script
 assert_success "exits 0 on WARN-only H2" "$CASE_STATUS"
 assert_contains "H2 reports missing PowerShell script" "$CASE_OUTPUT" 'missing-session-start.ps1'
 echo ""
 
-# ── 18. VS1 — invalid customization locations in settings.json ──────────────
-echo "18. VS1: invalid customization paths in settings.json trigger WARN"
+# ── 20. VS1 — invalid customization locations in settings.json ──────────────
+echo "20. VS1: invalid customization paths in settings.json trigger WARN"
 run_audit_case json mutate_vs1_invalid_settings_paths
 assert_success "VS1 WARN-only still exits 0" "$CASE_STATUS"
 assert_contains "VS1 reports missing plugin path" "$CASE_OUTPUT" 'chat.plugins.paths entry not found'
 assert_contains "VS1 reports missing instructions path" "$CASE_OUTPUT" 'chat.instructionsFilesLocations entry not found'
 echo ""
 
-# ── 19. K1 — invalid starter-kit plugin JSON ────────────────────────────────
-echo "19. K1: invalid starter-kit plugin JSON triggers CRITICAL"
+# ── 21. K1 — invalid starter-kit plugin JSON ────────────────────────────────
+echo "21. K1: invalid starter-kit plugin JSON triggers CRITICAL"
 run_audit_case json mutate_k1_invalid_plugin_json
 assert_failure "exits non-zero on bad plugin" "$CASE_STATUS"
 assert_contains "K1 invalid plugin JSON" "$CASE_OUTPUT" '"check_id": "K1"'
 echo ""
 
-# ── 20. K2 — REGISTRY references missing starter-kit files ─────────────────
-echo "20. K2: REGISTRY references missing starter-kit files triggers HIGH"
+# ── 22. K2 — REGISTRY references missing starter-kit files ─────────────────
+echo "22. K2: REGISTRY references missing starter-kit files triggers HIGH"
 run_audit_case json mutate_k2_missing_registry_file
 assert_failure "exits non-zero on missing starter-kit file" "$CASE_STATUS"
 assert_contains "K2 missing file" "$CASE_OUTPUT" 'skills/python-testing/SKILL.md'
+echo ""
+
+# ── 23. Consumer profile — consumer-shaped repo passes ─────────────────────
+echo "23. consumer profile: consumer-shaped repo remains HEALTHY"
+run_audit_case json mutate_consumer_layout consumer
+assert_success "consumer profile exits 0 on consumer-shaped repo" "$CASE_STATUS"
+assert_contains "consumer profile HEALTHY" "$CASE_OUTPUT" '"status": "HEALTHY"'
+echo ""
+
+# ── 24. Consumer profile — A4 repo policy skipped ──────────────────────────
+echo "24. consumer profile: A4 repo delegation policy is skipped"
+run_audit_case json mutate_a4_missing_delegate consumer
+assert_success "consumer profile skips A4" "$CASE_STATUS"
+assert_contains "consumer profile stays HEALTHY for A4-only mutation" "$CASE_OUTPUT" '"status": "HEALTHY"'
+echo ""
+
+# ── 25. Consumer profile — I4 repo policy skipped ──────────────────────────
+echo "25. consumer profile: I4 repo delegation wording is skipped"
+run_audit_case json mutate_i4_missing_delegation_policy consumer
+assert_success "consumer profile skips I4" "$CASE_STATUS"
+assert_contains "consumer profile stays HEALTHY for I4-only mutation" "$CASE_OUTPUT" '"status": "HEALTHY"'
+echo ""
+
+# ── 26. Consumer profile — starter-kit source checks skipped ───────────────
+echo "26. consumer profile: starter-kit source registry checks are skipped"
+run_audit_case json mutate_k2_missing_registry_file consumer
+assert_success "consumer profile skips K2" "$CASE_STATUS"
+assert_contains "consumer profile stays HEALTHY for K2-only mutation" "$CASE_OUTPUT" '"status": "HEALTHY"'
+echo ""
+
+# ── 27. Consumer profile — generic checks still run ────────────────────────
+echo "27. consumer profile: generic MCP checks still trigger failures"
+run_audit_case json mutate_m1_invalid_json consumer
+assert_failure "consumer profile still exits non-zero on invalid MCP JSON" "$CASE_STATUS"
+assert_contains "consumer profile still reports M1" "$CASE_OUTPUT" '"check_id": "M1"'
 echo ""
 
 # ── Summary ───────────────────────────────────────────────────────────────────

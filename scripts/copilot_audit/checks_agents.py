@@ -1,4 +1,4 @@
-"""Agent checks (A1–A3) for the Copilot Audit tool."""
+"""Agent checks (A1–A4) for the Copilot Audit tool."""
 from __future__ import annotations
 
 import pathlib
@@ -7,6 +7,32 @@ import re
 from .context import AuditContext, ensure_context
 from .models import Finding, CheckResult, HIGH, WARN, INFO, CRITICAL
 from .helpers import strip_code_spans, PLACEHOLDER_RE
+
+
+AGENT_DELEGATION_POLICY: dict[str, set[str]] = {
+    "audit.agent.md": {"Code", "Setup", "Researcher", "Extensions", "Organise"},
+    "code.agent.md": {"Review", "Audit", "Researcher", "Explore", "Extensions", "Commit", "Setup", "Organise"},
+    "coding.agent.md": {"Review", "Audit", "Researcher", "Explore", "Extensions", "Commit", "Setup", "Organise"},
+    "commit.agent.md": {"Code", "Review", "Audit"},
+    "explore.agent.md": {"Researcher"},
+    "extensions.agent.md": {"Code", "Audit", "Organise"},
+    "fast.agent.md": {"Code", "Review", "Audit", "Explore", "Researcher", "Extensions", "Commit", "Setup", "Organise"},
+    "organise.agent.md": {"Code", "Explore"},
+    "researcher.agent.md": {"Code", "Audit", "Explore"},
+    "review.agent.md": {"Code", "Audit", "Organise"},
+    "setup.agent.md": {"Audit", "Extensions", "Organise"},
+}
+
+
+def _parse_inline_list(frontmatter: str, field: str) -> set[str]:
+    match = re.search(rf"^{field}:\s*\[(.*)\]\s*$", frontmatter, re.M)
+    if not match:
+        return set()
+    return {
+        item.strip().strip("\"").strip("'")
+        for item in match.group(1).split(",")
+        if item.strip()
+    }
 
 
 def check_a1_agent_frontmatter(root: pathlib.Path | AuditContext) -> CheckResult:
@@ -74,4 +100,45 @@ def check_a3_agent_no_placeholders(root: pathlib.Path | AuditContext) -> CheckRe
             result.findings.append(Finding("A3", rel, HIGH,
                                            f"Contains {len(matches)} placeholder token(s): "
                                            + ", ".join(matches[:3])))
+    return result
+
+
+def check_a4_agent_delegation_matrix(root: pathlib.Path | AuditContext) -> CheckResult:
+    """A4 — Agent allow-lists must match the repo delegation matrix."""
+    ctx = ensure_context(root)
+    result = CheckResult("A4", "Agent delegation matrix")
+    if not ctx.agents_dir.is_dir():
+        return result
+
+    for agent_file in ctx.agent_files:
+        expected = AGENT_DELEGATION_POLICY.get(agent_file.name)
+        if expected is None:
+            continue
+        text = ctx.read_text(agent_file)
+        if not text.startswith("---\n"):
+            continue
+        end = text.find("\n---\n", 4)
+        if end == -1:
+            continue
+
+        rel = ctx.rel(agent_file)
+        actual = _parse_inline_list(text[4:end], "agents")
+        missing = sorted(expected - actual)
+        extra = sorted(actual - expected)
+
+        if missing:
+            result.findings.append(Finding(
+                "A4",
+                rel,
+                HIGH,
+                "Missing required delegate(s): " + ", ".join(missing),
+            ))
+        if extra:
+            result.findings.append(Finding(
+                "A4",
+                rel,
+                WARN,
+                "Unexpected delegate(s) outside policy: " + ", ".join(extra),
+            ))
+
     return result

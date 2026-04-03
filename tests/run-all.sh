@@ -73,6 +73,7 @@ run_phase "Hook Behavior" \
   "tests/hooks/test-hook-pulse.sh" \
   "tests/hooks/test-hook-post-edit-lint.sh" \
   "tests/hooks/test-hook-save-context.sh" \
+  "tests/hooks/test-mcp-heartbeat-server.sh" \
   "tests/hooks/test-guard-destructive.sh" \
   "tests/hooks/test-hook-scan-secrets.sh"
 
@@ -82,6 +83,7 @@ run_optional_phase "Hook Behavior (PowerShell parity)" "pwsh" "pwsh" \
 
 run_phase "Script Behavior" \
   "tests/scripts/test-release-plan.sh" \
+  "tests/scripts/test-select-targeted-tests.sh" \
   "tests/scripts/test-sync-version.sh" \
   "tests/scripts/test-stub-migration.sh" \
   "tests/scripts/test-sync-workspace-index.sh" \

@@ -1,7 +1,5 @@
 # JavaScript
 node_modules/
-package.json
-package-lock.json
 
 # Hook scan logs (written by scan-secrets.sh at session end)
 logs/

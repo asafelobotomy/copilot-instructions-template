@@ -93,7 +93,99 @@ if "commit-preflight" not in template_data["skills"]["template"]:
 '
 echo ""
 
-echo "4. Agent allow-lists stay minimal and workflow-aligned"
+echo "4. Main/default agent instructions require specialist-first delegation"
+assert_python "top-level instruction files encode the delegation policy" '
+required_by_file = {
+    ".github/copilot-instructions.md": [
+        "Main/default agent delegation:",
+        "delegate instead of absorbing",
+        "Preferred specialist map:",
+        "`Explore` for read-only repo scans",
+        "`Researcher` for current external docs",
+        "`Review` for formal code review or architectural critique",
+        "`Audit` for health, security, or residual-risk checks",
+        "`Extensions` for VS Code extension, profile, or workspace recommendation",
+        "`Commit` for staging, commits, pushes, tags, or releases",
+        "`Setup` for template bootstrap, instruction update, or backup restore",
+        "`Organise` for file moves, path repair, or repository reshaping",
+    ],
+    "template/copilot-instructions.md": [
+        "The parent/default agent follows this protocol too:",
+        "delegate to the matching agent instead of absorbing",
+        "Preferred specialist map:",
+        "`Explore` for read-only repo scans",
+        "`Researcher` for current external docs",
+        "`Review` for formal code review or architectural critique",
+        "`Audit` for health, security, or residual-risk checks",
+        "`Extensions` for VS Code extension, profile, or workspace recommendation",
+        "`Commit` for staging, commits, pushes, tags, or releases",
+        "`Setup` for template bootstrap, instruction update, or backup restore",
+        "`Organise` for file moves, path repair, or repository reshaping",
+    ],
+    "AGENTS.md": [
+        "The main/default agent follows the same specialist-first rule:",
+        "delegate instead of handling the specialist workflow inline.",
+    ],
+}
+for rel, needles in required_by_file.items():
+    text = " ".join((root / rel).read_text(encoding="utf-8").split())
+    for needle in needles:
+        if " ".join(needle.split()) not in text:
+            raise SystemExit(rel + " missing delegation guidance: " + needle)
+'
+echo ""
+
+echo "5. Task completion and testing policy distinguish targeted vs full-suite gates"
+assert_python "instruction files define phase testing vs final completion semantics" '
+required_by_file = {
+    ".github/copilot-instructions.md": [
+        "use deterministic targeted suites during intermediate phases; run `bash tests/run-all.sh` before marking a full task done end-to-end",
+        "During intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites",
+        "Run `bash tests/run-all.sh` only before marking the full user task complete end-to-end",
+        "### Test Scope Policy",
+        "**Task complete** means the full user-visible task is finished end-to-end",
+        "During intermediate phases, prefer deterministic path-based targeted suites",
+        "If multiple sub-parts are still in progress, do not treat a passing targeted subset as permission to declare the whole task complete",
+        "Broaden early when changes touch shared helpers, broad policy surfaces, parity mirrors, or any area without a reliable targeted test mapping",
+        "Final gate: before marking the full task complete, run the full suite with `bash tests/run-all.sh`",
+    ],
+    "template/copilot-instructions.md": [
+        "use deterministic targeted suites during intermediate phases when available; run `{{TEST_COMMAND}}` before marking a full task done end-to-end",
+        "Three-check ritual before marking a full task complete end-to-end",
+        "Must pass before the full task is done",
+        "During intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites",
+        "Run `{{TEST_COMMAND}}` only before marking the full user task complete end-to-end",
+        "### Test Scope Policy",
+        "**Task complete** means the full user-visible task is finished end-to-end",
+        "During intermediate phases, prefer deterministic path-based targeted suites",
+        "If multiple sub-parts are still in progress, do not treat a passing targeted subset as permission to declare the whole task complete",
+        "Broaden early when changes touch shared helpers, broad policy surfaces, parity mirrors, or any area without a reliable targeted test mapping",
+        "Final gate: before marking the full task complete, run the full suite with `{{TEST_COMMAND}}`",
+    ],
+}
+for rel, needles in required_by_file.items():
+    text = " ".join((root / rel).read_text(encoding="utf-8").split()).lower()
+    for needle in needles:
+        if " ".join(needle.split()).lower() not in text:
+            raise SystemExit(rel + " missing testing policy guidance: " + needle)
+'
+echo ""
+
+echo "6. Developer instructions expose the targeted test selector command"
+assert_python "developer instructions mention the targeted test selector" '
+text = " ".join((root / ".github/copilot-instructions.md").read_text(encoding="utf-8").split())
+required = [
+    "Select targeted tests",
+    "bash scripts/tests/select-targeted-tests.sh <paths...>",
+    "Use `bash scripts/tests/select-targeted-tests.sh <paths...>` to choose deterministic phase checks from changed paths",
+]
+for needle in required:
+    if " ".join(needle.split()) not in text:
+        raise SystemExit(".github/copilot-instructions.md missing selector guidance: " + needle)
+'
+echo ""
+
+echo "7. Agent allow-lists stay minimal and workflow-aligned"
 assert_python "agent allow-lists match documented delegation policy" '
 def parse_tools_or_agents(frontmatter, field):
     match = re.search(rf"^{field}:\s*\[(.*)\]\s*$", frontmatter, re.M)
@@ -107,15 +199,15 @@ def parse_tools_or_agents(frontmatter, field):
 
 expected = {
     "audit.agent.md": {"Code", "Setup", "Researcher", "Extensions", "Organise"},
-    "coding.agent.md": {"Review", "Audit", "Researcher", "Explore", "Extensions", "Commit", "Organise"},
+    "coding.agent.md": {"Review", "Audit", "Researcher", "Explore", "Extensions", "Commit", "Setup", "Organise"},
     "commit.agent.md": {"Code", "Review", "Audit"},
     "explore.agent.md": {"Researcher"},
     "extensions.agent.md": {"Code", "Audit", "Organise"},
-    "fast.agent.md": {"Code", "Explore", "Researcher"},
-    "organise.agent.md": {"Explore"},
-    "researcher.agent.md": {"Code", "Audit"},
+    "fast.agent.md": {"Code", "Review", "Audit", "Explore", "Researcher", "Extensions", "Commit", "Setup", "Organise"},
+    "organise.agent.md": {"Code", "Explore"},
+    "researcher.agent.md": {"Code", "Audit", "Explore"},
     "review.agent.md": {"Code", "Audit", "Organise"},
-    "setup.agent.md": {"Audit", "Organise"},
+    "setup.agent.md": {"Audit", "Extensions", "Organise"},
 }
 
 for name, expected_agents in expected.items():
@@ -137,14 +229,30 @@ checks = {
         "Use `Explore` for read-only codebase inventory across multiple files",
         "Use `Researcher` when a task depends on current external documentation",
         "Use `Extensions` when the work shifts into VS Code extension recommendations",
+        "Use `Setup` when the task turns into template bootstrap, instruction update,",
     ],
     "commit.agent.md": [
         "Use `Code` when preflight or review finds implementation work",
         "Use `Audit` when the user requests a deeper security or health check",
     ],
     "fast.agent.md": [
+        "If the user is asking for a formal code review or architectural critique, use",
+        "If the user is asking for a health check, security audit, or vulnerability",
         "If the question expands beyond a single file but stays read-only, use",
         "If the answer depends on current external documentation or version-specific",
+        "If the user is asking to stage, commit, push, tag, or release changes, use",
+        "If the task is really VS Code extension, profile, or workspace recommendation",
+        "If the task is really template setup, instruction update, or backup restore",
+        "If the task is primarily moving files, fixing broken paths, or reorganising",
+    ],
+    "organise.agent.md": [
+        "Use `Code` when the task expands from structural cleanup into semantic",
+    ],
+    "researcher.agent.md": [
+        "Use `Explore` when you need a broader read-only inventory of local callers,",
+    ],
+    "setup.agent.md": [
+        "Use `Extensions` when setup or update work shifts into VS Code extension",
     ],
 }
 for name, needles in checks.items():

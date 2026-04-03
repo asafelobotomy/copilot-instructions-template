@@ -12,7 +12,7 @@ model:
 tools: [agent, editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Extensions', 'Commit', 'Organise']
+agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Extensions', 'Commit', 'Setup', 'Organise']
 handoffs:
   - label: Review changes
     agent: Review
@@ -48,6 +48,8 @@ Guidelines:
   API behavior.
 - Use `Extensions` when the work shifts into VS Code extension recommendations,
   profile isolation, or extension configuration rather than repo code changes.
+- Use `Setup` when the task turns into template bootstrap, instruction update,
+  or backup restore work rather than implementation.
 - Delegate to `Organise` when the task is primarily about moving files,
   fixing path references, or reshaping directory structure.
 

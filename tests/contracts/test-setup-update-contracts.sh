@@ -10,6 +10,7 @@ init_test_context "$0"
 
 SETUP="$REPO_ROOT/SETUP.md"
 UPDATE="$REPO_ROOT/UPDATE.md"
+MANIFESTS="$REPO_ROOT/template/setup/manifests.md"
 
 echo "=== SETUP.md and UPDATE.md contract checks ==="
 echo ""
@@ -287,6 +288,20 @@ missing = core_tokens - setup_tokens
 if missing:
     raise SystemExit(f"SETUP.md does not mention these core template tokens: {sorted(missing)}")
 '
+echo ""
+
+# ──────────────────────────────────────────────────────────────
+echo "17. Setup companion manifests include commit-style assets"
+# ──────────────────────────────────────────────────────────────
+
+assert_file_contains "manifests.md includes onboard commit style prompt" \
+    "$MANIFESTS" "onboard-commit-style.prompt.md"
+
+assert_file_contains "manifests.md includes commit-style workspace stub" \
+    "$MANIFESTS" "template/workspace/commit-style.md"
+
+assert_file_contains "manifests.md fetches python hook support files" \
+    "$MANIFESTS" "hookScripts.python"
 echo ""
 
 finish_tests

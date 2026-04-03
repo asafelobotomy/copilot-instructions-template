@@ -42,6 +42,9 @@ make_fixture() {
   : > "$root/template/hooks/scripts/session-start.ps1"
   : > "$root/template/hooks/scripts/guard-destructive.ps1"
   : > "$root/template/hooks/scripts/save-context.ps1"
+  : > "$root/template/hooks/scripts/heartbeat_clock_summary.py"
+  : > "$root/template/hooks/scripts/mcp-heartbeat-server.py"
+  : > "$root/template/hooks/scripts/pulse_runtime.py"
 }
 
 echo "=== sync-workspace-index.sh direct tests ==="
@@ -88,6 +91,7 @@ for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/works
   assert data['counts']['skillsTemplate'] == 3
   assert data['counts']['hookScriptsShell'] == 3
   assert data['counts']['hookScriptsPowerShell'] == 3
+  assert data['counts']['hookScriptsPython'] == 3
 "
 assert_python_in_root "preferred items come first and extras sort after them" "$TMP_WRITE" "
 for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/workspace-index.json'):
@@ -97,6 +101,7 @@ for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/works
   assert data['skills']['template'] == ['skill-creator', 'test-coverage-review', 'aaa-extra']
   assert data['hookScripts']['shell'] == ['session-start.sh', 'guard-destructive.sh', 'save-context.sh']
   assert data['hookScripts']['powershell'] == ['session-start.ps1', 'guard-destructive.ps1', 'save-context.ps1']
+  assert data['hookScripts']['python'] == ['heartbeat_clock_summary.py', 'mcp-heartbeat-server.py', 'pulse_runtime.py']
 "
 assert_python_in_root "repo and template indices match exactly" "$TMP_WRITE" "
 repo_data = json.load((root / '.copilot/workspace/workspace-index.json').open())

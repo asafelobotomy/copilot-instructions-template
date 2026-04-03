@@ -5,12 +5,23 @@ import argparse
 import pathlib
 import sys
 
-from . import format_json, format_markdown, overall_status, run_audit, summary_counts
+from . import (
+    DEFAULT_PROFILE,
+    PROFILES,
+    format_json,
+    format_markdown,
+    overall_status,
+    run_audit,
+    summary_counts,
+)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Copilot Audit — static-analysis for all files VS Code Copilot reads."
+        description=(
+            "Copilot Audit — static-analysis for files VS Code Copilot reads, "
+            "with developer and consumer-safe profiles."
+        )
     )
     parser.add_argument(
         "--root",
@@ -23,6 +34,15 @@ def main() -> int:
         default="md",
         help="Output format: md (default) or json",
     )
+    parser.add_argument(
+        "--profile",
+        choices=PROFILES,
+        default=DEFAULT_PROFILE,
+        help=(
+            "Audit profile: developer (default, repo policy checks) or "
+            "consumer (safe subset for consumer repos)"
+        ),
+    )
     args = parser.parse_args()
 
     root = pathlib.Path(args.root).resolve()
@@ -30,7 +50,7 @@ def main() -> int:
         print(f"Error: --root '{root}' is not a directory", file=sys.stderr)
         return 2
 
-    results = run_audit(root)
+    results = run_audit(root, profile=args.profile)
 
     if args.output == "json":
         print(format_json(results))

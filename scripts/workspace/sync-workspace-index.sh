@@ -83,6 +83,15 @@ preferred_ps_hooks = [
     "pulse.ps1",
 ]
 
+preferred_python_hooks = [
+    "heartbeat_clock_summary.py",
+    "mcp-heartbeat-server.py",
+    "pulse_intent.py",
+    "pulse_paths.py",
+    "pulse_runtime.py",
+    "pulse_state.py",
+]
+
 
 def ordered(existing, preferred):
     existing_set = set(existing)
@@ -96,12 +105,14 @@ skills_repo_existing = [p.parent.name for p in (root / ".github/skills").glob("*
 skills_template_existing = [p.parent.name for p in (root / "template/skills").glob("*/SKILL.md")]
 shell_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.sh")]
 ps_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.ps1")]
+python_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.py")]
 
 agents = ordered(agents_existing, preferred_agents)
 skills_repo = ordered(skills_repo_existing, preferred_skills)
 skills_template = ordered(skills_template_existing, preferred_skills)
 shell_hooks = ordered(shell_hooks_existing, preferred_shell_hooks)
 ps_hooks = ordered(ps_hooks_existing, preferred_ps_hooks)
+python_hooks = ordered(python_hooks_existing, preferred_python_hooks)
 
 generated = {
     "$schema": "https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/schema/workspace-index.schema.json",
@@ -114,6 +125,7 @@ generated = {
         "skillsTemplate": len(skills_template),
         "hookScriptsShell": len(shell_hooks),
         "hookScriptsPowerShell": len(ps_hooks),
+        "hookScriptsPython": len(python_hooks),
     },
     "agents": agents,
     "skills": {
@@ -123,6 +135,7 @@ generated = {
     "hookScripts": {
         "shell": shell_hooks,
         "powershell": ps_hooks,
+        "python": python_hooks,
     },
     "notes": [
         "This index is the canonical metadata source for drift checks.",

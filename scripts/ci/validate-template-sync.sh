@@ -7,9 +7,6 @@ drift=0
 # Skills: .github/skills/* must match template/skills/*
 for dir in .github/skills/*/; do
   skill=$(basename "$dir")
-  if [[ "$skill" == "mcp-management" ]]; then
-    continue
-  fi
   template_skill="template/skills/$skill/SKILL.md"
   if [[ -f "$template_skill" ]]; then
     if ! diff -q "$dir/SKILL.md" "$template_skill" > /dev/null 2>&1; then

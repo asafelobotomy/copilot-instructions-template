@@ -64,6 +64,7 @@ expected = {
     ".github/skills/issue-triage/SKILL.md": "template/skills/issue-triage/SKILL.md",
     ".github/skills/lean-pr-review/SKILL.md": "template/skills/lean-pr-review/SKILL.md",
     ".github/skills/mcp-builder/SKILL.md": "template/skills/mcp-builder/SKILL.md",
+    ".github/skills/mcp-management/SKILL.md": "template/skills/mcp-management/SKILL.md",
     ".github/skills/plugin-management/SKILL.md": "template/skills/plugin-management/SKILL.md",
     ".github/skills/skill-creator/SKILL.md": "template/skills/skill-creator/SKILL.md",
     ".github/skills/skill-management/SKILL.md": "template/skills/skill-management/SKILL.md",
@@ -81,14 +82,16 @@ for repo_rel, template_rel in expected.items():
 '
 echo ""
 
-echo "3. mcp-management skill exists only in .github/skills/ (no template mirror)"
-assert_python "mcp-management has no template mirror" '
-mcp_template = root / "template/skills/mcp-management"
-mcp_github = root / ".github/skills/mcp-management/SKILL.md"
-if mcp_template.exists():
-    raise SystemExit("template/skills/mcp-management/ should not exist")
-if not mcp_github.exists():
-    raise SystemExit(".github/skills/mcp-management/SKILL.md is missing")
+echo "3. Every developer and template skill has a counterpart"
+assert_python "skill mirrors exist in both directions" '
+repo_dir = root / ".github/skills"
+template_dir = root / "template/skills"
+repo_skills = {path.parent.name for path in repo_dir.rglob("SKILL.md")}
+template_skills = {path.parent.name for path in template_dir.rglob("SKILL.md")}
+if repo_skills != template_skills:
+    raise SystemExit(
+        f"repo-only={sorted(repo_skills - template_skills)} template-only={sorted(template_skills - repo_skills)}"
+    )
 '
 echo ""
 

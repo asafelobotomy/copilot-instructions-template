@@ -1,0 +1,579 @@
+{
+  "schemaVersion": "1.0",
+  "description": "Deterministic path-to-targeted-test mapping for intermediate-phase verification in copilot-instructions-template.",
+  "defaults": {
+    "unmappedPhaseStrategy": "full-suite",
+    "runFullSuiteAtCompletion": true
+  },
+  "rules": [
+    {
+      "id": "selector-script",
+      "matchType": "exact",
+      "pattern": "scripts/tests/select-targeted-tests.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-select-targeted-tests.sh"],
+      "reason": "The selector script has a dedicated unit suite."
+    },
+    {
+      "id": "selector-map",
+      "matchType": "exact",
+      "pattern": "scripts/tests/targeted-test-map.json",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-select-targeted-tests.sh"],
+      "reason": "The selector manifest is validated by the selector unit suite."
+    },
+    {
+      "id": "tests-run-all",
+      "matchType": "exact",
+      "pattern": "tests/run-all.sh",
+      "phaseStrategy": "full-suite",
+      "tests": [],
+      "reason": "The canonical runner defines the full-suite gate and is safest to validate with the full suite."
+    },
+    {
+      "id": "test-helpers",
+      "matchType": "exact",
+      "pattern": "tests/lib/test-helpers.sh",
+      "phaseStrategy": "full-suite",
+      "tests": [],
+      "reason": "Shared shell test helpers affect most shell suites, so no reliable narrow subset exists."
+    },
+    {
+      "id": "copilot-audit-sandbox-helper",
+      "matchType": "exact",
+      "pattern": "tests/lib/copilot-audit-sandbox.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-copilot-audit.sh"],
+      "reason": "The copilot audit sandbox helper is only used by the audit unit suite."
+    },
+    {
+      "id": "powershell-test-helpers",
+      "matchType": "exact",
+      "pattern": "tests/lib/powershell-hook-test-helpers.sh",
+      "phaseStrategy": "broaden-aggressively",
+      "tests": [
+        "tests/hooks/test-hooks-powershell.sh",
+        "tests/hooks/test-guard-destructive-powershell.sh"
+      ],
+      "reason": "Shared PowerShell hook helpers affect the full PowerShell hook surface."
+    },
+    {
+      "id": "powershell-coverage-tools",
+      "matchType": "prefix",
+      "pattern": "tests/coverage/",
+      "phaseStrategy": "broaden-aggressively",
+      "tests": [
+        "tests/hooks/test-hooks-powershell.sh",
+        "tests/hooks/test-guard-destructive-powershell.sh"
+      ],
+      "reason": "PowerShell coverage wrappers affect every PowerShell hook suite."
+    },
+    {
+      "id": "runnable-hook-tests",
+      "matchType": "prefix",
+      "pattern": "tests/hooks/",
+      "phaseStrategy": "targeted",
+      "tests": ["self"],
+      "reason": "Hook test suites are runnable directly and should self-validate when edited."
+    },
+    {
+      "id": "runnable-script-tests",
+      "matchType": "prefix",
+      "pattern": "tests/scripts/",
+      "phaseStrategy": "targeted",
+      "tests": ["self"],
+      "reason": "Script test suites are runnable directly and should self-validate when edited."
+    },
+    {
+      "id": "runnable-contract-tests",
+      "matchType": "prefix",
+      "pattern": "tests/contracts/",
+      "phaseStrategy": "targeted",
+      "tests": ["self"],
+      "reason": "Contract suites are runnable directly and should self-validate when edited."
+    },
+    {
+      "id": "shared-script-lib",
+      "matchType": "exact",
+      "pattern": "scripts/lib.sh",
+      "phaseStrategy": "broaden-aggressively",
+      "tests": [
+        "tests/scripts/test-release-plan.sh",
+        "tests/scripts/test-sync-version.sh",
+        "tests/scripts/test-stub-migration.sh",
+        "tests/scripts/test-sync-workspace-index.sh",
+        "tests/scripts/test-sync-models.sh",
+        "tests/scripts/test-validate-agent-frontmatter.sh",
+        "tests/scripts/test-sync-template-parity.sh",
+        "tests/scripts/test-permission-resilience.sh"
+      ],
+      "reason": "scripts/lib.sh is sourced by multiple release/sync/validate utilities."
+    },
+    {
+      "id": "release-sync-version",
+      "matchType": "exact",
+      "pattern": "scripts/release/sync-version.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-sync-version.sh",
+        "tests/scripts/test-security-edge-cases.sh"
+      ],
+      "reason": "sync-version has direct unit coverage plus an idempotency regression in security edge cases."
+    },
+    {
+      "id": "release-plan",
+      "matchType": "exact",
+      "pattern": "scripts/release/plan-release.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-release-plan.sh"],
+      "reason": "plan-release is covered by a dedicated behavior suite."
+    },
+    {
+      "id": "release-stub-migration",
+      "matchType": "exact",
+      "pattern": "scripts/release/stub-migration.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-stub-migration.sh"],
+      "reason": "stub-migration is covered by a dedicated unit suite."
+    },
+    {
+      "id": "workspace-index-script",
+      "matchType": "exact",
+      "pattern": "scripts/workspace/sync-workspace-index.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-sync-workspace-index.sh"],
+      "reason": "sync-workspace-index has a dedicated direct test suite."
+    },
+    {
+      "id": "workspace-drift-script",
+      "matchType": "exact",
+      "pattern": "scripts/workspace/check-workspace-drift.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-workspace-drift.sh"],
+      "reason": "check-workspace-drift has a dedicated direct test suite."
+    },
+    {
+      "id": "sync-models-script",
+      "matchType": "exact",
+      "pattern": "scripts/sync/sync-models.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-sync-models.sh"],
+      "reason": "sync-models has a dedicated contract suite."
+    },
+    {
+      "id": "sync-template-parity-script",
+      "matchType": "exact",
+      "pattern": "scripts/sync/sync-template-parity.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-sync-template-parity.sh"],
+      "reason": "sync-template-parity has a dedicated behavior suite."
+    },
+    {
+      "id": "validate-agent-frontmatter-script",
+      "matchType": "exact",
+      "pattern": "scripts/validate/validate-agent-frontmatter.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-validate-agent-frontmatter.sh"],
+      "reason": "validate-agent-frontmatter has a dedicated unit suite."
+    },
+    {
+      "id": "copilot-audit-script",
+      "matchType": "exact",
+      "pattern": "scripts/copilot_audit.py",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-copilot-audit.sh"],
+      "reason": "copilot_audit.py is validated by its dedicated unit suite."
+    },
+    {
+      "id": "copilot-audit-package",
+      "matchType": "prefix",
+      "pattern": "scripts/copilot_audit/",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-copilot-audit.sh"],
+      "reason": "copilot_audit package changes are covered by the audit unit suite."
+    },
+    {
+      "id": "template-hooks-parity",
+      "matchType": "prefix",
+      "pattern": "template/hooks/",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-template-parity.sh"],
+      "reason": "Template hook assets are guarded by the template parity contract suite."
+    },
+    {
+      "id": "github-hooks-parity",
+      "matchType": "prefix",
+      "pattern": ".github/hooks/",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-template-parity.sh"],
+      "reason": "Repo-live hook copies are guarded by the template parity contract suite."
+    },
+    {
+      "id": "template-hook-shell-broad",
+      "matchType": "glob",
+      "pattern": "template/hooks/scripts/*.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-permission-resilience.sh"],
+      "reason": "Template shell hook scripts should keep permissions, strict mode, and shebang guarantees."
+    },
+    {
+      "id": "github-hook-shell-broad",
+      "matchType": "glob",
+      "pattern": ".github/hooks/scripts/*.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-permission-resilience.sh"],
+      "reason": "Repo-live shell hook copies should keep permissions and executability guarantees."
+    },
+    {
+      "id": "template-hook-powershell-broad",
+      "matchType": "glob",
+      "pattern": "template/hooks/scripts/*.ps1",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hooks-powershell.sh"],
+      "reason": "Template PowerShell hook scripts are exercised by the PowerShell hook umbrella suite."
+    },
+    {
+      "id": "hook-session-start",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/session-start.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-session-start.sh"],
+      "reason": "session-start.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-pulse",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/pulse.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-pulse.sh"],
+      "reason": "pulse.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-post-edit-lint",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/post-edit-lint.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-post-edit-lint.sh"],
+      "reason": "post-edit-lint.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-save-context",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/save-context.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-save-context.sh"],
+      "reason": "save-context.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-save-context-python-helper",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/heartbeat_clock_summary.py",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-save-context.sh"],
+      "reason": "heartbeat_clock_summary.py is exercised by the save-context hook suite."
+    },
+    {
+      "id": "hook-save-context-python-helper-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/heartbeat_clock_summary.py",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-save-context.sh"],
+      "reason": "Repo-live heartbeat_clock_summary.py is exercised by the save-context hook suite."
+    },
+    {
+      "id": "hook-pulse-python-helpers",
+      "matchType": "glob",
+      "pattern": "template/hooks/scripts/pulse_*.py",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-pulse.sh"],
+      "reason": "Python pulse helpers are exercised by the pulse hook suite."
+    },
+    {
+      "id": "hook-pulse-python-helpers-github",
+      "matchType": "glob",
+      "pattern": ".github/hooks/scripts/pulse_*.py",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-pulse.sh"],
+      "reason": "Repo-live Python pulse helpers are exercised by the pulse hook suite."
+    },
+    {
+      "id": "hook-mcp-heartbeat-server",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/mcp-heartbeat-server.py",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-mcp-heartbeat-server.sh"],
+      "reason": "The heartbeat MCP server has a dedicated unit suite."
+    },
+    {
+      "id": "hook-mcp-heartbeat-server-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/mcp-heartbeat-server.py",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-mcp-heartbeat-server.sh"],
+      "reason": "The repo-live heartbeat MCP server has a dedicated unit suite."
+    },
+    {
+      "id": "hook-scan-secrets",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/scan-secrets.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-scan-secrets.sh"],
+      "reason": "scan-secrets.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-guard-destructive",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/guard-destructive.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-guard-destructive.sh",
+        "tests/scripts/test-security-edge-cases.sh"
+      ],
+      "reason": "guard-destructive.sh has direct hook coverage plus security edge-case coverage."
+    },
+    {
+      "id": "hook-mcp-launchers",
+      "matchType": "glob",
+      "pattern": "template/hooks/scripts/mcp-*.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-mcp-launchers.sh"],
+      "reason": "MCP launcher wrappers are covered by the mcp-launchers suite."
+    },
+    {
+      "id": "hook-guard-destructive-powershell",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/guard-destructive.ps1",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-guard-destructive-powershell.sh"],
+      "reason": "guard-destructive.ps1 has a dedicated PowerShell suite."
+    },
+    {
+      "id": "agent-files",
+      "matchType": "glob",
+      "pattern": ".github/agents/*.agent.md",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-customization-contracts.sh",
+        "tests/scripts/test-copilot-audit.sh",
+        "tests/scripts/test-sync-models.sh",
+        "tests/scripts/test-validate-agent-frontmatter.sh"
+      ],
+      "reason": "Agent definitions participate in customization contracts, audit checks, model sync, and frontmatter validation."
+    },
+    {
+      "id": "models-registry",
+      "matchType": "exact",
+      "pattern": "MODELS.md",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-sync-models.sh"],
+      "reason": "MODELS.md is validated by the sync-models contract suite."
+    },
+    {
+      "id": "llms-registry",
+      "matchType": "exact",
+      "pattern": "llms.txt",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-sync-models.sh"],
+      "reason": "llms.txt is validated by the sync-models contract suite."
+    },
+    {
+      "id": "customization-instructions",
+      "matchType": "prefix",
+      "pattern": ".github/instructions/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-template-parity.sh"
+      ],
+      "reason": "Developer instruction stubs are covered by customization contracts and parity checks."
+    },
+    {
+      "id": "customization-prompts",
+      "matchType": "prefix",
+      "pattern": ".github/prompts/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-template-parity.sh"
+      ],
+      "reason": "Developer prompts are covered by customization contracts and parity checks."
+    },
+    {
+      "id": "customization-skills",
+      "matchType": "prefix",
+      "pattern": ".github/skills/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-template-parity.sh"
+      ],
+      "reason": "Developer skills are covered by customization contracts and parity checks."
+    },
+    {
+      "id": "template-instructions",
+      "matchType": "prefix",
+      "pattern": "template/instructions/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-template-parity.sh"
+      ],
+      "reason": "Template instruction stubs are covered by customization contracts and parity checks."
+    },
+    {
+      "id": "template-prompts",
+      "matchType": "prefix",
+      "pattern": "template/prompts/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-template-parity.sh"
+      ],
+      "reason": "Template prompt stubs are covered by customization contracts and parity checks."
+    },
+    {
+      "id": "template-skills",
+      "matchType": "prefix",
+      "pattern": "template/skills/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-template-parity.sh"
+      ],
+      "reason": "Template skills are covered by customization contracts and parity checks."
+    },
+    {
+      "id": "developer-copilot-instructions",
+      "matchType": "exact",
+      "pattern": ".github/copilot-instructions.md",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-customization-contracts.sh",
+        "tests/scripts/test-copilot-audit.sh"
+      ],
+      "reason": "Developer instructions are covered by customization contracts and copilot audit checks."
+    },
+    {
+      "id": "template-copilot-instructions",
+      "matchType": "exact",
+      "pattern": "template/copilot-instructions.md",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-setup-update-contracts.sh",
+        "tests/scripts/test-copilot-audit.sh"
+      ],
+      "reason": "Template instructions participate in customization contracts, setup/update contracts, and copilot audit checks."
+    },
+    {
+      "id": "agents-doc",
+      "matchType": "exact",
+      "pattern": "AGENTS.md",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-customization-contracts.sh"],
+      "reason": "AGENTS.md drives customization policy and should run the customization contract suite."
+    },
+    {
+      "id": "setup-update-docs",
+      "matchType": "exact",
+      "pattern": "SETUP.md",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-setup-update-contracts.sh"],
+      "reason": "SETUP.md is validated by the setup/update contract suite."
+    },
+    {
+      "id": "setup-manifests-docs",
+      "matchType": "exact",
+      "pattern": "template/setup/manifests.md",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-setup-update-contracts.sh"],
+      "reason": "Setup companion manifests are validated by the setup/update contract suite."
+    },
+    {
+      "id": "update-protocol-docs",
+      "matchType": "exact",
+      "pattern": "UPDATE.md",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-setup-update-contracts.sh"],
+      "reason": "UPDATE.md is validated by the setup/update contract suite."
+    },
+    {
+      "id": "mcp-config",
+      "matchType": "exact",
+      "pattern": ".vscode/mcp.json",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-copilot-audit.sh",
+        "tests/scripts/test-mcp-launchers.sh"
+      ],
+      "reason": "The MCP config is covered by the audit suite and the launcher contract suite."
+    },
+    {
+      "id": "settings-config",
+      "matchType": "glob",
+      "pattern": "*.vscode/settings.json",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-customization-contracts.sh",
+        "tests/scripts/test-copilot-audit.sh"
+      ],
+      "reason": "VS Code settings are covered by customization contracts and the audit suite."
+    },
+    {
+      "id": "starter-kits",
+      "matchType": "prefix",
+      "pattern": "starter-kits/",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-starter-kits.sh"],
+      "reason": "Starter-kit assets are validated by the starter-kit contract suite."
+    },
+    {
+      "id": "release-metadata",
+      "matchType": "exact",
+      "pattern": "VERSION.md",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-release-contracts.sh"],
+      "reason": "Release metadata files are validated by the release contract suite."
+    },
+    {
+      "id": "release-changelog",
+      "matchType": "exact",
+      "pattern": "CHANGELOG.md",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-release-contracts.sh"],
+      "reason": "Release documentation is validated by the release contract suite."
+    },
+    {
+      "id": "release-migration",
+      "matchType": "exact",
+      "pattern": "MIGRATION.md",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-release-contracts.sh"],
+      "reason": "Migration documentation is validated by the release contract suite."
+    },
+    {
+      "id": "release-config",
+      "matchType": "exact",
+      "pattern": "release-please-config.json",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-release-contracts.sh"],
+      "reason": "release-please config is validated by the release contract suite."
+    },
+    {
+      "id": "release-manifest",
+      "matchType": "exact",
+      "pattern": ".release-please-manifest.json",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-release-contracts.sh"],
+      "reason": "release-please manifest is validated by the release contract suite."
+    },
+    {
+      "id": "release-workflows",
+      "matchType": "glob",
+      "pattern": ".github/workflows/*.yml",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-release-contracts.sh"],
+      "reason": "Release workflow contracts validate CI and release-please workflow coupling."
+    }
+  ]
+}

@@ -7,7 +7,7 @@
 >
 > **⚡ Critical Reminders** — every session, every task:
 >
-> 1. **Test** — run `{{TEST_COMMAND}}` before marking any task done (§3).
+> 1. **Test** — use deterministic targeted suites during intermediate phases when available; run `{{TEST_COMMAND}}` before marking a full task done end-to-end (§3).
 > 2. **PDCA** — Plan→Do→Check→Act for every non-trivial change (§5).
 > 3. **Read first** — never claim or modify a file not opened this session (§4).
 > 4. **Additive** — never delete existing rules without explicit user instruction (§8).
@@ -36,7 +36,7 @@ Switch modes explicitly. Default is **Implement**.
 
 - Plan → implement → test → document in one uninterrupted flow.
 - Full PDCA for every non-trivial change.
-- Three-check ritual before marking a task complete.
+- Three-check ritual before marking a full task complete end-to-end.
 
 ### Review Mode
 
@@ -77,7 +77,7 @@ For deeper audits, activate the matching skill (§12) instead of expanding §2:
 | File LOC (hard) | {{LOC_HIGH_THRESHOLD}} lines | Refuse to extend; decompose first |
 | Dependency budget | {{DEP_BUDGET}} runtime deps | Propose removal before adding |
 | Dependency budget (warn) | {{DEP_BUDGET_WARN}} runtime deps | Flag for review |
-| Test command | `{{TEST_COMMAND}}` | Must pass before task is done |
+| Test command | `{{TEST_COMMAND}}` | Must pass before the full task is done |
 | Type check | `{{TYPE_CHECK_COMMAND}}` | Must pass before task is done |
 | Three-check ritual | `{{THREE_CHECK_COMMAND}}` | Run before marking complete |
 | Integration test gate | {{INTEGRATION_TEST_ENV_VAR}} | Set to run integration tests |
@@ -113,8 +113,16 @@ Apply to every non-trivial change.
 
 **Plan**: State the goal. List the files that will change. Estimate LOC delta.
 **Do**: Implement. Write tests alongside code, not after.
-**Check**: Run `{{TEST_COMMAND}}`. Review output. Fix before proceeding.
+**Check**: During intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites for the touched paths when available. If the blast radius includes shared helpers, broad contract surfaces, or no reliable mapping exists, broaden aggressively. Run `{{TEST_COMMAND}}` only before marking the full user task complete end-to-end. Review output. Fix before proceeding.
 **Act**: If baseline exceeded, address it now. Summarise what changed.
+
+### Test Scope Policy
+
+- **Task complete** means the full user-visible task is finished end-to-end, not that one phase of a larger plan is done and not that one item in a multi-part TODO list is done.
+- During intermediate phases, prefer deterministic path-based targeted suites tied to the files or directories actually touched.
+- If multiple sub-parts are still in progress, do not treat a passing targeted subset as permission to declare the whole task complete.
+- Broaden early when changes touch shared helpers, broad policy surfaces, parity mirrors, or any area without a reliable targeted test mapping.
+- Final gate: before marking the full task complete, run the full suite with `{{TEST_COMMAND}}`.
 
 ### Structured Thinking Discipline
 
@@ -233,9 +241,19 @@ Hook configuration lives in `.github/hooks/copilot-hooks.json`. VS Code supports
 
 When spawning subagents:
 
+- The parent/default agent follows this protocol too: if a request is primarily
+  specialist work, delegate to the matching agent instead of absorbing the
+  specialist workflow inline.
 - Each `.github/agents/*.agent.md` declares an `agents:` allow-list restricting which subagents it may invoke. Respect these boundaries.
 - Keep allow-lists narrow. Add a subagent only when the agent body defines a concrete workflow for using it. Do not keep speculative delegates "just in case".
 - Prefer the lightest valid handoff: use `Explore` for read-only repo scans, `Researcher` for current external docs, `Audit` for residual-risk or security checks, and `Organise` for pathing or file moves.
+- Preferred specialist map: `Explore` for read-only repo scans, `Researcher`
+  for current external docs, `Review` for formal code review or architectural
+  critique, `Audit` for health, security, or residual-risk checks,
+  `Extensions` for VS Code extension, profile, or workspace recommendation
+  work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for
+  template bootstrap, instruction update, or backup restore work, and
+  `Organise` for file moves, path repair, or repository reshaping.
 - Pass the full contents of this file as system context.
 - Set `max_depth = {{SUBAGENT_MAX_DEPTH}}`. Stop and surface to user if reached.
 - Each subagent must run the three-check ritual before reporting done.

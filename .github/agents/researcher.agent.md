@@ -9,7 +9,7 @@ model:
 tools: [agent, fetch, webSearch, codebase, search, editFiles, runCommands]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Audit']
+agents: ['Code', 'Audit', 'Explore']
 handoffs:
   - label: Implement findings
     agent: Code
@@ -102,6 +102,8 @@ One-paragraph executive summary.
 - Use `#webSearch` to discover URLs when you do not have them. If `webSearch` is
   unavailable, construct targeted fetches to known documentation hubs listed in
   `.copilot/workspace/RESEARCH.md`.
+- Use `Explore` when you need a broader read-only inventory of local callers,
+  files, or patterns before spending time on external research.
 - Use `#codebase` and `#search` to understand the current implementation before
   fetching external docs — avoid re-fetching what already exists locally.
 - Use `#editFiles` to write research documents and update `RESEARCH.md`.

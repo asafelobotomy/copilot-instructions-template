@@ -60,14 +60,28 @@ Audit agent — running <health check|security audit|full audit>…
 
 # Part 1 — Health Checks
 
-Print a structured health report with sections D1-D14 showing findings or "OK". End with counts for CRITICAL/HIGH/WARN/INFO/OK and an overall health status.
+Print a structured health report with sections D1-D14 showing findings, "OK",
+or "N/A" when a check does not apply to the detected repo shape. End with
+counts for CRITICAL/HIGH/WARN/INFO/OK and an overall health status.
+
+## Repo shape detection
+
+Before running D1-D14, detect which layout you are auditing:
+
+- **Developer template repo**: `template/copilot-instructions.md`, `VERSION.md`,
+  and `SETUP.md` are present.
+- **Consumer repo**: `.github/copilot-version.md` or
+  `.copilot/workspace/workspace-index.json` is present and
+  `template/copilot-instructions.md` is absent.
+- **Fallback**: if the layout is ambiguous, default to the consumer-safe subset.
+  Do not assume template-repo-only files exist.
 
 ## Files to inspect
 
 Use `codebase` for file contents, `fetch` for upstream version checks, and `githubRepo` for repository metadata when relevant.
 
-- `.github/copilot-instructions.md` — developer instructions for this repo (must have zero `{{` tokens)
-- `template/copilot-instructions.md` — consumer template (must retain `{{PLACEHOLDER}}` tokens)
+- `.github/copilot-instructions.md` — installed instructions in any repo (must have zero `{{` tokens)
+- `template/copilot-instructions.md` — developer template repo only (must retain `{{PLACEHOLDER}}` tokens)
 - `.github/agents/*.agent.md` — all files in this directory
 - `.copilot/workspace/IDENTITY.md`
 - `.copilot/workspace/HEARTBEAT.md`
@@ -96,6 +110,8 @@ Checks S1-S8 and S10 use only file reads and `grep` patterns. Check S9 via OSV.d
 
 ### D1 — Attention Budget (template/copilot-instructions.md)
 
+Developer template repo only.
+
 Count total lines and per-section lines using `wc -l` and `grep -n "^## §"`.
 
 | Scope | Limit |
@@ -110,19 +126,31 @@ Flag: `[CRITICAL]` if any section exceeds limit. `[WARN]` if within 10 lines.
 
 ### D2 — Section structure (template/copilot-instructions.md)
 
+Developer template repo only.
+
 Verify §1–§13 all present and in order.
 Flag: `[CRITICAL]` if missing. `[WARN]` if out of order.
 
 ### D3 — Placeholder separation
 
-1. **Developer file** `.github/copilot-instructions.md` must have zero `{{` tokens → `[CRITICAL]` if found.
-2. **Consumer template** `template/copilot-instructions.md` must retain ≥ 3 `{{` tokens → `[HIGH]` if fewer.
+1. **All repos**: `.github/copilot-instructions.md` must have zero `{{` tokens → `[CRITICAL]` if found.
+2. **Developer template repo only**: `template/copilot-instructions.md` must retain ≥ 3 `{{` tokens → `[HIGH]` if fewer.
 
-### D4 — Agent file validity
+### D4 — Agent file validity and delegation policy
 
-For each `.github/agents/*.agent.md`: check frontmatter present, `name:` set, handoff targets resolve to existing agent names, `model:` listed.
+For each `.github/agents/*.agent.md`: always check frontmatter present,
+`name:` set, handoff targets resolve to existing agent names, and `model:` is
+listed.
 
-Flag: `[CRITICAL]` broken handoff. `[HIGH]` missing name/frontmatter. `[WARN]` missing model.
+Developer template repo only: specialist delegation allow-lists match the repo
+policy.
+
+Consumer repos: skip repo-policy allow-list matching and only report
+structural agent validity.
+
+Flag: `[CRITICAL]` broken handoff. `[HIGH]` missing name/frontmatter or
+required delegates in developer template repos. `[WARN]` missing model or
+unexpected delegates in developer template repos.
 
 ### D5 — MCP configuration (.vscode/mcp.json)
 
@@ -132,8 +160,11 @@ Flag: `[CRITICAL]` npx usage. `[HIGH]` @modelcontextprotocol references.
 
 ### D6 — Version file
 
-Detect repo type: `grep -q '{{' .github/copilot-instructions.md` → consumer vs developer.
-**Developer repo**: skip (mark N/A). **Consumer repo**: check `.github/copilot-version.md` exists with valid semver.
+Use the repo shape detection above.
+
+**Developer template repo**: skip (mark N/A). **Consumer repo**: check
+`.github/copilot-version.md` exists with valid semver.
+
 Flag: `[HIGH]` if absent or malformed.
 
 ### D7 — Workspace memory files
@@ -181,9 +212,19 @@ Flag: `[HIGH]` missing agent or shell hook. `[WARN]` missing skill or PS1 hook. 
 
 ### D14 — Static audit (copilot_audit.py)
 
-Developer repo only. If `scripts/copilot_audit.py` exists, run `python3 scripts/copilot_audit.py --root . --output json` and map findings to the report (CRITICAL→CRITICAL, HIGH→HIGH, WARN→WARN, INFO→INFO).
+If `scripts/copilot_audit.py` exists, run the profile that matches the detected
+repo shape and map findings to the report (CRITICAL→CRITICAL, HIGH→HIGH,
+WARN→WARN, INFO→INFO).
 
-Covers: A1–A3 (agents), I1–I3 (instructions), P1 (prompts), S1–S2 (skills), M1–M3 (MCP), H1–H2 (hooks), SH1–SH3 (shell), PS1 (PowerShell), K1–K2 (starter kits), VS1 (VS Code settings).
+- Developer template repo: `python3 scripts/copilot_audit.py --root . --output json`
+- Consumer repo: `python3 scripts/copilot_audit.py --profile consumer --root . --output json`
+
+Covers: A1–A4 (agents), I1–I4 (instructions), P1 (prompts), S1–S2 (skills), M1–M3 (MCP), H1–H2 (hooks), SH1–SH3 (shell), PS1 (PowerShell), K1–K2 (starter kits), VS1 (VS Code settings).
+
+Consumer static-audit subset covers: A1–A3 (agents), I1 and I3
+(instructions), P1 (prompts), S1–S2 (skills), M1–M3 (MCP), H1–H2 (hooks),
+SH1–SH3 (shell), PS1 (PowerShell), and VS1 (VS Code settings). It
+intentionally skips repo-only A4, I4, K1, and K2.
 
 If absent: `[INFO]` — static audit skipped.
 

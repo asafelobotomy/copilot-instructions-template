@@ -36,6 +36,9 @@ Canonical source for inventory:
 
 Keep subagent delegation narrow.
 
+- The main/default agent follows the same specialist-first rule: when a request
+  clearly belongs to a specialist agent, delegate instead of handling the
+  specialist workflow inline.
 - Treat each `.github/agents/*.agent.md` `agents:` list as a hard boundary.
 - Add a delegate only when the agent body defines a concrete handoff for it.
 - Prefer the lightest valid handoff: `Explore` for read-only repo scans, `Researcher` for current external docs, `Audit` for residual-risk checks, and `Organise` for structural moves or path fixes.

@@ -112,15 +112,14 @@ assert_success "real repo check exits zero" "$status"
 assert_contains "real repo in sync" "$output" "in sync"
 echo ""
 
-echo "9. mcp-management divergence is not flagged"
+echo "9. mcp-management divergence is detected"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_fixture "$TMP"
 mkdir -p "$TMP/template/skills/mcp-management" "$TMP/.github/skills/mcp-management"
 echo "# template version" > "$TMP/template/skills/mcp-management/SKILL.md"
 echo "# developer version (intentionally different)" > "$TMP/.github/skills/mcp-management/SKILL.md"
-output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1)
-status=$?
-assert_success "mcp-management divergence allowed" "$status"
+output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1) || true
+assert_contains "mcp-management drift detected" "$output" "mcp-management"
 echo ""
 
 echo "10. Missing hook script is detected"

@@ -52,6 +52,7 @@ After writing, replace `{{TEST_FRAMEWORK}}` and `{{TEST_COMMAND}}` tokens in stu
 | `test-gen.prompt.md` |
 | `review-file.prompt.md` |
 | `commit-msg.prompt.md` |
+| `onboard-commit-style.prompt.md` |
 
 Fetch pattern: `{BASE_URL}/template/prompts/{name}`
 
@@ -63,13 +64,17 @@ After writing, replace `{{THREE_CHECK_COMMAND}}`, `{{TEST_FRAMEWORK}}`, `{{TEST_
 
 **Configuration**: fetch `{BASE_URL}/template/hooks/copilot-hooks.json` → `.github/hooks/copilot-hooks.json`
 
-Fetch all scripts listed in the `hookScripts.shell` and `hookScripts.powershell` arrays from `workspace-index.json`.
+Fetch all scripts listed in the `hookScripts.shell`, `hookScripts.powershell`, and `hookScripts.python` arrays from `workspace-index.json`.
 
 **Bash scripts** → `.github/hooks/scripts/`:
 
 Fetch pattern: `{BASE_URL}/template/hooks/scripts/{name}`
 
 **PowerShell scripts** → `.github/hooks/scripts/`:
+
+Fetch pattern: `{BASE_URL}/template/hooks/scripts/{name}`
+
+**Python support files** → `.github/hooks/scripts/`:
 
 Fetch pattern: `{BASE_URL}/template/hooks/scripts/{name}`
 
@@ -86,6 +91,7 @@ After writing `.sh` files: `chmod +x .github/hooks/scripts/*.sh`
 | `.copilot/workspace/USER.md` | `template/workspace/USER.md` |
 | `.copilot/workspace/TOOLS.md` | `template/workspace/TOOLS.md` |
 | `.copilot/workspace/MEMORY.md` | `template/workspace/MEMORY.md` |
+| `.copilot/workspace/commit-style.md` | `template/workspace/commit-style.md` |
 | `.copilot/workspace/workspace-index.json` | `template/workspace/workspace-index.json` |
 | `.copilot/workspace/BOOTSTRAP.md` | `template/workspace/BOOTSTRAP.md` |
 | `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` |

@@ -22,9 +22,6 @@ import pathlib
 root = pathlib.Path(sys.argv[1])
 mode = sys.argv[2]
 
-# mcp-management is .github/-only (no template mirror per Architecture invariant)
-SKILL_EXCLUDE = {"mcp-management"}
-
 drift = []
 repaired = []
 
@@ -52,8 +49,6 @@ for ext in ("*.sh", "*.ps1", "*.json", "*.py"):
 
 for src_dir in sorted((root / "template/skills").iterdir()):
     if not src_dir.is_dir():
-        continue
-    if src_dir.name in SKILL_EXCLUDE:
         continue
     src = src_dir / "SKILL.md"
     dst = root / ".github/skills" / src_dir.name / "SKILL.md"

@@ -9,7 +9,7 @@ model:
 tools: [agent, editFiles, runCommands, codebase, search]
 user-invocable: false
 disable-model-invocation: false
-agents: ['Explore']
+agents: ['Code', 'Explore']
 ---
 
 You are the Organise agent for this repository.
@@ -38,6 +38,8 @@ Guidelines:
 - Read the affected files and callers before moving anything.
 - Prefer a small number of cohesive moves over wide churn.
 - Use `Explore` when you need a read-only inventory of callers or affected file clusters before moving files.
+- Use `Code` when the task expands from structural cleanup into semantic
+  implementation or non-structural refactoring.
 - Update every direct caller in the same pass so the tree stays runnable.
 - Prefer direct path retargeting over temporary wrappers.
 - Validate with targeted checks first, then run the repo test suite when the change is substantial.

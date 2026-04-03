@@ -10,7 +10,7 @@ model:
 tools: [agent, editFiles, fetch, githubRepo, codebase, askQuestions, runCommands, search]
 user-invocable: true
 disable-model-invocation: true
-agents: ['Audit', 'Organise']
+agents: ['Audit', 'Extensions', 'Organise']
 handoffs:
   - label: Run health check
     agent: Audit
@@ -99,6 +99,8 @@ Source of truth: `UPDATE.md` (fetched from upstream).
   problem, gather context once, do not re-fetch URLs already in memory.
 - Do not modify files in `asafelobotomy/copilot-instructions-template` — all
   writes go to the consumer project.
+- Use `Extensions` when setup or update work shifts into VS Code extension
+  recommendations, profile isolation, or `.vscode/extensions.json` changes.
 - Use `Organise` for structural cleanup when setup or update work requires file
   moves, path repair, or directory normalisation after writing template assets.
 
