@@ -9,7 +9,8 @@
     "skillsTemplate": 16,
     "hookScriptsShell": 11,
     "hookScriptsPowerShell": 12,
-    "hookScriptsPython": 6
+    "hookScriptsPython": 6,
+    "hookScriptsJson": 1
   },
   "agents": [
     "setup.agent.md",
@@ -96,6 +97,9 @@
       "pulse_paths.py",
       "pulse_runtime.py",
       "pulse_state.py"
+    ],
+    "json": [
+      "heartbeat-policy.json"
     ]
   },
   "notes": [

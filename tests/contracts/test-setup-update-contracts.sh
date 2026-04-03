@@ -304,4 +304,49 @@ assert_file_contains "manifests.md fetches python hook support files" \
     "$MANIFESTS" "hookScripts.python"
 echo ""
 
+# ──────────────────────────────────────────────────────────────
+echo "18. Hook companion inventories include JSON and Python support files"
+# ──────────────────────────────────────────────────────────────
+
+assert_file_contains "manifests.md fetches JSON hook support files" \
+    "$MANIFESTS" "hookScripts.json"
+
+assert_file_contains "manifests.md file manifest tracks hook JSON helpers" \
+    "$MANIFESTS" "\\.github/hooks/scripts/\\*\\.json"
+
+assert_file_contains "manifests.md file manifest tracks hook Python helpers" \
+    "$MANIFESTS" "\\.github/hooks/scripts/\\*\\.py"
+
+assert_file_contains "UPDATE.md file manifest tracks hook JSON helpers" \
+    "$UPDATE" "\\.github/hooks/scripts/\\*\\.json"
+
+assert_file_contains "UPDATE.md file manifest tracks hook Python helpers" \
+    "$UPDATE" "\\.github/hooks/scripts/\\*\\.py"
+echo ""
+
+# ──────────────────────────────────────────────────────────────
+echo "19. Workspace-index fallback is available before agent and skill discovery"
+# ──────────────────────────────────────────────────────────────
+
+assert_python "SETUP.md prefetches workspace-index before §2.5" '
+text = (root / "SETUP.md").read_text(encoding="utf-8")
+workspace_index_url = "https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/workspace/workspace-index.json"
+prefetch_pos = text.find(workspace_index_url)
+agents_pos = text.find("## § 2.5 — Write model-pinned agent files")
+skills_pos = text.find("## § 2.6 — Scaffold skill library")
+if prefetch_pos == -1:
+    raise SystemExit("workspace-index prefetch URL missing from SETUP.md")
+if agents_pos == -1 or skills_pos == -1:
+    raise SystemExit("agent or skill section missing from SETUP.md")
+if not (prefetch_pos < agents_pos < skills_pos):
+    raise SystemExit(f"prefetch_pos={prefetch_pos} agents_pos={agents_pos} skills_pos={skills_pos}")
+'
+
+assert_file_contains "manifests.md documents SETUP §2 prefetch for agent fallback" \
+    "$MANIFESTS" "prefetched by SETUP\.md §2"
+
+assert_file_not_contains "manifests.md no longer defers agent fallback to §3" \
+    "$MANIFESTS" "fetched in § ?3"
+echo ""
+
 finish_tests

@@ -299,7 +299,8 @@ done
 # File manifest
 for f in .github/agents/*.agent.md .github/skills/*/SKILL.md \
   .github/hooks/copilot-hooks.json .github/hooks/scripts/*.sh \
-  .github/hooks/scripts/*.ps1 .github/instructions/*.instructions.md \
+  .github/hooks/scripts/*.ps1 .github/hooks/scripts/*.json \
+  .github/hooks/scripts/*.py .github/instructions/*.instructions.md \
   .github/prompts/*.prompt.md .github/workflows/copilot-setup-steps.yml \
   .copilot/workspace/*.md .copilot/workspace/workspace-index.json; do
   [ -f "$f" ] || continue; echo "${f}=$(sha256sum "$f" | cut -c1-12)"
@@ -323,7 +324,8 @@ for i in range(1, 10):
 for pattern in [
     '.github/agents/*.agent.md', '.github/skills/*/SKILL.md',
     '.github/hooks/copilot-hooks.json', '.github/hooks/scripts/*.sh',
-    '.github/hooks/scripts/*.ps1', '.github/instructions/*.instructions.md',
+  '.github/hooks/scripts/*.ps1', '.github/hooks/scripts/*.json',
+  '.github/hooks/scripts/*.py', '.github/instructions/*.instructions.md',
     '.github/prompts/*.prompt.md', '.github/workflows/copilot-setup-steps.yml',
     '.copilot/workspace/*.md', '.copilot/workspace/workspace-index.json',
 ]:

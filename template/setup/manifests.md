@@ -15,13 +15,13 @@ Use **dynamic discovery** via GitHub API tree to enumerate all agents:
 GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/git/trees/main?recursive=1
 ```
 
-Filter for `type == "blob"` and `path` matching `.github/agents/*.agent.md`. Fetch each verbatim. If `"truncated": true`, fall back to the `agents` array in `workspace-index.json` (fetched in § 3).
+Filter for `type == "blob"` and `path` matching `.github/agents/*.agent.md`. Fetch each verbatim. If `"truncated": true`, fall back to the `agents` array in the workspace-index payload prefetched by SETUP.md §2. Write that same payload to `.copilot/workspace/workspace-index.json` later in §3.
 
 ---
 
 ## Skill files (§ 2.6)
 
-Dynamic discovery: filter API tree for `template/skills/*/SKILL.md`. If truncated, fall back to the `skills.template` array in `workspace-index.json`.
+Dynamic discovery: filter API tree for `template/skills/*/SKILL.md`. If truncated, fall back to the `skills.template` array in the workspace-index payload prefetched by SETUP.md §2.
 
 ---
 
@@ -64,7 +64,7 @@ After writing, replace `{{THREE_CHECK_COMMAND}}`, `{{TEST_FRAMEWORK}}`, `{{TEST_
 
 **Configuration**: fetch `{BASE_URL}/template/hooks/copilot-hooks.json` → `.github/hooks/copilot-hooks.json`
 
-Fetch all scripts listed in the `hookScripts.shell`, `hookScripts.powershell`, and `hookScripts.python` arrays from `workspace-index.json`.
+Fetch all files listed in the `hookScripts.shell`, `hookScripts.powershell`, `hookScripts.python`, and `hookScripts.json` arrays from the workspace-index payload prefetched by SETUP.md §2.
 
 **Bash scripts** → `.github/hooks/scripts/`:
 
@@ -251,7 +251,8 @@ done
 # File manifest
 for f in .github/agents/*.agent.md .github/skills/*/SKILL.md \
   .github/hooks/copilot-hooks.json .github/hooks/scripts/*.sh \
-  .github/hooks/scripts/*.ps1 .github/instructions/*.instructions.md \
+  .github/hooks/scripts/*.ps1 .github/hooks/scripts/*.json \
+  .github/hooks/scripts/*.py .github/instructions/*.instructions.md \
   .github/prompts/*.prompt.md .github/workflows/copilot-setup-steps.yml \
   .copilot/workspace/*.md .copilot/workspace/workspace-index.json; do
   [ -f "$f" ] || continue; echo "${f}=$(sha256sum "$f" | cut -c1-12)"
@@ -276,7 +277,8 @@ for i in range(1, 10):
 patterns = [
     '.github/agents/*.agent.md', '.github/skills/*/SKILL.md',
     '.github/hooks/copilot-hooks.json', '.github/hooks/scripts/*.sh',
-    '.github/hooks/scripts/*.ps1', '.github/instructions/*.instructions.md',
+  '.github/hooks/scripts/*.ps1', '.github/hooks/scripts/*.json',
+  '.github/hooks/scripts/*.py', '.github/instructions/*.instructions.md',
     '.github/prompts/*.prompt.md', '.github/workflows/copilot-setup-steps.yml',
     '.copilot/workspace/*.md', '.copilot/workspace/workspace-index.json',
 ]

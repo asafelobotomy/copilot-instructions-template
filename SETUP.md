@@ -157,6 +157,14 @@ Fetch the companion manifests file for §2.5–§3:
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/setup/manifests.md
 ```
 
+Also prefetch the workspace index fallback used by §2.5, §2.6, and §2.12 when
+the GitHub tree API response is truncated. Keep it in memory until §3 writes the
+same payload to `.copilot/workspace/workspace-index.json`:
+
+```text
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/workspace/workspace-index.json
+```
+
 > **Parallelization**: §2.5–§2.14 (including §2.11a) are independent. Fetch all URLs
 > in parallel where possible.
 
@@ -176,13 +184,13 @@ Batch up to 4 per call. Do not proceed with unresolved tokens. **Fallback**: pre
 
 ## § 2.5 — Write model-pinned agent files
 
-Create `.github/agents/`. Follow manifests.md § Agent files (dynamic discovery with known-agents fallback). If any fetch fails, stop immediately.
+Create `.github/agents/`. Follow manifests.md § Agent files. If the GitHub tree response is truncated, use the prefetched workspace-index fallback from §2 before continuing. If any fetch fails, stop immediately.
 
 ---
 
 ## § 2.6 — Scaffold skill library
 
-Create `.github/skills/`. Follow manifests.md § Skill files (dynamic discovery with known-skills fallback).
+Create `.github/skills/`. Follow manifests.md § Skill files. If the GitHub tree response is truncated, use the prefetched workspace-index fallback from §2 before continuing.
 
 ---
 
