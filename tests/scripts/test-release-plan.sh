@@ -146,11 +146,11 @@ assert_contains "wip consumer commit infers patch" "$output" "version_bump=patch
 assert_contains "wip consumer commit forces release-as" "$output" "force_release_as=true"
 echo ""
 
-echo "5. release-style commit still plans a release (workflow handles loop guard)"
+echo "5. release-style commit still plans a release (CI handles release-commit finalization)"
 sandbox=$(make_release_sandbox)
 (
   cd "$sandbox" || exit 1
-  # Loop prevention now lives in workflow `if:` conditions, not in this script.
+  # Release-commit handling now lives in the CI release job, not in this script.
   printf 'Template copy v1.2.4\n' > template/copilot-instructions.md
   git add template/copilot-instructions.md
   git commit -q -m "chore(main): release 1.2.4"

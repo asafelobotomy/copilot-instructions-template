@@ -29,6 +29,8 @@ if pkg.get("version-file") != "VERSION.md":
     raise SystemExit(pkg.get("version-file"))
 if pkg.get("changelog-path") != "CHANGELOG.md":
     raise SystemExit(pkg.get("changelog-path"))
+if ".release-please-manifest.json" in pkg.get("extra-files", []):
+    raise SystemExit("manifest must not be listed in extra-files")
 for rel in pkg.get("extra-files", []):
     if not (root / rel).exists():
         raise SystemExit(rel)
@@ -65,35 +67,71 @@ for path in targets:
 '
 echo ""
 
-echo "5. release-please.yml workflow_run name matches CI workflow name"
-assert_python "workflow_run trigger name matches CI name" '
-import re
+echo "5. CI workflow integrates release automation after validation"
+assert_python "CI owns the release orchestration" '
 ci_text = (root / ".github/workflows/ci.yml").read_text(encoding="utf-8")
-rp_text = (root / ".github/workflows/release-please.yml").read_text(encoding="utf-8")
-ci_name_m = re.search(r"^name:\s*(.+)", ci_text, re.MULTILINE)
-rp_name_m = re.search(r"workflows:\s*\[\"(.+?)\"\]", rp_text)
-if not ci_name_m:
-    raise SystemExit("could not find name: in ci.yml")
-if not rp_name_m:
-    raise SystemExit("could not find workflows: trigger in release-please.yml")
-ci_name = ci_name_m.group(1).strip()
-rp_name = rp_name_m.group(1).strip()
-if ci_name != rp_name:
-    raise SystemExit("MISMATCH ci=" + repr(ci_name) + " rp=" + repr(rp_name))
+normalized = ci_text.replace(chr(39), "")
+required = [
+    "release:",
+    "name: Release automation",
+    "needs:",
+    "- validate",
+    "- markdownlint",
+    "- actionlint",
+    "- yamllint",
+    "- shellcheck",
+    "- script-tests",
+    "github.event_name == push && github.ref == refs/heads/main",
+    "bash scripts/release/plan-release.sh",
+    "googleapis/release-please-action",
+]
+for needle in required:
+    if needle not in normalized:
+        raise SystemExit("missing CI release orchestration detail: " + needle)
 '
 echo ""
 
-echo "6. release workflow is gated by the release planner"
-assert_python "release workflow uses plan-release gate" '
-rp_text = (root / ".github/workflows/release-please.yml").read_text(encoding="utf-8")
-if "bash scripts/release/plan-release.sh" not in rp_text:
-    raise SystemExit("release planner step missing")
-if "steps.plan.outputs.should_release ==" not in rp_text:
-    raise SystemExit("release action missing planner gate")
-if "release-as: ${{ steps.plan.outputs.next_version }}" not in rp_text:
-    raise SystemExit("forced release step missing direct release-as input")
-if "startsWith(github.event.workflow_run.head_commit.message" not in rp_text or "chore(main): release " not in rp_text:
-    raise SystemExit("workflow-level loop guard missing")
+echo "6. Release job removes CI writeback and prepares MIGRATION on the release PR"
+assert_python "single-authority release flow has no extra main-branch writers" '
+ci_text = (root / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+normalized = ci_text.replace(chr(39), "")
+for forbidden in [
+    "Sync derived version references",
+    "Auto-commit version sync",
+    "chore: sync version references [skip ci]",
+    "git pull --ff-only",
+]:
+    if forbidden in ci_text:
+        raise SystemExit("forbidden legacy flow still present: " + forbidden)
+required = [
+    "Detect release commit",
+    "is_release_commit=true",
+    "steps.release_commit.outputs.is_release_commit == true",
+    "bash scripts/release/stub-migration.sh \"$NEXT_TAG\"",
+    "gh pr view \"$pr_number\"",
+    "git push origin HEAD:\"$pr_branch\"",
+    "gh pr merge \"$pr_number\"",
+]
+for needle in required:
+    if needle not in normalized:
+        raise SystemExit("missing release finalization detail: " + needle)
+if (root / ".github/workflows/release-please.yml").exists():
+    raise SystemExit("legacy release-please workflow should be removed")
+'
+echo ""
+
+echo "7. Maintainer docs describe the repository settings expected by release automation"
+assert_python "release docs mention the GitHub settings audit" '
+readme = (root / "README.md").read_text(encoding="utf-8")
+required = [
+    "## Recommended GitHub settings",
+    "bash scripts/release/audit-release-settings.sh",
+    "Enable auto-merge and squash merge.",
+    "GitHub Actions to create and approve pull requests.",
+]
+for needle in required:
+    if needle not in readme:
+        raise SystemExit("README missing release-governance guidance: " + needle)
 '
 echo ""
 

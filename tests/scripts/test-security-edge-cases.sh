@@ -7,7 +7,7 @@
 #   3. `input` field alias  — tool_input may use "input" key instead of "command"
 #   4. Chained commands     — dangerous pattern embedded mid-string must still trigger
 #   5. Case insensitivity   — grep -i flag; SQL keywords in lowercase must be caught
-#   6. Idempotency          — sync-version.sh run twice yields identical result
+#   6. Read-only stability  — sync-version.sh must never mutate managed files
 #
 # Run: bash tests/scripts/test-security-edge-cases.sh
 # Exit 0: all tests passed.  Exit 1: one or more failures.
@@ -100,36 +100,42 @@ assert_decision "lowercase delete from where1" "$(make_input 'terminal' 'delete 
 assert_decision "lowercase delete from"        "$(make_input 'terminal' 'delete from sessions')"       "ask"
 echo ""
 
-# ── 6. sync-version.sh idempotency ───────────────────────────────────────────
-# Running sync-version.sh twice should produce identical file state.
-# The CI workflow runs it and checks for a dirty tree; a non-idempotent script
-# would produce spurious diffs on the second run.  We copy the real repo files
-# into a temp dir so the test never mutates the working tree.
-echo "6. sync-version.sh idempotency"
+# ── 6. sync-version.sh read-only stability ───────────────────────────────────
+# Running sync-version.sh twice should leave the managed files unchanged.
+# The script is a verifier now, so any mutation would reintroduce a second
+# version writer outside release-please.
+echo "6. sync-version.sh read-only stability"
 
 TMPDIR_SYNC=$(mktemp -d)
 CLEANUP_DIRS+=("$TMPDIR_SYNC")
 
-# Mirror the two files sync-version.sh operates on
+# Mirror the files sync-version.sh verifies
 cp "$REPO_ROOT/VERSION.md" "$TMPDIR_SYNC/"
 cp "$REPO_ROOT/.release-please-manifest.json" "$TMPDIR_SYNC/"
 mkdir -p "$TMPDIR_SYNC/.github"
+mkdir -p "$TMPDIR_SYNC/template"
 cp "$REPO_ROOT/.github/copilot-instructions.md" "$TMPDIR_SYNC/.github/"
+cp "$REPO_ROOT/template/copilot-instructions.md" "$TMPDIR_SYNC/template/"
+cp "$REPO_ROOT/README.md" "$TMPDIR_SYNC/"
 
-# First run — may or may not change files, but must exit 0
+# First run — must exit 0 and leave the files untouched
 ROOT_DIR="$TMPDIR_SYNC" bash "$SYNC" >/dev/null 2>&1
 SNAP1=$(cat "$TMPDIR_SYNC/.github/copilot-instructions.md" \
+            "$TMPDIR_SYNC/template/copilot-instructions.md" \
+            "$TMPDIR_SYNC/README.md" \
             "$TMPDIR_SYNC/.release-please-manifest.json" 2>/dev/null)
 
 # Second run — must be an exact no-op relative to the first run
 ROOT_DIR="$TMPDIR_SYNC" bash "$SYNC" >/dev/null 2>&1
 SNAP2=$(cat "$TMPDIR_SYNC/.github/copilot-instructions.md" \
+            "$TMPDIR_SYNC/template/copilot-instructions.md" \
+            "$TMPDIR_SYNC/README.md" \
             "$TMPDIR_SYNC/.release-please-manifest.json" 2>/dev/null)
 
 if [[ "$SNAP1" == "$SNAP2" ]]; then
-  pass_note "sync-version.sh is idempotent (second run produces no changes)"
+  pass_note "sync-version.sh is read-only (second run produces no changes)"
 else
-  fail_note "sync-version.sh is NOT idempotent — files changed on second run" "$(diff <(echo "$SNAP1") <(echo "$SNAP2") | head -20)"
+  fail_note "sync-version.sh is NOT read-only — files changed across runs" "$(diff <(echo "$SNAP1") <(echo "$SNAP2") | head -20)"
 fi
 echo ""
 

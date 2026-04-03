@@ -28,7 +28,43 @@ the next tagged version (listed in **Includes**).
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<tag>/<template-source-path>
 ```
 
-**Available tags**: v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1, v4.2.0, v5.0.0, v5.0.1, v5.1.0, v5.2.0
+**Available tags**: v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1, v4.2.0, v5.0.0, v5.0.1, v5.1.0, v5.2.0, v5.3.0
+
+## v5.3.0
+
+| Breaking | Sections changed | Sections added | Includes |
+|----------|-----------------|----------------|----------|
+| No | §2, §5, §8, §9 | — | — |
+
+**What changed**: Adds phase-scoped test selection guidance and a consumer-facing audit workflow, tightens heartbeat runtime helpers around active-work tracking, and expands the hook/workspace inventory used by setup and update flows.
+
+**Breaking**: None
+
+**New placeholders**: none
+
+**Companion files added**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/skills/commit-preflight/SKILL.md` | `template/skills/commit-preflight/SKILL.md` | **New** (commit-time workflow preflight skill) |
+
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/agents/audit.agent.md` | `.github/agents/audit.agent.md` | Updated (consumer audit mode and residual-risk workflow) |
+| `.github/hooks/scripts/heartbeat-policy.json` | `template/hooks/scripts/heartbeat-policy.json` | Updated (policy-driven heartbeat thresholds and messages) |
+| `.github/hooks/scripts/mcp-heartbeat-server.py` | `template/hooks/scripts/mcp-heartbeat-server.py` | Updated (reflection payload handling) |
+| `.github/hooks/scripts/pulse.sh` | `template/hooks/scripts/pulse.sh` | Updated (phase testing and heartbeat orchestration) |
+| `.github/hooks/scripts/pulse.ps1` | `template/hooks/scripts/pulse.ps1` | Updated (PowerShell parity for heartbeat orchestration) |
+| `.github/hooks/scripts/pulse_intent.py` | `template/hooks/scripts/pulse_intent.py` | Updated (audit-mode prompt routing) |
+| `.github/hooks/scripts/pulse_paths.py` | `template/hooks/scripts/pulse_paths.py` | Updated (consumer path classification) |
+| `.github/hooks/scripts/pulse_runtime.py` | `template/hooks/scripts/pulse_runtime.py` | Updated (policy loading and runtime thresholds) |
+| `.github/hooks/scripts/pulse_state.py` | `template/hooks/scripts/pulse_state.py` | Updated (active-work tracking and retrospective thresholds) |
+| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` | Updated (active-work heartbeat guidance) |
+| `.copilot/workspace/workspace-index.json` | `template/workspace/workspace-index.json` | Updated (expanded hook companion inventory) |
+
+**Manual actions**: None
 
 ## v4.2.0
 

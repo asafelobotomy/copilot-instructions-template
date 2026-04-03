@@ -32,6 +32,50 @@ Current template version: **5.3.0** <!-- x-release-please-version --> — see [`
 
 ## Release automation
 
-After a commit lands on `main`, GitHub runs the full workflow set first. When CI passes, the release workflow evaluates only consumer-facing paths: `template/`, `.github/agents/`, `starter-kits/`, `SETUP.md`, and `UPDATE.md`.
+Pushes to `main` run the full validation workflow first. A final CI release job runs only after the validation jobs succeed, so the same workflow both validates the commit and drives release-please.
 
-Changes outside that surface are treated as developer-only and do not produce a release. Consumer-facing changes do produce a release: `feat` commits keep a minor bump, `fix` and `deps` keep a patch bump, and non-releasable commit headers fall back to a forced patch release so consumer updates are still tagged and published.
+The release job evaluates only consumer-facing paths: `template/`, `.github/agents/`, `starter-kits/`, `SETUP.md`, and `UPDATE.md`. Developer-only changes do not produce a release. Consumer-facing changes open or update a release PR; `feat` keeps a minor bump, `fix` and `deps` keep a patch bump, and non-releasable commit headers fall back to a forced patch release so consumer updates are still tagged and published.
+
+Release-please is the only version writer. Do not bump `VERSION.md`, `.release-please-manifest.json`, or the `x-release-please-version` markers manually.
+
+## Terminal-safe strict mode
+
+In zsh workspaces, do not issue top-level `set -euo pipefail` or `setopt errexit nounset pipefail` directly into a persistent terminal session. Use the repo wrappers so strict mode stays isolated to a child Bash process.
+
+For one-line snippets:
+
+```bash
+bash scripts/tests/run-strict-bash.sh --command 'tmpdir=$(mktemp -d) && printf "ok\n" > "$tmpdir/out" && cat "$tmpdir/out" && rm -rf "$tmpdir"'
+```
+
+For multi-line snippets:
+
+```bash
+bash scripts/tests/run-strict-bash-stdin.sh <<'EOF'
+tmpdir=$(mktemp -d)
+printf 'hello\n' > "$tmpdir/out.txt"
+cat "$tmpdir/out.txt"
+rm -rf "$tmpdir"
+EOF
+```
+
+## Recommended GitHub settings
+
+The current release workflow assumes a lightweight ruleset on `main`.
+
+- Block branch deletion.
+- Block non-fast-forward pushes.
+- Enable auto-merge and squash merge.
+- Enable the Actions setting that allows GitHub Actions to create and approve pull requests.
+- Keep required pull-request approvals and required status checks off `main` unless you intentionally want release PRs to pause for manual merge or you switch release PR automation to a GitHub App or PAT-backed token.
+
+Audit the live repository settings with an authenticated GitHub CLI session:
+
+```bash
+bash scripts/release/audit-release-settings.sh
+```
+
+If you want stricter governance on `main`, choose one of these paths:
+
+1. Require pull-request approval and accept manual review and merge for release PRs.
+2. Require pull-request checks and move release PR automation to a GitHub App or PAT-backed token that can trigger those checks.

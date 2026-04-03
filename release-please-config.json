@@ -8,7 +8,6 @@
       "extra-files": [
         "template/copilot-instructions.md",
         "README.md",
-        ".release-please-manifest.json",
         ".github/copilot-instructions.md"
       ]
     }

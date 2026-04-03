@@ -8,7 +8,7 @@
 # Inserts the stub directly before the first ## v* version heading, and
 # appends the tag to the "Available tags" line.
 #
-# Called by release-please.yml after a GitHub release is created.
+# Called from the CI release job before merging a release PR.
 
 set -euo pipefail
 

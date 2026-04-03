@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# sync-version.sh — CI safety net for version constants.
+# sync-version.sh — verify release-managed version references stay aligned.
 #
+# Legacy name retained for compatibility.
 # Single source of truth: VERSION.md
-# Primary sync: release-please extra-files (x-release-please-version markers)
-# This script: fallback validation — CI runs it and checks for a dirty tree.
-#              If release-please updated all markers correctly, this is a no-op.
+# Single writer: release-please (version-file, manifest-file, extra-files)
+# This script is read-only and fails if the managed files drift from VERSION.md.
 set -euo pipefail
 
 ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
@@ -26,31 +26,69 @@ if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
 fi
 
 python3 - "$ROOT_DIR" "$VERSION" <<'PY'
+import json
+import pathlib
 import re
 import sys
-import pathlib
 
 root = pathlib.Path(sys.argv[1])
 version = sys.argv[2]
+errors = []
 
-def sub(path, pattern, repl):
-    t = path.read_text()
-    nt = re.sub(pattern, repl, t, flags=re.S)
-    if nt != t:
-        path.write_text(nt)
 
-sub(root / "template/copilot-instructions.md",
-    r'(> \*\*Template version\*\*: )\d+\.\d+\.\d+( [^|]*\| \*\*Applied\*\*:)',
-    rf'\g<1>{version}\g<2>')
-sub(root / "README.md",
-    r'(\*\*)\d+\.\d+\.\d+(\*\* <!-- x-release-please-version -->)',
-    rf'\g<1>{version}\g<2>')
-sub(root / ".release-please-manifest.json",
-    r'("\."\s*:\s*")\d+\.\d+\.\d+(")',
-    rf'\g<1>{version}\g<2>')
-sub(root / ".github/copilot-instructions.md",
-    r'(Template version: )\d+\.\d+\.\d+',
-    rf'\g<1>{version}')
+def require_text_match(path: pathlib.Path, pattern: str, description: str, require_marker: bool = False) -> None:
+    if not path.exists():
+        errors.append(f"missing file: {path.relative_to(root)}")
+        return
+    text = path.read_text(encoding="utf-8")
+    if require_marker and "x-release-please-version" not in text:
+        errors.append(f"missing x-release-please-version marker in {path.relative_to(root)}")
+    match = re.search(pattern, text, re.S)
+    if match is None:
+        errors.append(f"could not locate {description} in {path.relative_to(root)}")
+        return
+    actual = match.group(1)
+    if actual != version:
+        errors.append(
+            f"version drift in {path.relative_to(root)}: expected {version}, found {actual}"
+        )
+
+
+require_text_match(
+    root / "template/copilot-instructions.md",
+    r"> \*\*Template version\*\*: (\d+\.\d+\.\d+)(?: [^|]*\| \*\*Applied\*\*:)",
+    "template version marker",
+    require_marker=True,
+)
+require_text_match(
+    root / "README.md",
+    r"\*\*(\d+\.\d+\.\d+)\*\* <!-- x-release-please-version -->",
+    "README version marker",
+    require_marker=True,
+)
+require_text_match(
+    root / ".github/copilot-instructions.md",
+    r"Template version: (\d+\.\d+\.\d+)",
+    "developer instruction version marker",
+    require_marker=True,
+)
+
+manifest_path = root / ".release-please-manifest.json"
+if not manifest_path.exists():
+    errors.append("missing file: .release-please-manifest.json")
+else:
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    actual = manifest.get(".")
+    if actual != version:
+        errors.append(
+            f"version drift in .release-please-manifest.json: expected {version}, found {actual}"
+        )
+
+if errors:
+    for err in errors:
+        print(f"❌ {err}")
+    print("Run release-please or repair the managed files before releasing again.")
+    raise SystemExit(1)
+
+print(f"✅ Release-managed version references match VERSION.md ({version})")
 PY
-
-echo "✅ Synced version references from VERSION.md ($VERSION)"

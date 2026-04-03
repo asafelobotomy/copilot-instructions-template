@@ -12,10 +12,11 @@ trap 'teardown_sandbox' EXIT
 # Path to the script under test (relative to repo root)
 SCRIPT="$REPO_ROOT/scripts/release/sync-version.sh"
 
-# ── Helpers ────────────────────────────────────────────────────────────────────
+# ── Helpers ───────────────────────────────────────────────────────────────────
 
 setup_sandbox() {
   local ver="${1:-1.2.3}"
+  local managed_ver="${2:-$ver}"
   SANDBOX=$(mktemp -d)
   # Minimal tree matching the paths the script targets
   mkdir -p "$SANDBOX/template" "$SANDBOX/.github"
@@ -23,39 +24,30 @@ setup_sandbox() {
   cat > "$SANDBOX/template/copilot-instructions.md" <<'INST'
 # Copilot Instructions Template
 
-> **Template version**: 0.0.0 <!-- x-release-please-version --> | **Applied**: 2025-01-01
+> **Template version**: __VERSION__ <!-- x-release-please-version --> | **Applied**: 2025-01-01
 > Living document.
 INST
+  sed -i "s/__VERSION__/$managed_ver/" "$SANDBOX/template/copilot-instructions.md"
 
-  printf '{"." : "0.0.0"}\n' > "$SANDBOX/.release-please-manifest.json"
+  printf '{"." : "%s"}\n' "$managed_ver" > "$SANDBOX/.release-please-manifest.json"
 
-  printf 'Current template version: **0.0.0** <!-- x-release-please-version --> — see CHANGELOG.md.\n' \
+  printf 'Current template version: **%s** <!-- x-release-please-version --> — see CHANGELOG.md.\n' "$managed_ver" \
     > "$SANDBOX/README.md"
 
   cat > "$SANDBOX/.github/copilot-instructions.md" <<'DVINST'
 # Developer Instructions — copilot-instructions-template
 
-> Role: AI developer for this repository. Template version: 0.0.0 <!-- x-release-please-version --> | Updated: 2025-01-01
+> Role: AI developer for this repository. Template version: __VERSION__ <!-- x-release-please-version --> | Updated: 2025-01-01
 DVINST
+  sed -i "s/__VERSION__/$managed_ver/" "$SANDBOX/.github/copilot-instructions.md"
 }
 
 teardown_sandbox() {
   [[ -n "${SANDBOX:-}" ]] && rm -rf "$SANDBOX"
 }
 
-assert_fail() {
-  local desc="$1" actual_exit="$2"
-  if [[ "$actual_exit" -ne 0 ]]; then
-    pass_note "$desc"
-  else
-    fail_note "$desc" "     expected non-zero exit, got 0"
-  fi
-}
-
 run_script() {
-  # Run the script with ROOT_DIR pointing to our sandbox
   ROOT_DIR="$SANDBOX" bash "$SCRIPT" 2>&1
-  return $?
 }
 
 # ── Tests ──────────────────────────────────────────────────────────────────────
@@ -63,103 +55,106 @@ run_script() {
 echo "=== sync-version.sh unit tests ==="
 echo ""
 
-# ── 1. Happy path — updates both files ─────────────────────────────────────────
-echo "1. Happy path — updates version 0.0.0 → 1.2.3"
-setup_sandbox "1.2.3"
-run_script
-exit_code=$?
-assert_success "exits 0" "$exit_code"
-assert_file_contains "copilot-instructions updated" "$SANDBOX/template/copilot-instructions.md" "Template version\*\*: 1.2.3"
-assert_file_not_contains "old version gone"         "$SANDBOX/template/copilot-instructions.md" "Template version\*\*: 0.0.0"
-assert_file_contains "dev-instructions updated"     "$SANDBOX/.github/copilot-instructions.md"  "Template version: 1.2.3"
-assert_file_not_contains "dev-instructions old ver" "$SANDBOX/.github/copilot-instructions.md"  "Template version: 0.0.0"
-assert_file_contains "readme updated"              "$SANDBOX/README.md"                         "\*\*1.2.3\*\*"
-assert_file_not_contains "readme old version gone" "$SANDBOX/README.md"                         "\*\*0.0.0\*\*"
-assert_file_contains "manifest updated"             "$SANDBOX/.release-please-manifest.json"   '"1.2.3"'
-assert_file_not_contains "old manifest gone"        "$SANDBOX/.release-please-manifest.json"   '"0.0.0"'
+# ── 1. Happy path — matching files verify cleanly ─────────────────────────────
+echo "1. Matching release-managed files verify cleanly"
+setup_sandbox "1.2.3" "1.2.3"
+output=$(run_script)
+status=$?
+assert_success "exits 0" "$status"
+assert_contains "success message mentions VERSION.md" "$output" "Release-managed version references match VERSION.md (1.2.3)"
 teardown_sandbox
 echo ""
 
-# ── 2. Inline x-release-please-version marker is preserved ────────────────────
-echo "2. Inline marker preserved after substitution"
-setup_sandbox "2.0.0"
-run_script >/dev/null
-assert_file_contains "marker still in instructions" "$SANDBOX/template/copilot-instructions.md" "x-release-please-version"
-assert_file_contains "marker still in dev-instructions" "$SANDBOX/.github/copilot-instructions.md" "x-release-please-version"
+# ── 2. Drift is detected instead of rewritten ──────────────────────────────────
+echo "2. Drift is reported instead of being rewritten"
+setup_sandbox "1.2.3" "0.0.0"
+output=$(run_script 2>&1)
+status=$?
+assert_failure "drift exits non-zero" "$status"
+assert_contains "template drift is reported" "$output" "template/copilot-instructions.md"
+assert_contains "manifest drift is reported" "$output" "version drift in .release-please-manifest.json"
 teardown_sandbox
 echo ""
 
-# ── 3. Idempotency — running twice leaves tree clean ──────────────────────────
-echo "3. Idempotency — second run is a no-op"
-setup_sandbox "3.1.0"
-run_script >/dev/null
+# ── 3. Marker requirements are enforced ────────────────────────────────────────
+echo "3. Missing release markers are reported"
+setup_sandbox "2.0.0" "2.0.0"
+printf 'Current template version: **2.0.0** — see CHANGELOG.md.\n' > "$SANDBOX/README.md"
+output=$(run_script 2>&1)
+status=$?
+assert_failure "missing marker exits non-zero" "$status"
+assert_contains "missing marker is reported" "$output" "missing x-release-please-version marker in README.md"
+teardown_sandbox
+echo ""
+
+# ── 4. Read-only verification is stable ───────────────────────────────────────
+echo "4. Verification is read-only across repeated runs"
+setup_sandbox "3.1.0" "3.1.0"
 sha1_inst=$(sha256sum "$SANDBOX/template/copilot-instructions.md")
 sha1_manifest=$(sha256sum "$SANDBOX/.release-please-manifest.json")
 sha1_readme=$(sha256sum "$SANDBOX/README.md")
+sha1_dev=$(sha256sum "$SANDBOX/.github/copilot-instructions.md")
+run_script >/dev/null
 run_script >/dev/null
 sha2_inst=$(sha256sum "$SANDBOX/template/copilot-instructions.md")
 sha2_manifest=$(sha256sum "$SANDBOX/.release-please-manifest.json")
 sha2_readme=$(sha256sum "$SANDBOX/README.md")
-if [[ "$sha1_inst" == "$sha2_inst" ]]; then
-  pass_note "copilot-instructions idempotent"
+sha2_dev=$(sha256sum "$SANDBOX/.github/copilot-instructions.md")
+if [[ "$sha1_inst" == "$sha2_inst" && "$sha1_manifest" == "$sha2_manifest" && "$sha1_readme" == "$sha2_readme" && "$sha1_dev" == "$sha2_dev" ]]; then
+  pass_note "verification leaves files unchanged"
 else
-  fail_note "copilot-instructions changed on second run"
-fi
-if [[ "$sha1_manifest" == "$sha2_manifest" ]]; then
-  pass_note "manifest idempotent"
-else
-  fail_note "manifest changed on second run"
-fi
-if [[ "$sha1_readme" == "$sha2_readme" ]]; then
-  pass_note "readme idempotent"
-else
-  fail_note "readme changed on second run"
+  fail_note "verification leaves files unchanged"
 fi
 teardown_sandbox
 echo ""
 
-# ── 4. Multi-digit version (10.21.300) ────────────────────────────────────────
-echo "4. Multi-digit version (10.21.300)"
-setup_sandbox "10.21.300"
-run_script >/dev/null
-assert_file_contains "manifest has multi-digit version" "$SANDBOX/.release-please-manifest.json" '"10.21.300"'
+# ── 5. Multi-digit version (10.21.300) ────────────────────────────────────────
+echo "5. Multi-digit version (10.21.300) verifies cleanly"
+setup_sandbox "10.21.300" "10.21.300"
+output=$(run_script)
+status=$?
+assert_success "multi-digit version exits zero" "$status"
+assert_contains "multi-digit version is echoed" "$output" "10.21.300"
 teardown_sandbox
 echo ""
 
-# ── 5. Missing VERSION.md → non-zero exit ─────────────────────────────────────
-echo "5. Missing VERSION.md exits non-zero"
+# ── 6. Missing VERSION.md → non-zero exit ─────────────────────────────────────
+echo "6. Missing VERSION.md exits non-zero"
 SANDBOX=$(mktemp -d)
 mkdir -p "$SANDBOX/.github"
-# Intentionally do NOT create VERSION.md
 ROOT_DIR="$SANDBOX" bash "$SCRIPT" 2>/dev/null
-assert_fail "missing VERSION.md → exit non-zero" $?
+assert_failure "missing VERSION.md → exit non-zero" $?
 teardown_sandbox
 echo ""
 
-# ── 6. Invalid semver (alpha string) → non-zero exit ─────────────────────────
-echo "6. Invalid semver 'not-a-version' exits non-zero"
-setup_sandbox
+# ── 7. Invalid semver (alpha string) → non-zero exit ─────────────────────────
+echo "7. Invalid semver 'not-a-version' exits non-zero"
+setup_sandbox "1.2.3" "1.2.3"
 echo "not-a-version" > "$SANDBOX/VERSION.md"
 run_script 2>/dev/null
-assert_fail "invalid semver → exit non-zero" $?
-teardown_sandbox
-echo ""
-
-# ── 7. Invalid semver (missing patch) → non-zero exit ────────────────────────
-echo "7. Incomplete semver '1.2' exits non-zero"
-setup_sandbox
-echo "1.2" > "$SANDBOX/VERSION.md"
-run_script 2>/dev/null
-assert_fail "incomplete semver → exit non-zero" $?
+assert_failure "invalid semver → exit non-zero" $?
 teardown_sandbox
 echo ""
 
 # ── 8. VERSION.md with leading/trailing whitespace → handled ──────────────────
 echo "8. VERSION.md with surrounding whitespace"
-setup_sandbox
+setup_sandbox "4.5.6" "4.5.6"
 printf "  4.5.6  \n" > "$SANDBOX/VERSION.md"
-run_script >/dev/null
-assert_file_contains "strips whitespace — manifest updated" "$SANDBOX/.release-please-manifest.json" '"4.5.6"'
+output=$(run_script)
+status=$?
+assert_success "surrounding whitespace is tolerated" "$status"
+assert_contains "whitespace-normalized version is echoed" "$output" "4.5.6"
+teardown_sandbox
+echo ""
+
+# ── 9. Manifest drift is reported directly ────────────────────────────────────
+echo "9. Manifest drift is reported directly"
+setup_sandbox "7.8.9" "7.8.9"
+printf '{"." : "7.8.8"}\n' > "$SANDBOX/.release-please-manifest.json"
+output=$(run_script 2>&1)
+status=$?
+assert_failure "manifest drift exits non-zero" "$status"
+assert_contains "manifest drift points at manifest file" "$output" ".release-please-manifest.json"
 teardown_sandbox
 echo ""
 

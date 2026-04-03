@@ -29,29 +29,6 @@ jobs:
             || { echo "❌ Not a valid semver (expected x.y.z)"; exit 1; }
           echo "✅ OK"
 
-      - name: Sync derived version references
-        run: bash scripts/release/sync-version.sh
-
-      - name: Auto-commit version sync (push to main only)
-        if: github.event_name == 'push'
-        run: |
-          if ! git diff --quiet; then
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add template/copilot-instructions.md README.md .release-please-manifest.json .github/copilot-instructions.md
-            git commit -m "chore: sync version references [skip ci]"
-            git push
-          fi
-
-      - name: Version-derived files are in sync
-        run: |
-          git diff --quiet || {
-            echo "❌ Version-derived files are out of sync."
-            echo "Run: bash scripts/release/sync-version.sh and commit the changes."
-            git --no-pager diff --name-only
-            exit 1
-          }
-
       - name: CHANGELOG has [Unreleased] section
         run: |
           grep -q '## \[Unreleased\]' CHANGELOG.md \
@@ -171,20 +148,6 @@ jobs:
 
       - name: "Attention budget — copilot-instructions.md line limits"
         run: bash scripts/ci/validate-attention-budget.sh
-
-      - name: Release workflow mutual exclusion
-        run: |
-          # Both release-manual.yml and release-please.yml warn "use one or the other".
-          # This step enforces that — if both have an active push trigger, fail fast.
-          has_push() { grep -qE '^  push:' "$1" 2>/dev/null; }
-          manual_active=0; please_active=0
-          if has_push .github/workflows/release-manual.yml; then manual_active=1; fi
-          if has_push .github/workflows/release-please.yml; then please_active=1; fi
-          if [[ $manual_active -eq 1 && $please_active -eq 1 ]]; then
-            echo "❌ Both release-manual.yml and release-please.yml have active push triggers."
-            exit 1
-          fi
-          echo "✅ Release workflow mutual exclusion OK"
 
       - name: JSON files parse without errors
         run: |
@@ -346,6 +309,9 @@ jobs:
       - name: Script behavior | sync-version.sh
         run: bash tests/scripts/test-sync-version.sh
 
+      - name: Script behavior | run-all-captured.sh
+        run: bash tests/scripts/test-run-all-captured.sh
+
       - name: Script behavior | sync-workspace-index.sh
         run: bash tests/scripts/test-sync-workspace-index.sh
 
@@ -367,6 +333,9 @@ jobs:
       - name: Script behavior | sync-template-parity.sh
         run: bash tests/scripts/test-sync-template-parity.sh
 
+      - name: Script behavior | validate-template-sync.sh
+        run: bash tests/scripts/test-validate-template-sync.sh
+
       - name: Script behavior | validate-agent-frontmatter.sh
         run: bash tests/scripts/test-validate-agent-frontmatter.sh
 
@@ -381,3 +350,100 @@ jobs:
 
       - name: Docs and contracts | setup and update contracts
         run: bash tests/contracts/test-setup-update-contracts.sh
+
+  release:
+    name: Release automation
+    runs-on: ubuntu-latest
+    needs:
+      - validate
+      - markdownlint
+      - actionlint
+      - yamllint
+      - shellcheck
+      - script-tests
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Detect release commit
+        id: release_commit
+        env:
+          HEAD_SUBJECT: ${{ github.event.head_commit.message }}
+        run: |
+          if [[ "$HEAD_SUBJECT" == chore\(main\):\ release\ * ]]; then
+            echo "is_release_commit=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_release_commit=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Plan release
+        id: plan
+        if: steps.release_commit.outputs.is_release_commit != 'true'
+        run: bash scripts/release/plan-release.sh
+
+      - name: Skip release for dev-only changes
+        if: steps.release_commit.outputs.is_release_commit != 'true' && steps.plan.outputs.should_release != 'true'
+        run: |
+          echo "Skipping release: ${{ steps.plan.outputs.reason }}"
+
+      - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
+        id: release_native
+        if: >-
+          steps.release_commit.outputs.is_release_commit == 'true' ||
+          (steps.plan.outputs.should_release == 'true' && steps.plan.outputs.force_release_as != 'true')
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
+        id: release_forced
+        if: steps.release_commit.outputs.is_release_commit != 'true' && steps.plan.outputs.should_release == 'true' && steps.plan.outputs.force_release_as == 'true'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-as: ${{ steps.plan.outputs.next_version }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - name: Prepare MIGRATION stub on release PR
+        if: (steps.release_native.outputs.pr || steps.release_forced.outputs.pr) && !(steps.release_native.outputs.release_created == 'true' || steps.release_forced.outputs.release_created == 'true')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_PR: ${{ steps.release_native.outputs.pr || steps.release_forced.outputs.pr }}
+          NEXT_TAG: v${{ steps.plan.outputs.next_version }}
+        run: |
+          pr_number=$(python3 -c 'import json, os; print(json.loads(os.environ["RELEASE_PR"])["number"])')
+          pr_branch=$(gh pr view "$pr_number" --repo "${{ github.repository }}" --json headRefName --jq .headRefName)
+          git fetch origin "$pr_branch"
+          git checkout -B "$pr_branch" FETCH_HEAD
+          bash scripts/release/stub-migration.sh "$NEXT_TAG"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add MIGRATION.md
+          git diff --cached --quiet \
+            || git commit -m "docs: stub MIGRATION.md entry for $NEXT_TAG [skip ci]"
+          git push origin HEAD:"$pr_branch"
+
+      - name: Merge release PR
+        if: (steps.release_native.outputs.pr || steps.release_forced.outputs.pr) && !(steps.release_native.outputs.release_created == 'true' || steps.release_forced.outputs.release_created == 'true')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_PR: ${{ steps.release_native.outputs.pr || steps.release_forced.outputs.pr }}
+        run: |
+          pr_number=$(python3 -c 'import json, os; print(json.loads(os.environ["RELEASE_PR"])["number"])')
+          gh pr merge "$pr_number" \
+            --repo ${{ github.repository }} \
+            --squash \
+            --auto \
+            || echo '::warning::Auto-merge failed or unavailable. Merge the release PR manually.'
