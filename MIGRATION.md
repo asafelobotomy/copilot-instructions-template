@@ -28,7 +28,7 @@ the next tagged version (listed in **Includes**).
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<tag>/<template-source-path>
 ```
 
-**Available tags**: v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1, v4.2.0, v5.0.0, v5.0.1, v5.1.0, v5.2.0, v5.3.0, v5.4.0
+**Available tags**: v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1, v4.2.0, v5.0.0, v5.0.1, v5.1.0, v5.2.0, v5.3.0, v5.4.0, v5.5.0
 
 ## v5.3.0
 
@@ -201,6 +201,22 @@ mv .copilot/workspace/DOC_INDEX.json .copilot/workspace/workspace-index.json 2>/
 Then update any agent count or skill count references inside the file to match the current `.github/agents/` and `.github/skills/` directories.
 
 ## v5.4.0
+
+| Breaking | Sections changed | Sections added | Includes |
+|----------|-----------------|----------------|----------|
+| TBD | — | — | — |
+
+**What changed**: *(stub — fill in before the next release or immediately after)*
+
+**New placeholders**: none
+
+**Companion files added**: none
+
+**Companion files updated**: none
+
+**Manual actions**: None
+
+## v5.5.0
 
 | Breaking | Sections changed | Sections added | Includes |
 |----------|-----------------|----------------|----------|
