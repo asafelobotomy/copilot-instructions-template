@@ -135,7 +135,59 @@ for rel, needles in required_by_file.items():
 '
 echo ""
 
-echo "5. Task completion and testing policy distinguish targeted vs full-suite gates"
+echo "5. Setup lifecycle entry surfaces point to canonical protocol sources"
+assert_python "setup and agent entry files point to the canonical protocol docs" '
+checks = {
+    "AGENTS.md": [
+        "## Canonical protocol sources",
+        "[SETUP.md](SETUP.md)",
+        "[UPDATE.md](UPDATE.md)",
+        "template/setup/manifests.md#protocol-sources",
+    ],
+    ".github/agents/setup.agent.md": [
+        "## Canonical protocol sources",
+        "[SETUP.md](SETUP.md)",
+        "[UPDATE.md](UPDATE.md)",
+        "template/setup/manifests.md#protocol-sources",
+        "[AGENTS.md](AGENTS.md)",
+    ],
+    "template/setup/manifests.md": [
+        "## Protocol sources",
+        "| Setup |",
+        "| Update and restore |",
+        "`SETUP.md`",
+        "`UPDATE.md`",
+    ],
+}
+for rel, needles in checks.items():
+    text = (root / rel).read_text(encoding="utf-8")
+    for needle in needles:
+        if needle not in text:
+            raise SystemExit(rel + " missing protocol source pointer: " + needle)
+
+agents_text = (root / "AGENTS.md").read_text(encoding="utf-8")
+if "## Remote Bootstrap Sequence" in agents_text:
+    raise SystemExit("AGENTS.md still duplicates the remote bootstrap sequence")
+if "## Remote Update Sequence" in agents_text:
+    raise SystemExit("AGENTS.md still duplicates the remote update sequence")
+for phrase in [
+    "Setup from asafelobotomy/copilot-instructions-template",
+    "Update your instructions",
+    "Restore instructions from backup",
+]:
+    if agents_text.count(phrase) != 1:
+        raise SystemExit("AGENTS.md duplicates trigger phrase: " + phrase)
+
+setup_agent_text = (root / ".github/agents/setup.agent.md").read_text(encoding="utf-8")
+if "### Pre-flight URLs" in setup_agent_text:
+    raise SystemExit("setup.agent.md still duplicates the pre-flight URL list")
+if "### Trigger phrases (update mode)" in setup_agent_text:
+    raise SystemExit("setup.agent.md still duplicates the update trigger phrase list")
+'
+echo ""
+
+# ──────────────────────────────────────────────────────────────
+echo "6. Task completion and testing policy distinguish targeted vs full-suite gates"
 assert_python "instruction files define phase testing vs final completion semantics" '
 required_by_file = {
     ".github/copilot-instructions.md": [
@@ -158,6 +210,7 @@ required_by_file = {
         "### Test Scope Policy",
         "**Task complete** means the full user-visible task is finished end-to-end",
         "During intermediate phases, prefer deterministic path-based targeted suites",
+        "If the repo documents a targeted-test selector or phase-test command, use it to choose deterministic phase checks from changed paths",
         "If multiple sub-parts are still in progress, do not treat a passing targeted subset as permission to declare the whole task complete",
         "Broaden early when changes touch shared helpers, broad policy surfaces, parity mirrors, or any area without a reliable targeted test mapping",
         "Final gate: before marking the full task complete, run the full suite with `{{TEST_COMMAND}}`",
@@ -171,7 +224,7 @@ for rel, needles in required_by_file.items():
 '
 echo ""
 
-echo "6. Developer instructions expose the targeted test selector command"
+echo "7. Developer instructions expose the targeted test selector command"
 assert_python "developer instructions mention the targeted test selector" '
 text = " ".join((root / ".github/copilot-instructions.md").read_text(encoding="utf-8").split())
 required = [
@@ -185,7 +238,7 @@ for needle in required:
 '
 echo ""
 
-echo "7. Instruction files encode terminal discipline for truncation and zsh shells"
+echo "8. Instruction files encode terminal discipline for truncation and zsh shells"
 assert_python "instruction files include terminal discipline guidance" '
 required_by_file = {
     ".github/copilot-instructions.md": [
@@ -238,7 +291,7 @@ for search_root in search_roots:
 '
 echo ""
 
-echo "8. Agent and prompt surfaces avoid top-level zsh strict-mode mutation guidance"
+echo "9. Agent and prompt surfaces avoid top-level zsh strict-mode mutation guidance"
 assert_python "prompt and agent surfaces avoid raw zsh strict-mode mutation" '
 search_roots = [
     root / ".github/agents",
@@ -255,7 +308,7 @@ for search_root in search_roots:
 '
 echo ""
 
-echo "9. Agent allow-lists stay minimal and workflow-aligned"
+echo "10. Agent allow-lists stay minimal and workflow-aligned"
 assert_python "agent allow-lists match documented delegation policy" '
 def parse_tools_or_agents(frontmatter, field):
     match = re.search(rf"^{field}:\s*\[(.*)\]\s*$", frontmatter, re.M)
@@ -330,6 +383,80 @@ for name, needles in checks.items():
     for needle in needles:
         if needle not in text:
             raise SystemExit(name + " missing workflow guidance: " + needle)
+'
+echo ""
+
+echo "11. Hidden specialist agents are not advertised in the public trigger table"
+assert_python "AGENTS.md keeps delegation-first specialists out of direct trigger docs" '
+text = (root / "AGENTS.md").read_text(encoding="utf-8")
+normalized = " ".join(text.split())
+required = [
+    "direct consumer-facing trigger phrases",
+    "Audit, Researcher, Extensions, and Organise",
+    "hidden from direct invocation",
+]
+for needle in required:
+    if " ".join(needle.split()) not in normalized:
+        raise SystemExit("AGENTS.md missing hidden-agent note: " + needle)
+for forbidden in [
+    "| Health check |",
+    "| Extensions (review/install/profile) |",
+    "| Research (find/report/track) |",
+    "| Security audit |",
+]:
+    if forbidden in text:
+        raise SystemExit("AGENTS.md still advertises hidden specialist trigger row: " + forbidden)
+'
+echo ""
+
+echo "12. Lightweight AI entry surfaces point to canonical sources"
+assert_python "CLAUDE.md and llms.txt stay lean and point to the canonical sources" '
+claude_text = (root / "CLAUDE.md").read_text(encoding="utf-8")
+for needle in [
+    ".github/copilot-instructions.md",
+    "bash tests/run-all.sh",
+    "## Canonical instructions",
+]:
+    if needle not in claude_text:
+        raise SystemExit("CLAUDE.md missing canonical source pointer: " + needle)
+for forbidden in ["## Rules", "## Coding conventions"]:
+    if forbidden in claude_text:
+        raise SystemExit("CLAUDE.md still duplicates policy section: " + forbidden)
+
+llms_text = (root / "llms.txt").read_text(encoding="utf-8")
+for needle in [
+    "[.github/copilot-instructions.md](.github/copilot-instructions.md)",
+    "[AGENTS.md](AGENTS.md)",
+    "[MODELS.md](MODELS.md)",
+    "## Model strategy",
+]:
+    if needle not in llms_text:
+        raise SystemExit("llms.txt missing canonical navigation link: " + needle)
+for forbidden in ["## Route queries quickly", "## Canonical machine sources"]:
+    if forbidden in llms_text:
+        raise SystemExit("llms.txt still duplicates navigation section: " + forbidden)
+
+models_text = (root / "MODELS.md").read_text(encoding="utf-8")
+if "llms.txt` mirrors only the primary-model and thinking-effort summary" not in models_text:
+    raise SystemExit("MODELS.md missing llms.txt mirror note")
+'
+echo ""
+
+echo "13. Consumer template CLAUDE surface stays lean and placeholder-safe"
+assert_python "template/CLAUDE.md mirrors the canonical-source pattern with placeholders" '
+template_claude_text = (root / "template/CLAUDE.md").read_text(encoding="utf-8")
+for needle in [
+    "## Canonical instructions",
+    ".github/copilot-instructions.md",
+    "{{TEST_COMMAND}}",
+    "{{PROJECT_NAME}}",
+    "{{LANGUAGE}}",
+]:
+    if needle not in template_claude_text:
+        raise SystemExit("template/CLAUDE.md missing expected content: " + needle)
+for forbidden in ["## Rules", "## Coding conventions"]:
+    if forbidden in template_claude_text:
+        raise SystemExit("template/CLAUDE.md still duplicates deprecated section: " + forbidden)
 '
 echo ""
 

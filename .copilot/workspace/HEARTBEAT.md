@@ -47,9 +47,9 @@ When `session_reflect` returns, process its output silently:
 - **Actionable items** → surface to the user (security, tech debt, broken assumptions)
 - **Carry-forward lessons** → persist to *MEMORY.md + SOUL.md*
 
-The MCP tool sets the session sentinel complete automatically. No manual sentinel management is needed.
+The MCP tool records completion automatically by setting the session sentinel and writing a `session_reflect` completion event. No manual sentinel management is needed.
 
-If the `session_reflect` MCP tool is unavailable, briefly self-review: execution accuracy, scope completeness, and anything worth persisting to SOUL.md / MEMORY.md / USER.md.
+If the `session_reflect` MCP tool is unavailable, briefly self-review: execution accuracy, scope completeness, and anything worth persisting to SOUL.md / MEMORY.md / USER.md, then rerun `session_reflect` once the heartbeat MCP server is restored.
 
 <!-- Add custom retrospective questions below this line -->
 
@@ -66,11 +66,12 @@ If the `session_reflect` MCP tool is unavailable, briefly self-review: execution
 
 ## History
 
-*(Append-only. Keep last 5 entries.)*
+*(Append-only. Keep last 5 entries. Keep each row to trigger, result, and where durable insights were persisted.)*
 
 | Date | Session ID | Trigger | Result | Actions taken |
 |------|------------|---------|--------|---------------|
-| 2026-04-02 | local-a0d837a3 | Retrospective — heartbeat/button investigation | PASS | Research session: diagnosed false-positive retrospective trigger (elapsed time alone as strong signal, no delta gate); confirmed Stop hook schema (no button output); designed active-work-time model. W11 noted: initial button answer required user correction. Insights persisted to SOUL.md, MEMORY.md, USER.md, repo memory. |
-| 2026-04-02 | 1bfe8821-3b7b-4b8a-89eb-65472a1368cd | Session start + CI resolution | PASS | Reviewed latest failed CI run; isolated ShellCheck failure in test-customization-contracts.sh; added scoped SC2016 suppressions for embedded Python snippets; ran bash tests/run-all.sh (25 suites passing); updated repo memory with shell-quoting note |
-| 2026-03-19 | n/a | Task completion + explicit debug | WARN→PASS | Added CI check 4 for copilot-instructions.md placeholders; updated MEMORY.md metrics freshness; logged this heartbeat entry |
-| 2026-03-19 | n/a | Task completion (Researcher + Explore agents) | PASS | Added researcher.agent.md, explore.agent.md; RESEARCH.md URL tracker; SETUP.md counts 6→8 agents, 8→9 workspace files; DOC_INDEX updated; tests 226→227+ |
+| 2026-04-03 | 18fc61af-8a85-4bdd-aff7-33d0236884cf | Session start | PASS | Inventory and selector cleanup verified; durable details live in source files and test logs. |
+| 2026-04-02 | local-a0d837a3 | Retrospective — heartbeat/button investigation | PASS | Retrospective completed; insights persisted to SOUL.md, MEMORY.md, USER.md, and repo memory. |
+| 2026-04-02 | 1bfe8821-3b7b-4b8a-89eb-65472a1368cd | Session start + CI resolution | PASS | CI fix verified; shell-quoting note persisted to repo memory. |
+| 2026-03-19 | n/a | Task completion + explicit debug | WARN→PASS | Metrics freshness updated in MEMORY.md. |
+| 2026-03-19 | n/a | Task completion (Researcher + Explore agents) | PASS | Agent and research surfaces updated; durable details live in source files. |

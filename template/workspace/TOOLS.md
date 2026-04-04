@@ -6,10 +6,12 @@
 
 | Tool / command | Effective usage pattern |
 |----------------|-------------------------|
-| `{{TEST_COMMAND}}` | Run after every change; treat red as blocking |
+| `{{TEST_COMMAND}}` | Canonical underlying full-suite entrypoint when you need the direct command. |
 | `{{TYPE_CHECK_COMMAND}}` | Run after every type definition change |
 | `{{LOC_COMMAND}}` | Run after adding new files to check LOC bands |
-| `{{THREE_CHECK_COMMAND}}` | Three-check ritual — run before marking any task done |
+| `{{THREE_CHECK_COMMAND}}` | Preferred final verification command or ritual before marking any task done. |
+
+If the repo documents a targeted-test selector or phase-test command, use it during intermediate phases instead of defaulting to the full suite.
 
 ## Toolbox
 

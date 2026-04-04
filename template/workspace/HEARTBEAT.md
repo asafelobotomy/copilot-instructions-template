@@ -47,9 +47,9 @@ When `session_reflect` returns, process its output silently:
 - **Actionable items** → surface to the user (security, tech debt, broken assumptions)
 - **Carry-forward lessons** → persist to *MEMORY.md + SOUL.md*
 
-The MCP tool sets the session sentinel complete automatically. No manual sentinel management is needed.
+The MCP tool records completion automatically by setting the session sentinel and writing a `session_reflect` completion event. No manual sentinel management is needed.
 
-If the `session_reflect` MCP tool is unavailable, briefly self-review: execution accuracy, scope completeness, and anything worth persisting to SOUL.md / MEMORY.md / USER.md.
+If the `session_reflect` MCP tool is unavailable, briefly self-review: execution accuracy, scope completeness, and anything worth persisting to SOUL.md / MEMORY.md / USER.md, then rerun `session_reflect` once the heartbeat MCP server is restored.
 
 <!-- Add custom retrospective questions below this line -->
 
@@ -66,7 +66,7 @@ If the `session_reflect` MCP tool is unavailable, briefly self-review: execution
 
 ## History
 
-*(Append-only. Keep last 5 entries.)*
+*(Append-only. Keep last 5 entries. Keep each row to trigger, result, and where durable insights were persisted.)*
 
 | Date | Session ID | Trigger | Result | Actions taken |
 |------|------------|---------|--------|---------------|

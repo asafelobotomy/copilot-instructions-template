@@ -57,7 +57,6 @@ $sessionStartGuidance = [string]($retroMessages['session_start_guidance'] ?? $de
 $explicitSystemMessage = [string]($retroMessages['explicit_system'] ?? $defaultPolicy['retrospective']['messages']['explicit_system'])
 $stopReflectInstruction = [string]($retroMessages['stop_reflect_instruction'] ?? $defaultPolicy['retrospective']['messages']['stop_reflect_instruction'])
 $acceptedReason = [string]($retroMessages['accepted_reason'] ?? $defaultPolicy['retrospective']['messages']['accepted_reason'])
-$retroTranscriptPattern = [string]($retrospectivePolicy['transcript_complete_pattern'] ?? $defaultPolicy['retrospective']['transcript_complete_pattern'])
 
 $state = Get-State
 $providedId = if ($payload.sessionId) { [string]$payload.sessionId } else { '' }
@@ -211,21 +210,11 @@ if ($Trigger -eq 'stop') {
     }
 
     $state = Close-WorkWindow $state
-    $retroRan = Test-SentinelComplete
+    $startEpoch = if ($state['session_start_epoch']) { [int64]$state['session_start_epoch'] } else { 0 }
+    $retroRan = (Test-SentinelComplete) -or (Test-ReflectionComplete $sessionId $startEpoch)
 
-    if (-not $retroRan -and $payload.transcript_path -and (Test-Path $payload.transcript_path)) {
-        $content = Get-Content $payload.transcript_path -Raw -ErrorAction SilentlyContinue
-        if ($content -match $retroTranscriptPattern) {
-            $retroRan = $true
-        }
-    }
-
-    if (-not $retroRan -and -not (Test-Path $sentinelPath) -and (Test-HeartbeatFresh 120)) {
-        $retroRan = $true
-    }
-
-    $startEpoch = if ($state['session_start_epoch']) { [int64]$state['session_start_epoch'] } else { $now }
-    $durationS = [int]($now - $startEpoch)
+    $durationStart = if ($startEpoch -gt 0) { $startEpoch } else { $now }
+    $durationS = [int]($now - $durationStart)
     if ($durationS -lt 0) { $durationS = 0 }
 
     if ($retroRan) {

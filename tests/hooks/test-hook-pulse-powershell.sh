@@ -99,7 +99,61 @@ assert state["session_state"] == "complete"
 '
 echo ""
 
-echo "6. user accepting retrospective keyword blocks at stop"
+echo "6. transcript mentions alone do not satisfy retrospective completion"
+TMP_TRANSCRIPT_PULSE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_TRANSCRIPT_PULSE")
+printf '.copilot/\n' >> "$TMP_TRANSCRIPT_PULSE/.git/info/exclude"
+mkdir -p "$TMP_TRANSCRIPT_PULSE/.copilot/workspace"
+run_pulse_in_dir "$TMP_TRANSCRIPT_PULSE" '{"sessionId":"ps-sess-transcript"}' -Trigger session_start >/dev/null
+for i in 1 2 3 4 5 6 7 8; do
+  printf 'change %s\n' "$i" > "$TMP_TRANSCRIPT_PULSE/ps-transcript-$i.txt"
+done
+printf 'Significant session detected. Call the session_reflect MCP tool now.\n' > "$TMP_TRANSCRIPT_PULSE/transcript.txt"
+output=$(run_pulse_in_dir "$TMP_TRANSCRIPT_PULSE" '{"stop_hook_active": false, "transcript_path":"transcript.txt"}' -Trigger stop)
+assert_contains "powershell transcript mention still blocks" "$output" '"decision":"block"'
+assert_python_in_root "powershell transcript mention keeps retrospective suggested" "$TMP_TRANSCRIPT_PULSE" '
+state = json.loads((root / ".copilot/workspace/state.json").read_text(encoding="utf-8"))
+assert state["retrospective_state"] == "suggested"
+'
+echo ""
+
+echo "7. reflection completion event passes stop without a sentinel"
+TMP_EVENT_PULSE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_EVENT_PULSE")
+printf '.copilot/\n' >> "$TMP_EVENT_PULSE/.git/info/exclude"
+mkdir -p "$TMP_EVENT_PULSE/.copilot/workspace"
+run_pulse_in_dir "$TMP_EVENT_PULSE" '{"sessionId":"ps-sess-event"}' -Trigger session_start >/dev/null
+for i in 1 2 3 4 5 6 7 8; do
+  printf 'change %s\n' "$i" > "$TMP_EVENT_PULSE/ps-event-$i.txt"
+done
+rm -f "$TMP_EVENT_PULSE/.copilot/workspace/.heartbeat-session"
+cat >> "$TMP_EVENT_PULSE/.copilot/workspace/.heartbeat-events.jsonl" <<'EOF'
+{"detail":"complete","session_id":"ps-sess-event","trigger":"session_reflect","ts":1704068400,"ts_utc":"2024-01-01T00:20:00Z"}
+EOF
+output=$(run_pulse_in_dir "$TMP_EVENT_PULSE" '{"stop_hook_active": false}' -Trigger stop)
+assert_contains "powershell completion event without sentinel continues" "$output" '"continue":true'
+assert_python_in_root "powershell completion event updates state" "$TMP_EVENT_PULSE" '
+state = json.loads((root / ".copilot/workspace/state.json").read_text(encoding="utf-8"))
+assert state["retrospective_state"] == "complete"
+assert state["session_state"] == "complete"
+'
+echo ""
+
+echo "8. reflection completion events from other sessions do not pass stop"
+TMP_OTHER_EVENT_PULSE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_OTHER_EVENT_PULSE")
+printf '.copilot/\n' >> "$TMP_OTHER_EVENT_PULSE/.git/info/exclude"
+mkdir -p "$TMP_OTHER_EVENT_PULSE/.copilot/workspace"
+run_pulse_in_dir "$TMP_OTHER_EVENT_PULSE" '{"sessionId":"ps-sess-other-event"}' -Trigger session_start >/dev/null
+for i in 1 2 3 4 5 6 7 8; do
+  printf 'change %s\n' "$i" > "$TMP_OTHER_EVENT_PULSE/ps-other-event-$i.txt"
+done
+rm -f "$TMP_OTHER_EVENT_PULSE/.copilot/workspace/.heartbeat-session"
+cat >> "$TMP_OTHER_EVENT_PULSE/.copilot/workspace/.heartbeat-events.jsonl" <<'EOF'
+{"detail":"complete","session_id":"different-session","trigger":"session_reflect","ts":1704068400,"ts_utc":"2024-01-01T00:20:00Z"}
+EOF
+output=$(run_pulse_in_dir "$TMP_OTHER_EVENT_PULSE" '{"stop_hook_active": false}' -Trigger stop)
+assert_contains "powershell other-session completion event still blocks" "$output" '"decision":"block"'
+echo ""
+
+echo "9. user accepting retrospective keyword blocks at stop"
 TMP_ACCEPT_PULSE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_ACCEPT_PULSE")
 printf '.copilot/\n' >> "$TMP_ACCEPT_PULSE/.git/info/exclude"
 mkdir -p "$TMP_ACCEPT_PULSE/.copilot/workspace"
@@ -111,7 +165,7 @@ assert_contains "accepted stop blocks for retrospective" "$output" '"decision":"
 assert_contains "accepted stop explains retrospective run" "$output" 'session_reflect'
 echo ""
 
-echo "7. pulse.ps1 records duration and UTC timestamp when stop completes"
+echo "10. pulse.ps1 records duration and UTC timestamp when stop completes"
 TMP_DONE_PULSE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_DONE_PULSE")
 mkdir -p "$TMP_DONE_PULSE/.copilot/workspace"
 run_pulse_in_dir "$TMP_DONE_PULSE" '{"sessionId":"ps-sess-3"}' -Trigger session_start >/dev/null
@@ -133,14 +187,14 @@ assert state["retrospective_state"] == "complete"
 '
 echo ""
 
-echo "8. user_prompt heartbeat keyword emits system message"
+echo "11. user_prompt heartbeat keyword emits system message"
 TMP_PROMPT_PULSE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_PROMPT_PULSE")
 mkdir -p "$TMP_PROMPT_PULSE/.copilot/workspace"
 output=$(run_pulse_in_dir "$TMP_PROMPT_PULSE" '{"prompt":"Can you check your heartbeat now?"}' -Trigger user_prompt)
 assert_contains "powershell keyword prompt includes guidance" "$output" 'Heartbeat trigger detected'
 echo ""
 
-echo "9. discussion-only prompt does not arm heartbeat or retrospective"
+echo "12. discussion-only prompt does not arm heartbeat or retrospective"
 TMP_TOPIC_PULSE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_TOPIC_PULSE")
 mkdir -p "$TMP_TOPIC_PULSE/.copilot/workspace"
 run_pulse_in_dir "$TMP_TOPIC_PULSE" '{"sessionId":"ps-sess-topic"}' -Trigger session_start >/dev/null
@@ -159,7 +213,29 @@ assert state["retrospective_state"] == "not-needed"
 '
 echo ""
 
-echo "10. session_start captures git baseline"
+echo "13. explanation prompts stay informational"
+TMP_EXPLAIN_PULSE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_EXPLAIN_PULSE")
+mkdir -p "$TMP_EXPLAIN_PULSE/.copilot/workspace"
+run_pulse_in_dir "$TMP_EXPLAIN_PULSE" '{"sessionId":"ps-sess-explain"}' -Trigger session_start >/dev/null
+output=$(run_pulse_in_dir "$TMP_EXPLAIN_PULSE" '{"prompt":"Could you explain the retrospective policy?"}' -Trigger user_prompt)
+assert_valid_json "powershell retrospective policy prompt returns valid JSON" "$output"
+if echo "$output" | grep -q 'systemMessage'; then
+  fail_note "powershell retrospective policy prompt stays informational" "     unexpected systemMessage in output: $output"
+else
+  pass_note "powershell retrospective policy prompt stays informational"
+fi
+output=$(run_pulse_in_dir "$TMP_EXPLAIN_PULSE" '{"prompt":"Show the heartbeat policy"}' -Trigger user_prompt)
+assert_valid_json "powershell heartbeat policy prompt returns valid JSON" "$output"
+if echo "$output" | grep -q 'systemMessage'; then
+  fail_note "powershell heartbeat policy prompt stays informational" "     unexpected systemMessage in output: $output"
+else
+  pass_note "powershell heartbeat policy prompt stays informational"
+fi
+output=$(run_pulse_in_dir "$TMP_EXPLAIN_PULSE" '{"stop_hook_active": false}' -Trigger stop)
+assert_contains "powershell explanation prompts do not arm stop" "$output" '"continue":true'
+echo ""
+
+echo "14. session_start captures git baseline"
 TMP_BASE_PULSE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_BASE_PULSE")
 printf '.copilot/\n' >> "$TMP_BASE_PULSE/.git/info/exclude"
 mkdir -p "$TMP_BASE_PULSE/.copilot/workspace"
@@ -174,7 +250,7 @@ assert state["task_window_start_epoch"] == 0
 '
 echo ""
 
-echo "11. soft_post_tool increments edit count only for file-writing tools"
+echo "15. soft_post_tool increments edit count only for file-writing tools"
 TMP_EDIT_PULSE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_EDIT_PULSE")
 mkdir -p "$TMP_EDIT_PULSE/.copilot/workspace"
 run_pulse_in_dir "$TMP_EDIT_PULSE" '{"sessionId":"ps-sess-edit"}' -Trigger session_start >/dev/null
@@ -195,7 +271,7 @@ assert state["copilot_edit_count"] == 2
 '
 echo ""
 
-echo "12. soft_post_tool opens and accumulates work windows"
+echo "16. soft_post_tool opens and accumulates work windows"
 TMP_WIN_PULSE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_WIN_PULSE")
 mkdir -p "$TMP_WIN_PULSE/.copilot/workspace"
 run_pulse_in_dir "$TMP_WIN_PULSE" '{"sessionId":"ps-sess-win"}' -Trigger session_start >/dev/null
@@ -223,7 +299,7 @@ assert state["task_window_start_epoch"] > 0
 '
 echo ""
 
-echo "13. pure planning session never triggers retrospective"
+echo "17. pure planning session never triggers retrospective"
 TMP_PLAN_PULSE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_PLAN_PULSE")
 printf '.copilot/\n' >> "$TMP_PLAN_PULSE/.git/info/exclude"
 mkdir -p "$TMP_PLAN_PULSE/.copilot/workspace"
@@ -249,7 +325,7 @@ assert state["retrospective_state"] == "not-needed"
 '
 echo ""
 
-echo "14. pre-existing dirty files do not inflate the delta count"
+echo "18. pre-existing dirty files do not inflate the delta count"
 TMP_DELTA_PULSE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_DELTA_PULSE")
 printf '.copilot/\n' >> "$TMP_DELTA_PULSE/.git/info/exclude"
 mkdir -p "$TMP_DELTA_PULSE/.copilot/workspace"
@@ -265,7 +341,7 @@ assert state["retrospective_state"] == "not-needed"
 '
 echo ""
 
-echo "15. corrupt state file is recovered safely"
+echo "19. corrupt state file is recovered safely"
 TMP_CORRUPT_PULSE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CORRUPT_PULSE")
 mkdir -p "$TMP_CORRUPT_PULSE/.copilot/workspace"
 printf '{broken-json\n' > "$TMP_CORRUPT_PULSE/.copilot/workspace/state.json"
@@ -276,7 +352,7 @@ json.loads((root / ".copilot/workspace/state.json").read_text(encoding="utf-8"))
 '
 echo ""
 
-echo "16. transition digest stays quiet while the session is only orienting"
+echo "20. transition digest stays quiet while the session is only orienting"
 TMP_DIGEST_QUIET_PULSE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_DIGEST_QUIET_PULSE")
 mkdir -p "$TMP_DIGEST_QUIET_PULSE/.copilot/workspace"
 run_pulse_in_dir "$TMP_DIGEST_QUIET_PULSE" '{"sessionId":"ps-sess-digest-quiet"}' -Trigger session_start >/dev/null
@@ -303,7 +379,7 @@ assert state["digest_emit_count"] == 0
 '
 echo ""
 
-echo "17. transition digest appears when work crosses into consolidating"
+echo "21. transition digest appears when work crosses into consolidating"
 TMP_DIGEST_PULSE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_DIGEST_PULSE")
 mkdir -p "$TMP_DIGEST_PULSE/.copilot/workspace"
 run_pulse_in_dir "$TMP_DIGEST_PULSE" '{"sessionId":"ps-sess-digest"}' -Trigger session_start >/dev/null
@@ -335,7 +411,7 @@ else
 fi
 echo ""
 
-echo "18. session_start initializes transition state"
+echo "22. session_start initializes transition state"
 TMP_COUNTER_PULSE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_COUNTER_PULSE")
 mkdir -p "$TMP_COUNTER_PULSE/.copilot/workspace"
 run_pulse_in_dir "$TMP_COUNTER_PULSE" '{"sessionId":"ps-sess-counter"}' -Trigger session_start >/dev/null

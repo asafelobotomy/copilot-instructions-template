@@ -32,21 +32,21 @@ $Scope = if ($env:SCAN_SCOPE) { $env:SCAN_SCOPE } else { 'diff' }
 
 # Secret patterns: Name, Severity, Regex
 $Patterns = @(
-    @('AWS_ACCESS_KEY',       'critical', 'AKIA[0-9A-Z]{16}')
-    @('AWS_SECRET_KEY',       'critical', 'aws_secret_access_key\s*[:=]\s*[''"]?[A-Za-z0-9/+=]{40}')
-    @('GCP_API_KEY',          'high',     'AIza[0-9A-Za-z_-]{35}')
-    @('GITHUB_PAT',           'critical', 'ghp_[0-9A-Za-z]{36}')
-    @('GITHUB_OAUTH',         'critical', 'gho_[0-9A-Za-z]{36}')
-    @('GITHUB_APP_TOKEN',     'critical', 'ghs_[0-9A-Za-z]{36}')
-    @('GITHUB_REFRESH_TOKEN', 'critical', 'ghr_[0-9A-Za-z]{36}')
-    @('GITHUB_FINE_PAT',      'critical', 'github_pat_[0-9A-Za-z_]{82}')
-    @('PRIVATE_KEY',          'critical', '-----BEGIN (RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----')
-    @('GENERIC_SECRET',       'high',     '(secret|token|password|passwd|pwd|api[_-]?key|apikey|access[_-]?key|auth[_-]?token|client[_-]?secret)\s*[:=]\s*[''"]?[A-Za-z0-9_/+=~.-]{8,}')
-    @('CONNECTION_STRING',    'high',     '(mongodb(\+srv)?|postgres(ql)?|mysql|redis|amqp|mssql)://[^\s''"]{10,}')
-    @('SLACK_TOKEN',          'high',     'xox[baprs]-[0-9]{10,}-[0-9A-Za-z-]+')
-    @('STRIPE_SECRET_KEY',    'critical', 'sk_live_[0-9A-Za-z]{24,}')
-    @('NPM_TOKEN',            'high',     'npm_[0-9A-Za-z]{36}')
-    @('JWT_TOKEN',            'medium',   'eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}')
+    [PSCustomObject]@{ Name = 'AWS_ACCESS_KEY'; Severity = 'critical'; Regex = 'AKIA[0-9A-Z]{16}' }
+    [PSCustomObject]@{ Name = 'AWS_SECRET_KEY'; Severity = 'critical'; Regex = 'aws_secret_access_key\s*[:=]\s*[''\"]?[A-Za-z0-9/+=]{40}' }
+    [PSCustomObject]@{ Name = 'GCP_API_KEY'; Severity = 'high'; Regex = 'AIza[0-9A-Za-z_-]{35}' }
+    [PSCustomObject]@{ Name = 'GITHUB_PAT'; Severity = 'critical'; Regex = 'ghp_[0-9A-Za-z]{36}' }
+    [PSCustomObject]@{ Name = 'GITHUB_OAUTH'; Severity = 'critical'; Regex = 'gho_[0-9A-Za-z]{36}' }
+    [PSCustomObject]@{ Name = 'GITHUB_APP_TOKEN'; Severity = 'critical'; Regex = 'ghs_[0-9A-Za-z]{36}' }
+    [PSCustomObject]@{ Name = 'GITHUB_REFRESH_TOKEN'; Severity = 'critical'; Regex = 'ghr_[0-9A-Za-z]{36}' }
+    [PSCustomObject]@{ Name = 'GITHUB_FINE_PAT'; Severity = 'critical'; Regex = 'github_pat_[0-9A-Za-z_]{82}' }
+    [PSCustomObject]@{ Name = 'PRIVATE_KEY'; Severity = 'critical'; Regex = '-----BEGIN (RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----' }
+    [PSCustomObject]@{ Name = 'GENERIC_SECRET'; Severity = 'high'; Regex = '(secret|token|password|passwd|pwd|api[_-]?key|apikey|access[_-]?key|auth[_-]?token|client[_-]?secret)\s*[:=]\s*[''\"]?[A-Za-z0-9_/+=~.-]{8,}' }
+    [PSCustomObject]@{ Name = 'CONNECTION_STRING'; Severity = 'high'; Regex = '(mongodb(\+srv)?|postgres(ql)?|mysql|redis|amqp|mssql)://[^\s''\"]{10,}' }
+    [PSCustomObject]@{ Name = 'SLACK_TOKEN'; Severity = 'high'; Regex = 'xox[baprs]-[0-9]{10,}-[0-9A-Za-z-]+' }
+    [PSCustomObject]@{ Name = 'STRIPE_SECRET_KEY'; Severity = 'critical'; Regex = 'sk_live_[0-9A-Za-z]{24,}' }
+    [PSCustomObject]@{ Name = 'NPM_TOKEN'; Severity = 'high'; Regex = 'npm_[0-9A-Za-z]{36}' }
+    [PSCustomObject]@{ Name = 'JWT_TOKEN'; Severity = 'medium'; Regex = 'eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}' }
 )
 
 # Collect files to scan
@@ -90,22 +90,27 @@ foreach ($filepath in $Files) {
     $lineNum = 0
     foreach ($line in Get-Content $filepath -ErrorAction SilentlyContinue) {
         $lineNum++
+        $lineText = [string]$line
         foreach ($pat in $Patterns) {
-            $pName, $pSev, $pRegex = $pat
-            if ($line -match $pRegex) {
-                $matchVal = $Matches[0]
-                # Skip placeholder / example values
-                if ($matchVal -match '(example|placeholder|your[_-]|xxx|changeme|TODO|FIXME|replace[_-]?me|dummy|fake|test[_-]?key|sample)') { continue }
-                # Check allowlist
-                $allowed = $false
-                foreach ($al in $Allowlist) {
-                    if ($matchVal -like "*$al*") { $allowed = $true; break }
-                }
-                if ($allowed) { continue }
-                # Redact
-                $redacted = if ($matchVal.Length -le 12) { '[REDACTED]' } else { $matchVal.Substring(0,4) + '...' + $matchVal.Substring($matchVal.Length - 4) }
-                $Findings += [PSCustomObject]@{ File=$filepath; Line=$lineNum; Pattern=$pName; Severity=$pSev; Match=$redacted }
+            $pName = [string]$pat.Name
+            $pSev = [string]$pat.Severity
+            $pRegex = [string]$pat.Regex
+            if (-not $pRegex) { continue }
+            $match = [regex]::Match($lineText, $pRegex)
+            if (-not $match.Success) { continue }
+
+            $matchVal = $match.Value
+            # Skip placeholder / example values
+            if ($matchVal -match '(example|placeholder|your[_-]|xxx|changeme|TODO|FIXME|replace[_-]?me|dummy|fake|test[_-]?key|sample)') { continue }
+            # Check allowlist
+            $allowed = $false
+            foreach ($al in $Allowlist) {
+                if ($matchVal -like "*$al*") { $allowed = $true; break }
             }
+            if ($allowed) { continue }
+            # Redact
+            $redacted = if ($matchVal.Length -le 12) { '[REDACTED]' } else { $matchVal.Substring(0,4) + '...' + $matchVal.Substring($matchVal.Length - 4) }
+            $Findings += [PSCustomObject]@{ File=$filepath; Line=$lineNum; Pattern=$pName; Severity=$pSev; Match=$redacted }
         }
     }
 }

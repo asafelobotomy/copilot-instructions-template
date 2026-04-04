@@ -18,10 +18,9 @@ function Get-DefaultPolicy {
             messages = [ordered]@{
                 session_start_guidance = 'Open .copilot/workspace/HEARTBEAT.md and run the Checks section. If the Stop hook later flags significant work, call the session_reflect MCP tool before stopping.'
                 explicit_system = 'Heartbeat trigger detected. Run HEARTBEAT.md checks now.'
-                stop_reflect_instruction = 'Significant session detected. Call the session_reflect MCP tool now, process its output silently, then stop normally. If the MCP tool is unavailable, briefly review: execution accuracy, scope completeness, and anything worth persisting to SOUL.md / MEMORY.md / USER.md.'
+                stop_reflect_instruction = 'Significant session detected. Call the session_reflect MCP tool now, process its output silently, then stop normally. If the MCP tool is unavailable, briefly review: execution accuracy, scope completeness, and anything worth persisting to SOUL.md / MEMORY.md / USER.md, then rerun session_reflect once the heartbeat MCP server is restored.'
                 accepted_reason = 'The user requested a retrospective. Call the session_reflect MCP tool, process its output, persist insights, then stop normally.'
             }
-            transcript_complete_pattern = 'session_reflect|heartbeat-session.*complete'
         }
     }
 }
@@ -121,6 +120,7 @@ function Add-HeartbeatEvent([string]$Name, [string]$Detail = '', [nullable[int]]
     $eventRecord = [ordered]@{ ts = $now; ts_utc = (Convert-EpochToUtcString $now); trigger = $Name }
     if ($Detail) { $eventRecord.detail = $Detail }
     if ($null -ne $DurationS) { $eventRecord.duration_s = $DurationS }
+    if ($sessionId) { $eventRecord.session_id = [string]$sessionId }
     ($eventRecord | ConvertTo-Json -Depth 4 -Compress) + "`n" | Add-Content $eventsPath -Encoding utf8
 }
 
@@ -185,6 +185,36 @@ function Test-SentinelComplete {
     }
 }
 
+function Test-ReflectionComplete([string]$SessionId, [int64]$SessionStartEpoch) {
+    if (-not (Test-Path $eventsPath)) { return $false }
+    try {
+        $lines = @(Get-Content $eventsPath -Encoding utf8)
+    } catch {
+        return $false
+    }
+    for ($index = $lines.Count - 1; $index -ge 0; $index--) {
+        $line = [string]$lines[$index]
+        if (-not $line.Trim()) { continue }
+        try {
+            $event = $line | ConvertFrom-Json -AsHashtable
+        } catch {
+            continue
+        }
+        if ($event['trigger'] -ne 'session_reflect' -or $event['detail'] -ne 'complete') {
+            continue
+        }
+        $eventSessionId = [string]($event['session_id'] ?? '')
+        if ($eventSessionId) {
+            return $eventSessionId -eq $SessionId
+        }
+        $eventTs = $event['ts']
+        if ($SessionStartEpoch -gt 0 -and $null -ne $eventTs) {
+            return [int64]$eventTs -ge $SessionStartEpoch
+        }
+    }
+    return $false
+}
+
 function Test-HeartbeatFresh([int]$Minutes) {
     if (-not (Test-Path $heartbeatPath)) { return $false }
     try {
@@ -239,21 +269,25 @@ function Get-RetrospectiveState([hashtable]$State) {
 function Test-RetrospectiveRequest([string]$Prompt) {
     if ($Prompt -notmatch '(?i)\bretrospective\b') { return $false }
     if ($Prompt -match "(?i)\b(no|skip|don't|do not|not now)\b.*\bretrospective\b") { return $false }
+    if ($Prompt -match '(?i)\b(explain|review|describe|summari[sz]e|discuss|compare|analy[sz]e|policy|threshold|logic|docs?|documentation|rules?)\b') { return $false }
     return (
-        $Prompt -match '(?i)^\s*retrospective\b' -or
+        $Prompt -match '(?i)^\s*retrospective(?:\s+(?:now|please))?\s*[?.!]*$' -or
+        $Prompt -match '(?i)^\s*(run|do|start|perform)\s+(a\s+)?retrospective\b' -or
         $Prompt -match '(?i)\b(run|do|start|perform)\b.*\bretrospective\b' -or
-        $Prompt -match '(?i)\b(can|could|would)\s+you\b.*\bretrospective\b' -or
-        $Prompt -match '(?i)\bplease\b.*\bretrospective\b'
+        $Prompt -match '(?i)\b(can|could|would)\s+you\b.*\b(run|do|start|perform)\b.*\bretrospective\b' -or
+        $Prompt -match '(?i)\bplease\b.*\b(run|do|start|perform)\b.*\bretrospective\b'
     )
 }
 
 function Test-HeartbeatRequest([string]$Prompt) {
     if ($Prompt -match "(?i)\b(no|skip|don't|do not)\b.*\b(heartbeat|health check)\b") { return $false }
+    if ($Prompt -match '(?i)\b(explain|review|describe|summari[sz]e|discuss|compare|analy[sz]e|policy|threshold|logic|docs?|documentation|rules?)\b') { return $false }
     return (
         $Prompt -match '(?i)^\s*heartbeat(?:\s+now)?\s*[?.!]*$' -or
-        $Prompt -match '(?i)\b(check|run|show)\b.*\bheartbeat\b' -or
-        $Prompt -match '(?i)\b(run|do|show)\b.*\bhealth check\b' -or
-        $Prompt -match '(?i)\b(can|could|would)\s+you\b.*\b(heartbeat|health check)\b'
+        $Prompt -match '(?i)^\s*(check|run)\s+(your\s+)?heartbeat\b' -or
+        $Prompt -match '(?i)\b(check|run)\b.*\bheartbeat\b' -or
+        $Prompt -match '(?i)\b(run|do)\b.*\bhealth check\b' -or
+        $Prompt -match '(?i)\b(can|could|would)\s+you\b.*\b(check|run|do)\b.*\b(heartbeat|health check)\b'
     )
 }
 

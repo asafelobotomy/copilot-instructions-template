@@ -2,8 +2,9 @@
 
 | Tool / command | Effective usage pattern |
 |----------------|-------------------------|
-| `bash tests/run-all.sh` | Run after every change; treat red as blocking |
-| `bash tests/run-all.sh` | Three-check ritual — run before marking a task done |
-| `echo "no type check configured"` | Run after every type definition change |
+| `bash scripts/tests/select-targeted-tests.sh <paths...>` | Use during intermediate phases to choose deterministic suites from changed paths. |
+| `bash scripts/tests/run-all-captured.sh` | Use as the terminal-safe final full-suite gate before marking a task done. |
+| `bash tests/run-all.sh` | Canonical underlying full-suite entrypoint when terminal capture is not needed. |
+| `echo "no type check configured"` | Placeholder type-check command for workflows and docs; this repo has no dedicated type-check step. |
 
 *(Updated as effective workflows are discovered.)*

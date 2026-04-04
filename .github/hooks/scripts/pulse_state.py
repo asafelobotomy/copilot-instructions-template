@@ -21,10 +21,9 @@ DEFAULT_POLICY = {
         "messages": {
             "session_start_guidance": "Open .copilot/workspace/HEARTBEAT.md and run the Checks section. If the Stop hook later flags significant work, call the session_reflect MCP tool before stopping.",
             "explicit_system": "Heartbeat trigger detected. Run HEARTBEAT.md checks now.",
-            "stop_reflect_instruction": "Significant session detected. Call the session_reflect MCP tool now, process its output silently, then stop normally. If the MCP tool is unavailable, briefly review: execution accuracy, scope completeness, and anything worth persisting to SOUL.md / MEMORY.md / USER.md.",
+            "stop_reflect_instruction": "Significant session detected. Call the session_reflect MCP tool now, process its output silently, then stop normally. If the MCP tool is unavailable, briefly review: execution accuracy, scope completeness, and anything worth persisting to SOUL.md / MEMORY.md / USER.md, then rerun session_reflect once the heartbeat MCP server is restored.",
             "accepted_reason": "The user requested a retrospective. Call the session_reflect MCP tool, process its output, persist insights, then stop normally.",
         },
-        "transcript_complete_pattern": "session_reflect|heartbeat-session.*complete",
     }
 }
 
@@ -129,6 +128,7 @@ def append_event(
     trigger: str,
     detail: str = "",
     duration_s=None,
+    session_id: str = "",
 ) -> None:
     if not workspace.exists():
         return
@@ -137,6 +137,8 @@ def append_event(
         event["detail"] = detail
     if duration_s is not None:
         event["duration_s"] = duration_s
+    if session_id:
+        event["session_id"] = session_id
     with events_path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(event, sort_keys=True) + "\n")
 
@@ -194,6 +196,33 @@ def sentinel_is_complete(sentinel_path: Path) -> bool:
         return len(parts) >= 3 and parts[2].strip() == "complete"
     except Exception:
         return False
+
+
+def reflection_event_complete(events_path: Path, session_id: str, session_start_epoch: int) -> bool:
+    if not events_path.exists():
+        return False
+    try:
+        lines = events_path.read_text(encoding="utf-8").splitlines()
+    except Exception:
+        return False
+    for line in reversed(lines):
+        if not line.strip():
+            continue
+        try:
+            event = json.loads(line)
+        except Exception:
+            continue
+        if not isinstance(event, dict):
+            continue
+        if event.get("trigger") != "session_reflect" or event.get("detail") != "complete":
+            continue
+        event_session_id = str(event.get("session_id") or "")
+        if event_session_id:
+            return event_session_id == session_id
+        event_ts = event.get("ts")
+        if isinstance(event_ts, (int, float)) and session_start_epoch > 0:
+            return int(event_ts) >= session_start_epoch
+    return False
 
 
 def heartbeat_fresh(heartbeat_path: Path, now: int, minutes: int) -> bool:

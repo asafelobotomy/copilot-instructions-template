@@ -115,9 +115,50 @@ assert "Context compaction occurred" in joined
 assert "test coverage and documentation kept pace" in joined
 '
 assert_matches "sentinel is marked complete" "$(cat "$TMP_SESSION/.copilot/workspace/.heartbeat-session")" 'sess-heartbeat\|.*\|complete'
+assert_python_in_root "session_reflect appends a completion event" "$TMP_SESSION" '
+events = [json.loads(line) for line in (root / ".copilot/workspace/.heartbeat-events.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
+event = events[-1]
+assert event["trigger"] == "session_reflect"
+assert event["detail"] == "complete"
+assert event["session_id"] == "sess-heartbeat"
+'
 echo ""
 
-echo "3. Corrupt state falls back safely and still completes the sentinel"
+echo "3. Reflection metrics ignore compactions from other sessions"
+TMP_SCOPE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_SCOPE")
+printf '.copilot/\n' >> "$TMP_SCOPE/.git/info/exclude"
+mkdir -p "$TMP_SCOPE/.copilot/workspace"
+cat > "$TMP_SCOPE/.copilot/workspace/state.json" <<'JSON'
+{
+    "session_id": "sess-current",
+    "session_start_epoch": 1704067200,
+    "session_start_git_count": 0,
+    "active_work_seconds": 1800,
+    "task_window_start_epoch": 0,
+    "last_raw_tool_epoch": 0,
+    "copilot_edit_count": 6
+}
+JSON
+cat > "$TMP_SCOPE/.copilot/workspace/.heartbeat-events.jsonl" <<'EOF'
+{"detail":"complete","session_id":"sess-old","trigger":"session_reflect","ts":1704067000,"ts_utc":"2023-12-31T23:56:40Z"}
+{"session_id":"sess-old","trigger":"compaction","ts":1704067100,"ts_utc":"2023-12-31T23:58:20Z"}
+{"session_id":"sess-current","trigger":"compaction","ts":1704068100,"ts_utc":"2024-01-01T00:15:00Z"}
+EOF
+output=$(run_reflect "$TMP_SCOPE")
+status=$?
+assert_success "scoped reflection exits zero" "$status"
+assert_valid_json "scoped reflection output is valid JSON" "$output"
+REFLECT_OUTPUT="$output" assert_python "scoped reflection only counts current-session compactions" '
+payload = json.loads(os.environ["REFLECT_OUTPUT"])
+assert payload["metrics"]["compactions"] == 1
+'
+echo ""
+
+echo "4. Source guidance uses the strong or supporting threshold contract"
+assert_contains "mcp heartbeat server docstring matches threshold contract" "$(cat "$SCRIPT")" 'one strong signal: 8+ modified files or 30+ minutes active; or two'
+echo ""
+
+echo "5. Corrupt state falls back safely and still completes the sentinel"
 TMP_CORRUPT=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CORRUPT")
 mkdir -p "$TMP_CORRUPT/.copilot/workspace"
 printf 'not json\n' > "$TMP_CORRUPT/.copilot/workspace/state.json"

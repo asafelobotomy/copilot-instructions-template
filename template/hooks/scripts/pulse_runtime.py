@@ -14,12 +14,12 @@ from pulse_state import (
     close_work_window,
     compute_session_medians,
     get_git_modified_file_count,
-    heartbeat_fresh,
     iso_utc,
     load_policy,
     load_session_priors,
     load_state,
     prune_events,
+    reflection_event_complete,
     recommend_retrospective,
     save_state,
     sentinel_is_complete,
@@ -57,11 +57,18 @@ def prompt_requests_retrospective(prompt: str) -> bool:
         return False
     if re.search(r"\b(no|skip|don't|do not|not now)\b.*\bretrospective\b", prompt, flags=re.IGNORECASE):
         return False
+    if re.search(
+        r"\b(explain|review|describe|summari[sz]e|discuss|compare|analy[sz]e|policy|threshold|logic|docs?|documentation|rules?)\b",
+        prompt,
+        flags=re.IGNORECASE,
+    ):
+        return False
     patterns = (
-        r"^\s*retrospective\b",
+        r"^\s*retrospective(?:\s+(?:now|please))?\s*[?.!]*$",
+        r"^\s*(?:run|do|start|perform)\s+(?:a\s+)?retrospective\b",
         r"\b(run|do|start|perform)\b.*\bretrospective\b",
-        r"\b(can|could|would)\s+you\b.*\bretrospective\b",
-        r"\bplease\b.*\bretrospective\b",
+        r"\b(can|could|would)\s+you\b.*\b(run|do|start|perform)\b.*\bretrospective\b",
+        r"\bplease\b.*\b(run|do|start|perform)\b.*\bretrospective\b",
     )
     return any(re.search(pattern, prompt, flags=re.IGNORECASE) for pattern in patterns)
 
@@ -69,11 +76,18 @@ def prompt_requests_retrospective(prompt: str) -> bool:
 def prompt_requests_heartbeat_check(prompt: str) -> bool:
     if re.search(r"\b(no|skip|don't|do not)\b.*\b(heartbeat|health check)\b", prompt, flags=re.IGNORECASE):
         return False
+    if re.search(
+        r"\b(explain|review|describe|summari[sz]e|discuss|compare|analy[sz]e|policy|threshold|logic|docs?|documentation|rules?)\b",
+        prompt,
+        flags=re.IGNORECASE,
+    ):
+        return False
     patterns = (
         r"^\s*heartbeat(?:\s+now)?\s*[?.!]*$",
-        r"\b(check|run|show)\b.*\bheartbeat\b",
-        r"\b(run|do|show)\b.*\bhealth check\b",
-        r"\b(can|could|would)\s+you\b.*\b(heartbeat|health check)\b",
+        r"^\s*(?:check|run)\s+(?:your\s+)?heartbeat\b",
+        r"\b(check|run)\b.*\bheartbeat\b",
+        r"\b(run|do)\b.*\bhealth check\b",
+        r"\b(can|could|would)\s+you\b.*\b(check|run|do)\b.*\b(heartbeat|health check)\b",
     )
     return any(re.search(pattern, prompt, flags=re.IGNORECASE) for pattern in patterns)
 
@@ -111,12 +125,6 @@ ACCEPTED_REASON = str(
     RETRO_MESSAGES.get("accepted_reason")
     or DEFAULT_POLICY["retrospective"]["messages"]["accepted_reason"]
 )
-RETRO_TRANSCRIPT_PATTERN = str(
-    RETRO_POLICY.get("transcript_complete_pattern")
-    or DEFAULT_POLICY["retrospective"]["transcript_complete_pattern"]
-)
-
-
 def build_recommendation(state: dict) -> tuple[bool, str]:
     return recommend_retrospective(state, RETRO_MODIFIED_THRESHOLDS, RETRO_ELAPSED_THRESHOLDS)
 
@@ -171,7 +179,7 @@ if TRIGGER == "session_start":
     state["touched_files_sample"] = []
     state["unique_touched_file_count"] = 0
     set_sentinel(SENTINEL_PATH, WORKSPACE, NOW, session_id, "pending")
-    append_event(EVENTS_PATH, WORKSPACE, NOW, TRIGGER)
+    append_event(EVENTS_PATH, WORKSPACE, NOW, TRIGGER, session_id=session_id)
     prune_events(EVENTS_PATH)
     save_state(state, WORKSPACE, STATE_PATH)
     ctx_parts = [
@@ -214,7 +222,7 @@ if TRIGGER == "soft_post_tool":
 
     if NOW - int(state.get("last_soft_trigger_epoch") or 0) >= 300:
         state["last_soft_trigger_epoch"] = NOW
-        append_event(EVENTS_PATH, WORKSPACE, NOW, TRIGGER)
+        append_event(EVENTS_PATH, WORKSPACE, NOW, TRIGGER, session_id=session_id)
 
     state, digest = update_intent_engine(
         state,
@@ -243,7 +251,7 @@ if TRIGGER == "compaction":
     state = close_work_window(state)
     state["last_compaction_epoch"] = NOW
     state["last_write_epoch"] = NOW
-    append_event(EVENTS_PATH, WORKSPACE, NOW, TRIGGER)
+    append_event(EVENTS_PATH, WORKSPACE, NOW, TRIGGER, session_id=session_id)
     state, _digest = update_intent_engine(
         state,
         None,
@@ -268,7 +276,14 @@ if TRIGGER in ("user_prompt", "explicit"):
     if heartbeat_requested or retrospective_requested:
         state["last_explicit_epoch"] = NOW
         state["last_write_epoch"] = NOW
-        append_event(EVENTS_PATH, WORKSPACE, NOW, "explicit_prompt", "heartbeat" if heartbeat_requested else "retrospective")
+        append_event(
+            EVENTS_PATH,
+            WORKSPACE,
+            NOW,
+            "explicit_prompt",
+            "heartbeat" if heartbeat_requested else "retrospective",
+            session_id=session_id,
+        )
         state, _digest = update_intent_engine(
             state,
             None,
@@ -294,29 +309,20 @@ if TRIGGER == "stop":
         raise SystemExit(0)
 
     state = close_work_window(state)
-    retro_ran = sentinel_is_complete(SENTINEL_PATH)
+    session_start_epoch = int(state.get("session_start_epoch") or 0)
+    retro_ran = sentinel_is_complete(SENTINEL_PATH) or reflection_event_complete(
+        EVENTS_PATH,
+        session_id,
+        session_start_epoch,
+    )
 
-    transcript_path = str(payload.get("transcript_path") or "")
-    if not retro_ran and transcript_path:
-        tpath = Path(transcript_path)
-        if tpath.exists():
-            try:
-                transcript = tpath.read_text(encoding="utf-8", errors="ignore")
-            except Exception:
-                transcript = ""
-            if re.search(RETRO_TRANSCRIPT_PATTERN, transcript, flags=re.IGNORECASE):
-                retro_ran = True
-
-    if not retro_ran and not SENTINEL_PATH.exists() and heartbeat_fresh(HEARTBEAT_PATH, NOW, 120):
-        retro_ran = True
-
-    duration_seconds = max(0, NOW - int(state.get("session_start_epoch") or 0))
+    duration_seconds = max(0, NOW - session_start_epoch)
     if retro_ran:
         state["session_state"] = "complete"
         state["retrospective_state"] = "complete"
         state["last_write_epoch"] = NOW
         set_sentinel(SENTINEL_PATH, WORKSPACE, NOW, session_id, "complete")
-        append_event(EVENTS_PATH, WORKSPACE, NOW, TRIGGER, "complete", duration_seconds)
+        append_event(EVENTS_PATH, WORKSPACE, NOW, TRIGGER, "complete", duration_seconds, session_id=session_id)
         save_state(state, WORKSPACE, STATE_PATH)
         print_json({"continue": True})
         raise SystemExit(0)
@@ -324,7 +330,7 @@ if TRIGGER == "stop":
     if retrospective_state(state) == "accepted":
         state["session_state"] = "pending"
         state["last_write_epoch"] = NOW
-        append_event(EVENTS_PATH, WORKSPACE, NOW, TRIGGER, "accepted-pending")
+        append_event(EVENTS_PATH, WORKSPACE, NOW, TRIGGER, "accepted-pending", session_id=session_id)
         save_state(state, WORKSPACE, STATE_PATH)
         print_json({
             "hookSpecificOutput": {
@@ -340,7 +346,7 @@ if TRIGGER == "stop":
         state["session_state"] = "pending"
         state["retrospective_state"] = "suggested"
         state["last_write_epoch"] = NOW
-        append_event(EVENTS_PATH, WORKSPACE, NOW, TRIGGER, "reflect-needed")
+        append_event(EVENTS_PATH, WORKSPACE, NOW, TRIGGER, "reflect-needed", session_id=session_id)
         save_state(state, WORKSPACE, STATE_PATH)
         print_json({
             "hookSpecificOutput": {
@@ -354,7 +360,7 @@ if TRIGGER == "stop":
     state["session_state"] = "complete"
     state["retrospective_state"] = "not-needed"
     state["last_write_epoch"] = NOW
-    append_event(EVENTS_PATH, WORKSPACE, NOW, TRIGGER, "not-needed", duration_seconds)
+    append_event(EVENTS_PATH, WORKSPACE, NOW, TRIGGER, "not-needed", duration_seconds, session_id=session_id)
     save_state(state, WORKSPACE, STATE_PATH)
     print_json({"continue": True})
     raise SystemExit(0)

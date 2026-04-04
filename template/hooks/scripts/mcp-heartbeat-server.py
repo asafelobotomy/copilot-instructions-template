@@ -93,6 +93,43 @@ def _recent_events(limit: int = 20) -> list[dict]:
     return events[-limit:]
 
 
+def _append_event(trigger: str, detail: str = "", session_id: str = "", duration_s: int | None = None) -> None:
+    if not WORKSPACE.exists():
+        return
+    event = {
+        "ts": int(time.time()),
+        "ts_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "trigger": trigger,
+    }
+    if detail:
+        event["detail"] = detail
+    if session_id:
+        event["session_id"] = session_id
+    if duration_s is not None:
+        event["duration_s"] = int(duration_s)
+    with EVENTS_PATH.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(event, sort_keys=True) + "\n")
+
+
+def _session_events(state: dict, limit: int = 50) -> list[dict]:
+    session_id = str(state.get("session_id") or "")
+    session_start = int(state.get("session_start_epoch") or 0)
+    scoped: list[dict] = []
+    for event in _recent_events(limit):
+        if not isinstance(event, dict):
+            continue
+        event_session_id = str(event.get("session_id") or "")
+        if session_id and event_session_id:
+            if event_session_id != session_id:
+                continue
+        else:
+            event_ts = event.get("ts")
+            if session_start > 0 and isinstance(event_ts, (int, float)) and int(event_ts) < session_start:
+                continue
+        scoped.append(event)
+    return scoped
+
+
 def _set_sentinel_complete(session_id: str) -> None:
     """Mark the session sentinel as complete so the Stop hook passes through."""
     if not WORKSPACE.exists():
@@ -116,7 +153,9 @@ def session_reflect() -> dict:
     count, key events) and lean reflection prompts.
 
     Call before ending any session where the health digest indicates significant
-    work (5+ file modifications or 15+ minutes active).  Process the output
+    work (one strong signal: 8+ modified files or 30+ minutes active; or two
+    supporting signals: 5+ modified files, 15+ minutes active, or context
+    compaction). Process the output
     silently — update SOUL.md, MEMORY.md, USER.md only if insights warrant it.
     Surface findings to the user only for actionable items (security concerns,
     tech debt, coverage gaps, broken assumptions).
@@ -142,7 +181,7 @@ def session_reflect() -> dict:
     edit_count = int(state.get("copilot_edit_count") or 0)
     effective_files = delta_files if delta_files > 0 else edit_count
     compactions = sum(
-        1 for ev in _recent_events(50) if ev.get("trigger") == "compaction"
+        1 for ev in _session_events(state, 50) if ev.get("trigger") == "compaction"
     )
 
     # --- Magnitude ---------------------------------------------------------
@@ -181,6 +220,7 @@ def session_reflect() -> dict:
 
     # --- Set sentinel complete ---------------------------------------------
     session_id = state.get("session_id") or "unknown"
+    _append_event("session_reflect", "complete", session_id=str(session_id))
     _set_sentinel_complete(session_id)
 
     return {
