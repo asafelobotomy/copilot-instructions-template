@@ -7,6 +7,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [5.5.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.4.0...v5.5.0) (2026-04-04)
+
+
+### Features
+
+* **setup:** add factory restore recovery flow ([ce827bb](https://github.com/asafelobotomy/copilot-instructions-template/commit/ce827bb0fe33b4651d4c55de0be319a7210a738e))
+
 ## [5.4.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.3.0...v5.4.0) (2026-04-04)
 
 
