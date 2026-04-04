@@ -7,6 +7,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [5.4.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.3.0...v5.4.0) (2026-04-04)
+
+
+### Features
+
+* **ci:** adopt suite-manifest driven test validation ([84438f4](https://github.com/asafelobotomy/copilot-instructions-template/commit/84438f421ba099b2f4a821327d659a1628742b19))
+* **hooks:** extend heartbeat and pulse hook coverage ([4ffffeb](https://github.com/asafelobotomy/copilot-instructions-template/commit/4ffffeb97ab365975f61b5c1f1aa88a2a983ab0b))
+
+
+### Bug Fixes
+
+* **setup:** prefetch workspace-index fallback ([c0b2ecc](https://github.com/asafelobotomy/copilot-instructions-template/commit/c0b2eccdecb6218b458eca31447a9bd66a6c0706))
+
 ## [5.3.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.2.0...v5.3.0) (2026-04-03)
 
 
