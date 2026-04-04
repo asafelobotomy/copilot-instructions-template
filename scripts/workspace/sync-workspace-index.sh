@@ -59,6 +59,10 @@ def ordered(existing, baseline):
 agents_existing = [p.name for p in (root / ".github/agents").glob("*.agent.md")]
 skills_repo_existing = [p.parent.name for p in (root / ".github/skills").glob("*/SKILL.md")]
 skills_template_existing = [p.parent.name for p in (root / "template/skills").glob("*/SKILL.md")]
+prompts_existing = [p.name for p in (root / "template/prompts").glob("*.prompt.md")]
+instructions_existing = [p.name for p in (root / "template/instructions").glob("*.instructions.md")]
+workspace_files_existing = [p.name for p in (root / "template/workspace").glob("*") if p.is_file()]
+workflow_existing = [p.name for p in (root / "template").glob("copilot-setup-steps.yml")]
 shell_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.sh")]
 ps_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.ps1")]
 python_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.py")]
@@ -69,6 +73,10 @@ baseline = load_order_baseline(template_index_path, index_path)
 agents = ordered(agents_existing, list_or_empty(baseline, "agents"))
 skills_repo = ordered(skills_repo_existing, list_or_empty(baseline, "skills", "repo"))
 skills_template = ordered(skills_template_existing, list_or_empty(baseline, "skills", "template"))
+prompts = ordered(prompts_existing, list_or_empty(baseline, "prompts"))
+instructions = ordered(instructions_existing, list_or_empty(baseline, "instructions"))
+workspace_files = ordered(workspace_files_existing, list_or_empty(baseline, "workspaceFiles"))
+workflow_files = ordered(workflow_existing, list_or_empty(baseline, "workflowFiles"))
 shell_hooks = ordered(shell_hooks_existing, list_or_empty(baseline, "hookScripts", "shell"))
 ps_hooks = ordered(ps_hooks_existing, list_or_empty(baseline, "hookScripts", "powershell"))
 python_hooks = ordered(python_hooks_existing, list_or_empty(baseline, "hookScripts", "python"))
@@ -93,6 +101,10 @@ generated = {
         "repo": skills_repo,
         "template": skills_template,
     },
+    "prompts": prompts,
+    "instructions": instructions,
+    "workspaceFiles": workspace_files,
+    "workflowFiles": workflow_files,
     "hookScripts": {
         "shell": shell_hooks,
         "powershell": ps_hooks,

@@ -18,6 +18,8 @@ make_fixture() {
     "$root/.github/skills/skill-creator" \
     "$root/.github/skills/extension-review" \
     "$root/.github/skills/zzz-extra" \
+    "$root/template/instructions" \
+    "$root/template/prompts" \
     "$root/template/skills/skill-creator" \
     "$root/template/skills/test-coverage-review" \
     "$root/template/skills/aaa-extra" \
@@ -35,6 +37,14 @@ make_fixture() {
   printf 'name: skill-creator\ndescription: test\n' > "$root/template/skills/skill-creator/SKILL.md"
   printf 'name: test-coverage-review\ndescription: test\n' > "$root/template/skills/test-coverage-review/SKILL.md"
   printf 'name: aaa-extra\ndescription: test\n' > "$root/template/skills/aaa-extra/SKILL.md"
+
+  : > "$root/template/instructions/api-routes.instructions.md"
+  : > "$root/template/instructions/tests.instructions.md"
+  : > "$root/template/prompts/commit-msg.prompt.md"
+  : > "$root/template/prompts/review-file.prompt.md"
+  : > "$root/template/workspace/BOOTSTRAP.md"
+  : > "$root/template/workspace/TOOLS.md"
+  : > "$root/template/copilot-setup-steps.yml"
 
   : > "$root/template/hooks/scripts/session-start.sh"
   : > "$root/template/hooks/scripts/guard-destructive.sh"
@@ -76,6 +86,22 @@ make_fixture() {
       "test-coverage-review"
     ]
   },
+  "prompts": [
+    "commit-msg.prompt.md",
+    "review-file.prompt.md"
+  ],
+  "instructions": [
+    "api-routes.instructions.md",
+    "tests.instructions.md"
+  ],
+  "workspaceFiles": [
+    "BOOTSTRAP.md",
+    "TOOLS.md",
+    "workspace-index.json"
+  ],
+  "workflowFiles": [
+    "copilot-setup-steps.yml"
+  ],
   "hookScripts": {
     "shell": [
       "session-start.sh",
@@ -155,6 +181,10 @@ for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/works
   assert data['agents'] == ['setup.agent.md', 'review.agent.md', 'z-last.agent.md']
   assert data['skills']['repo'] == ['skill-creator', 'extension-review', 'zzz-extra']
   assert data['skills']['template'] == ['skill-creator', 'test-coverage-review', 'aaa-extra']
+  assert data['prompts'] == ['commit-msg.prompt.md', 'review-file.prompt.md']
+  assert data['instructions'] == ['api-routes.instructions.md', 'tests.instructions.md']
+  assert data['workspaceFiles'] == ['BOOTSTRAP.md', 'TOOLS.md', 'workspace-index.json']
+  assert data['workflowFiles'] == ['copilot-setup-steps.yml']
   assert data['hookScripts']['shell'] == ['session-start.sh', 'guard-destructive.sh', 'save-context.sh']
   assert data['hookScripts']['powershell'] == ['session-start.ps1', 'guard-destructive.ps1', 'save-context.ps1']
   assert data['hookScripts']['python'] == ['heartbeat_clock_summary.py', 'mcp-heartbeat-server.py', 'pulse_runtime.py']

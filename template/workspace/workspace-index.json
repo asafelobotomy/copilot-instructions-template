@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/schema/workspace-index.schema.json",
   "schemaVersion": "1.0",
-  "updated": "2026-04-03",
+  "updated": "2026-04-04",
   "purpose": "Canonical machine-readable inventory for repository metadata.",
   "counts": {
     "agents": 10,
@@ -62,6 +62,36 @@
       "commit-preflight"
     ]
   },
+  "prompts": [
+    "commit-msg.prompt.md",
+    "context-map.prompt.md",
+    "explain.prompt.md",
+    "onboard-commit-style.prompt.md",
+    "refactor.prompt.md",
+    "review-file.prompt.md",
+    "test-gen.prompt.md"
+  ],
+  "instructions": [
+    "api-routes.instructions.md",
+    "config.instructions.md",
+    "docs.instructions.md",
+    "tests.instructions.md"
+  ],
+  "workspaceFiles": [
+    "BOOTSTRAP.md",
+    "HEARTBEAT.md",
+    "IDENTITY.md",
+    "MEMORY.md",
+    "RESEARCH.md",
+    "SOUL.md",
+    "TOOLS.md",
+    "USER.md",
+    "commit-style.md",
+    "workspace-index.json"
+  ],
+  "workflowFiles": [
+    "copilot-setup-steps.yml"
+  ],
   "hookScripts": {
     "shell": [
       "lib-hooks.sh",
