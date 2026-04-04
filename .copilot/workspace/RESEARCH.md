@@ -31,11 +31,14 @@
 | <https://code.visualstudio.com/docs/copilot/concepts/language-models> | Concepts: thinking tokens, context window, adaptive reasoning, effort levels vary by model and provider | 2026-03-28 | thinking-effort, concepts |
 | <https://code.visualstudio.com/updates/v1_99> | v1.99 Mar 2025 — Thinking Tool (experimental, agent mode only, any model); `github.copilot.chat.agent.thinkingTool` setting | 2026-03-28 | thinking-tool, agents |
 | <https://code.visualstudio.com/updates/v1_109> | v1.109 Jan 2026 — Anthropic thinking tokens rendered in chat UX; `chat.thinking.style`, `chat.agent.thinking.collapsedTools` settings | 2026-03-28 | thinking-effort, ux |
-| <https://code.visualstudio.com/updates/v1_110> | v1.110 Feb 2026 — current stable; agent plugins, agentic browser tools, context compaction, fork session | 2026-03-28 | stable, release-notes |
+| <https://code.visualstudio.com/updates/v1_110> | v1.110 Feb 2026 — agent plugins, agentic browser tools, context compaction, fork session (superseded by v1.114) | 2026-03-28 | release-notes |
 | <https://docs.github.com/en/copilot/concepts/billing/copilot-requests> | Model multipliers (0x included, 0.33x light, 1x standard, 3x flagship); premium request accounting; 10% auto-selection discount | 2026-03-28 | billing, multipliers |
 | <https://docs.github.com/en/copilot/reference/ai-models/model-comparison> | Task-based model comparison table: all models with task categories, model card links | 2026-03-28 | models, reference |
 | <https://docs.github.com/en/copilot/using-github-copilot/ai-models/supported-ai-models-in-copilot> | Canonical model list; plan availability; retirement history; LTS models | 2026-03-28 | models, reference |
 | <https://docs.github.com/en/copilot/concepts/auto-model-selection> | Auto model selection: qualifying models, 10% multiplier discount for paid plans, coding agent auto selection | 2026-03-28 | models, billing |
+| <https://docs.github.com/en/copilot/concepts/fallback-and-lts-models> | GPT-5.3-Codex designated base+LTS model 2026-03-18; GPT-4.1 is premium-exhausted fallback; LTS commitment = 1 year | 2026-04-04 | models, lts, base-model |
+| <https://code.visualstudio.com/updates/v1_111> | v1.111 (2026-03-09) — Autopilot Preview, agent permission levels (Default/Bypass/Autopilot), agent-scoped hooks Preview in `.agent.md` frontmatter | 2026-04-04 | agents, autopilot, hooks |
+| <https://code.visualstudio.com/updates> | Current stable: v1.114.0 (2026-04-01) — `/troubleshoot` for chat, codebase search semantic-only, video in image carousel | 2026-04-04 | stable, release-notes |
 
 ## Release Automation Tooling
 

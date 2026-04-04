@@ -83,7 +83,7 @@ options:
   - label: "S — Standard"
     description: "17 questions (S1-S5 + A6-A17), ~6 min"
   - label: "F — Full"
-    description: "23 questions (S1-S5 + A6-A17 + E16-E24), ~10 min"
+    description: "25 questions (S1-S5 + A6-A17 + E16-E18, E20-E24), ~10 min"
   - label: "Skip"
     description: "Use all defaults immediately — no questions asked"
 allowFreeformInput: false
@@ -326,7 +326,7 @@ If "Yes": `code --install-extension asafelobotomy.copilot-profile-tools`. If Mar
 
 ## § 3 — Scaffold workspace identity files
 
-Create `.copilot/workspace/`. Follow manifests.md § Workspace identity files for the nine-file table. Replace `{{PLACEHOLDER}}` tokens from §1 and `{{SETUP_DATE}}` with today's date. If any fetch fails, stop immediately.
+Create `.copilot/workspace/`. Follow manifests.md § Workspace identity files for the ten-file table. Replace `{{PLACEHOLDER}}` tokens from §1 and `{{SETUP_DATE}}` with today's date. If any fetch fails, stop immediately.
 
 ---
 

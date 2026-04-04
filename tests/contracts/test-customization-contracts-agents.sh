@@ -110,19 +110,32 @@ if "fetch" not in fm:
 '
 echo ""
 
-echo "3. Organise stays hidden and coordinator agents can invoke it"
-assert_python "organise agent stays subagent-only with nested delegation" '
-path = root / ".github/agents/organise.agent.md"
-text = path.read_text(encoding="utf-8")
-if not text.startswith("---\n"):
-    raise SystemExit("missing frontmatter in organise.agent.md")
-end = text.find("\n---\n", 4)
-if end == -1:
-    raise SystemExit("unterminated frontmatter in organise.agent.md")
-fm = text[4:end]
+echo "3. Specialist delegation agents stay hidden and coordinators can invoke them"
+assert_python "specialist agents stay hidden when they are delegation-first" '
+expected_hidden = {
+    "audit.agent.md": ["name: Audit", "user-invocable: false"],
+    "researcher.agent.md": ["name: Researcher", "user-invocable: false"],
+    "extensions.agent.md": ["name: Extensions", "user-invocable: false"],
+    "organise.agent.md": ["name: Organise", "user-invocable: false"],
+}
+
+for filename, needles in expected_hidden.items():
+    path = root / ".github/agents" / filename
+    text = path.read_text(encoding="utf-8")
+    if not text.startswith("---\n"):
+        raise SystemExit("missing frontmatter in " + filename)
+    end = text.find("\n---\n", 4)
+    if end == -1:
+        raise SystemExit("unterminated frontmatter in " + filename)
+    fm = text[4:end]
+    for needle in needles:
+        if needle not in fm:
+            raise SystemExit(filename + " missing: " + needle)
+
+organise_text = (root / ".github/agents/organise.agent.md").read_text(encoding="utf-8")
+end = organise_text.find("\n---\n", 4)
+fm = organise_text[4:end]
 required = [
-    "name: Organise",
-    "user-invocable: false",
     "disable-model-invocation: false",
     "tools: [agent, editFiles, runCommands, codebase, search]",
 ]

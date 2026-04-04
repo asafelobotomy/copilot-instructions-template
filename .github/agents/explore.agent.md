@@ -4,6 +4,7 @@ description: Fast read-only codebase exploration and Q&A subagent. Prefer over m
 argument-hint: Describe WHAT you're looking for and desired thoroughness (quick/medium/thorough)
 model:
   - Claude Haiku 4.5
+  - GPT-5.4 mini
   - GPT-5 mini
   - Claude Sonnet 4.6
 tools: [agent, codebase, search, runCommands]

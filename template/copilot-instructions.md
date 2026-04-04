@@ -131,6 +131,7 @@ Apply to every non-trivial change.
 
 - **Task complete** means the full user-visible task is finished end-to-end, not that one phase of a larger plan is done and not that one item in a multi-part TODO list is done.
 - During intermediate phases, prefer deterministic path-based targeted suites tied to the files or directories actually touched.
+- If the repo documents a targeted-test selector or phase-test command, use it to choose deterministic phase checks from changed paths instead of guessing the phase-time suite set manually.
 - If multiple sub-parts are still in progress, do not treat a passing targeted subset as permission to declare the whole task complete.
 - Broaden early when changes touch shared helpers, broad policy surfaces, parity mirrors, or any area without a reliable targeted test mapping.
 - Final gate: before marking the full task complete, run the full suite with `{{TEST_COMMAND}}`.

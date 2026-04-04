@@ -2,6 +2,13 @@
 
 Single source of truth for all agent model assignments in this repository.
 
+Current external review date: 2026-04-04. GitHub now designates GPT-5.3-Codex
+as the Copilot base + LTS model. GitHub's supported-models docs also note that
+Claude Sonnet 4.6 and GPT-5.4 mini multipliers are subject to change.
+
+`llms.txt` mirrors only the primary-model and thinking-effort summary for quick
+navigation. Edit this file to change assignments.
+
 The `model:` list in each `.agent.md` file is ordered: VS Code Copilot picks the
 first available model and falls back down the list. Edit this file to change any
 assignment, then propagate with:
@@ -44,20 +51,21 @@ Recommended effort levels per agent:
 > **User override**: these are recommendations. Users set thinking effort per model
 > in the VS Code model picker (click `>` next to the model name). The setting
 > persists across conversations for each model. There is no per-agent override in
-> `.agent.md` frontmatter as of VS Code 1.110.
+> `.agent.md` frontmatter as of VS Code 1.114.
 
 ---
 
 ## coding
 
-Implementation, refactoring, and multi-step coding tasks.
+Implementation, refactoring, and multi-step coding tasks. GPT-5.3-Codex is the
+primary because GitHub now treats it as the Copilot base + LTS model for
+agentic software development; GPT-5.2-Codex is the like-for-like fallback.
 
+- GPT-5.3-Codex
+- GPT-5.2-Codex
 - GPT-5.1
 - Claude Sonnet 4.6
 - GPT-5 mini
-- GPT-5.3-Codex
-- GPT-5.2-Codex
-- GPT-5.1-Codex
 
 ## organise
 
@@ -109,9 +117,11 @@ Requires interactive question capability (never use Codex/autonomous models).
 ## explore
 
 Fast read-only codebase exploration and Q&A. Uses lightweight models for speed;
-Sonnet is the capability fallback for complex queries.
+GPT-5.4 mini is the tool-using fallback for grep-heavy exploration, and Sonnet
+is the capability fallback for complex queries.
 
 - Claude Haiku 4.5
+- GPT-5.4 mini
 - GPT-5 mini
 - Claude Sonnet 4.6
 

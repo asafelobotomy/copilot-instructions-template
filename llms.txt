@@ -5,18 +5,11 @@
 ## Start here
 
 - [.github/copilot-instructions.md](.github/copilot-instructions.md): Main always-loaded instruction file. Core methodology and guardrails.
-- [AGENTS.md](AGENTS.md): Machine entry point. Trigger phrases, setup, update, and restore sequences.
+- [AGENTS.md](AGENTS.md): Machine entry point. Trigger phrases and canonical setup or update pointers.
+- [MODELS.md](MODELS.md): Single source of truth for agent model assignments and thinking-effort guidance.
 - [SETUP.md](SETUP.md): Remote bootstrap protocol for consumer projects.
 - [UPDATE.md](UPDATE.md): Remote update and restore protocol.
 - [MIGRATION.md](MIGRATION.md): Per-version migration registry.
-
-## Route queries quickly
-
-- Setup or first install flow: [SETUP.md](SETUP.md)
-- Updating existing installs: [UPDATE.md](UPDATE.md)
-- Release-to-release changes: [MIGRATION.md](MIGRATION.md)
-- Core operating rules: [.github/copilot-instructions.md](.github/copilot-instructions.md)
-- Trigger phrases and remote bootstrap entrypoint: [AGENTS.md](AGENTS.md)
 
 ## Model strategy
 
@@ -26,7 +19,7 @@
 | Surface | Recommended model | Thinking Effort | Role |
 |---------|-------------------|-----------------|------|
 | `setup.agent.md` | Claude Sonnet 4.6 | Medium | Template lifecycle (setup, updates, restore) |
-| `coding.agent.md` | GPT-5.1 | High | Implementation, refactoring, multi-step coding |
+| `coding.agent.md` | GPT-5.3-Codex | High | Implementation, refactoring, multi-step coding |
 | `organise.agent.md` | GPT-5.1 | Medium | Subagent-only structural cleanup, file moves, path repair, and directory layout normalization |
 | `review.agent.md` | GPT-5.4 | High | Deep review, debugging, architectural analysis |
 | `fast.agent.md` | Claude Haiku 4.5 | Low | Quick lookups and lightweight edits |
@@ -86,14 +79,6 @@ Current agents: Setup, Code, Organise, Review, Fast, Audit, Explore,
 Extensions, Researcher, Commit.
 
 Exact handoff permissions can evolve. Read `.github/agents/*.agent.md` frontmatter for authoritative `agents:` allow-lists.
-
-## Canonical machine sources
-
-- Inventory and counts: `.copilot/workspace/workspace-index.json`
-- Model assignments and rationale: [MODELS.md](MODELS.md)
-- Hook event wiring: `.github/hooks/copilot-hooks.json`
-- Template hook mirror: `template/hooks/copilot-hooks.json`
-- Agent metadata and handoff policy: `.github/agents/*.agent.md`
 
 ## Cross-tool compatibility
 

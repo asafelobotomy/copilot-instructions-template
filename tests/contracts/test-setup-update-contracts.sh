@@ -349,4 +349,32 @@ assert_file_not_contains "manifests.md no longer defers agent fallback to §3" \
     "$MANIFESTS" "fetched in § ?3"
 echo ""
 
+# ──────────────────────────────────────────────────────────────
+echo "20. Tier counts in SETUP.md match the interview inventory"
+# ──────────────────────────────────────────────────────────────
+
+assert_python "setup tier descriptions match current question totals" '
+setup_text = (root / "SETUP.md").read_text(encoding="utf-8")
+interview_text = (root / "template/setup/interview.md").read_text(encoding="utf-8")
+
+question_ids = set(re.findall(r"\*\*([SAE]\d+)\s+—", interview_text))
+
+quick_ids = {qid for qid in question_ids if qid.startswith("S")}
+standard_ids = quick_ids | {qid for qid in question_ids if qid.startswith("A")}
+full_ids = standard_ids | {qid for qid in question_ids if qid.startswith("E")}
+
+expected_descriptions = {
+    "Q — Quick": f"{len(quick_ids)} questions (S1-S5), ~3 min",
+    "S — Standard": f"{len(standard_ids)} questions (S1-S5 + A6-A17), ~6 min",
+    "F — Full": f"{len(full_ids)} questions (S1-S5 + A6-A17 + E16-E18, E20-E24), ~10 min",
+}
+
+for label, description in expected_descriptions.items():
+    if label not in setup_text:
+        raise SystemExit(f"missing tier label in SETUP.md: {label}")
+    if description not in setup_text:
+        raise SystemExit(f"missing or stale tier description in SETUP.md: {description}")
+'
+echo ""
+
 finish_tests

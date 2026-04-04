@@ -20,7 +20,7 @@ Copilot fetches [`UPDATE.md`](UPDATE.md) and performs a version-aware three-way 
 
 ## All trigger phrases
 
-See [`AGENTS.md`](AGENTS.md) for the full list of commands (health check, retrospective, skills, MCP, hooks, and more).
+See [`AGENTS.md`](AGENTS.md) for the full list of direct consumer-facing commands (heartbeat, retrospective, tools, skills, MCP, hooks, and more).
 
 ## Keep delegation narrow
 

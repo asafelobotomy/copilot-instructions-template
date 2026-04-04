@@ -72,25 +72,12 @@ Source of truth: `UPDATE.md` (fetched from upstream).
   and guardrail conflict resolutions. Follow the `ask_questions` blocks in
   UPDATE.md exactly.
 
-### Pre-flight URLs (in order)
+## Canonical protocol sources
 
-1. Installed version: `.github/copilot-version.md` in the current project
-2. Template version: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/VERSION.md`
-3. Migration registry: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/MIGRATION.md`
-4. Template changelog: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/CHANGELOG.md`
-5. New template file: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/copilot-instructions.md`
-6. Old baseline (at installed version tag): `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/v<INSTALLED_VERSION>/template/copilot-instructions.md`
-
-### Trigger phrases (update mode)
-
-- "Update your instructions"
-- "Check for instruction updates"
-- "Update from copilot-instructions-template"
-- "Sync instructions with the template"
-- "Force check instruction updates" *(bypasses version equality check)*
-- "Restore instructions from backup"
-- "Roll back the instructions update"
-- "List instruction backups"
+- Setup behaviour: [SETUP.md](SETUP.md)
+- Update and restore behaviour: [UPDATE.md](UPDATE.md)
+- Supporting upstream source inventory: [template/setup/manifests.md](template/setup/manifests.md#protocol-sources)
+- Trigger phrases and repo entry point: [AGENTS.md](AGENTS.md)
 
 ## Shared constraints
 

@@ -9,20 +9,11 @@
 - **Language**: Markdown / Shell
 - **Test command**: `bash tests/run-all.sh`
 
-## Rules
+## Canonical instructions
 
-1. Run `bash tests/run-all.sh` before marking any task done.
-2. Plan-Do-Check-Act (PDCA) for every non-trivial change.
-3. Never modify a file not opened this session.
-4. Never delete existing rules without explicit user instruction.
-
-## Coding conventions
-
-- Shell scripts: `set -euo pipefail` required.
-- No silent error swallowing — log or re-throw.
-- No commented-out code — git history is the undo stack.
-- Markdown: follow `.markdownlint.json` / `.markdownlint-cli2.yaml`.
-- Hook scripts: JSON in on stdin → JSON on stdout (stdio protocol).
+- Primary repo rules live in `.github/copilot-instructions.md`.
+- Use `bash tests/run-all.sh` as the full-suite gate.
+- Follow the developer instructions file for workflow, testing, and editing rules.
 
 ## See also
 

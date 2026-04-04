@@ -8,7 +8,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5.1
 tools: [agent, codebase, runCommands, githubRepo, fetch, search, webSearch]
-user-invocable: true
+user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Setup', 'Researcher', 'Extensions', 'Organise']
 handoffs:

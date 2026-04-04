@@ -3,12 +3,11 @@ name: Code
 description: Implement features, refactor, and run multi-step coding tasks
 argument-hint: Describe what to build or fix — e.g. "add pagination to the search endpoint" or "refactor auth module to use JWT"
 model:
+  - GPT-5.3-Codex
+  - GPT-5.2-Codex
   - GPT-5.1
   - Claude Sonnet 4.6
   - GPT-5 mini
-  - GPT-5.3-Codex
-  - GPT-5.2-Codex
-  - GPT-5.1-Codex
 tools: [agent, editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
 user-invocable: true
 disable-model-invocation: false
