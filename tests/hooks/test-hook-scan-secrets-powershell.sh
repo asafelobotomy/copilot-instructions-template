@@ -14,11 +14,16 @@ SCRIPT="$SCRIPTS_DIR/scan-secrets.ps1"
 
 run_scan_in_dir() {
   local dir="$1" payload="$2"
+  local env_assignment var_name var_value
   shift 2
   (
     cd "$dir" || exit 1
     while [[ $# -gt 0 ]]; do
-      export "$1"
+      env_assignment="$1"
+      var_name=${env_assignment%%=*}
+      var_value=${env_assignment#*=}
+      printf -v "$var_name" '%s' "$var_value"
+      export "${var_name?}"
       shift
     done
     run_ps_script "$SCRIPT" "$payload"

@@ -17,6 +17,7 @@ usage() {
 }
 
 cwd=""
+stdin_payload=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -40,9 +41,15 @@ if [[ -t 0 ]]; then
   exit 1
 fi
 
+stdin_payload=$(cat)
+if [[ -z "$stdin_payload" ]]; then
+  usage
+  exit 1
+fi
+
 args=()
 if [[ -n "$cwd" ]]; then
   args+=(--cwd "$cwd")
 fi
 
-exec bash "$script_dir/run-strict-bash.sh" "${args[@]}"
+exec bash "$script_dir/run-strict-bash.sh" "${args[@]}" --command "$stdin_payload"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # purpose:  Read the canonical test-suite manifest for local execution, CI matrix generation, and suite inventory validation.
 # when:     Use when running the full local suite, generating CI suite jobs, or validating suite inventory; not for path-to-suite selection logic itself.
-# inputs:   Subcommand (validate|ci-matrix|run-local) and optional --root PATH pointing at a repository root.
+# inputs:   Subcommand (validate|ci-matrix|run-local|run-suite), optional --root PATH, and a suite path for run-suite.
 # outputs:  Prints a validation message, CI matrix JSON, or the full local suite transcript and exit code.
 # risk:     safe
 # source:   original
@@ -260,11 +260,27 @@ def cmd_run_local(root: pathlib.Path) -> int:
     return 0
 
 
+def add_root_argument(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--root", default=str(default_root()), help="Repository root to inspect")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="python3 scripts/tests/suite-manifest.py")
-    parser.add_argument("command", choices=["validate", "ci-matrix", "run-local", "run-suite"])
-    parser.add_argument("suite_path", nargs="?", help="Manifest suite path for run-suite")
-    parser.add_argument("--root", default=str(default_root()), help="Repository root to inspect")
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    validate_parser = subparsers.add_parser("validate")
+    add_root_argument(validate_parser)
+
+    ci_matrix_parser = subparsers.add_parser("ci-matrix")
+    add_root_argument(ci_matrix_parser)
+
+    run_local_parser = subparsers.add_parser("run-local")
+    add_root_argument(run_local_parser)
+
+    run_suite_parser = subparsers.add_parser("run-suite")
+    add_root_argument(run_suite_parser)
+    run_suite_parser.add_argument("suite_path", help="Manifest suite path for run-suite")
+
     return parser
 
 
@@ -280,8 +296,6 @@ def main() -> int:
     if args.command == "run-local":
         return cmd_run_local(root)
     if args.command == "run-suite":
-        if not args.suite_path:
-            parser.error("run-suite requires <suite_path>")
         return cmd_run_suite(root, args.suite_path)
     raise SystemExit(f"unsupported command: {args.command}")
 
