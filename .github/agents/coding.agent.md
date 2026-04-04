@@ -48,7 +48,7 @@ Guidelines:
 - Use `Extensions` when the work shifts into VS Code extension recommendations,
   profile isolation, or extension configuration rather than repo code changes.
 - Use `Setup` when the task turns into template bootstrap, instruction update,
-  or backup restore work rather than implementation.
+  backup restore, or factory restore work rather than implementation.
 - Delegate to `Organise` when the task is primarily about moving files,
   fixing path references, or reshaping directory structure.
 

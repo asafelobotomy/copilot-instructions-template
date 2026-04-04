@@ -19,7 +19,7 @@ DELEGATION_POLICY_SNIPPETS: dict[str, tuple[str, ...]] = {
         "`Audit` for health, security, or residual-risk checks",
         "`Extensions` for VS Code extension, profile, or workspace recommendation",
         "`Commit` for staging, commits, pushes, tags, or releases",
-        "`Setup` for template bootstrap, instruction update, or backup restore",
+        "`Setup` for template bootstrap, instruction update, backup restore, or factory restore",
         "`Organise` for file moves, path repair, or repository reshaping",
     ),
     "template/copilot-instructions.md": (
@@ -32,7 +32,7 @@ DELEGATION_POLICY_SNIPPETS: dict[str, tuple[str, ...]] = {
         "`Audit` for health, security, or residual-risk checks",
         "`Extensions` for VS Code extension, profile, or workspace recommendation",
         "`Commit` for staging, commits, pushes, tags, or releases",
-        "`Setup` for template bootstrap, instruction update, or backup restore",
+        "`Setup` for template bootstrap, instruction update, backup restore, or factory restore",
         "`Organise` for file moves, path repair, or repository reshaping",
     ),
 }

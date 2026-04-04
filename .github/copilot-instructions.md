@@ -173,7 +173,8 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
   critique, `Audit` for health, security, or residual-risk checks,
   `Extensions` for VS Code extension, profile, or workspace recommendation
   work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for
-  template bootstrap, instruction update, or backup restore work, and
+  template bootstrap, instruction update, backup restore, or factory restore
+  work, and
   `Organise` for file moves, path repair, or repository reshaping.
 - Tool Protocol: activate `.github/skills/tool-protocol/SKILL.md` before building any script.
 - Heartbeat: `.copilot/workspace/HEARTBEAT.md` — run at session start. Health digest emits on meaningful phase transitions and overlay changes, not a fixed tool-call cadence. On significant sessions (8+ files or 30+ active minutes), the Stop hook instructs the model to call the `session_reflect` MCP tool autonomously. Silent when healthy.

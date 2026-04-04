@@ -106,7 +106,7 @@ required_by_file = {
         "`Audit` for health, security, or residual-risk checks",
         "`Extensions` for VS Code extension, profile, or workspace recommendation",
         "`Commit` for staging, commits, pushes, tags, or releases",
-        "`Setup` for template bootstrap, instruction update, or backup restore",
+        "`Setup` for template bootstrap, instruction update, backup restore, or factory restore",
         "`Organise` for file moves, path repair, or repository reshaping",
     ],
     "template/copilot-instructions.md": [
@@ -119,7 +119,7 @@ required_by_file = {
         "`Audit` for health, security, or residual-risk checks",
         "`Extensions` for VS Code extension, profile, or workspace recommendation",
         "`Commit` for staging, commits, pushes, tags, or releases",
-        "`Setup` for template bootstrap, instruction update, or backup restore",
+        "`Setup` for template bootstrap, instruction update, backup restore, or factory restore",
         "`Organise` for file moves, path repair, or repository reshaping",
     ],
     "AGENTS.md": [
@@ -154,7 +154,7 @@ checks = {
     "template/setup/manifests.md": [
         "## Protocol sources",
         "| Setup |",
-        "| Update and restore |",
+        "| Update, backup restore, and factory restore |",
         "`SETUP.md`",
         "`UPDATE.md`",
     ],
@@ -174,6 +174,7 @@ for phrase in [
     "Setup from asafelobotomy/copilot-instructions-template",
     "Update your instructions",
     "Restore instructions from backup",
+    "Factory restore instructions",
 ]:
     if agents_text.count(phrase) != 1:
         raise SystemExit("AGENTS.md duplicates trigger phrase: " + phrase)
@@ -365,7 +366,7 @@ checks = {
         "If the answer depends on current external documentation or version-specific",
         "If the user is asking to stage, commit, push, tag, or release changes, use",
         "If the task is really VS Code extension, profile, or workspace recommendation",
-        "If the task is really template setup, instruction update, or backup restore",
+        "If the task is really template setup, instruction update, backup restore, or factory restore",
         "If the task is primarily moving files, fixing broken paths, or reorganising",
     ],
     "organise.agent.md": [

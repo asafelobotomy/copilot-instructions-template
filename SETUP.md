@@ -4,11 +4,20 @@
 > All writes go to the **user's current project** — never to the template repository.
 > After setup completes and the user confirms, delete this file from the user's project.
 
+## Recovery mode
+
+`UPDATE.md` uses this setup flow only after factory restore has created a complete backup and removed every managed surface from the working tree. When recovery mode starts, treat the project as a clean install.
+
+- Do not read, merge, preserve, or rely on current `.github/copilot-instructions.md`, `.github/copilot-version.md`, current §10 values, existing `.copilot/workspace/` files, existing `.vscode/*.json` files, or template-managed `CHANGELOG.md` content except from the backup snapshot.
+- If any managed surface still exists when recovery mode begins, stop and remove it after backing it up. Do not continue with merge or keep-existing behavior.
+- Collect fresh setup answers and write a fresh installation from upstream sources.
+
 ## Pre-conditions
 
 - You are inside the **user's project**, not the template repository.
 - You fetched `template/copilot-instructions.md` from `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/copilot-instructions.md` and hold it in memory.
 - You have `editFiles` tool access.
+- If invoked by factory restore, disregard local managed files and rebuild from scratch after the backup-and-purge step.
 - If any fetch fails during setup, **stop immediately** and report the error.
 
 ---

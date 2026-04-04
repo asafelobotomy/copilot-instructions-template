@@ -106,7 +106,7 @@ GPT-5.4 is the primary; Claude Opus 4.6 provides Agent Teams capability.
 
 ## setup
 
-Template lifecycle — first-time setup, upstream updates, and backup restore.
+Template lifecycle — first-time setup, upstream updates, backup restore, and factory restore.
 Requires interactive question capability (never use Codex/autonomous models).
 
 - Claude Sonnet 4.6

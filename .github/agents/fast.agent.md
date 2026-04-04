@@ -40,8 +40,7 @@ Guidelines:
   `Commit`.
 - If the task is really VS Code extension, profile, or workspace recommendation
   work, use `Extensions`.
-- If the task is really template setup, instruction update, or backup restore
-  work, use `Setup`.
+- If the task is really template setup, instruction update, backup restore, or factory restore work, use `Setup`.
 - If the task is primarily moving files, fixing broken paths, or reorganising
   directories, use `Organise`.
 - Do not run the full PDCA cycle for simple edits — just make the change and

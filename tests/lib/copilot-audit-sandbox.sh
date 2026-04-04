@@ -26,7 +26,7 @@ setup_sandbox() {
 > Role: AI developer.
 Main/default agent delegation: when the request is primarily specialist work,
 delegate instead of absorbing the workflow inline.
-Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for current external docs, `Review` for formal code review or architectural critique, `Audit` for health, security, or residual-risk checks, `Extensions` for VS Code extension, profile, or workspace recommendation work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for template bootstrap, instruction update, or backup restore work, and `Organise` for file moves, path repair, or repository reshaping.
+Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for current external docs, `Review` for formal code review or architectural critique, `Audit` for health, security, or residual-risk checks, `Extensions` for VS Code extension, profile, or workspace recommendation work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for template bootstrap, instruction update, backup restore, or factory restore work, and `Organise` for file moves, path repair, or repository reshaping.
 MD
 
   # Consumer template — must have ≥ 3 {{PLACEHOLDER}} tokens
@@ -34,7 +34,7 @@ MD
 # Template
 {{REPO_OWNER}} {{REPO_NAME}} {{LANGUAGE}}
 The parent/default agent follows this protocol too: if a request is primarily specialist work, delegate to the matching agent instead of absorbing the specialist workflow inline.
-Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for current external docs, `Review` for formal code review or architectural critique, `Audit` for health, security, or residual-risk checks, `Extensions` for VS Code extension, profile, or workspace recommendation work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for template bootstrap, instruction update, or backup restore work, and `Organise` for file moves, path repair, or repository reshaping.
+Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for current external docs, `Review` for formal code review or architectural critique, `Audit` for health, security, or residual-risk checks, `Extensions` for VS Code extension, profile, or workspace recommendation work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for template bootstrap, instruction update, backup restore, or factory restore work, and `Organise` for file moves, path repair, or repository reshaping.
 MD
 
   # Valid agent

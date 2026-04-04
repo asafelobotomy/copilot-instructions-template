@@ -16,7 +16,7 @@ inventory of supporting upstream sources so `AGENTS.md` and
 | Protocol | Canonical behaviour file | Supporting upstream sources |
 |----------|--------------------------|-----------------------------|
 | Setup | `SETUP.md` | `template/copilot-instructions.md`, `template/setup/interview.md`, `template/setup/manifests.md`, `template/workspace/workspace-index.json`, `template/copilot-setup-steps.yml`, `template/vscode/settings.json`, `template/vscode/extensions.json`, `starter-kits/REGISTRY.json` |
-| Update and restore | `UPDATE.md` | `VERSION.md`, `MIGRATION.md`, `MIGRATION.archive.md`, `CHANGELOG.md`, `template/copilot-instructions.md`, `template/setup/manifests.md` |
+| Update, backup restore, and factory restore | `UPDATE.md` | `VERSION.md`, `MIGRATION.md`, `MIGRATION.archive.md`, `CHANGELOG.md`, `template/copilot-instructions.md`, `template/setup/manifests.md`, `SETUP.md` |
 
 ---
 

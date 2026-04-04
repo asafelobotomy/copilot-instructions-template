@@ -264,7 +264,8 @@ When spawning subagents:
   critique, `Audit` for health, security, or residual-risk checks,
   `Extensions` for VS Code extension, profile, or workspace recommendation
   work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for
-  template bootstrap, instruction update, or backup restore work, and
+  template bootstrap, instruction update, backup restore, or factory restore
+  work, and
   `Organise` for file moves, path repair, or repository reshaping.
 - Pass the full contents of this file as system context.
 - Set `max_depth = {{SUBAGENT_MAX_DEPTH}}`. Stop and surface to user if reached.

@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD022 MD031 MD032 MD058 -->
 
-> **For Copilot**: Follow every step precisely. Do **not** write until the user confirms after the Pre-flight Report — except the automatic backup (always created silently before first write).
+> **For Copilot**: Follow every step precisely. Do **not** write until the user confirms after the Pre-flight Report or the Factory restore confirmation — except the automatic backup (always created silently before first write).
 >
 > **For the human**: Say one of the trigger phrases below in a Copilot chat.
 >
@@ -13,9 +13,13 @@
 ## Trigger phrases
 - *"Update your instructions"* / *"Check for instruction updates"* / *"Update from copilot-instructions-template"* / *"Sync instructions with the template"* / *"Check the template for updates"*
 - *"Force check instruction updates"* (bypasses version equality — see Force check section)
+- *"Factory restore instructions"* / *"Reinstall instructions from scratch"*
 - *"Restore instructions from backup"* / *"Roll back the instructions update"* / *"List instruction backups"*
 
-All update phrases check `https://github.com/asafelobotomy/copilot-instructions-template` for a newer version.
+Standard update phrases check `https://github.com/asafelobotomy/copilot-instructions-template` for a newer version.
+Factory restore phrases disregard current repo instructions, back up every managed surface, remove those surfaces from the working tree, and reinstall the latest upstream setup payload from scratch.
+
+If the user says *"Factory restore instructions"* or *"Reinstall instructions from scratch"*, skip U1-U5b and jump to Factory restore.
 
 ---
 
@@ -344,16 +348,77 @@ Report: version transition, section counts, companion counts, breaking changes, 
 
 ---
 
+## Factory restore
+### F1 — Confirm recovery mode
+Factory restore is a destructive recovery path for broken or partial installations. It bypasses the normal update pre-flight, ignores the current instruction installation, backs up every managed surface, removes those surfaces from the working tree, and reinstalls the latest upstream template from scratch.
+
+```ask_questions
+header: "Factory restore"
+question: "Factory restore ignores current repo instructions, backs up every managed file, removes those files from the working tree, and reinstalls from scratch. Continue?"
+options:
+  - label: "Yes"
+    description: "Archive current managed files and reinstall from upstream"
+    recommended: true
+  - label: "No"
+    description: "Cancel"
+allowFreeformInput: false
+```
+
+> **Fallback**: If `ask_questions` unavailable, present as yes/no in chat.
+
+If the user declines, stop with no writes.
+
+### F2 — Back up current managed files
+Create `.github/archive/pre-factory-restore-<TODAY>-v<CURRENT_VERSION_OR_UNKNOWN>/` (append a counter if needed) before the first write. Archive any existing managed surfaces that are present:
+
+- `.github/copilot-instructions.md`
+- `.github/copilot-version.md`
+- `.github/agents/`
+- `.github/skills/`
+- `.github/hooks/`
+- `.github/instructions/`
+- `.github/prompts/`
+- `.github/workflows/copilot-setup-steps.yml`
+- `.github/starter-kits/`
+- `.copilot/workspace/`
+- `.vscode/mcp.json`
+- `.vscode/settings.json`
+- `.vscode/extensions.json`
+- `CLAUDE.md`
+- `CHANGELOG.md`
+
+Do not require every path to exist. Include `BACKUP-MANIFEST.md` listing every managed surface, whether it was copied, and its original destination. The goal is a complete reversible recovery snapshot.
+
+### F3 — Remove current managed surfaces
+After the backup succeeds, remove every existing managed surface from the working tree before reinstall begins.
+
+- Do not leave prior managed files in place after the backup completes.
+- Do not merge with, preserve, or consult current managed files during factory restore.
+- The only surviving copy of previous managed files must be the pre-factory backup snapshot.
+
+### F4 — Reinstall from scratch
+After the purge, fetch the latest upstream `SETUP.md` and execute it as a clean install.
+
+- Explicitly disregard current repo instructions, `.github/copilot-version.md`, stored setup answers, current §10 overrides, existing workspace identity content, existing VS Code config files, and template-managed CHANGELOG content except as data preserved inside the backup snapshot.
+- Do not read old managed files to guide reinstall decisions.
+- Do not offer merge or keep-existing branches for managed files during factory restore.
+- Collect fresh setup answers and write a fresh installation from upstream sources.
+
+### F5 — Report completion
+Report the pre-factory backup path, confirm that managed surfaces were removed before reinstall, and note that future updates can return to the normal update flow.
+
+---
+
 ## Restore from backup
 ### R1 — List available backups
-Scan `.github/archive/` for `pre-update-*` dirs. If none: "No backups found." → stop.
+Scan `.github/archive/` for `pre-update-*`, `pre-factory-restore-*`, and `pre-restore-*` dirs. If none: "No backups found." → stop.
 
 ```ask_questions
 header: "Select backup"
 question: "Which backup would you like to restore?"
 options:
-  - label: "pre-update-<DATE>-v<VERSION>/"
-    description: "Installed: <DATE>"
+  - label: "<BACKUP_DIR>/"
+    description: "Backup type, date, and managed files from BACKUP-MANIFEST.md"
   - label: "Cancel"
     description: "Do not restore"
 allowFreeformInput: false
@@ -364,7 +429,7 @@ allowFreeformInput: false
 Populate dynamically from scanned directories.
 
 #### R2 — Show backup manifest and confirm
-Read `BACKUP-MANIFEST.md`, show version/date/files. Note current file will be backed up first.
+Read `BACKUP-MANIFEST.md`, show backup type, version/date if present, and the managed files included. Note current managed files will be backed up first.
 
 ```ask_questions
 header: "Confirm restore"
@@ -380,14 +445,14 @@ allowFreeformInput: false
 
 > **Fallback**: If `ask_questions` unavailable, present as yes/no in chat.
 
-#### R3 — Back up current file
-Create `.github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION>/` with current instructions, affected companion files, and `BACKUP-MANIFEST.md`. Always reversible.
+#### R3 — Back up current managed files
+Create `.github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION_OR_UNKNOWN>/` with current managed files and `BACKUP-MANIFEST.md`. Always reversible.
 
 #### R4 — Restore
-Copy `copilot-instructions.md` and companion files from backup to original paths, preserving structure. Create parent dirs as needed.
+Restore the managed surfaces recorded in `BACKUP-MANIFEST.md` to their original paths, preserving structure. Remove current managed copies first when needed so the restored snapshot is exact. Create parent dirs as needed.
 
 #### R5 — Record the restoration
-Append to CHANGELOG.md: "Restored from `pre-update-<DATE>-v<VERSION>`. Pre-restore snapshot at `pre-restore-<TODAY>-v<CURRENT>`."
+Append to CHANGELOG.md: "Restored from `<BACKUP_DIR>`. Pre-restore snapshot at `pre-restore-<TODAY>-v<CURRENT_OR_UNKNOWN>`."
 
 #### R6 — Confirmation
 Report: restored from, files count, pre-restore path, CHANGELOG updated. Note: undo by restoring pre-restore snapshot.

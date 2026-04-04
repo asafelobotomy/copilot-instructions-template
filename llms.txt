@@ -8,7 +8,7 @@
 - [AGENTS.md](AGENTS.md): Machine entry point. Trigger phrases and canonical setup or update pointers.
 - [MODELS.md](MODELS.md): Single source of truth for agent model assignments and thinking-effort guidance.
 - [SETUP.md](SETUP.md): Remote bootstrap protocol for consumer projects.
-- [UPDATE.md](UPDATE.md): Remote update and restore protocol.
+- [UPDATE.md](UPDATE.md): Remote update, backup restore, and factory restore protocol.
 - [MIGRATION.md](MIGRATION.md): Per-version migration registry.
 
 ## Model strategy
@@ -18,7 +18,7 @@
 
 | Surface | Recommended model | Thinking Effort | Role |
 |---------|-------------------|-----------------|------|
-| `setup.agent.md` | Claude Sonnet 4.6 | Medium | Template lifecycle (setup, updates, restore) |
+| `setup.agent.md` | Claude Sonnet 4.6 | Medium | Template lifecycle (setup, updates, backup restore, factory restore) |
 | `coding.agent.md` | GPT-5.3-Codex | High | Implementation, refactoring, multi-step coding |
 | `organise.agent.md` | GPT-5.1 | Medium | Subagent-only structural cleanup, file moves, path repair, and directory layout normalization |
 | `review.agent.md` | GPT-5.4 | High | Deep review, debugging, architectural analysis |

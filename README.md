@@ -18,6 +18,14 @@ Tell Copilot:
 
 Copilot fetches [`UPDATE.md`](UPDATE.md) and performs a version-aware three-way merge.
 
+## Recover a broken installation
+
+Tell Copilot:
+
+> *"Factory restore instructions"*
+
+Copilot bypasses the normal update pre-flight, backs up every template-managed surface, removes those files from the working tree, and reruns the latest setup flow from scratch.
+
 ## All trigger phrases
 
 See [`AGENTS.md`](AGENTS.md) for the full list of direct consumer-facing commands (heartbeat, retrospective, tools, skills, MCP, hooks, and more).

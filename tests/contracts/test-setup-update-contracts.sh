@@ -50,6 +50,12 @@ for section in \
   "### S — Skip" \
   "### C — Customise" \
   "## Post-update steps" \
+    "## Factory restore" \
+    "### F1 —" \
+    "### F2 —" \
+    "### F3 —" \
+    "### F4 —" \
+        "### F5 —" \
   "## Restore from backup" \
   "### R1 —" \
   "#### R2 —" \
@@ -375,6 +381,46 @@ for label, description in expected_descriptions.items():
     if description not in setup_text:
         raise SystemExit(f"missing or stale tier description in SETUP.md: {description}")
 '
+echo ""
+
+# ──────────────────────────────────────────────────────────────
+echo "21. Factory restore is a full backup-purge-reinstall flow"
+# ──────────────────────────────────────────────────────────────
+
+assert_file_contains "Factory restore backs up VS Code MCP config" \
+    "$UPDATE" "\\.vscode/mcp\.json"
+
+assert_file_contains "Factory restore backs up VS Code settings" \
+    "$UPDATE" "\\.vscode/settings\.json"
+
+assert_file_contains "Factory restore backs up VS Code extensions" \
+    "$UPDATE" "\\.vscode/extensions\.json"
+
+assert_file_contains "Factory restore backs up CHANGELOG.md" \
+    "$UPDATE" "CHANGELOG\.md"
+
+assert_file_contains "Factory restore writes BACKUP-MANIFEST.md" \
+    "$UPDATE" "BACKUP-MANIFEST\.md"
+
+assert_file_contains "Factory restore removes managed surfaces before reinstall" \
+    "$UPDATE" "remove every existing managed surface"
+
+assert_file_contains "Factory restore ignores current repo instructions" \
+    "$UPDATE" "Explicitly disregard current repo instructions"
+
+assert_file_contains "SETUP recovery mode forbids reading old managed files" \
+    "$SETUP" "Do not read, merge, preserve, or rely on current .*copilot-instructions\\.md"
+echo ""
+
+# ──────────────────────────────────────────────────────────────
+echo "22. Restore from backup supports factory-restore snapshots"
+# ──────────────────────────────────────────────────────────────
+
+assert_file_contains "Restore flow scans pre-factory-restore backups" \
+    "$UPDATE" "pre-factory-restore-\\*"
+
+assert_file_contains "Restore flow uses backup manifests to restore managed surfaces" \
+    "$UPDATE" "Restore the managed surfaces recorded in .*BACKUP-MANIFEST\\.md"
 echo ""
 
 finish_tests

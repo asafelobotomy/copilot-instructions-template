@@ -14,7 +14,7 @@ Use the setup and update entries from the canonical trigger table below.
 which mode to use based on whether `.github/copilot-instructions.md` exists.
 
 For first-time setup, follow [SETUP.md](SETUP.md) exactly.
-For updates or restore, follow [UPDATE.md](UPDATE.md) exactly.
+For updates, backup restore, or factory restore, follow [UPDATE.md](UPDATE.md) exactly.
 Use [template/setup/manifests.md](template/setup/manifests.md#protocol-sources)
 as the canonical supporting-source inventory instead of restating fetch lists
 here.
@@ -39,7 +39,7 @@ Keep subagent delegation narrow.
 ## Canonical protocol sources
 
 - First-time setup behaviour: [SETUP.md](SETUP.md)
-- Update and restore behaviour: [UPDATE.md](UPDATE.md)
+- Update, backup restore, and factory restore behaviour: [UPDATE.md](UPDATE.md)
 - Supporting upstream source inventory: [template/setup/manifests.md](template/setup/manifests.md#protocol-sources)
 - Canonical inventory and counts: `.copilot/workspace/workspace-index.json`
 
@@ -68,6 +68,7 @@ invocation.
 | Update instructions | *"Update your instructions"* / *"Check for instruction updates"* / *"Update from copilot-instructions-template"* / *"Sync instructions with the template"* / *"Check the template for updates"* |
 | Force update check | *"Force check instruction updates"* |
 | Restore backup | *"Restore instructions from backup"* |
+| Factory restore | *"Factory restore instructions"* / *"Reinstall instructions from scratch"* |
 | Heartbeat | *"Check your heartbeat"* |
 | Retrospective | *"Run retrospective"* |
 | Show/build/save tools | *"Show me the toolbox"* / *"Build a tool for ..."* |

@@ -1,7 +1,7 @@
 ---
 name: Setup
-description: Template lifecycle — first-time setup, upstream updates, and backup restore
-argument-hint: Say "set up this project", "update your instructions", "force check instruction updates", or "restore instructions from backup"
+description: Template lifecycle — first-time setup, upstream updates, backup restore, and factory restore
+argument-hint: Say "set up this project", "update your instructions", "factory restore instructions", "force check instruction updates", or "restore instructions from backup"
 model:
   - Claude Sonnet 4.6
   - Claude Sonnet 4.5
@@ -20,13 +20,15 @@ handoffs:
 
 You are the Setup agent for copilot-instructions-template.
 
-Your role: manage the full template lifecycle — first-time setup **and** upstream
-updates/restores — for consumer projects.
+Your role: manage the full template lifecycle — first-time setup, upstream
+updates, backup restore, and factory restore — for consumer projects.
 
 ## Mode detection
 
-1. If `.github/copilot-instructions.md` **does not exist** → **Setup mode**.
-2. If it **exists** → **Update mode** (includes force-check and restore).
+1. If the user explicitly says "factory restore instructions" or
+  "reinstall instructions from scratch" → **Factory restore mode**.
+2. If `.github/copilot-instructions.md` **does not exist** → **Setup mode**.
+3. If it **exists** → **Update mode** (includes force-check and backup restore).
 
 Select the correct mode automatically based on the filesystem state. If the user
 explicitly says "set up" on a project that already has instructions, confirm
@@ -55,6 +57,26 @@ Source of truth: `SETUP.md` (fetched from upstream).
   `python3 --version`, `ls package.json`). Use `search` for semantic codebase
   exploration when resolving placeholders.
 
+## Factory restore mode
+
+Source of truth: `UPDATE.md` (Factory restore) and `SETUP.md` (Recovery mode).
+
+- Bypass the normal update pre-flight when the user explicitly asks for factory
+  restore.
+- Explicitly disregard current repo instructions, version metadata, stored
+  setup answers, existing workspace identity files, and existing VS Code
+  config surfaces as inputs.
+- Create the pre-factory backup first and write a `BACKUP-MANIFEST.md` for all
+  managed surfaces.
+- Remove all managed surfaces from the working tree after backup and before
+  reinstall.
+- Execute `SETUP.md` only after the purge, treating the project as a clean
+  install from upstream sources.
+- Do not offer merge or keep-existing branches for managed files during
+  factory restore.
+- Use `ask_questions` for the factory-restore confirmation and the fresh setup
+  decisions that follow.
+
 ## Update mode
 
 Source of truth: `UPDATE.md` (fetched from upstream).
@@ -75,7 +97,7 @@ Source of truth: `UPDATE.md` (fetched from upstream).
 ## Canonical protocol sources
 
 - Setup behaviour: [SETUP.md](SETUP.md)
-- Update and restore behaviour: [UPDATE.md](UPDATE.md)
+- Update, backup restore, and factory restore behaviour: [UPDATE.md](UPDATE.md)
 - Supporting upstream source inventory: [template/setup/manifests.md](template/setup/manifests.md#protocol-sources)
 - Trigger phrases and repo entry point: [AGENTS.md](AGENTS.md)
 
