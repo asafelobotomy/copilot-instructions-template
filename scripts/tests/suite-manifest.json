@@ -1,0 +1,292 @@
+{
+  "schemaVersion": "1.0",
+  "description": "Canonical test suite inventory for local runs, CI execution, and selector validation.",
+  "phases": [
+    {
+      "id": "hooks",
+      "label": "Hook Behavior"
+    },
+    {
+      "id": "hooks-powershell",
+      "label": "Hook Behavior (PowerShell parity)",
+      "optionalRequirement": {
+        "command": "pwsh",
+        "label": "pwsh",
+        "probeArgs": [
+          "-NoProfile",
+          "-NonInteractive",
+          "-Command",
+          "exit 0"
+        ]
+      }
+    },
+    {
+      "id": "scripts",
+      "label": "Script Behavior"
+    },
+    {
+      "id": "contracts",
+      "label": "Documentation And Contracts"
+    }
+  ],
+  "suites": [
+    {
+      "id": "hook-session-start",
+      "path": "tests/hooks/test-hook-session-start.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | session-start.sh"
+    },
+    {
+      "id": "hook-pulse",
+      "path": "tests/hooks/test-hook-pulse.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | pulse.sh"
+    },
+    {
+      "id": "hook-post-edit-lint",
+      "path": "tests/hooks/test-hook-post-edit-lint.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | post-edit-lint.sh"
+    },
+    {
+      "id": "hook-save-context",
+      "path": "tests/hooks/test-hook-save-context.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | save-context.sh"
+    },
+    {
+      "id": "hook-heartbeat-clock-summary",
+      "path": "tests/hooks/test-heartbeat-clock-summary.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | heartbeat_clock_summary.py"
+    },
+    {
+      "id": "hook-pulse-paths",
+      "path": "tests/hooks/test-pulse-paths.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | pulse_paths.py"
+    },
+    {
+      "id": "hook-mcp-heartbeat-server",
+      "path": "tests/hooks/test-mcp-heartbeat-server.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | mcp-heartbeat-server.py"
+    },
+    {
+      "id": "hook-guard-destructive",
+      "path": "tests/hooks/test-guard-destructive.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | guard-destructive.sh"
+    },
+    {
+      "id": "hook-subagent-start",
+      "path": "tests/hooks/test-hook-subagent-start.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | subagent-start.sh"
+    },
+    {
+      "id": "hook-subagent-stop",
+      "path": "tests/hooks/test-hook-subagent-stop.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | subagent-stop.sh"
+    },
+    {
+      "id": "hook-scan-secrets",
+      "path": "tests/hooks/test-hook-scan-secrets.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | scan-secrets.sh"
+    },
+    {
+      "id": "hook-powershell-parity",
+      "path": "tests/hooks/test-hooks-powershell.sh",
+      "phase": "hooks-powershell",
+      "ciLabel": "Hook behavior | hooks PowerShell parity"
+    },
+    {
+      "id": "guard-destructive-powershell-parity",
+      "path": "tests/hooks/test-guard-destructive-powershell.sh",
+      "phase": "hooks-powershell",
+      "ciLabel": "Hook behavior | guard-destructive PowerShell parity"
+    },
+    {
+      "id": "hook-scan-secrets-powershell",
+      "path": "tests/hooks/test-hook-scan-secrets-powershell.sh",
+      "phase": "hooks-powershell",
+      "ciLabel": "Hook behavior | scan-secrets PowerShell parity"
+    },
+    {
+      "id": "hook-subagent-start-powershell",
+      "path": "tests/hooks/test-hook-subagent-start-powershell.sh",
+      "phase": "hooks-powershell",
+      "ciLabel": "Hook behavior | subagent-start PowerShell parity"
+    },
+    {
+      "id": "hook-subagent-stop-powershell",
+      "path": "tests/hooks/test-hook-subagent-stop-powershell.sh",
+      "phase": "hooks-powershell",
+      "ciLabel": "Hook behavior | subagent-stop PowerShell parity"
+    },
+    {
+      "id": "script-release-plan",
+      "path": "tests/scripts/test-release-plan.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | release-plan.sh"
+    },
+    {
+      "id": "script-run-strict-bash",
+      "path": "tests/scripts/test-run-strict-bash.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | run-strict-bash.sh"
+    },
+    {
+      "id": "script-run-strict-bash-stdin",
+      "path": "tests/scripts/test-run-strict-bash-stdin.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | run-strict-bash-stdin.sh"
+    },
+    {
+      "id": "script-audit-release-settings",
+      "path": "tests/scripts/test-audit-release-settings.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | audit-release-settings.sh"
+    },
+    {
+      "id": "script-suite-manifest",
+      "path": "tests/scripts/test-suite-manifest.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | suite-manifest"
+    },
+    {
+      "id": "script-select-targeted-tests",
+      "path": "tests/scripts/test-select-targeted-tests.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | select-targeted-tests.sh"
+    },
+    {
+      "id": "script-run-all-captured",
+      "path": "tests/scripts/test-run-all-captured.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | run-all-captured.sh"
+    },
+    {
+      "id": "script-sync-version",
+      "path": "tests/scripts/test-sync-version.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | sync-version.sh"
+    },
+    {
+      "id": "script-stub-migration",
+      "path": "tests/scripts/test-stub-migration.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | stub-migration.sh"
+    },
+    {
+      "id": "script-sync-workspace-index",
+      "path": "tests/scripts/test-sync-workspace-index.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | sync-workspace-index.sh"
+    },
+    {
+      "id": "script-sync-models",
+      "path": "tests/scripts/test-sync-models.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | sync-models.sh"
+    },
+    {
+      "id": "script-validate-agent-frontmatter",
+      "path": "tests/scripts/test-validate-agent-frontmatter.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | validate-agent-frontmatter.sh"
+    },
+    {
+      "id": "script-validate-required-files",
+      "path": "tests/scripts/test-validate-required-files.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | validate-required-files.sh"
+    },
+    {
+      "id": "script-validate-cross-references",
+      "path": "tests/scripts/test-validate-cross-references.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | validate-cross-references.sh"
+    },
+    {
+      "id": "script-validate-attention-budget",
+      "path": "tests/scripts/test-validate-attention-budget.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | validate-attention-budget.sh"
+    },
+    {
+      "id": "script-sync-template-parity",
+      "path": "tests/scripts/test-sync-template-parity.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | sync-template-parity.sh"
+    },
+    {
+      "id": "script-validate-template-sync",
+      "path": "tests/scripts/test-validate-template-sync.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | validate-template-sync.sh"
+    },
+    {
+      "id": "script-security-edge-cases",
+      "path": "tests/scripts/test-security-edge-cases.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | security edge cases"
+    },
+    {
+      "id": "script-copilot-audit",
+      "path": "tests/scripts/test-copilot-audit.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | copilot-audit"
+    },
+    {
+      "id": "script-mcp-launchers",
+      "path": "tests/scripts/test-mcp-launchers.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | mcp-launchers"
+    },
+    {
+      "id": "script-workspace-drift",
+      "path": "tests/scripts/test-workspace-drift.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | workspace-drift"
+    },
+    {
+      "id": "script-permission-resilience",
+      "path": "tests/scripts/test-permission-resilience.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | permission resilience"
+    },
+    {
+      "id": "contract-release",
+      "path": "tests/contracts/test-release-contracts.sh",
+      "phase": "contracts",
+      "ciLabel": "Docs and contracts | release metadata contracts"
+    },
+    {
+      "id": "contract-customization",
+      "path": "tests/contracts/test-customization-contracts.sh",
+      "phase": "contracts",
+      "ciLabel": "Docs and contracts | customization file contracts"
+    },
+    {
+      "id": "contract-template-parity",
+      "path": "tests/contracts/test-template-parity.sh",
+      "phase": "contracts",
+      "ciLabel": "Docs and contracts | template parity"
+    },
+    {
+      "id": "contract-starter-kits",
+      "path": "tests/contracts/test-starter-kits.sh",
+      "phase": "contracts",
+      "ciLabel": "Docs and contracts | starter-kits"
+    },
+    {
+      "id": "contract-setup-update",
+      "path": "tests/contracts/test-setup-update-contracts.sh",
+      "phase": "contracts",
+      "ciLabel": "Docs and contracts | setup and update contracts"
+    }
+  ]
+}

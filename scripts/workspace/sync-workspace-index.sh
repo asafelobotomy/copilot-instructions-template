@@ -26,81 +26,33 @@ index_path = pathlib.Path(sys.argv[2])
 template_index_path = pathlib.Path(sys.argv[3])
 mode = sys.argv[4]
 
-preferred_agents = [
-    "setup.agent.md",
-    "coding.agent.md",
-    "organise.agent.md",
-    "review.agent.md",
-    "fast.agent.md",
-    "audit.agent.md",
-    "explore.agent.md",
-    "extensions.agent.md",
-    "researcher.agent.md",
-    "commit.agent.md",
-]
 
-preferred_skills = [
-    "skill-creator",
-    "fix-ci-failure",
-    "lean-pr-review",
-    "conventional-commit",
-    "create-adr",
-    "mcp-builder",
-    "webapp-testing",
-    "agentic-workflows",
-    "issue-triage",
-    "tool-protocol",
-    "skill-management",
-    "mcp-management",
-    "plugin-management",
-    "extension-review",
-    "test-coverage-review",
-    "commit-preflight",
-]
-
-preferred_shell_hooks = [
-    "lib-hooks.sh",
-    "scan-secrets.sh",
-    "session-start.sh",
-    "guard-destructive.sh",
-    "post-edit-lint.sh",
-    "save-context.sh",
-    "subagent-start.sh",
-    "subagent-stop.sh",
-    "mcp-npx.sh",
-    "mcp-uvx.sh",
-    "pulse.sh",
-]
-
-preferred_ps_hooks = [
-    "scan-secrets.ps1",
-    "session-start.ps1",
-    "guard-destructive.ps1",
-    "post-edit-lint.ps1",
-    "save-context.ps1",
-    "subagent-start.ps1",
-    "subagent-stop.ps1",
-    "pulse.ps1",
-]
-
-preferred_python_hooks = [
-    "heartbeat_clock_summary.py",
-    "mcp-heartbeat-server.py",
-    "pulse_intent.py",
-    "pulse_paths.py",
-    "pulse_runtime.py",
-    "pulse_state.py",
-]
-
-preferred_json_hooks = [
-    "heartbeat-policy.json",
-]
+def load_order_baseline(template_path: pathlib.Path, repo_path: pathlib.Path) -> dict[str, object]:
+    for candidate in (template_path, repo_path):
+        if candidate.exists():
+            with candidate.open(encoding="utf-8") as handle:
+                return json.load(handle)
+    return {}
 
 
-def ordered(existing, preferred):
+def list_or_empty(payload: dict[str, object], *keys: str) -> list[str]:
+    current: object = payload
+    for key in keys:
+        if not isinstance(current, dict):
+            return []
+        current = current.get(key)
+    if not isinstance(current, list):
+        return []
+    return [item for item in current if isinstance(item, str)]
+
+
+def ordered(existing, baseline):
     existing_set = set(existing)
-    ordered_items = [item for item in preferred if item in existing_set]
-    extras = sorted([item for item in existing if item not in set(preferred)])
+    if not baseline:
+        return sorted(existing_set)
+    baseline_set = set(baseline)
+    ordered_items = [item for item in baseline if item in existing_set]
+    extras = sorted(item for item in existing_set if item not in baseline_set)
     return ordered_items + extras
 
 
@@ -112,13 +64,15 @@ ps_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.p
 python_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.py")]
 json_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.json")]
 
-agents = ordered(agents_existing, preferred_agents)
-skills_repo = ordered(skills_repo_existing, preferred_skills)
-skills_template = ordered(skills_template_existing, preferred_skills)
-shell_hooks = ordered(shell_hooks_existing, preferred_shell_hooks)
-ps_hooks = ordered(ps_hooks_existing, preferred_ps_hooks)
-python_hooks = ordered(python_hooks_existing, preferred_python_hooks)
-json_hooks = ordered(json_hooks_existing, preferred_json_hooks)
+baseline = load_order_baseline(template_index_path, index_path)
+
+agents = ordered(agents_existing, list_or_empty(baseline, "agents"))
+skills_repo = ordered(skills_repo_existing, list_or_empty(baseline, "skills", "repo"))
+skills_template = ordered(skills_template_existing, list_or_empty(baseline, "skills", "template"))
+shell_hooks = ordered(shell_hooks_existing, list_or_empty(baseline, "hookScripts", "shell"))
+ps_hooks = ordered(ps_hooks_existing, list_or_empty(baseline, "hookScripts", "powershell"))
+python_hooks = ordered(python_hooks_existing, list_or_empty(baseline, "hookScripts", "python"))
+json_hooks = ordered(json_hooks_existing, list_or_empty(baseline, "hookScripts", "json"))
 
 generated = {
     "$schema": "https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/schema/workspace-index.schema.json",

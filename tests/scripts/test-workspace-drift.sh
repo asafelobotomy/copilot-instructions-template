@@ -18,7 +18,9 @@ TMPDIR_OK=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_OK")
 cat > "$TMPDIR_OK/HEARTBEAT.md" <<'EOF'
 ## Response Contract
 <!-- template-section: heartbeat-response-contract v2 -->
-- Always append a History row when the trigger is Session start or Explicit.
+- Always append a History row when the trigger is Session start or Explicit — regardless of check results.
+- For all other triggers, append a History row only if a check raised an alert or retrospective output was persisted to SOUL.md / MEMORY.md / USER.md.
+- If checks pass and nothing was persisted on a non-explicit trigger, keep Pulse as `HEARTBEAT_OK` and omit the History row.
 EOF
 output=$(bash "$SCRIPT" "$TMPDIR_OK" 2>/dev/null)
 status=$?
@@ -26,7 +28,21 @@ assert_success "current sentinels exit 0" "$status"
 assert_matches "current sentinels reports OK" "$output" "^OK"
 echo ""
 
-echo "2. Workspace missing sentinel exits 1 and reports DRIFT"
+echo "2. Workspace with the sentinel but stale response lines exits 1 and reports DRIFT_CONTENT"
+TMPDIR_CONTENT=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_CONTENT")
+cat > "$TMPDIR_CONTENT/HEARTBEAT.md" <<'EOF'
+## Response Contract
+<!-- template-section: heartbeat-response-contract v2 -->
+- Always append a History row when the trigger is Session start or Explicit.
+- Omit the History row whenever checks pass.
+EOF
+output=$(bash "$SCRIPT" "$TMPDIR_CONTENT" 2>/dev/null)
+status=$?
+assert_failure "stale response lines exit 1" "$status"
+assert_matches "stale response lines report DRIFT_CONTENT" "$output" "^DRIFT_CONTENT"
+echo ""
+
+echo "3. Workspace missing sentinel exits 1 and reports DRIFT"
 TMPDIR_DRIFT=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_DRIFT")
 cat > "$TMPDIR_DRIFT/HEARTBEAT.md" <<'EOF'
 ## Response Contract
@@ -39,7 +55,7 @@ assert_failure "drifted sentinel exits 1" "$status"
 assert_matches "drifted sentinel reports DRIFT" "$output" "^DRIFT"
 echo ""
 
-echo "3. Workspace missing the file entirely exits 1 and reports MISSING_FILE"
+echo "4. Workspace missing the file entirely exits 1 and reports MISSING_FILE"
 TMPDIR_MISSING=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_MISSING")
 output=$(bash "$SCRIPT" "$TMPDIR_MISSING" 2>/dev/null)
 status=$?
@@ -47,13 +63,13 @@ assert_failure "missing file exits 1" "$status"
 assert_matches "missing file reports MISSING_FILE" "$output" "^MISSING_FILE"
 echo ""
 
-echo "4. Repo own workspace passes the check (integration test)"
+echo "5. Repo own workspace passes the check (integration test)"
 output=$(bash "$SCRIPT" "$REPO_ROOT/.copilot/workspace" 2>/dev/null)
 status=$?
 assert_success "repo workspace is up to date" "$status"
 echo ""
 
-echo "5. Script is executable"
+echo "6. Script is executable"
 [[ -x "$SCRIPT" ]] && test_rc=0 || test_rc=1
 assert_success "check-workspace-drift.sh is executable" "$test_rc"
 echo ""

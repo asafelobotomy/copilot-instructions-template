@@ -72,9 +72,14 @@ if diff -q "$NPX_SCRIPT" "$REPO_ROOT/.github/hooks/scripts/mcp-npx.sh" >/dev/nul
 if diff -q "$UVX_SCRIPT" "$REPO_ROOT/.github/hooks/scripts/mcp-uvx.sh" >/dev/null; then pass_note "mcp-uvx.sh parity"; else fail_note "mcp-uvx.sh parity" "files differ"; fi
 echo ""
 
-echo "12. dev repo mcp.json references launcher scripts"
+echo "12. dev repo mcp.json uses portable direct commands"
 MCP_JSON="$REPO_ROOT/.vscode/mcp.json"
-assert_contains "mcp.json uses mcp-npx.sh" "$(cat "$MCP_JSON")" "mcp-npx.sh"
-assert_contains "mcp.json uses mcp-uvx.sh" "$(cat "$MCP_JSON")" "mcp-uvx.sh"
+assert_contains "mcp.json uses direct npx command" "$(cat "$MCP_JSON")" '"command": "npx"'
+assert_contains "mcp.json uses direct uvx command" "$(cat "$MCP_JSON")" '"command": "uvx"'
+if grep -Eq 'mcp-npx\.sh|mcp-uvx\.sh' "$MCP_JSON"; then
+	fail_note "mcp.json avoids shell wrapper commands" "wrapper scripts still referenced in $MCP_JSON"
+else
+	pass_note "mcp.json avoids shell wrapper commands"
+fi
 
 finish_tests

@@ -23,6 +23,30 @@
       "reason": "run-all-captured has a dedicated wrapper behavior suite."
     },
     {
+      "id": "suite-manifest-script",
+      "matchType": "exact",
+      "pattern": "scripts/tests/suite-manifest.py",
+      "phaseStrategy": "broaden-aggressively",
+      "tests": [
+        "tests/scripts/test-suite-manifest.sh",
+        "tests/scripts/test-select-targeted-tests.sh",
+        "tests/scripts/test-run-all-captured.sh"
+      ],
+      "reason": "suite-manifest.py defines the canonical suite inventory for the local runner, CI matrix, and selector validation."
+    },
+    {
+      "id": "suite-manifest-data",
+      "matchType": "exact",
+      "pattern": "scripts/tests/suite-manifest.json",
+      "phaseStrategy": "broaden-aggressively",
+      "tests": [
+        "tests/scripts/test-suite-manifest.sh",
+        "tests/scripts/test-select-targeted-tests.sh",
+        "tests/scripts/test-run-all-captured.sh"
+      ],
+      "reason": "suite-manifest.json is the canonical suite inventory for the local runner, CI matrix, and selector validation."
+    },
+    {
       "id": "run-strict-bash-script",
       "matchType": "exact",
       "pattern": "scripts/tests/run-strict-bash.sh",
@@ -55,6 +79,14 @@
       "reason": "The canonical runner defines the full-suite gate and is safest to validate with the full suite."
     },
     {
+      "id": "suite-manifest-test",
+      "matchType": "exact",
+      "pattern": "tests/scripts/test-suite-manifest.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["self"],
+      "reason": "The suite-manifest helper suite is directly runnable and should self-validate when edited."
+    },
+    {
       "id": "test-helpers",
       "matchType": "exact",
       "pattern": "tests/lib/test-helpers.sh",
@@ -77,7 +109,10 @@
       "phaseStrategy": "broaden-aggressively",
       "tests": [
         "tests/hooks/test-hooks-powershell.sh",
-        "tests/hooks/test-guard-destructive-powershell.sh"
+        "tests/hooks/test-guard-destructive-powershell.sh",
+        "tests/hooks/test-hook-scan-secrets-powershell.sh",
+        "tests/hooks/test-hook-subagent-start-powershell.sh",
+        "tests/hooks/test-hook-subagent-stop-powershell.sh"
       ],
       "reason": "Shared PowerShell hook helpers affect the full PowerShell hook surface."
     },
@@ -88,7 +123,10 @@
       "phaseStrategy": "broaden-aggressively",
       "tests": [
         "tests/hooks/test-hooks-powershell.sh",
-        "tests/hooks/test-guard-destructive-powershell.sh"
+        "tests/hooks/test-guard-destructive-powershell.sh",
+        "tests/hooks/test-hook-scan-secrets-powershell.sh",
+        "tests/hooks/test-hook-subagent-start-powershell.sh",
+        "tests/hooks/test-hook-subagent-stop-powershell.sh"
       ],
       "reason": "PowerShell coverage wrappers affect every PowerShell hook suite."
     },
@@ -115,6 +153,30 @@
       "phaseStrategy": "targeted",
       "tests": ["self"],
       "reason": "Contract suites are runnable directly and should self-validate when edited."
+    },
+    {
+      "id": "customization-contract-subsuite-surfaces",
+      "matchType": "exact",
+      "pattern": "tests/contracts/test-customization-contracts-surfaces.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-customization-contracts.sh"],
+      "reason": "Customization contract sub-suites run through the aggregate customization contract suite in the canonical manifest."
+    },
+    {
+      "id": "customization-contract-subsuite-agents",
+      "matchType": "exact",
+      "pattern": "tests/contracts/test-customization-contracts-agents.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-customization-contracts.sh"],
+      "reason": "Customization contract sub-suites run through the aggregate customization contract suite in the canonical manifest."
+    },
+    {
+      "id": "customization-contract-subsuite-policies",
+      "matchType": "exact",
+      "pattern": "tests/contracts/test-customization-contracts-policies.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-customization-contracts.sh"],
+      "reason": "Customization contract sub-suites run through the aggregate customization contract suite in the canonical manifest."
     },
     {
       "id": "shared-script-lib",
@@ -207,6 +269,30 @@
       "phaseStrategy": "targeted",
       "tests": ["tests/scripts/test-validate-template-sync.sh"],
       "reason": "validate-template-sync delegates to the canonical parity check and has a dedicated behavior suite."
+    },
+    {
+      "id": "validate-required-files-script",
+      "matchType": "exact",
+      "pattern": "scripts/ci/validate-required-files.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-validate-required-files.sh"],
+      "reason": "validate-required-files has a dedicated behavior suite."
+    },
+    {
+      "id": "validate-cross-references-script",
+      "matchType": "exact",
+      "pattern": "scripts/ci/validate-cross-references.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-validate-cross-references.sh"],
+      "reason": "validate-cross-references has a dedicated behavior suite."
+    },
+    {
+      "id": "validate-attention-budget-script",
+      "matchType": "exact",
+      "pattern": "scripts/ci/validate-attention-budget.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/scripts/test-validate-attention-budget.sh"],
+      "reason": "validate-attention-budget has a dedicated behavior suite."
     },
     {
       "id": "validate-agent-frontmatter-script",
@@ -309,16 +395,44 @@
       "matchType": "exact",
       "pattern": "template/hooks/scripts/heartbeat_clock_summary.py",
       "phaseStrategy": "targeted",
-      "tests": ["tests/hooks/test-hook-save-context.sh"],
-      "reason": "heartbeat_clock_summary.py is exercised by the save-context hook suite."
+      "tests": [
+        "tests/hooks/test-heartbeat-clock-summary.sh",
+        "tests/hooks/test-hook-save-context.sh"
+      ],
+      "reason": "heartbeat_clock_summary.py has a direct helper suite plus save-context integration coverage."
     },
     {
       "id": "hook-save-context-python-helper-github",
       "matchType": "exact",
       "pattern": ".github/hooks/scripts/heartbeat_clock_summary.py",
       "phaseStrategy": "targeted",
-      "tests": ["tests/hooks/test-hook-save-context.sh"],
-      "reason": "Repo-live heartbeat_clock_summary.py is exercised by the save-context hook suite."
+      "tests": [
+        "tests/hooks/test-heartbeat-clock-summary.sh",
+        "tests/hooks/test-hook-save-context.sh"
+      ],
+      "reason": "Repo-live heartbeat_clock_summary.py has a direct helper suite plus save-context integration coverage."
+    },
+    {
+      "id": "hook-pulse-paths-helper",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/pulse_paths.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-pulse-paths.sh",
+        "tests/hooks/test-hook-pulse.sh"
+      ],
+      "reason": "pulse_paths.py has a direct helper suite plus pulse integration coverage."
+    },
+    {
+      "id": "hook-pulse-paths-helper-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/pulse_paths.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-pulse-paths.sh",
+        "tests/hooks/test-hook-pulse.sh"
+      ],
+      "reason": "Repo-live pulse_paths.py has a direct helper suite plus pulse integration coverage."
     },
     {
       "id": "hook-pulse-python-helpers",
@@ -361,6 +475,22 @@
       "reason": "scan-secrets.sh has a dedicated hook unit suite."
     },
     {
+      "id": "hook-scan-secrets-powershell",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/scan-secrets.ps1",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-scan-secrets-powershell.sh"],
+      "reason": "scan-secrets.ps1 has a dedicated PowerShell suite."
+    },
+    {
+      "id": "hook-scan-secrets-powershell-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/scan-secrets.ps1",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-scan-secrets-powershell.sh"],
+      "reason": "Repo-live scan-secrets.ps1 has a dedicated PowerShell suite."
+    },
+    {
       "id": "hook-guard-destructive",
       "matchType": "exact",
       "pattern": "template/hooks/scripts/guard-destructive.sh",
@@ -386,6 +516,70 @@
       "phaseStrategy": "targeted",
       "tests": ["tests/hooks/test-guard-destructive-powershell.sh"],
       "reason": "guard-destructive.ps1 has a dedicated PowerShell suite."
+    },
+    {
+      "id": "hook-subagent-start",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/subagent-start.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-subagent-start.sh"],
+      "reason": "subagent-start.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-subagent-start-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/subagent-start.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-subagent-start.sh"],
+      "reason": "Repo-live subagent-start.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-subagent-stop",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/subagent-stop.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-subagent-stop.sh"],
+      "reason": "subagent-stop.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-subagent-stop-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/subagent-stop.sh",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-subagent-stop.sh"],
+      "reason": "Repo-live subagent-stop.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-subagent-start-powershell",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/subagent-start.ps1",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-subagent-start-powershell.sh"],
+      "reason": "subagent-start.ps1 has a dedicated PowerShell suite."
+    },
+    {
+      "id": "hook-subagent-start-powershell-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/subagent-start.ps1",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-subagent-start-powershell.sh"],
+      "reason": "Repo-live subagent-start.ps1 has a dedicated PowerShell suite."
+    },
+    {
+      "id": "hook-subagent-stop-powershell",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/subagent-stop.ps1",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-subagent-stop-powershell.sh"],
+      "reason": "subagent-stop.ps1 has a dedicated PowerShell suite."
+    },
+    {
+      "id": "hook-subagent-stop-powershell-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/subagent-stop.ps1",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/hooks/test-hook-subagent-stop-powershell.sh"],
+      "reason": "Repo-live subagent-stop.ps1 has a dedicated PowerShell suite."
     },
     {
       "id": "agent-files",
@@ -506,12 +700,28 @@
       "reason": "Template instructions participate in customization contracts, setup/update contracts, and copilot audit checks."
     },
     {
+      "id": "template-claude-surface",
+      "matchType": "exact",
+      "pattern": "template/CLAUDE.md",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-customization-contracts.sh"],
+      "reason": "template/CLAUDE.md is covered by the customization contract suite."
+    },
+    {
       "id": "agents-doc",
       "matchType": "exact",
       "pattern": "AGENTS.md",
       "phaseStrategy": "targeted",
       "tests": ["tests/contracts/test-customization-contracts.sh"],
       "reason": "AGENTS.md drives customization policy and should run the customization contract suite."
+    },
+    {
+      "id": "claude-compat-doc",
+      "matchType": "exact",
+      "pattern": "CLAUDE.md",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-customization-contracts.sh"],
+      "reason": "CLAUDE.md is covered by the customization policy contract suite."
     },
     {
       "id": "setup-update-docs",

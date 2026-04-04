@@ -3,7 +3,14 @@
 # Called from CI workflow. Exit 0 = within budget, exit 1 = over budget.
 set -euo pipefail
 
-FILE="template/copilot-instructions.md"
+ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
+FILE="$ROOT_DIR/template/copilot-instructions.md"
+
+if [[ ! -f "$FILE" ]]; then
+  echo "❌ Missing: template/copilot-instructions.md"
+  exit 1
+fi
+
 TOTAL=$(wc -l < "$FILE")
 MAX_TOTAL=800
 MAX_SECTION=120

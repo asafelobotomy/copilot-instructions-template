@@ -46,6 +46,60 @@ make_fixture() {
   : > "$root/template/hooks/scripts/heartbeat_clock_summary.py"
   : > "$root/template/hooks/scripts/mcp-heartbeat-server.py"
   : > "$root/template/hooks/scripts/pulse_runtime.py"
+
+  cat > "$root/template/workspace/workspace-index.json" <<'EOF'
+{
+  "$schema": "https://example.test/workspace-index.schema.json",
+  "schemaVersion": "1.0",
+  "updated": "2026-04-03",
+  "purpose": "fixture",
+  "counts": {
+    "agents": 2,
+    "skillsRepo": 2,
+    "skillsTemplate": 2,
+    "hookScriptsShell": 3,
+    "hookScriptsPowerShell": 3,
+    "hookScriptsPython": 2,
+    "hookScriptsJson": 1
+  },
+  "agents": [
+    "setup.agent.md",
+    "review.agent.md"
+  ],
+  "skills": {
+    "repo": [
+      "skill-creator",
+      "extension-review"
+    ],
+    "template": [
+      "skill-creator",
+      "test-coverage-review"
+    ]
+  },
+  "hookScripts": {
+    "shell": [
+      "session-start.sh",
+      "guard-destructive.sh",
+      "save-context.sh"
+    ],
+    "powershell": [
+      "session-start.ps1",
+      "guard-destructive.ps1",
+      "save-context.ps1"
+    ],
+    "python": [
+      "heartbeat_clock_summary.py",
+      "mcp-heartbeat-server.py"
+    ],
+    "json": [
+      "heartbeat-policy.json"
+    ]
+  },
+  "notes": [
+    "fixture baseline"
+  ]
+}
+EOF
 }
 
 echo "=== sync-workspace-index.sh direct tests ==="
@@ -95,7 +149,7 @@ for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/works
   assert data['counts']['hookScriptsPython'] == 3
   assert data['counts']['hookScriptsJson'] == 1
 "
-assert_python_in_root "preferred items come first and extras sort after them" "$TMP_WRITE" "
+assert_python_in_root "baseline order is preserved and extras sort after it" "$TMP_WRITE" "
 for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/workspace-index.json'):
   data = json.load((root / rel).open())
   assert data['agents'] == ['setup.agent.md', 'review.agent.md', 'z-last.agent.md']

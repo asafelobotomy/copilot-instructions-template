@@ -3,14 +3,30 @@
 # Called from CI workflow. Exit 0 = consistent, exit 1 = stale references found.
 set -euo pipefail
 
+ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
+TEMPLATE_FILE="$ROOT_DIR/template/copilot-instructions.md"
+SETUP_FILE="$ROOT_DIR/SETUP.md"
+
+if [[ ! -f "$TEMPLATE_FILE" ]]; then
+  echo "❌ Missing: template/copilot-instructions.md"
+  exit 1
+fi
+
+if [[ ! -f "$SETUP_FILE" ]]; then
+  echo "❌ Missing: SETUP.md"
+  exit 1
+fi
+
+cd "$ROOT_DIR"
+
 failed=0
 
 # Derive expected section count from copilot-instructions.md
-SECTION_MAX=$(grep -oP '§\K[0-9]+' template/copilot-instructions.md | sort -n | tail -1)
+SECTION_MAX=$(grep -oP '§\K[0-9]+' "$TEMPLATE_FILE" | sort -n | tail -1)
 echo "ℹ️  Highest section: §$SECTION_MAX"
 
 # Derive expected question count from SETUP.md (highest E-number)
-Q_MAX=$(grep -oP '^#+.*\bE\K[0-9]+' SETUP.md | sort -n | tail -1)
+Q_MAX=$(grep -oP '^#+.*\bE\K[0-9]+' "$SETUP_FILE" | sort -n | tail -1)
 echo "ℹ️  Highest Expert question: E$Q_MAX"
 
 # Check for stale "all sections" ranges (last 2 totals only).

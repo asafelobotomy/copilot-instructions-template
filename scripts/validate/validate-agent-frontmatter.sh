@@ -19,7 +19,7 @@ import pathlib
 root = pathlib.Path(sys.argv[1])
 agents_dir = root / ".github" / "agents"
 
-REQUIRED_FIELDS = ["name", "description", "model", "tools"]
+REQUIRED_FIELDS = ["name", "description", "model", "tools", "user-invocable"]
 
 errors = []
 count = 0
@@ -55,6 +55,14 @@ for agent_file in sorted(agents_dir.glob("*.agent.md")):
         lines_after = fm[model_match.end():]
         if not lines_after.startswith("\n  - ") and not lines_after.startswith("  - "):
             errors.append(f"{agent_file.name}: model list is empty")
+
+    user_invocable_match = re.search(r'^user-invocable:\s*(.*)\s*$', fm, re.M)
+    if user_invocable_match:
+        raw_value = user_invocable_match.group(1).strip()
+        if raw_value not in {"true", "false"}:
+            errors.append(
+                f"{agent_file.name}: user-invocable must be true or false, found {raw_value!r}"
+            )
 
     agents_match = re.search(r'^agents:\s*\[(.*)\]\s*$', fm, re.M)
     if agents_match:

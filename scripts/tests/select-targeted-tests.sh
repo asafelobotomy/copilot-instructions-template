@@ -9,13 +9,14 @@ set -euo pipefail
 
 ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
 MAP_FILE="$ROOT_DIR/scripts/tests/targeted-test-map.json"
+SUITE_MANIFEST_PATH="$ROOT_DIR/scripts/tests/suite-manifest.json"
 
 if [[ $# -lt 1 ]]; then
   echo "Usage: bash scripts/tests/select-targeted-tests.sh <path> [<path>...]" >&2
   exit 1
 fi
 
-python3 - "$ROOT_DIR" "$MAP_FILE" "$@" <<'PY'
+python3 - "$ROOT_DIR" "$MAP_FILE" "$SUITE_MANIFEST_PATH" "$@" <<'PY'
 from __future__ import annotations
 
 import fnmatch
@@ -26,14 +27,30 @@ import sys
 
 ROOT = pathlib.Path(sys.argv[1]).resolve()
 MAP_FILE = pathlib.Path(sys.argv[2])
-RAW_PATHS = sys.argv[3:]
+SUITE_MANIFEST_PATH = pathlib.Path(sys.argv[3])
+RAW_PATHS = sys.argv[4:]
 
 if not MAP_FILE.is_file():
     raise SystemExit(f"targeted test map not found: {MAP_FILE}")
+if not SUITE_MANIFEST_PATH.is_file():
+    raise SystemExit(f"suite manifest not found: {SUITE_MANIFEST_PATH}")
 
 config = json.loads(MAP_FILE.read_text(encoding="utf-8"))
 rules = config.get("rules", [])
 defaults = config.get("defaults", {})
+suite_manifest = json.loads(SUITE_MANIFEST_PATH.read_text(encoding="utf-8"))
+
+suite_order: dict[str, int] = {}
+for index, suite in enumerate(suite_manifest.get("suites", [])):
+    path = suite.get("path")
+    if not isinstance(path, str) or not path:
+        raise SystemExit(f"invalid suite manifest path entry: {suite}")
+    if path in suite_order:
+        raise SystemExit(f"duplicate suite path in suite manifest: {path}")
+    suite_order[path] = index
+
+if not suite_order:
+    raise SystemExit(f"suite manifest has no suites: {SUITE_MANIFEST_PATH}")
 
 PHASE_RANK = {
     "targeted": 0,
@@ -79,11 +96,24 @@ def unique(items: list[str]) -> list[str]:
     return ordered
 
 
+def ordered_suite_paths(items: list[str]) -> list[str]:
+    known = [item for item in unique(items) if item in suite_order]
+    unknown = sorted(item for item in unique(items) if item not in suite_order)
+    return sorted(known, key=lambda item: suite_order[item]) + unknown
+
+
 for rule in rules:
     if rule.get("matchType") not in {"exact", "prefix", "glob"}:
         raise SystemExit(f"invalid matchType in {MAP_FILE}: {rule}")
     if rule.get("phaseStrategy") not in PHASE_RANK:
         raise SystemExit(f"invalid phaseStrategy in {MAP_FILE}: {rule}")
+    for test in rule.get("tests", []):
+        if test == "self":
+            continue
+        if test not in suite_order:
+            raise SystemExit(
+                f"targeted test map references suite path not present in suite manifest: {test}"
+            )
 
 normalized_paths = [normalize_path(path) for path in RAW_PATHS]
 selected_tests: list[str] = []
@@ -105,7 +135,17 @@ for path in normalized_paths:
     for rule in path_matches:
         tests = []
         for test in rule.get("tests", []):
-            tests.append(path if test == "self" else test)
+            if test == "self":
+                if path not in suite_order:
+                    continue
+                resolved_test = path
+            else:
+                resolved_test = test
+            if resolved_test not in suite_order:
+                raise SystemExit(
+                    f"selected suite path is not present in suite manifest: {resolved_test}"
+                )
+            tests.append(resolved_test)
         selected_tests.extend(tests)
         rule_strategy = str(rule["phaseStrategy"])
         matched_rules.append(
@@ -125,7 +165,7 @@ for path in normalized_paths:
 output = {
     "input_paths": RAW_PATHS,
     "normalized_paths": normalized_paths,
-    "selected_tests": sorted(unique(selected_tests)),
+    "selected_tests": ordered_suite_paths(selected_tests),
     "intermediate_phase_strategy": current_strategy,
     "run_full_suite_at_completion": bool(defaults.get("runFullSuiteAtCompletion", True)),
     "matched_rules": matched_rules,

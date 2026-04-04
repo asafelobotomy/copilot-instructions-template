@@ -22,6 +22,7 @@ model:
   - TestModel
 tools:
   - codebase
+user-invocable: true
 ---
 # $name
 EOF
@@ -86,7 +87,42 @@ output=$(ROOT_DIR="$TMP" bash "$SCRIPT" 2>&1) || true
 assert_contains "empty model list reported" "$output" "model list is empty"
 echo ""
 
-echo "5. Missing opening --- is detected"
+echo "5. Missing user-invocable field is detected"
+TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
+mkdir -p "$TMP/.github/agents"
+cat > "$TMP/.github/agents/bad.agent.md" <<'EOF'
+---
+name: bad
+description: test
+model:
+  - TestModel
+tools:
+  - codebase
+---
+EOF
+output=$(ROOT_DIR="$TMP" bash "$SCRIPT" 2>&1) || true
+assert_contains "missing user-invocable reported" "$output" "missing required field 'user-invocable'"
+echo ""
+
+echo "6. Invalid user-invocable value is detected"
+TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
+mkdir -p "$TMP/.github/agents"
+cat > "$TMP/.github/agents/bad.agent.md" <<'EOF'
+---
+name: bad
+description: test
+model:
+  - TestModel
+tools:
+  - codebase
+user-invocable: maybe
+---
+EOF
+output=$(ROOT_DIR="$TMP" bash "$SCRIPT" 2>&1) || true
+assert_contains "invalid user-invocable reported" "$output" "user-invocable must be true or false"
+echo ""
+
+echo "7. Missing opening --- is detected"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 mkdir -p "$TMP/.github/agents"
 echo "no frontmatter here" > "$TMP/.github/agents/bad.agent.md"
@@ -94,14 +130,14 @@ output=$(ROOT_DIR="$TMP" bash "$SCRIPT" 2>&1) || true
 assert_contains "missing opening dashes" "$output" "missing opening ---"
 echo ""
 
-echo "6. No agent files at all is an error"
+echo "8. No agent files at all is an error"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 mkdir -p "$TMP/.github/agents"
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" 2>&1) || true
 assert_contains "no agents found" "$output" "no *.agent.md files found"
 echo ""
 
-echo "7. Real repo agents pass validation"
+echo "9. Real repo agents pass validation"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" 2>&1)
 status=$?
 assert_success "real repo exits zero" "$status"
