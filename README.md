@@ -42,7 +42,7 @@ Current template version: **5.5.0** <!-- x-release-please-version --> — see [`
 
 Pushes to `main` run the full validation workflow first. A final CI release job runs only after the validation jobs succeed, so the same workflow both validates the commit and drives release-please.
 
-The release job evaluates only consumer-facing paths: `template/`, `.github/agents/`, `starter-kits/`, `SETUP.md`, and `UPDATE.md`. Developer-only changes do not produce a release. Consumer-facing changes open or update a release PR; `feat` keeps a minor bump, `fix` and `deps` keep a patch bump, and non-releasable commit headers fall back to a forced patch release so consumer updates are still tagged and published.
+Only release-driving changes produce a release. The allowlist is: `template/`, `.github/agents/`, `starter-kits/`, `SETUP.md`, `UPDATE.md`, `AGENTS.md`, and `scripts/workspace/check-workspace-drift.sh`. Workflow changes, docs-only maintainer changes, tests, and other internal maintenance do not release by themselves. Within the release-driving set, `feat` keeps a minor bump, `fix` and `deps` keep a patch bump, and non-releasable commit headers fall back to a forced patch release so direct-purpose changes are still tagged and published.
 
 Release-please is the only version writer. Do not bump `VERSION.md`, `.release-please-manifest.json`, or the `x-release-please-version` markers manually.
 

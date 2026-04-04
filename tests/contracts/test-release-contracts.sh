@@ -100,6 +100,7 @@ for forbidden in [
     "Auto-commit version sync",
     "chore: sync version references [skip ci]",
     "git pull --ff-only",
+    "stub MIGRATION.md entry for $NEXT_TAG [skip ci]",
 ]:
     if forbidden in ci_text:
         raise SystemExit("forbidden legacy flow still present: " + forbidden)
@@ -115,6 +116,8 @@ required = [
 for needle in required:
     if needle not in normalized:
         raise SystemExit("missing release finalization detail: " + needle)
+if "[skip ci]" in ci_text and "stub MIGRATION.md entry for $NEXT_TAG" in ci_text:
+    raise SystemExit("release PR stub commit must not contain [skip ci] because squash merges copy it into main release commits")
 if (root / ".github/workflows/release-please.yml").exists():
     raise SystemExit("legacy release-please workflow should be removed")
 '
@@ -128,10 +131,17 @@ required = [
     "bash scripts/release/audit-release-settings.sh",
     "Enable auto-merge and squash merge.",
     "GitHub Actions to create and approve pull requests.",
+    "Only release-driving changes produce a release.",
+    "scripts/workspace/check-workspace-drift.sh",
 ]
 for needle in required:
     if needle not in readme:
         raise SystemExit("README missing release-governance guidance: " + needle)
+for forbidden in [
+    "Any successful push to `main` is releaseable.",
+]:
+    if forbidden in readme:
+        raise SystemExit("README still documents retired broad-release rule: " + forbidden)
 '
 echo ""
 

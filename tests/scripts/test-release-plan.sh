@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/scripts/test-release-plan.sh -- verify consumer-path release planning behavior.
+# tests/scripts/test-release-plan.sh -- verify release planning only for release-driving changes.
 set -uo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
@@ -13,7 +13,7 @@ make_release_sandbox() {
   dir=$(mktemp -d)
   CLEANUP_DIRS+=("$dir")
 
-  mkdir -p "$dir/scripts/release" "$dir/template" "$dir/.github/agents" "$dir/starter-kits/python"
+  mkdir -p "$dir/scripts/release" "$dir/scripts/workspace" "$dir/template" "$dir/.github/agents" "$dir/starter-kits/python"
   cp "$REPO_ROOT/scripts/release/plan-release.sh" "$dir/scripts/release/plan-release.sh"
   cp "$REPO_ROOT/scripts/lib.sh" "$dir/scripts/lib.sh"
 
@@ -64,6 +64,15 @@ EOF_AGENT
 {}
 EOF_PLUGIN
 
+  cat > "$dir/AGENTS.md" <<'EOF_AGENTS'
+Agent entrypoint
+EOF_AGENTS
+
+  cat > "$dir/scripts/workspace/check-workspace-drift.sh" <<'EOF_DRIFT'
+#!/usr/bin/env bash
+echo drift
+EOF_DRIFT
+
   (
     cd "$dir" || exit 1
     git init -q
@@ -89,7 +98,7 @@ run_plan() {
 echo "=== Release planner behavior ==="
 echo ""
 
-echo "1. Dev-only changes do not trigger a release"
+echo "1. README-only changes do not trigger a release"
 sandbox=$(make_release_sandbox)
 (
   cd "$sandbox" || exit 1
@@ -98,11 +107,12 @@ sandbox=$(make_release_sandbox)
   git commit -q -m "docs: clarify maintainer notes"
 )
 output=$(run_plan "$sandbox")
-assert_contains "dev-only change skips release" "$output" "should_release=false"
-assert_contains "dev-only change keeps bump none" "$output" "version_bump=none"
+assert_contains "readme-only change skips release" "$output" "should_release=false"
+assert_contains "readme-only change keeps bump none" "$output" "version_bump=none"
+assert_contains "readme-only change explains skip" "$output" "reason=no release-driving changes since last tag"
 echo ""
 
-echo "2. Consumer docs-only changes force a patch release"
+echo "2. Template docs-only changes still force a patch release"
 sandbox=$(make_release_sandbox)
 (
   cd "$sandbox" || exit 1
@@ -111,42 +121,57 @@ sandbox=$(make_release_sandbox)
   git commit -q -m "docs: clarify consumer template wording"
 )
 output=$(run_plan "$sandbox")
-assert_contains "consumer docs change triggers release" "$output" "should_release=true"
-assert_contains "consumer docs change bumps patch" "$output" "version_bump=patch"
-assert_contains "consumer docs change forces release-as" "$output" "force_release_as=true"
-assert_contains "consumer docs change computes next patch" "$output" "next_version=1.2.4"
+assert_contains "template docs change triggers release" "$output" "should_release=true"
+assert_contains "template docs change bumps patch" "$output" "version_bump=patch"
+assert_contains "template docs change forces release-as" "$output" "force_release_as=true"
+assert_contains "template docs change computes next patch" "$output" "next_version=1.2.4"
 echo ""
 
-echo "3. Consumer feat commits keep native minor bumping"
+echo "3. Agent entrypoint changes trigger a patch release"
 sandbox=$(make_release_sandbox)
 (
   cd "$sandbox" || exit 1
-  printf '{"name":"python"}\n' > starter-kits/python/plugin.json
+  printf 'new trigger\n' >> AGENTS.md
+  git add AGENTS.md
+  git commit -q -m "docs: expand direct trigger wording"
+)
+output=$(run_plan "$sandbox")
+assert_contains "agent entrypoint change triggers release" "$output" "should_release=true"
+assert_contains "agent entrypoint change bumps patch" "$output" "version_bump=patch"
+assert_contains "agent entrypoint change forces release-as" "$output" "force_release_as=true"
+assert_contains "agent entrypoint change computes next patch" "$output" "next_version=1.2.4"
+echo ""
+
+echo "4. Release-driving feat commits keep native minor bumping"
+sandbox=$(make_release_sandbox)
+(
+  cd "$sandbox" || exit 1
+  printf '{"name":"python-v2"}\n' > starter-kits/python/plugin.json
   git add starter-kits/python/plugin.json
   git commit -q -m "feat: expand python starter kit"
 )
 output=$(run_plan "$sandbox")
-assert_contains "consumer feat triggers release" "$output" "should_release=true"
-assert_contains "consumer feat bumps minor" "$output" "version_bump=minor"
-assert_contains "consumer feat does not force release-as" "$output" "force_release_as=false"
-assert_contains "consumer feat computes next minor" "$output" "next_version=1.3.0"
+assert_contains "release-driving feat triggers release" "$output" "should_release=true"
+assert_contains "release-driving feat bumps minor" "$output" "version_bump=minor"
+assert_contains "release-driving feat does not force release-as" "$output" "force_release_as=false"
+assert_contains "release-driving feat computes next minor" "$output" "next_version=1.3.0"
 echo ""
 
-echo "4. Non-conventional consumer commits still infer a patch release"
+echo "5. Non-conventional release-driving commits still infer a patch release"
 sandbox=$(make_release_sandbox)
 (
   cd "$sandbox" || exit 1
-  printf 'extra note\n' >> SETUP.md
-  git add SETUP.md
-  git commit -q -m "[WIP] polish setup flow" -m "* fix: clarify bootstrap wording"
+  printf 'extra note\n' >> UPDATE.md
+  git add UPDATE.md
+  git commit -q -m "[WIP] polish update flow" -m "* fix: clarify release wording"
 )
 output=$(run_plan "$sandbox")
-assert_contains "wip consumer commit still triggers release" "$output" "should_release=true"
-assert_contains "wip consumer commit infers patch" "$output" "version_bump=patch"
-assert_contains "wip consumer commit forces release-as" "$output" "force_release_as=true"
+assert_contains "wip release-driving commit triggers release" "$output" "should_release=true"
+assert_contains "wip release-driving commit infers patch" "$output" "version_bump=patch"
+assert_contains "wip release-driving commit forces release-as" "$output" "force_release_as=true"
 echo ""
 
-echo "5. release-style commit still plans a release (CI handles release-commit finalization)"
+echo "6. release-style commit still plans a release (CI handles release-commit finalization)"
 sandbox=$(make_release_sandbox)
 (
   cd "$sandbox" || exit 1
@@ -161,19 +186,33 @@ assert_contains "release-style commit falls back to patch" "$output" "version_bu
 assert_contains "release-style commit forces release-as" "$output" "force_release_as=true"
 echo ""
 
-echo "6. Breaking-change bang (feat!:) in consumer commit body infers major via fallback"
+echo "7. Breaking-change bang (feat!:) in release-driving commit body infers major via fallback"
 sandbox=$(make_release_sandbox)
 (
   cd "$sandbox" || exit 1
-  printf 'note\n' >> SETUP.md
-  git add SETUP.md
+  printf 'note\n' >> UPDATE.md
+  git add UPDATE.md
   # Non-conventional header so native-bump stays none; bang in body exercises fallback_bump
   git commit -q -m "[WIP] big change" -m "* feat!: remove legacy bootstrap path"
 )
 output=$(run_plan "$sandbox")
-assert_contains "feat-bang consumer commit triggers release" "$output" "should_release=true"
-assert_contains "feat-bang consumer commit infers major" "$output" "version_bump=major"
-assert_contains "feat-bang consumer commit forces release-as" "$output" "force_release_as=true"
+assert_contains "feat-bang commit triggers release" "$output" "should_release=true"
+assert_contains "feat-bang commit infers major" "$output" "version_bump=major"
+assert_contains "feat-bang commit forces release-as" "$output" "force_release_as=true"
+echo ""
+
+echo "8. Drift-check helper changes are release-driving"
+sandbox=$(make_release_sandbox)
+(
+  cd "$sandbox" || exit 1
+  printf 'echo updated drift\n' >> scripts/workspace/check-workspace-drift.sh
+  git add scripts/workspace/check-workspace-drift.sh
+  git commit -q -m "fix: adjust workspace drift helper"
+)
+output=$(run_plan "$sandbox")
+assert_contains "drift helper change triggers release" "$output" "should_release=true"
+assert_contains "drift helper change bumps patch" "$output" "version_bump=patch"
+assert_contains "drift helper change does not force release-as" "$output" "force_release_as=false"
 echo ""
 
 finish_tests

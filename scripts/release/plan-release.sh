@@ -37,20 +37,22 @@ if [[ -z "$base_ref" ]]; then
   fi
 fi
 
-declare -a consumer_paths=(
-  template
-  .github/agents
-  starter-kits
-  SETUP.md
-  UPDATE.md
+declare -a release_paths=(
+    template
+    .github/agents
+    starter-kits
+    SETUP.md
+    UPDATE.md
+    AGENTS.md
+    scripts/workspace/check-workspace-drift.sh
 )
 
-mapfile -t consumer_files < <(git diff --name-only "$base_ref" "$head_ref" -- "${consumer_paths[@]}" | sed '/^$/d')
-consumer_commit_messages=$(git log --format=%B%x1e "$base_ref..$head_ref" -- "${consumer_paths[@]}" || true)
+mapfile -t release_files < <(git diff --name-only "$base_ref" "$head_ref" -- "${release_paths[@]}" | sed '/^$/d')
+release_commit_messages=$(git log --format=%B%x1e "$base_ref..$head_ref" -- "${release_paths[@]}" || true)
 current_version=$(tr -d '[:space:]' < VERSION.md)
 
-CONSUMER_FILES=$(printf '%s\n' "${consumer_files[@]:-}") \
-CONSUMER_COMMITS="$consumer_commit_messages" \
+RELEASE_FILES=$(printf '%s\n' "${release_files[@]:-}") \
+RELEASE_COMMITS="$release_commit_messages" \
 CURRENT_VERSION="$current_version" \
 python3 - <<'PY'
 import os
@@ -96,11 +98,11 @@ def fallback_bump(message: str) -> str:
     return "none"
 
 
-consumer_files = [line for line in os.environ.get("CONSUMER_FILES", "").splitlines() if line]
-messages = [chunk.strip() for chunk in os.environ.get("CONSUMER_COMMITS", "").split("\x1e") if chunk.strip()]
+release_files = [line for line in os.environ.get("RELEASE_FILES", "").splitlines() if line]
+messages = [chunk.strip() for chunk in os.environ.get("RELEASE_COMMITS", "").split("\x1e") if chunk.strip()]
 current_version = os.environ["CURRENT_VERSION"]
 
-should_release = bool(consumer_files)
+should_release = bool(release_files or messages)
 native_bump = "none"
 inferred_bump = "none"
 
@@ -122,17 +124,17 @@ if not should_release:
     bump = "none"
     force_release_as = False
     next_version = current_version
-    reason = "dev-only changes since last tag"
+    reason = "no release-driving changes since last tag"
 elif native_bump != "none":
     bump = native_bump
     force_release_as = False
     next_version = bump_version(current_version, bump)
-    reason = "consumer changes include releasable conventional commits"
+    reason = "release-driving commits include releasable conventional headers"
 else:
     bump = inferred_bump if inferred_bump != "none" else "patch"
     force_release_as = True
     next_version = bump_version(current_version, bump)
-    reason = "consumer changes need forced release-as fallback"
+    reason = "release-driving commits need forced release-as fallback"
 
 outputs = {
     "should_release": "true" if should_release else "false",

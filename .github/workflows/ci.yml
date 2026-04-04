@@ -348,7 +348,7 @@ jobs:
         if: steps.release_commit.outputs.is_release_commit != 'true'
         run: bash scripts/release/plan-release.sh
 
-      - name: Skip release for dev-only changes
+      - name: Skip release when planner finds no release-driving changes
         if: steps.release_commit.outputs.is_release_commit != 'true' && steps.plan.outputs.should_release != 'true'
         run: |
           echo "Skipping release: ${{ steps.plan.outputs.reason }}"
@@ -388,7 +388,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add MIGRATION.md
           git diff --cached --quiet \
-            || git commit -m "docs: stub MIGRATION.md entry for $NEXT_TAG [skip ci]"
+            || git commit -m "docs: stub MIGRATION.md entry for $NEXT_TAG"
           git push origin HEAD:"$pr_branch"
 
       - name: Merge release PR
