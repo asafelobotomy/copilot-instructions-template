@@ -113,6 +113,9 @@ Match = not modified. Mismatch = modified. If unavailable → legacy heuristic.
 | `template/prompts/*` | `.github/prompts/*` |
 | `template/workspace/*` | `.copilot/workspace/*` |
 | `template/copilot-setup-steps.yml` | `.github/workflows/copilot-setup-steps.yml` |
+| `template/vscode/settings.json` | `.vscode/settings.json` (only if the consumer already has this file from setup) |
+| `template/vscode/extensions.json` | `.vscode/extensions.json` (only if the consumer already has this file from setup) |
+| `template/vscode/mcp.json` | `.vscode/mcp.json` (when MCP is enabled) |
 | `template/CLAUDE.md` | `CLAUDE.md` |
 | `starter-kits/<kit>/**` | `.github/starter-kits/<kit>/**` (only if installed) |
 
@@ -302,10 +305,16 @@ for i in $(seq 1 9); do
 done
 # File manifest
 for f in .github/agents/*.agent.md .github/skills/*/SKILL.md \
+  .github/starter-kits/*/plugin.json \
+  .github/starter-kits/*/skills/*/SKILL.md \
+  .github/starter-kits/*/instructions/*.instructions.md \
+  .github/starter-kits/*/prompts/*.prompt.md \
   .github/hooks/copilot-hooks.json .github/hooks/scripts/*.sh \
   .github/hooks/scripts/*.ps1 .github/hooks/scripts/*.json \
   .github/hooks/scripts/*.py .github/instructions/*.instructions.md \
   .github/prompts/*.prompt.md .github/workflows/copilot-setup-steps.yml \
+  .vscode/settings.json .vscode/extensions.json .vscode/mcp.json \
+  CLAUDE.md \
   .copilot/workspace/*.md .copilot/workspace/workspace-index.json; do
   [ -f "$f" ] || continue; echo "${f}=$(sha256sum "$f" | cut -c1-12)"
 done
@@ -327,10 +336,16 @@ for i in range(1, 10):
 # File manifest
 for pattern in [
     '.github/agents/*.agent.md', '.github/skills/*/SKILL.md',
+    '.github/starter-kits/*/plugin.json',
+    '.github/starter-kits/*/skills/*/SKILL.md',
+    '.github/starter-kits/*/instructions/*.instructions.md',
+    '.github/starter-kits/*/prompts/*.prompt.md',
     '.github/hooks/copilot-hooks.json', '.github/hooks/scripts/*.sh',
   '.github/hooks/scripts/*.ps1', '.github/hooks/scripts/*.json',
   '.github/hooks/scripts/*.py', '.github/instructions/*.instructions.md',
     '.github/prompts/*.prompt.md', '.github/workflows/copilot-setup-steps.yml',
+    '.vscode/settings.json', '.vscode/extensions.json', '.vscode/mcp.json',
+    'CLAUDE.md',
     '.copilot/workspace/*.md', '.copilot/workspace/workspace-index.json',
 ]:
     for f in sorted(glob.glob(pattern)):

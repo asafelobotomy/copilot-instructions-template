@@ -18,7 +18,7 @@ handoffs:
     send: true
 ---
 
-You are the Setup agent for copilot-instructions-template.
+You are the Setup agent for the current project.
 
 Your role: manage the full template lifecycle — first-time setup, upstream
 updates, backup restore, and factory restore — for consumer projects.
@@ -98,7 +98,7 @@ Source of truth: `UPDATE.md` (fetched from upstream).
 
 - Setup behaviour: [SETUP.md](SETUP.md)
 - Update, backup restore, and factory restore behaviour: [UPDATE.md](UPDATE.md)
-- Supporting upstream source inventory: [template/setup/manifests.md](template/setup/manifests.md#protocol-sources)
+- Supporting upstream source inventory: [template/setup/manifests.md](https://github.com/asafelobotomy/copilot-instructions-template/blob/main/template/setup/manifests.md#protocol-sources)
 - Trigger phrases and repo entry point: [AGENTS.md](AGENTS.md)
 
 ## Shared constraints

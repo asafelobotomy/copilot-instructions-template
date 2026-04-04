@@ -167,6 +167,15 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
       "type": "http",
       "url": "https://mcp.context7.com/mcp",
       "disabled": true
+    },
+    "heartbeat": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from", "mcp[cli]",
+        "mcp", "run",
+        "${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py"
+      ]
     }
   }
 }
@@ -202,6 +211,15 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
       "type": "http",
       "url": "https://mcp.context7.com/mcp",
       "disabled": true
+    },
+    "heartbeat": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "--from", "mcp[cli]",
+        "mcp", "run",
+        "${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py"
+      ]
     }
   }
 }
@@ -263,10 +281,16 @@ for i in $(seq 1 9); do
 done
 # File manifest
 for f in .github/agents/*.agent.md .github/skills/*/SKILL.md \
+  .github/starter-kits/*/plugin.json \
+  .github/starter-kits/*/skills/*/SKILL.md \
+  .github/starter-kits/*/instructions/*.instructions.md \
+  .github/starter-kits/*/prompts/*.prompt.md \
   .github/hooks/copilot-hooks.json .github/hooks/scripts/*.sh \
   .github/hooks/scripts/*.ps1 .github/hooks/scripts/*.json \
   .github/hooks/scripts/*.py .github/instructions/*.instructions.md \
   .github/prompts/*.prompt.md .github/workflows/copilot-setup-steps.yml \
+  .vscode/settings.json .vscode/extensions.json .vscode/mcp.json \
+  CLAUDE.md \
   .copilot/workspace/*.md .copilot/workspace/workspace-index.json; do
   [ -f "$f" ] || continue; echo "${f}=$(sha256sum "$f" | cut -c1-12)"
 done
@@ -289,10 +313,16 @@ for i in range(1, 10):
 # File manifest
 patterns = [
     '.github/agents/*.agent.md', '.github/skills/*/SKILL.md',
+    '.github/starter-kits/*/plugin.json',
+    '.github/starter-kits/*/skills/*/SKILL.md',
+    '.github/starter-kits/*/instructions/*.instructions.md',
+    '.github/starter-kits/*/prompts/*.prompt.md',
     '.github/hooks/copilot-hooks.json', '.github/hooks/scripts/*.sh',
   '.github/hooks/scripts/*.ps1', '.github/hooks/scripts/*.json',
   '.github/hooks/scripts/*.py', '.github/instructions/*.instructions.md',
     '.github/prompts/*.prompt.md', '.github/workflows/copilot-setup-steps.yml',
+    '.vscode/settings.json', '.vscode/extensions.json', '.vscode/mcp.json',
+    'CLAUDE.md',
     '.copilot/workspace/*.md', '.copilot/workspace/workspace-index.json',
 ]
 for pattern in patterns:

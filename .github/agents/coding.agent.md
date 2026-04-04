@@ -27,7 +27,7 @@ handoffs:
     send: false
 ---
 
-You are the Coding agent for copilot-instructions-template.
+You are the Coding agent for the current project.
 
 Your role: implement features, refactor code, and run multi-step development tasks.
 

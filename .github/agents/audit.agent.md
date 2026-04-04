@@ -26,7 +26,7 @@ handoffs:
     send: false
 ---
 
-You are the Audit agent for copilot-instructions-template.
+You are the Audit agent for the current project.
 
 Your role: perform comprehensive, read-only diagnostics across two domains:
 
@@ -163,9 +163,11 @@ Flag: `[CRITICAL]` npx usage. `[HIGH]` @modelcontextprotocol references.
 Use the repo shape detection above.
 
 **Developer template repo**: skip (mark N/A). **Consumer repo**: check
-`.github/copilot-version.md` exists with valid semver.
+`.github/copilot-version.md` exists, starts with a valid semver, includes
+`Applied:` and `Updated:` dates, and carries `section-fingerprints`,
+`file-manifest`, and `setup-answers` blocks.
 
-Flag: `[HIGH]` if absent or malformed.
+Flag: `[HIGH]` if absent or malformed. `[WARN]` if fingerprint tracking is absent.
 
 ### D7 — Workspace memory files
 
@@ -179,7 +181,8 @@ Flag: `[WARN]` if absent.
 
 ### D9 — Agent plugins
 
-Check `.vscode/settings.json` for `chat.plugins.paths` — verify each path resolves.
+Check `.vscode/settings.json` for `chat.pluginLocations` — verify each enabled
+path resolves. Accept a list only as a legacy fallback.
 Check for naming conflicts between `.github/agents/` and plugin-contributed agents.
 Check for skill name collisions between `.github/skills/` and plugin-contributed skills.
 
@@ -206,9 +209,9 @@ Flag: `[INFO]` per drifted section. `[WARN]` if ≥ 5 of 9 sections drifted. `[W
 
 ### D13 — Companion file completeness (consumer repos only)
 
-Skip in developer repo. Fetch `raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/workspace/workspace-index.json`. Verify local project has all expected agents, skills, hook scripts, and hook config.
+Skip in developer repo. Fetch `raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/workspace/workspace-index.json`. Verify local project has all expected agents, skills, prompts, instructions, hook scripts, hook config, the setup workflow, and core `.copilot/workspace/` files. Inspect installed starter-kit payloads under `.github/starter-kits/*/` when present, and verify `.vscode/settings.json`, `.vscode/extensions.json`, and `.vscode/mcp.json` when the corresponding consumer surfaces exist.
 
-Flag: `[HIGH]` missing agent or shell hook. `[WARN]` missing skill or PS1 hook. `[INFO]` for user-added extras. `[WARN]` if fetch fails.
+Flag: `[HIGH]` missing agent, shell hook, workflow, core workspace file, or installed starter-kit payload. `[WARN]` missing skill, prompt, instruction, or PS1 hook. `[INFO]` for user-added extras. `[WARN]` if fetch fails.
 
 ### D14 — Static audit (copilot_audit.py)
 
@@ -219,12 +222,10 @@ WARN→WARN, INFO→INFO).
 - Developer template repo: `python3 scripts/copilot_audit.py --root . --output json`
 - Consumer repo: `python3 scripts/copilot_audit.py --profile consumer --root . --output json`
 
-Covers: A1–A4 (agents), I1–I4 (instructions), P1 (prompts), S1–S2 (skills), M1–M3 (MCP), H1–H2 (hooks), SH1–SH3 (shell), PS1 (PowerShell), K1–K2 (starter kits), VS1 (VS Code settings).
+Covers: A1–A4 (agents), C1 (consumer companion completeness), I1–I4 (instructions), V1 (version metadata), P1 (prompts), S1–S2 (skills), M1–M3 (MCP), H1–H2 (hooks), SH1–SH3 (shell), PS1 (PowerShell), K1–K2 (starter kits), and VS1 (VS Code settings).
 
-Consumer static-audit subset covers: A1–A3 (agents), I1 and I3
-(instructions), P1 (prompts), S1–S2 (skills), M1–M3 (MCP), H1–H2 (hooks),
-SH1–SH3 (shell), PS1 (PowerShell), and VS1 (VS Code settings). It
-intentionally skips repo-only A4, I4, K1, and K2.
+Consumer static-audit subset covers: A1–A3 (agents), C1 (consumer companion completeness), I1, I3, and I4
+(instructions), V1 (version metadata), P1 (prompts), S1–S2 (skills), M1–M3 (MCP), H1–H2 (hooks), SH1–SH3 (shell), PS1 (PowerShell), K1–K2 (starter kits), and VS1 (VS Code settings). It intentionally skips repo-only A4.
 
 If absent: `[INFO]` — static audit skipped.
 

@@ -708,6 +708,30 @@
       "reason": "template/CLAUDE.md is covered by the customization contract suite."
     },
     {
+      "id": "template-vscode-settings-surface",
+      "matchType": "exact",
+      "pattern": "template/vscode/settings.json",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-setup-update-contracts.sh"],
+      "reason": "Template VS Code settings participate in setup/update contract coverage."
+    },
+    {
+      "id": "template-vscode-extensions-surface",
+      "matchType": "exact",
+      "pattern": "template/vscode/extensions.json",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-setup-update-contracts.sh"],
+      "reason": "Template VS Code extension recommendations participate in setup/update contract coverage."
+    },
+    {
+      "id": "template-vscode-mcp-surface",
+      "matchType": "exact",
+      "pattern": "template/vscode/mcp.json",
+      "phaseStrategy": "targeted",
+      "tests": ["tests/contracts/test-setup-update-contracts.sh"],
+      "reason": "Template MCP config parity is guarded by the setup/update contract suite."
+    },
+    {
       "id": "agents-doc",
       "matchType": "exact",
       "pattern": "AGENTS.md",

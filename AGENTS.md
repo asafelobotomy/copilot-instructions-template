@@ -15,7 +15,8 @@ which mode to use based on whether `.github/copilot-instructions.md` exists.
 
 For first-time setup, follow [SETUP.md](SETUP.md) exactly.
 For updates, backup restore, or factory restore, follow [UPDATE.md](UPDATE.md) exactly.
-Use [template/setup/manifests.md](template/setup/manifests.md#protocol-sources)
+Use the upstream manifests inventory at
+[template/setup/manifests.md](https://github.com/asafelobotomy/copilot-instructions-template/blob/main/template/setup/manifests.md#protocol-sources)
 as the canonical supporting-source inventory instead of restating fetch lists
 here.
 
@@ -40,7 +41,7 @@ Keep subagent delegation narrow.
 
 - First-time setup behaviour: [SETUP.md](SETUP.md)
 - Update, backup restore, and factory restore behaviour: [UPDATE.md](UPDATE.md)
-- Supporting upstream source inventory: [template/setup/manifests.md](template/setup/manifests.md#protocol-sources)
+- Supporting upstream source inventory: [template/setup/manifests.md](https://github.com/asafelobotomy/copilot-instructions-template/blob/main/template/setup/manifests.md#protocol-sources)
 - Canonical inventory and counts: `.copilot/workspace/workspace-index.json`
 
 ## Consumer-Only Files

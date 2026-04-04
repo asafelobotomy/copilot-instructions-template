@@ -142,13 +142,13 @@ checks = {
         "## Canonical protocol sources",
         "[SETUP.md](SETUP.md)",
         "[UPDATE.md](UPDATE.md)",
-        "template/setup/manifests.md#protocol-sources",
+        "https://github.com/asafelobotomy/copilot-instructions-template/blob/main/template/setup/manifests.md#protocol-sources",
     ],
     ".github/agents/setup.agent.md": [
         "## Canonical protocol sources",
         "[SETUP.md](SETUP.md)",
         "[UPDATE.md](UPDATE.md)",
-        "template/setup/manifests.md#protocol-sources",
+        "https://github.com/asafelobotomy/copilot-instructions-template/blob/main/template/setup/manifests.md#protocol-sources",
         "[AGENTS.md](AGENTS.md)",
     ],
     "template/setup/manifests.md": [
@@ -184,6 +184,10 @@ if "### Pre-flight URLs" in setup_agent_text:
     raise SystemExit("setup.agent.md still duplicates the pre-flight URL list")
 if "### Trigger phrases (update mode)" in setup_agent_text:
     raise SystemExit("setup.agent.md still duplicates the update trigger phrase list")
+for rel in ("AGENTS.md", ".github/agents/setup.agent.md"):
+    text = (root / rel).read_text(encoding="utf-8")
+    if "[template/setup/manifests.md](template/setup/manifests.md#protocol-sources)" in text:
+        raise SystemExit(rel + " still points consumers at a non-installed local manifests path")
 '
 echo ""
 

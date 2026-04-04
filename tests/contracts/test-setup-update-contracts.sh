@@ -331,7 +331,112 @@ assert_file_contains "UPDATE.md file manifest tracks hook Python helpers" \
 echo ""
 
 # ──────────────────────────────────────────────────────────────
-echo "19. Workspace-index fallback is available before agent and skill discovery"
+echo "19. VS Code and starter-kit companion manifests are tracked"
+# ──────────────────────────────────────────────────────────────
+
+assert_file_contains "UPDATE.md maps template VS Code settings" \
+    "$UPDATE" "template/vscode/settings\.json"
+
+assert_file_contains "UPDATE.md keeps VS Code settings conditional" \
+    "$UPDATE" "template/vscode/settings\.json.*only if the consumer already has this file from setup"
+
+assert_file_contains "UPDATE.md maps template VS Code extensions" \
+    "$UPDATE" "template/vscode/extensions\.json"
+
+assert_file_contains "UPDATE.md keeps VS Code extensions conditional" \
+    "$UPDATE" "template/vscode/extensions\.json.*only if the consumer already has this file from setup"
+
+assert_file_contains "UPDATE.md maps template VS Code MCP config" \
+    "$UPDATE" "template/vscode/mcp\.json"
+
+assert_file_contains "manifests.md file manifest tracks starter-kit plugin manifests" \
+    "$MANIFESTS" "\\.github/starter-kits/\\*/plugin\.json"
+
+assert_file_contains "manifests.md file manifest tracks starter-kit skills" \
+    "$MANIFESTS" "\\.github/starter-kits/\\*/skills/\\*/SKILL\.md"
+
+assert_file_contains "manifests.md file manifest tracks starter-kit instructions" \
+    "$MANIFESTS" "\\.github/starter-kits/\\*/instructions/\\*\.instructions\.md"
+
+assert_file_contains "manifests.md file manifest tracks starter-kit prompts" \
+    "$MANIFESTS" "\\.github/starter-kits/\\*/prompts/\\*\.prompt\.md"
+
+assert_file_contains "manifests.md file manifest tracks VS Code settings" \
+    "$MANIFESTS" "\\.vscode/settings\.json"
+
+assert_file_contains "manifests.md file manifest tracks VS Code extensions" \
+    "$MANIFESTS" "\\.vscode/extensions\.json"
+
+assert_file_contains "manifests.md file manifest tracks VS Code MCP config" \
+    "$MANIFESTS" "\\.vscode/mcp\.json"
+
+assert_file_contains "manifests.md file manifest tracks CLAUDE.md" \
+    "$MANIFESTS" "CLAUDE\.md"
+
+assert_file_contains "UPDATE.md file manifest tracks starter-kit plugin manifests" \
+    "$UPDATE" "\\.github/starter-kits/\\*/plugin\.json"
+
+assert_file_contains "UPDATE.md file manifest tracks starter-kit skills" \
+    "$UPDATE" "\\.github/starter-kits/\\*/skills/\\*/SKILL\.md"
+
+assert_file_contains "UPDATE.md file manifest tracks starter-kit instructions" \
+    "$UPDATE" "\\.github/starter-kits/\\*/instructions/\\*\.instructions\.md"
+
+assert_file_contains "UPDATE.md file manifest tracks starter-kit prompts" \
+    "$UPDATE" "\\.github/starter-kits/\\*/prompts/\\*\.prompt\.md"
+
+assert_file_contains "UPDATE.md file manifest tracks VS Code settings" \
+    "$UPDATE" "\\.vscode/settings\.json"
+
+assert_file_contains "UPDATE.md file manifest tracks VS Code extensions" \
+    "$UPDATE" "\\.vscode/extensions\.json"
+
+assert_file_contains "UPDATE.md file manifest tracks VS Code MCP config" \
+    "$UPDATE" "\\.vscode/mcp\.json"
+
+assert_file_contains "UPDATE.md file manifest tracks CLAUDE.md" \
+    "$UPDATE" "CLAUDE\.md"
+echo ""
+
+# ──────────────────────────────────────────────────────────────
+echo "20. MCP sources keep the heartbeat server in parity"
+# ──────────────────────────────────────────────────────────────
+
+assert_python "template and manifest MCP configs stay semantically aligned" '
+import copy
+import re
+
+def extract_block(markdown: str, heading: str) -> dict[str, object]:
+    marker = markdown.find(heading)
+    if marker == -1:
+        raise SystemExit("missing heading in manifests.md: " + heading)
+    fenced = re.search(r"```json\n(.*?)\n```", markdown[marker:], re.S)
+    if fenced is None:
+        raise SystemExit("missing JSON fence after heading: " + heading)
+    return json.loads(fenced.group(1))
+
+manifests_text = (root / "template/setup/manifests.md").read_text(encoding="utf-8")
+sandboxed = extract_block(manifests_text, "### Sandboxed config")
+unsandboxed = extract_block(manifests_text, "### Unsandboxed config")
+template_mcp = json.loads((root / "template/vscode/mcp.json").read_text(encoding="utf-8"))
+
+if sandboxed != template_mcp:
+    raise SystemExit("Sandboxed manifests MCP config drifted from template/vscode/mcp.json")
+
+expected_unsandboxed = copy.deepcopy(template_mcp)
+expected_unsandboxed.pop("sandbox", None)
+filesystem = expected_unsandboxed.get("servers", {}).get("filesystem", {})
+if isinstance(filesystem, dict):
+    filesystem.pop("sandboxEnabled", None)
+    filesystem.pop("sandbox", None)
+
+if unsandboxed != expected_unsandboxed:
+    raise SystemExit("Unsandboxed manifests MCP config drifted from the template baseline")
+'
+echo ""
+
+# ──────────────────────────────────────────────────────────────
+echo "21. Workspace-index fallback is available before agent and skill discovery"
 # ──────────────────────────────────────────────────────────────
 
 assert_python "SETUP.md prefetches workspace-index before §2.5" '
@@ -356,7 +461,7 @@ assert_file_not_contains "manifests.md no longer defers agent fallback to §3" \
 echo ""
 
 # ──────────────────────────────────────────────────────────────
-echo "20. Tier counts in SETUP.md match the interview inventory"
+echo "22. Tier counts in SETUP.md match the interview inventory"
 # ──────────────────────────────────────────────────────────────
 
 assert_python "setup tier descriptions match current question totals" '
@@ -384,7 +489,7 @@ for label, description in expected_descriptions.items():
 echo ""
 
 # ──────────────────────────────────────────────────────────────
-echo "21. Factory restore is a full backup-purge-reinstall flow"
+echo "23. Factory restore is a full backup-purge-reinstall flow"
 # ──────────────────────────────────────────────────────────────
 
 assert_file_contains "Factory restore backs up VS Code MCP config" \
@@ -413,7 +518,7 @@ assert_file_contains "SETUP recovery mode forbids reading old managed files" \
 echo ""
 
 # ──────────────────────────────────────────────────────────────
-echo "22. Restore from backup supports factory-restore snapshots"
+echo "24. Restore from backup supports factory-restore snapshots"
 # ──────────────────────────────────────────────────────────────
 
 assert_file_contains "Restore flow scans pre-factory-restore backups" \

@@ -64,6 +64,15 @@ if "workspace-index.json" not in text:
     raise SystemExit("D13 must reference workspace-index.json as canonical inventory")
 if "raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/workspace/workspace-index.json" not in text:
     raise SystemExit("D13 must contain the upstream workspace-index.json fetch URL")
+for needle in [
+    "prompts",
+    "instructions",
+    "core `.copilot/workspace/` files",
+    "`.github/starter-kits/*/`",
+    "`.vscode/settings.json`",
+]:
+    if needle not in text:
+        raise SystemExit("D13 must cover companion surface: " + needle)
 '
 
 assert_python "audit report format covers D1-D14" '
@@ -92,13 +101,44 @@ required = [
     "specialist delegation allow-lists match the repo policy",
     "Consumer repos: skip repo-policy allow-list matching",
     "Covers: A1–A4 (agents)",
+    "C1 (consumer companion completeness)",
     "I1–I4 (instructions)",
+    "V1 (version metadata)",
     "--profile consumer",
-    "intentionally skips repo-only A4, I4, K1, and K2",
+    "K1–K2 (starter kits)",
+    "It intentionally skips repo-only A4.",
 ]
 for needle in required:
     if needle not in text:
         raise SystemExit("audit.agent.md missing delegation audit detail: " + needle)
+'
+
+assert_python "audit D6 and D9 cover version metadata and pluginLocations" '
+text = (root / ".github/agents/audit.agent.md").read_text(encoding="utf-8")
+for needle in [
+    "file-manifest",
+    "setup-answers",
+    "chat.pluginLocations",
+]:
+    if needle not in text:
+        raise SystemExit("audit.agent.md missing updated health-check detail: " + needle)
+'
+
+assert_python "verbatim-delivered agents use workspace-neutral identity wording" '
+expected = {
+    "coding.agent.md": "You are the Coding agent for the current project.",
+    "review.agent.md": "You are the Review agent for the current project.",
+    "fast.agent.md": "You are the Fast agent for the current project.",
+    "extensions.agent.md": "You are the Extensions agent for the current project.",
+    "setup.agent.md": "You are the Setup agent for the current project.",
+    "audit.agent.md": "You are the Audit agent for the current project.",
+}
+for filename, needle in expected.items():
+    text = (root / ".github/agents" / filename).read_text(encoding="utf-8")
+    if needle not in text:
+        raise SystemExit(filename + " missing workspace-neutral identity wording")
+    if "for copilot-instructions-template." in text:
+        raise SystemExit(filename + " still leaks template-repo identity into delivered agent text")
 '
 
 assert_python "audit has fetch tool for upstream checks" '
