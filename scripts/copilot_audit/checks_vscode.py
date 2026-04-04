@@ -17,11 +17,36 @@ def check_vs1_settings_plugins(root: pathlib.Path | AuditContext) -> CheckResult
                                        "File not found — skip"))
         return result
     rel = ctx.rel(settings_file)
-    data, error = ctx.load_json(settings_file)
+    data, error = ctx.load_jsonc(settings_file)
     if error is not None:
         result.findings.append(Finding("VS1", rel, CRITICAL,
                                        f"Invalid JSON: {error}"))
         return result
+
+    def _check_plugin_locations(key: str = "chat.pluginLocations", base: pathlib.Path = ctx.root) -> None:
+        locations = data.get(key)
+        if locations is None:
+            return
+        if isinstance(locations, dict):
+            entries = [(path, enabled) for path, enabled in locations.items() if isinstance(path, str)]
+        elif isinstance(locations, list):
+            entries = [(path, True) for path in locations if isinstance(path, str)]
+        else:
+            result.findings.append(Finding(
+                "VS1", rel, WARN,
+                f"{key} must be an object mapping path -> boolean or a list of paths",
+            ))
+            return
+
+        for raw_path, enabled in entries:
+            if enabled is False:
+                continue
+            resolved = pathlib.Path(raw_path) if pathlib.Path(raw_path).is_absolute() else base / raw_path
+            if not resolved.exists():
+                result.findings.append(Finding(
+                    "VS1", rel, WARN,
+                    f"{key} entry not found: {raw_path}",
+                ))
 
     def _check_path_list(key: str, base: pathlib.Path = ctx.root) -> None:
         paths = data.get(key, [])
@@ -37,6 +62,7 @@ def check_vs1_settings_plugins(root: pathlib.Path | AuditContext) -> CheckResult
                     f"{key} entry not found: {p}",
                 ))
 
+    _check_plugin_locations()
     _check_path_list("chat.plugins.paths")
     _check_path_list("chat.instructionsFilesLocations")
     _check_path_list("chat.promptFilesLocations")

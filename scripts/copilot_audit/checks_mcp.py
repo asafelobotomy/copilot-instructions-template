@@ -18,7 +18,7 @@ def check_m1_mcp_valid_json(root: pathlib.Path | AuditContext) -> CheckResult:
                                        "File not found — MCP not configured"))
         return result
     rel = ctx.rel(mcp_file)
-    data, error = ctx.load_json(mcp_file)
+    data, error = ctx.load_jsonc(mcp_file)
     if error is not None:
         result.findings.append(Finding("M1", rel, CRITICAL,
                                        f"Invalid JSON: {error}"))
@@ -37,7 +37,7 @@ def check_m2_mcp_no_npm_antipatterns(root: pathlib.Path | AuditContext) -> Check
     if not mcp_file.exists():
         return result
     rel = ctx.rel(mcp_file)
-    data, error = ctx.load_json(mcp_file)
+    data, error = ctx.load_jsonc(mcp_file)
     if error is not None:
         return result  # M1 already flagged this
     servers = data.get("servers", {})
@@ -70,7 +70,7 @@ def check_m3_mcp_no_secrets(root: pathlib.Path | AuditContext) -> CheckResult:
     if not mcp_file.exists():
         return result
     rel = ctx.rel(mcp_file)
-    data, error = ctx.load_json(mcp_file)
+    data, error = ctx.load_jsonc(mcp_file)
     if error is not None:
         return result
     secret_pattern = re.compile(

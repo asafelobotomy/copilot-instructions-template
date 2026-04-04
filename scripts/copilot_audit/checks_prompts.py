@@ -17,8 +17,11 @@ def check_p1_prompt_mode(root: pathlib.Path | AuditContext) -> CheckResult:
     ctx = ensure_context(root)
     result = CheckResult("P1", "Prompt file frontmatter")
     if not ctx.prompt_files:
-        result.findings.append(Finding("P1", ".github/prompts/", INFO,
-                                       "No .prompt.md files found"))
+        severity = WARN if ctx.repo_shape == "consumer" else INFO
+        message = "No .prompt.md files found"
+        if ctx.repo_shape == "consumer":
+            message += " — consumer install may be incomplete"
+        result.findings.append(Finding("P1", ".github/prompts/", severity, message))
         return result
     for pfile in ctx.prompt_files:
         rel = ctx.rel(pfile)

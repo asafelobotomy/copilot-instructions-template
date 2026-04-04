@@ -115,9 +115,349 @@ mutate_m2_npx_git() {
 JSON
 }
 
+mutate_m2_jsonc_npx_git() {
+  write_sandbox_file ".vscode/mcp.json" <<'JSON'
+{
+  // JSONC comments should still parse
+  "servers": {
+    "git": {
+      "command": "npx",
+      "args": ["mcp-server-git", "--repository", "."],
+    }
+  }
+}
+JSON
+}
+
 mutate_consumer_layout() {
   remove_sandbox_path "template"
   remove_sandbox_path "starter-kits"
+  remove_sandbox_path ".vscode/mcp.json"
+
+  write_sandbox_file ".github/copilot-instructions.md" <<'MD'
+# Consumer Instructions
+Sandbox Owner Sandbox Python
+The parent/default agent follows this protocol too: if a request is primarily specialist work, delegate to the matching agent instead of absorbing the specialist workflow inline.
+Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for current external docs, `Review` for formal code review or architectural critique, `Audit` for health, security, or residual-risk checks, `Extensions` for VS Code extension, profile, or workspace recommendation work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for template bootstrap, instruction update, backup restore, or factory restore work, and `Organise` for file moves, path repair, or repository reshaping.
+MD
+
+  mkdir -p "$SANDBOX/.github/workflows"
+  mkdir -p "$SANDBOX/.copilot/workspace"
+  write_sandbox_file ".github/workflows/copilot-setup-steps.yml" <<'YAML'
+name: Copilot Setup Steps
+YAML
+  write_sandbox_file ".vscode/extensions.json" <<'JSON'
+{
+  "recommendations": []
+}
+JSON
+  for file in BOOTSTRAP.md HEARTBEAT.md IDENTITY.md MEMORY.md RESEARCH.md SOUL.md TOOLS.md USER.md commit-style.md; do
+    write_sandbox_file ".copilot/workspace/$file" <<'MD'
+placeholder
+MD
+  done
+  cat > "$SANDBOX/.copilot/workspace/workspace-index.json" <<'JSON'
+{
+  "schemaVersion": "1.0",
+  "counts": {
+    "agents": 1,
+    "skillsRepo": 1,
+    "skillsTemplate": 1,
+    "hookScriptsShell": 1,
+    "hookScriptsPowerShell": 0,
+    "hookScriptsPython": 0,
+    "hookScriptsJson": 0
+  },
+  "agents": ["code.agent.md"],
+  "skills": {
+    "repo": ["my-skill"]
+  },
+  "prompts": ["commit.prompt.md"],
+  "instructions": ["api.instructions.md"],
+  "workspaceFiles": [
+    "BOOTSTRAP.md",
+    "HEARTBEAT.md",
+    "IDENTITY.md",
+    "MEMORY.md",
+    "RESEARCH.md",
+    "SOUL.md",
+    "TOOLS.md",
+    "USER.md",
+    "commit-style.md",
+    "workspace-index.json"
+  ],
+  "workflowFiles": ["copilot-setup-steps.yml"],
+  "hookScripts": {
+    "shell": ["session-start.sh"],
+    "powershell": [],
+    "python": [],
+    "json": []
+  }
+}
+JSON
+
+  mkdir -p "$SANDBOX/.github/starter-kits/python/prompts"
+  cat > "$SANDBOX/.github/starter-kits/python/plugin.json" <<'JSON'
+{
+  "name": "python-starter-kit",
+  "displayName": "Python Starter Kit",
+  "description": "Sandbox installed starter kit",
+  "version": "1.0.0"
+}
+JSON
+  cat > "$SANDBOX/.github/starter-kits/python/prompts/python-debug.prompt.md" <<'PROMPT'
+---
+description: Python debug helper
+agent: agent
+---
+Debug the Python issue.
+PROMPT
+
+  write_sandbox_file ".vscode/settings.json" <<'JSON'
+{
+  // Installed local plugin path
+  "chat.pluginLocations": {
+    ".github/starter-kits/python": true
+  }
+}
+JSON
+
+  write_sandbox_file ".github/copilot-version.md" <<'MD'
+<!-- markdownlint-disable-file MD041 -->
+5.4.0
+Applied: 2026-04-04
+Updated: 2026-04-04
+<!-- section-fingerprints
+§1=aaaaaaaaaaaa
+-->
+<!-- file-manifest
+.github/agents/code.agent.md=bbbbbbbbbbbb
+.github/hooks/copilot-hooks.json=bbbbbbbbbbbb
+.github/hooks/scripts/session-start.sh=bbbbbbbbbbbb
+.github/instructions/api.instructions.md=bbbbbbbbbbbb
+.github/prompts/commit.prompt.md=bbbbbbbbbbbb
+.github/skills/my-skill/SKILL.md=bbbbbbbbbbbb
+.github/workflows/copilot-setup-steps.yml=bbbbbbbbbbbb
+.vscode/settings.json=bbbbbbbbbbbb
+.vscode/extensions.json=bbbbbbbbbbbb
+.copilot/workspace/BOOTSTRAP.md=bbbbbbbbbbbb
+.copilot/workspace/HEARTBEAT.md=bbbbbbbbbbbb
+.copilot/workspace/IDENTITY.md=bbbbbbbbbbbb
+.copilot/workspace/MEMORY.md=bbbbbbbbbbbb
+.copilot/workspace/RESEARCH.md=bbbbbbbbbbbb
+.copilot/workspace/SOUL.md=bbbbbbbbbbbb
+.copilot/workspace/TOOLS.md=bbbbbbbbbbbb
+.copilot/workspace/USER.md=bbbbbbbbbbbb
+.copilot/workspace/commit-style.md=bbbbbbbbbbbb
+.copilot/workspace/workspace-index.json=bbbbbbbbbbbb
+.github/starter-kits/python/plugin.json=bbbbbbbbbbbb
+.github/starter-kits/python/prompts/python-debug.prompt.md=bbbbbbbbbbbb
+-->
+<!-- setup-answers
+PROJECT_NAME=Sandbox
+LANGUAGE=Python
+RUNTIME=Python
+PACKAGE_MANAGER=pip
+TEST_COMMAND=bash tests/run-all.sh
+TYPE_CHECK_COMMAND=echo "no type check configured"
+THREE_CHECK_COMMAND=echo "no three-check configured"
+TEST_FRAMEWORK=bash
+SETUP_DATE=2026-04-04
+-->
+MD
+}
+
+mutate_consumer_layout_without_vscode_surfaces() {
+  mutate_consumer_layout
+  remove_sandbox_path ".vscode/settings.json"
+  remove_sandbox_path ".vscode/extensions.json"
+  write_sandbox_file ".github/copilot-version.md" <<'MD'
+<!-- markdownlint-disable-file MD041 -->
+5.4.0
+Applied: 2026-04-04
+Updated: 2026-04-04
+<!-- section-fingerprints
+§1=aaaaaaaaaaaa
+-->
+<!-- file-manifest
+.github/agents/code.agent.md=bbbbbbbbbbbb
+.github/hooks/copilot-hooks.json=bbbbbbbbbbbb
+.github/hooks/scripts/session-start.sh=bbbbbbbbbbbb
+.github/instructions/api.instructions.md=bbbbbbbbbbbb
+.github/prompts/commit.prompt.md=bbbbbbbbbbbb
+.github/skills/my-skill/SKILL.md=bbbbbbbbbbbb
+.github/workflows/copilot-setup-steps.yml=bbbbbbbbbbbb
+.copilot/workspace/BOOTSTRAP.md=bbbbbbbbbbbb
+.copilot/workspace/HEARTBEAT.md=bbbbbbbbbbbb
+.copilot/workspace/IDENTITY.md=bbbbbbbbbbbb
+.copilot/workspace/MEMORY.md=bbbbbbbbbbbb
+.copilot/workspace/RESEARCH.md=bbbbbbbbbbbb
+.copilot/workspace/SOUL.md=bbbbbbbbbbbb
+.copilot/workspace/TOOLS.md=bbbbbbbbbbbb
+.copilot/workspace/USER.md=bbbbbbbbbbbb
+.copilot/workspace/commit-style.md=bbbbbbbbbbbb
+.copilot/workspace/workspace-index.json=bbbbbbbbbbbb
+.github/starter-kits/python/plugin.json=bbbbbbbbbbbb
+.github/starter-kits/python/prompts/python-debug.prompt.md=bbbbbbbbbbbb
+-->
+<!-- setup-answers
+PROJECT_NAME=Sandbox
+LANGUAGE=Python
+RUNTIME=Python
+PACKAGE_MANAGER=pip
+TEST_COMMAND=bash tests/run-all.sh
+TYPE_CHECK_COMMAND=echo "no type check configured"
+THREE_CHECK_COMMAND=echo "no three-check configured"
+TEST_FRAMEWORK=bash
+SETUP_DATE=2026-04-04
+-->
+MD
+}
+
+mutate_consumer_legacy_workspace_index_without_optional_files() {
+  mutate_consumer_layout_without_vscode_surfaces
+  write_sandbox_file ".copilot/workspace/workspace-index.json" <<'JSON'
+{
+  "schemaVersion": "0.9",
+  "counts": {
+    "agents": 1,
+    "skillsRepo": 1,
+    "skillsTemplate": 1,
+    "hookScriptsShell": 1,
+    "hookScriptsPowerShell": 0,
+    "hookScriptsPython": 0,
+    "hookScriptsJson": 0
+  },
+  "agents": ["code.agent.md"],
+  "skills": {
+    "repo": ["my-skill"]
+  },
+  "workspaceFiles": [
+    "BOOTSTRAP.md",
+    "HEARTBEAT.md",
+    "IDENTITY.md",
+    "MEMORY.md",
+    "RESEARCH.md",
+    "SOUL.md",
+    "TOOLS.md",
+    "USER.md",
+    "commit-style.md",
+    "workspace-index.json"
+  ],
+  "workflowFiles": ["copilot-setup-steps.yml"],
+  "hookScripts": {
+    "shell": ["session-start.sh"],
+    "powershell": [],
+    "python": [],
+    "json": []
+  }
+}
+JSON
+}
+
+mutate_consumer_missing_delegation_policy() {
+  mutate_consumer_layout
+  write_sandbox_file ".github/copilot-instructions.md" <<'MD'
+# Consumer Instructions
+> Role: AI developer.
+MD
+}
+
+mutate_consumer_missing_starter_kit_assets() {
+  mutate_consumer_layout
+  remove_sandbox_path ".github/starter-kits/python/prompts"
+}
+
+mutate_consumer_version_file_missing_blocks() {
+  mutate_consumer_layout
+  write_sandbox_file ".github/copilot-version.md" <<'MD'
+<!-- markdownlint-disable-file MD041 -->
+5.4.0
+Applied: 2026-04-04
+Updated: 2026-04-04
+<!-- section-fingerprints
+§1=aaaaaaaaaaaa
+-->
+MD
+}
+
+mutate_consumer_missing_workflow_inventory_surface() {
+  mutate_consumer_layout
+  remove_sandbox_path ".github/workflows/copilot-setup-steps.yml"
+}
+
+mutate_consumer_version_file_manifest_missing_surface() {
+  mutate_consumer_layout
+  write_sandbox_file ".github/copilot-version.md" <<'MD'
+<!-- markdownlint-disable-file MD041 -->
+5.4.0
+Applied: 2026-04-04
+Updated: 2026-04-04
+<!-- section-fingerprints
+§1=aaaaaaaaaaaa
+-->
+<!-- file-manifest
+.github/agents/code.agent.md=bbbbbbbbbbbb
+.github/hooks/copilot-hooks.json=bbbbbbbbbbbb
+-->
+<!-- setup-answers
+PROJECT_NAME=Sandbox
+LANGUAGE=Python
+RUNTIME=Python
+PACKAGE_MANAGER=pip
+TEST_COMMAND=bash tests/run-all.sh
+TYPE_CHECK_COMMAND=echo "no type check configured"
+THREE_CHECK_COMMAND=echo "no three-check configured"
+TEST_FRAMEWORK=bash
+SETUP_DATE=2026-04-04
+-->
+MD
+}
+
+mutate_consumer_setup_answers_missing_core_key() {
+  mutate_consumer_layout
+  write_sandbox_file ".github/copilot-version.md" <<'MD'
+<!-- markdownlint-disable-file MD041 -->
+5.4.0
+Applied: 2026-04-04
+Updated: 2026-04-04
+<!-- section-fingerprints
+§1=aaaaaaaaaaaa
+-->
+<!-- file-manifest
+.github/agents/code.agent.md=bbbbbbbbbbbb
+.github/hooks/copilot-hooks.json=bbbbbbbbbbbb
+.github/hooks/scripts/session-start.sh=bbbbbbbbbbbb
+.github/instructions/api.instructions.md=bbbbbbbbbbbb
+.github/prompts/commit.prompt.md=bbbbbbbbbbbb
+.github/skills/my-skill/SKILL.md=bbbbbbbbbbbb
+.github/workflows/copilot-setup-steps.yml=bbbbbbbbbbbb
+.vscode/settings.json=bbbbbbbbbbbb
+.vscode/extensions.json=bbbbbbbbbbbb
+.copilot/workspace/BOOTSTRAP.md=bbbbbbbbbbbb
+.copilot/workspace/HEARTBEAT.md=bbbbbbbbbbbb
+.copilot/workspace/IDENTITY.md=bbbbbbbbbbbb
+.copilot/workspace/MEMORY.md=bbbbbbbbbbbb
+.copilot/workspace/RESEARCH.md=bbbbbbbbbbbb
+.copilot/workspace/SOUL.md=bbbbbbbbbbbb
+.copilot/workspace/TOOLS.md=bbbbbbbbbbbb
+.copilot/workspace/USER.md=bbbbbbbbbbbb
+.copilot/workspace/commit-style.md=bbbbbbbbbbbb
+.copilot/workspace/workspace-index.json=bbbbbbbbbbbb
+.github/starter-kits/python/plugin.json=bbbbbbbbbbbb
+.github/starter-kits/python/prompts/python-debug.prompt.md=bbbbbbbbbbbb
+-->
+<!-- setup-answers
+PROJECT_NAME=Sandbox
+LANGUAGE=Python
+RUNTIME=Python
+PACKAGE_MANAGER=pip
+TYPE_CHECK_COMMAND=echo "no type check configured"
+THREE_CHECK_COMMAND=echo "no three-check configured"
+TEST_FRAMEWORK=bash
+SETUP_DATE=2026-04-04
+-->
+MD
 }
 
 mutate_m3_literal_secret() {
@@ -178,7 +518,10 @@ JSON
 mutate_vs1_invalid_settings_paths() {
   write_sandbox_file ".vscode/settings.json" <<'JSON'
 {
-  "chat.plugins.paths": [".copilot/plugins/missing.json"],
+  // Local plugin registrations
+  "chat.pluginLocations": {
+    ".github/starter-kits/missing": true
+  },
   "chat.instructionsFilesLocations": [".github/missing-instructions"],
   "chat.promptFilesLocations": [".github/missing-prompts"],
   "chat.agentFilesLocations": [".github/missing-agents"],
@@ -311,6 +654,13 @@ assert_failure "exits non-zero" "$CASE_STATUS"
 assert_contains "M2 npx flagged" "$CASE_OUTPUT" 'npx'
 echo ""
 
+# ── 13b. M2 — JSONC mcp.json still parses ─────────────────────────────────
+echo "13b. M2: JSONC mcp.json still triggers anti-pattern detection"
+run_audit_case json mutate_m2_jsonc_npx_git
+assert_failure "JSONC mcp config still exits non-zero" "$CASE_STATUS"
+assert_contains "M2 JSONC npx flagged" "$CASE_OUTPUT" 'mcp-server-git'
+echo ""
+
 # ── 14. M3 — literal secret in mcp env ───────────────────────────────────────
 echo "14. M3: literal secret value in mcp env triggers HIGH"
 run_audit_case json mutate_m3_literal_secret
@@ -361,7 +711,7 @@ echo ""
 echo "20. VS1: invalid customization paths in settings.json trigger WARN"
 run_audit_case json mutate_vs1_invalid_settings_paths
 assert_success "VS1 WARN-only still exits 0" "$CASE_STATUS"
-assert_contains "VS1 reports missing plugin path" "$CASE_OUTPUT" 'chat.plugins.paths entry not found'
+assert_contains "VS1 reports missing plugin path" "$CASE_OUTPUT" 'chat.pluginLocations entry not found'
 assert_contains "VS1 reports missing instructions path" "$CASE_OUTPUT" 'chat.instructionsFilesLocations entry not found'
 echo ""
 
@@ -386,6 +736,20 @@ assert_success "consumer profile exits 0 on consumer-shaped repo" "$CASE_STATUS"
 assert_contains "consumer profile HEALTHY" "$CASE_OUTPUT" '"status": "HEALTHY"'
 echo ""
 
+# ── 23b. Consumer profile — VS Code opt-out remains HEALTHY ─────────────────
+echo "23b. consumer profile: VS Code opt-out remains HEALTHY"
+run_audit_case json mutate_consumer_layout_without_vscode_surfaces consumer
+assert_success "consumer profile allows missing opted-out VS Code files" "$CASE_STATUS"
+assert_contains "consumer profile stays HEALTHY without VS Code files" "$CASE_OUTPUT" '"status": "HEALTHY"'
+echo ""
+
+# ── 23c. Consumer profile — legacy workspace-index stays conservative ───────
+echo "23c. consumer profile: legacy workspace-index remains HEALTHY without optional prompts or instructions"
+run_audit_case json mutate_consumer_legacy_workspace_index_without_optional_files consumer
+assert_success "consumer profile allows legacy workspace-index without optional inventories" "$CASE_STATUS"
+assert_contains "consumer profile stays HEALTHY for legacy workspace-index" "$CASE_OUTPUT" '"status": "HEALTHY"'
+echo ""
+
 # ── 24. Consumer profile — A4 repo policy skipped ──────────────────────────
 echo "24. consumer profile: A4 repo delegation policy is skipped"
 run_audit_case json mutate_a4_missing_delegate consumer
@@ -393,18 +757,18 @@ assert_success "consumer profile skips A4" "$CASE_STATUS"
 assert_contains "consumer profile stays HEALTHY for A4-only mutation" "$CASE_OUTPUT" '"status": "HEALTHY"'
 echo ""
 
-# ── 25. Consumer profile — I4 repo policy skipped ──────────────────────────
-echo "25. consumer profile: I4 repo delegation wording is skipped"
-run_audit_case json mutate_i4_missing_delegation_policy consumer
-assert_success "consumer profile skips I4" "$CASE_STATUS"
-assert_contains "consumer profile stays HEALTHY for I4-only mutation" "$CASE_OUTPUT" '"status": "HEALTHY"'
+# ── 25. Consumer profile — I4 repo policy is enforced ──────────────────────
+echo "25. consumer profile: I4 repo delegation wording is enforced"
+run_audit_case json mutate_consumer_missing_delegation_policy consumer
+assert_failure "consumer profile fails when delegation policy is missing" "$CASE_STATUS"
+assert_contains "consumer profile reports I4" "$CASE_OUTPUT" '"check_id": "I4"'
 echo ""
 
-# ── 26. Consumer profile — starter-kit source checks skipped ───────────────
-echo "26. consumer profile: starter-kit source registry checks are skipped"
-run_audit_case json mutate_k2_missing_registry_file consumer
-assert_success "consumer profile skips K2" "$CASE_STATUS"
-assert_contains "consumer profile stays HEALTHY for K2-only mutation" "$CASE_OUTPUT" '"status": "HEALTHY"'
+# ── 26. Consumer profile — installed starter-kit content is validated ──────
+echo "26. consumer profile: installed starter-kit content is validated"
+run_audit_case json mutate_consumer_missing_starter_kit_assets consumer
+assert_failure "consumer profile fails on empty installed starter kit" "$CASE_STATUS"
+assert_contains "consumer profile reports K2" "$CASE_OUTPUT" '"check_id": "K2"'
 echo ""
 
 # ── 27. Consumer profile — generic checks still run ────────────────────────
@@ -412,6 +776,37 @@ echo "27. consumer profile: generic MCP checks still trigger failures"
 run_audit_case json mutate_m1_invalid_json consumer
 assert_failure "consumer profile still exits non-zero on invalid MCP JSON" "$CASE_STATUS"
 assert_contains "consumer profile still reports M1" "$CASE_OUTPUT" '"check_id": "M1"'
+echo ""
+
+# ── 28. Consumer profile — version metadata completeness enforced ───────────
+echo "28. consumer profile: version metadata completeness is enforced"
+run_audit_case json mutate_consumer_version_file_missing_blocks consumer
+assert_failure "consumer profile fails on incomplete version metadata" "$CASE_STATUS"
+assert_contains "consumer profile reports V1" "$CASE_OUTPUT" '"check_id": "V1"'
+assert_contains "consumer profile flags setup-answers" "$CASE_OUTPUT" 'setup-answers block'
+echo ""
+
+# ── 29. Consumer profile — workspace inventory completeness enforced ────────
+echo "29. consumer profile: workspace inventory completeness is enforced"
+run_audit_case json mutate_consumer_missing_workflow_inventory_surface consumer
+assert_failure "consumer profile fails on missing workflow surface" "$CASE_STATUS"
+assert_contains "consumer profile reports C1" "$CASE_OUTPUT" '"check_id": "C1"'
+assert_contains "consumer profile flags missing workflow" "$CASE_OUTPUT" 'copilot-setup-steps.yml'
+echo ""
+
+# ── 30. Consumer profile — file-manifest tracks managed surfaces ────────────
+echo "30. consumer profile: file-manifest tracks managed surfaces"
+run_audit_case json mutate_consumer_version_file_manifest_missing_surface consumer
+assert_failure "consumer profile fails on incomplete file-manifest" "$CASE_STATUS"
+assert_contains "consumer profile flags missing managed surface" "$CASE_OUTPUT" 'file-manifest missing managed surface'
+assert_contains "consumer profile flags extensions surface" "$CASE_OUTPUT" '.vscode/extensions.json'
+echo ""
+
+# ── 31. Consumer profile — setup-answers track core setup decisions ─────────
+echo "31. consumer profile: setup-answers track core setup decisions"
+run_audit_case json mutate_consumer_setup_answers_missing_core_key consumer
+assert_failure "consumer profile fails on missing core setup answer" "$CASE_STATUS"
+assert_contains "consumer profile flags missing TEST_COMMAND" "$CASE_OUTPUT" 'setup-answers missing required key: TEST_COMMAND'
 echo ""
 
 # ── Summary ───────────────────────────────────────────────────────────────────

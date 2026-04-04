@@ -60,6 +60,101 @@ def strip_code_spans(text: str) -> str:
     return _BACKTICK_CODE_RE.sub("", text)
 
 
+def strip_json_comments(text: str) -> str:
+    """Remove JSONC-style comments while preserving string contents."""
+    chars: list[str] = []
+    index = 0
+    in_string = False
+    escaped = False
+    length = len(text)
+
+    while index < length:
+        char = text[index]
+
+        if in_string:
+            chars.append(char)
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            index += 1
+            continue
+
+        if char == '"':
+            in_string = True
+            chars.append(char)
+            index += 1
+            continue
+
+        if char == "/" and index + 1 < length:
+            nxt = text[index + 1]
+            if nxt == "/":
+                index += 2
+                while index < length and text[index] != "\n":
+                    index += 1
+                continue
+            if nxt == "*":
+                index += 2
+                while index + 1 < length and not (text[index] == "*" and text[index + 1] == "/"):
+                    index += 1
+                index = index + 2 if index + 1 < length else length
+                continue
+
+        chars.append(char)
+        index += 1
+
+    return "".join(chars)
+
+
+def strip_json_trailing_commas(text: str) -> str:
+    """Remove trailing commas outside strings so JSONC payloads remain parseable."""
+    chars: list[str] = []
+    index = 0
+    in_string = False
+    escaped = False
+    length = len(text)
+
+    while index < length:
+        char = text[index]
+
+        if in_string:
+            chars.append(char)
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == '"':
+                in_string = False
+            index += 1
+            continue
+
+        if char == '"':
+            in_string = True
+            chars.append(char)
+            index += 1
+            continue
+
+        if char == ",":
+            probe = index + 1
+            while probe < length and text[probe] in " \t\r\n":
+                probe += 1
+            if probe < length and text[probe] in "]}":
+                index += 1
+                continue
+
+        chars.append(char)
+        index += 1
+
+    return "".join(chars)
+
+
+def relax_jsonc(text: str) -> str:
+    """Convert JSONC-like text into strict JSON for parsing."""
+    return strip_json_trailing_commas(strip_json_comments(text))
+
+
 # ── Path discovery ────────────────────────────────────────────────────────────
 
 def instruction_dirs(root: pathlib.Path) -> list[pathlib.Path]:
@@ -68,13 +163,10 @@ def instruction_dirs(root: pathlib.Path) -> list[pathlib.Path]:
         root / ".github" / "instructions",
         root / "template" / "instructions",
     ]
-    starter_root = root / "starter-kits"
-    if starter_root.is_dir():
-        for kit in starter_root.iterdir():
-            if kit.is_dir():
-                kit_instructions = kit / "instructions"
-                if kit_instructions.is_dir():
-                    dirs.append(kit_instructions)
+    for kit in starter_kit_dirs(root):
+        kit_instructions = kit / "instructions"
+        if kit_instructions.is_dir():
+            dirs.append(kit_instructions)
     return dirs
 
 
@@ -84,13 +176,10 @@ def prompt_dirs(root: pathlib.Path) -> list[pathlib.Path]:
         root / ".github" / "prompts",
         root / "template" / "prompts",
     ]
-    starter_root = root / "starter-kits"
-    if starter_root.is_dir():
-        for kit in starter_root.iterdir():
-            if kit.is_dir():
-                kit_prompts = kit / "prompts"
-                if kit_prompts.is_dir():
-                    dirs.append(kit_prompts)
+    for kit in starter_kit_dirs(root):
+        kit_prompts = kit / "prompts"
+        if kit_prompts.is_dir():
+            dirs.append(kit_prompts)
     return dirs
 
 
@@ -100,13 +189,29 @@ def skill_dirs(root: pathlib.Path) -> list[pathlib.Path]:
         root / ".github" / "skills",
         root / "template" / "skills",
     ]
-    starter_root = root / "starter-kits"
-    if starter_root.is_dir():
+    for kit in starter_kit_dirs(root):
+        kit_skills = kit / "skills"
+        if kit_skills.is_dir():
+            dirs.append(kit_skills)
+    return dirs
+
+
+def starter_kit_roots(root: pathlib.Path) -> tuple[pathlib.Path, ...]:
+    """Return source and installed starter-kit roots when present."""
+    candidates = (
+        root / "starter-kits",
+        root / ".github" / "starter-kits",
+    )
+    return tuple(path for path in candidates if path.is_dir())
+
+
+def starter_kit_dirs(root: pathlib.Path) -> list[pathlib.Path]:
+    """Return all starter-kit directories from source and installed roots."""
+    dirs: list[pathlib.Path] = []
+    for starter_root in starter_kit_roots(root):
         for kit in starter_root.iterdir():
             if kit.is_dir():
-                kit_skills = kit / "skills"
-                if kit_skills.is_dir():
-                    dirs.append(kit_skills)
+                dirs.append(kit)
     return dirs
 
 

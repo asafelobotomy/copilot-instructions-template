@@ -8,34 +8,43 @@ from .models import Finding, CheckResult, HIGH, WARN, INFO, CRITICAL
 from .helpers import estimate_tokens, strip_code_spans, PLACEHOLDER_RE
 
 
-DELEGATION_POLICY_SNIPPETS: dict[str, tuple[str, ...]] = {
-    ".github/copilot-instructions.md": (
-        "Main/default agent delegation:",
-        "delegate instead of absorbing",
-        "Preferred specialist map:",
-        "`Explore` for read-only repo scans",
-        "`Researcher` for current external docs",
-        "`Review` for formal code review or architectural critique",
-        "`Audit` for health, security, or residual-risk checks",
-        "`Extensions` for VS Code extension, profile, or workspace recommendation",
-        "`Commit` for staging, commits, pushes, tags, or releases",
-        "`Setup` for template bootstrap, instruction update, backup restore, or factory restore",
-        "`Organise` for file moves, path repair, or repository reshaping",
-    ),
-    "template/copilot-instructions.md": (
-        "The parent/default agent follows this protocol too:",
-        "delegate to the matching agent instead of absorbing",
-        "Preferred specialist map:",
-        "`Explore` for read-only repo scans",
-        "`Researcher` for current external docs",
-        "`Review` for formal code review or architectural critique",
-        "`Audit` for health, security, or residual-risk checks",
-        "`Extensions` for VS Code extension, profile, or workspace recommendation",
-        "`Commit` for staging, commits, pushes, tags, or releases",
-        "`Setup` for template bootstrap, instruction update, backup restore, or factory restore",
-        "`Organise` for file moves, path repair, or repository reshaping",
-    ),
-}
+DEVELOPER_DELEGATION_POLICY_SNIPPETS = (
+    "Main/default agent delegation:",
+    "delegate instead of absorbing",
+    "Preferred specialist map:",
+    "`Explore` for read-only repo scans",
+    "`Researcher` for current external docs",
+    "`Review` for formal code review or architectural critique",
+    "`Audit` for health, security, or residual-risk checks",
+    "`Extensions` for VS Code extension, profile, or workspace recommendation",
+    "`Commit` for staging, commits, pushes, tags, or releases",
+    "`Setup` for template bootstrap, instruction update, backup restore, or factory restore",
+    "`Organise` for file moves, path repair, or repository reshaping",
+)
+
+CONSUMER_DELEGATION_POLICY_SNIPPETS = (
+    "The parent/default agent follows this protocol too:",
+    "delegate to the matching agent instead of absorbing",
+    "Preferred specialist map:",
+    "`Explore` for read-only repo scans",
+    "`Researcher` for current external docs",
+    "`Review` for formal code review or architectural critique",
+    "`Audit` for health, security, or residual-risk checks",
+    "`Extensions` for VS Code extension, profile, or workspace recommendation",
+    "`Commit` for staging, commits, pushes, tags, or releases",
+    "`Setup` for template bootstrap, instruction update, backup restore, or factory restore",
+    "`Organise` for file moves, path repair, or repository reshaping",
+)
+
+
+def _delegation_policy_snippets(ctx: AuditContext, rel: str) -> tuple[str, ...]:
+    if rel == ".github/copilot-instructions.md":
+        if ctx.repo_shape == "consumer":
+            return CONSUMER_DELEGATION_POLICY_SNIPPETS
+        return DEVELOPER_DELEGATION_POLICY_SNIPPETS
+    if rel == "template/copilot-instructions.md":
+        return CONSUMER_DELEGATION_POLICY_SNIPPETS
+    return ()
 
 
 def check_i1_instructions_placeholders(root: pathlib.Path | AuditContext) -> CheckResult:
@@ -92,8 +101,11 @@ def check_i3_instruction_stubs(root: pathlib.Path | AuditContext) -> CheckResult
     ctx = ensure_context(root)
     result = CheckResult("I3", "Instruction stub frontmatter")
     if not ctx.instruction_files:
-        result.findings.append(Finding("I3", ".github/instructions/", INFO,
-                                       "No .instructions.md files found"))
+        severity = WARN if ctx.repo_shape == "consumer" else INFO
+        message = "No .instructions.md files found"
+        if ctx.repo_shape == "consumer":
+            message += " — consumer install may be incomplete"
+        result.findings.append(Finding("I3", ".github/instructions/", severity, message))
         return result
     for ifile in ctx.instruction_files:
         rel = ctx.rel(ifile)
@@ -125,7 +137,7 @@ def check_i4_delegation_policy(root: pathlib.Path | AuditContext) -> CheckResult
             continue
         rel = ctx.rel(path)
         text = " ".join(ctx.read_text(path).split())
-        snippets = DELEGATION_POLICY_SNIPPETS.get(rel, ())
+        snippets = _delegation_policy_snippets(ctx, rel)
         missing = [snippet for snippet in snippets if " ".join(snippet.split()) not in text]
         if missing:
             result.findings.append(Finding(

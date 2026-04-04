@@ -1,0 +1,160 @@
+"""Consumer inventory helpers shared by audit checks."""
+from __future__ import annotations
+
+from .context import AuditContext
+
+
+WORKSPACE_INDEX_REL = ".copilot/workspace/workspace-index.json"
+HOOK_CONFIG_REL = ".github/hooks/copilot-hooks.json"
+OPTIONAL_VSCODE_FILES = (
+    ".vscode/settings.json",
+    ".vscode/extensions.json",
+    ".vscode/mcp.json",
+)
+OPTIONAL_ROOT_FILES = (
+    "CLAUDE.md",
+)
+STARTER_KIT_MANIFEST_GLOBS = (
+    ".github/starter-kits/*/plugin.json",
+    ".github/starter-kits/*/skills/*/SKILL.md",
+    ".github/starter-kits/*/instructions/*.instructions.md",
+    ".github/starter-kits/*/prompts/*.prompt.md",
+)
+
+# Backward-compatibility fallbacks for consumers that predate the richer
+# workspace-index inventories introduced in this repo. Prompt and instruction
+# installs are conditional, so a missing inventory cannot safely imply that all
+# template files should exist on disk.
+FALLBACK_WORKSPACE_FILES = (
+    "BOOTSTRAP.md",
+    "HEARTBEAT.md",
+    "IDENTITY.md",
+    "MEMORY.md",
+    "RESEARCH.md",
+    "SOUL.md",
+    "TOOLS.md",
+    "USER.md",
+    "commit-style.md",
+    "workspace-index.json",
+)
+FALLBACK_WORKFLOW_FILES = (
+    "copilot-setup-steps.yml",
+)
+
+
+def workspace_index_path(ctx: AuditContext):
+    """Return the local consumer workspace-index path."""
+    return ctx.root / WORKSPACE_INDEX_REL
+
+
+def _string_list(payload: object, *keys: str, fallback: tuple[str, ...] = ()) -> tuple[str, ...]:
+    current = payload
+    for key in keys:
+        if not isinstance(current, dict):
+            return fallback
+        current = current.get(key)
+    if not isinstance(current, list):
+        return fallback
+    return tuple(item for item in current if isinstance(item, str))
+
+
+def _has_list(payload: object, *keys: str) -> bool:
+    current = payload
+    for key in keys[:-1]:
+        if not isinstance(current, dict):
+            return False
+        current = current.get(key)
+    return isinstance(current, dict) and isinstance(current.get(keys[-1]), list)
+
+
+def _installed_filenames(ctx: AuditContext, rel_dir: str, pattern: str) -> tuple[str, ...]:
+    root = ctx.root / rel_dir
+    if not root.is_dir():
+        return ()
+    return tuple(sorted(path.name for path in root.glob(pattern) if path.is_file()))
+
+
+def inventory_from_workspace_index(
+    payload: object,
+    ctx: AuditContext | None = None,
+) -> dict[str, tuple[str, ...]]:
+    """Normalise the workspace-index inventory for consumer completeness checks."""
+    prompts = _string_list(payload, "prompts")
+    if not prompts and ctx is not None and not _has_list(payload, "prompts"):
+        prompts = _installed_filenames(ctx, ".github/prompts", "*.prompt.md")
+
+    instructions = _string_list(payload, "instructions")
+    if not instructions and ctx is not None and not _has_list(payload, "instructions"):
+        instructions = _installed_filenames(ctx, ".github/instructions", "*.instructions.md")
+
+    return {
+        "agents": _string_list(payload, "agents"),
+        "skills": _string_list(payload, "skills", "repo"),
+        "prompts": prompts,
+        "instructions": instructions,
+        "workspace_files": _string_list(payload, "workspaceFiles", fallback=FALLBACK_WORKSPACE_FILES),
+        "workflow_files": _string_list(payload, "workflowFiles", fallback=FALLBACK_WORKFLOW_FILES),
+        "hook_shell": _string_list(payload, "hookScripts", "shell"),
+        "hook_powershell": _string_list(payload, "hookScripts", "powershell"),
+        "hook_python": _string_list(payload, "hookScripts", "python"),
+        "hook_json": _string_list(payload, "hookScripts", "json"),
+    }
+
+
+def managed_consumer_file_paths(
+    ctx: AuditContext,
+    inventory: dict[str, tuple[str, ...]],
+) -> tuple[str, ...]:
+    """Return the managed consumer files that currently exist on disk."""
+    files: set[str] = set()
+
+    for filename in inventory["agents"]:
+        candidate = ctx.root / ".github" / "agents" / filename
+        if candidate.is_file():
+            files.add(ctx.rel(candidate))
+
+    for dirname in inventory["skills"]:
+        candidate = ctx.root / ".github" / "skills" / dirname / "SKILL.md"
+        if candidate.is_file():
+            files.add(ctx.rel(candidate))
+
+    for filename in inventory["prompts"]:
+        candidate = ctx.root / ".github" / "prompts" / filename
+        if candidate.is_file():
+            files.add(ctx.rel(candidate))
+
+    for filename in inventory["instructions"]:
+        candidate = ctx.root / ".github" / "instructions" / filename
+        if candidate.is_file():
+            files.add(ctx.rel(candidate))
+
+    hook_config = ctx.root / HOOK_CONFIG_REL
+    if hook_config.is_file():
+        files.add(HOOK_CONFIG_REL)
+
+    for filename in inventory["hook_shell"] + inventory["hook_powershell"] + inventory["hook_python"] + inventory["hook_json"]:
+        candidate = ctx.root / ".github" / "hooks" / "scripts" / filename
+        if candidate.is_file():
+            files.add(ctx.rel(candidate))
+
+    for filename in inventory["workspace_files"]:
+        candidate = ctx.root / ".copilot" / "workspace" / filename
+        if candidate.is_file():
+            files.add(ctx.rel(candidate))
+
+    for filename in inventory["workflow_files"]:
+        candidate = ctx.root / ".github" / "workflows" / filename
+        if candidate.is_file():
+            files.add(ctx.rel(candidate))
+
+    for rel in OPTIONAL_VSCODE_FILES + OPTIONAL_ROOT_FILES:
+        candidate = ctx.root / rel
+        if candidate.is_file():
+            files.add(rel)
+
+    for pattern in STARTER_KIT_MANIFEST_GLOBS:
+        for candidate in ctx.root.glob(pattern):
+            if candidate.is_file():
+                files.add(ctx.rel(candidate))
+
+    return tuple(sorted(files))

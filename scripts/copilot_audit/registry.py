@@ -7,6 +7,7 @@ from .checks_agents import (
     check_a3_agent_no_placeholders,
     check_a4_agent_delegation_matrix,
 )
+from .checks_consumer import check_c1_consumer_companion_inventory
 from .checks_hooks import (
     check_h1_hooks_valid_json,
     check_h2_hooks_scripts_exist,
@@ -35,6 +36,7 @@ from .checks_skills import (
     check_s1_skill_name_matches_dir,
     check_s2_skill_size,
 )
+from .checks_version import check_v1_copilot_version_metadata
 from .checks_vscode import check_vs1_settings_plugins
 
 DEVELOPER_CHECKS = (
@@ -46,6 +48,7 @@ DEVELOPER_CHECKS = (
     check_i2_instructions_length,
     check_i3_instruction_stubs,
     check_i4_delegation_policy,
+    check_v1_copilot_version_metadata,
     check_p1_prompt_mode,
     check_s1_skill_name_matches_dir,
     check_s2_skill_size,
@@ -67,8 +70,11 @@ CONSUMER_CHECKS = (
     check_a1_agent_frontmatter,
     check_a2_agent_handoffs,
     check_a3_agent_no_placeholders,
+    check_c1_consumer_companion_inventory,
     check_i1_instructions_placeholders,
     check_i3_instruction_stubs,
+    check_i4_delegation_policy,
+    check_v1_copilot_version_metadata,
     check_p1_prompt_mode,
     check_s1_skill_name_matches_dir,
     check_s2_skill_size,
@@ -81,6 +87,8 @@ CONSUMER_CHECKS = (
     check_sh2_pipefail,
     check_sh3_bash_syntax,
     check_ps1_basic_sanity,
+    check_k1_starter_kit_plugins,
+    check_k2_starter_registry,
     check_vs1_settings_plugins,
 )
 

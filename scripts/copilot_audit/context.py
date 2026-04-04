@@ -12,6 +12,7 @@ from .helpers import (
     iter_shell_scripts,
     parse_frontmatter,
     prompt_dirs,
+    relax_jsonc,
     skill_dirs,
 )
 
@@ -23,6 +24,7 @@ class AuditContext:
         self.root = pathlib.Path(root)
         self._text_cache: dict[pathlib.Path, str] = {}
         self._json_cache: dict[pathlib.Path, tuple[object | None, JSONDecodeError | None]] = {}
+        self._jsonc_cache: dict[pathlib.Path, tuple[object | None, JSONDecodeError | None]] = {}
         self._frontmatter_cache: dict[pathlib.Path, dict[str, object]] = {}
 
     def rel(self, path: pathlib.Path) -> str:
@@ -48,6 +50,20 @@ class AuditContext:
                 except JSONDecodeError as exc:
                     self._json_cache[path] = (None, exc)
         return self._json_cache[path]
+
+    def load_jsonc(self, path: pathlib.Path) -> tuple[object | None, JSONDecodeError | None]:
+        """Parse and cache JSONC-like files with comments and trailing commas."""
+        path = pathlib.Path(path)
+        if path not in self._jsonc_cache:
+            if not path.exists():
+                self._jsonc_cache[path] = (None, None)
+            else:
+                try:
+                    relaxed = relax_jsonc(self.read_text(path))
+                    self._jsonc_cache[path] = (json.loads(relaxed), None)
+                except JSONDecodeError as exc:
+                    self._jsonc_cache[path] = (None, exc)
+        return self._jsonc_cache[path]
 
     def load_frontmatter(self, path: pathlib.Path) -> dict[str, object]:
         """Parse and cache flat YAML frontmatter from Markdown files."""
@@ -103,10 +119,39 @@ class AuditContext:
         return self.root / "starter-kits"
 
     @cached_property
+    def installed_starter_kits_root(self) -> pathlib.Path:
+        return self.root / ".github" / "starter-kits"
+
+    @cached_property
+    def starter_kit_roots(self) -> tuple[pathlib.Path, ...]:
+        return tuple(
+            path for path in (self.starter_kits_root, self.installed_starter_kits_root)
+            if path.is_dir()
+        )
+
+    @cached_property
     def starter_kit_dirs(self) -> tuple[pathlib.Path, ...]:
-        if not self.starter_kits_root.is_dir():
-            return ()
-        return tuple(sorted(path for path in self.starter_kits_root.iterdir() if path.is_dir()))
+        dirs: list[pathlib.Path] = []
+        for starter_root in self.starter_kit_roots:
+            dirs.extend(sorted(path for path in starter_root.iterdir() if path.is_dir()))
+        return tuple(dirs)
+
+    @cached_property
+    def repo_shape(self) -> str:
+        has_template_repo_markers = (
+            (self.root / "template" / "copilot-instructions.md").is_file()
+            and (self.root / "SETUP.md").is_file()
+            and (self.root / "UPDATE.md").is_file()
+        )
+        has_consumer_markers = (
+            (self.root / ".github" / "copilot-version.md").is_file()
+            or (self.root / ".copilot" / "workspace" / "workspace-index.json").is_file()
+        )
+        if has_template_repo_markers:
+            return "developer"
+        if has_consumer_markers:
+            return "consumer"
+        return "unknown"
 
     @cached_property
     def hook_config_files(self) -> tuple[pathlib.Path, pathlib.Path]:
@@ -114,6 +159,10 @@ class AuditContext:
             self.root / "template" / "hooks" / "copilot-hooks.json",
             self.root / ".github" / "hooks" / "copilot-hooks.json",
         )
+
+    @cached_property
+    def workspace_index_file(self) -> pathlib.Path:
+        return self.root / ".copilot" / "workspace" / "workspace-index.json"
 
 
 def ensure_context(root_or_ctx: pathlib.Path | AuditContext) -> AuditContext:
