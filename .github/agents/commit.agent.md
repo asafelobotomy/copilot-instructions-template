@@ -57,6 +57,20 @@ to widen the fix scope beyond the proposed commit.
 8. Use `Audit` when the user requests a deeper security or health check before
   push or release, or when preflight leaves material residual risk.
 
+## TaskBrief validation
+
+Before entering the commit or push workflow, confirm the change has a task brief.
+Use the user's request, approved file scope, or `/memories/session/plan.md` when
+available. Do not invent missing requirements.
+
+Record or explicitly mark `N/A` for:
+
+- `acceptance_tests` — exact checks required before commit or push
+- `escalation_policy` — when to stop and ask instead of widening scope
+- `reporting_contract` — what outcome summary must be reported back
+
+If any field is required but unclear, use `askQuestions` before proceeding.
+
 ## Commit workflow
 
 1. Run `git status` and `git diff --cached --stat` to understand what is staged.

@@ -75,14 +75,21 @@ Run deterministic targeted suites during intermediate phases when the repo has a
 
 Every non-trivial change:
 
-1. **Plan** — state the goal, list files, estimate LOC delta.
+1. **Plan** — state the goal, list files, estimate LOC delta, and for non-trivial work write a brief requirements summary before coding. If that summary changes the plan, realign first.
 2. **Do** — implement; write tests alongside.
 3. **Check** — during intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites for the touched paths when available. If the blast radius includes shared helpers, broad contract surfaces, or no reliable mapping exists, broaden aggressively. Run `bash tests/run-all.sh` only before marking the full user task complete end-to-end. Fix before continuing.
 4. **Act** — address any baseline breach; summarise.
 
 ### Test Scope Policy
 
-- **Task complete** means the full user-visible task is finished end-to-end, not that one phase of a larger plan is done and not that one item in a multi-part TODO list is done.
+| Tier | Meaning | Use when |
+|------|---------|----------|
+| `PathTargeted` | Narrow deterministic checks mapped to touched paths | Default during intermediate work |
+| `AffectedSuite` | Broader checks for shared helpers or broad contract surfaces | Path-targeted coverage is too narrow |
+| `FullSuite` | Entire local test suite | Before marking the full task complete |
+| `MergeGate` | Verified state required before merge, release, or final handoff | The change is ready to leave the working session |
+
+- **Task complete** means the full user-visible task is finished end-to-end and the required verification has passed, not that one phase of a larger plan is done and not that one item in a multi-part TODO list is done.
 - During intermediate phases, prefer deterministic path-based targeted suites tied to the files or directories actually touched.
 - Use `bash scripts/tests/select-targeted-tests.sh <paths...>` to choose deterministic phase checks from changed paths when the mapping exists.
 - If multiple sub-parts are still in progress, do not treat a passing targeted subset as permission to declare the whole task complete.
@@ -94,10 +101,11 @@ Every non-trivial change:
 Before acting on any medium-to-complex task:
 
 1. **Frame** — state the problem in one sentence. Decompose if you cannot.
-2. **Gather** — search once with broad terms. Do not repeat with minor variations.
-3. **Decide** — choose an approach and commit. Do not oscillate between equal options.
-4. **Act** — implement in one pass. Do not re-read files already read unless changed.
-5. **Verify** — check once. On failure, diagnose root cause before retrying.
+2. **Intent-Gate** — if the prompt is ambiguous, compound, or lacks scope, ask one clarifying question before acting. Never start execution on a prompt that could plausibly mean two different things.
+3. **Gather** — search once with broad terms. Do not repeat with minor variations.
+4. **Decide** — choose an approach and commit. Do not oscillate between equal options.
+5. **Act** — implement in one pass. Do not re-read files already read unless changed.
+6. **Verify** — check once. On failure, diagnose root cause before retrying.
 
 **Anti-loop rules** (all agents and subagents):
 

@@ -122,14 +122,21 @@ For deeper audits, activate the matching skill (§12) instead of expanding §2:
 
 Apply to every non-trivial change.
 
-**Plan**: State the goal. List the files that will change. Estimate LOC delta.
+**Plan**: State the goal. List the files that will change. Estimate LOC delta. For non-trivial tasks that span multiple files or introduce new behaviour, write a brief requirements summary before coding. Realign before proceeding if that summary changes the plan.
 **Do**: Implement. Write tests alongside code, not after.
 **Check**: During intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites for the touched paths when available. If the blast radius includes shared helpers, broad contract surfaces, or no reliable mapping exists, broaden aggressively. Run `{{TEST_COMMAND}}` only before marking the full user task complete end-to-end. Review output. Fix before proceeding.
 **Act**: If baseline exceeded, address it now. Summarise what changed.
 
 ### Test Scope Policy
 
-- **Task complete** means the full user-visible task is finished end-to-end, not that one phase of a larger plan is done and not that one item in a multi-part TODO list is done.
+| Tier | Meaning | Use when |
+|------|---------|----------|
+| `PathTargeted` | Narrow deterministic checks mapped to touched paths | Default during intermediate work |
+| `AffectedSuite` | Broader checks for shared helpers or broad contract surfaces | Path-targeted coverage is too narrow |
+| `FullSuite` | Entire local test suite | Before marking the full task complete |
+| `MergeGate` | Verified state required before merge, release, or final handoff | The change is ready to leave the working session |
+
+- **Task complete** means the full user-visible task is finished end-to-end and the required verification has passed, not that one phase of a larger plan is done and not that one item in a multi-part TODO list is done.
 - During intermediate phases, prefer deterministic path-based targeted suites tied to the files or directories actually touched.
 - If the repo documents a targeted-test selector or phase-test command, use it to choose deterministic phase checks from changed paths instead of guessing the phase-time suite set manually.
 - If multiple sub-parts are still in progress, do not treat a passing targeted subset as permission to declare the whole task complete.
@@ -143,13 +150,16 @@ loop traps and wasted tokens:
 
 1. **Frame** — state the problem in one sentence. If you cannot, the task needs
    decomposition before proceeding.
-2. **Gather** — identify the minimum information needed to act. Search once with
+2. **Intent-Gate** — if the prompt is ambiguous, compound, or lacks scope, ask
+  one clarifying question before acting. Never start execution on a prompt
+  that could plausibly mean two different things.
+3. **Gather** — identify the minimum information needed to act. Search once with
    broad terms; do not repeat the same search with minor variations.
-3. **Decide** — choose an approach and commit. If two approaches seem equal, pick
+4. **Decide** — choose an approach and commit. If two approaches seem equal, pick
    either and move forward. Do not oscillate.
-4. **Act** — implement the chosen approach in one pass. Do not re-read files you
+5. **Act** — implement the chosen approach in one pass. Do not re-read files you
    have already read unless the content has changed.
-5. **Verify** — check the result once. If it fails, diagnose the root cause before
+6. **Verify** — check the result once. If it fails, diagnose the root cause before
    retrying. Never retry the same action expecting a different result.
 
 **Anti-loop rules** (apply to all agents and subagents):

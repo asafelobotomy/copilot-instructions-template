@@ -35,6 +35,17 @@ Keep subagent delegation narrow.
 - Add a delegate only when the agent body defines a concrete handoff for it.
 - Prefer the lightest valid handoff: `Explore` for read-only repo scans, `Researcher` for current external docs, `Audit` for residual-risk checks, and `Organise` for structural moves or path fixes.
 
+## Start specialist requests with scope
+
+- Include a one-sentence objective.
+- State the scope, including what is in and out.
+- State acceptance criteria or a definition of done.
+- If the request is vague, ask one clarifying question before starting specialist work.
+
+Trigger phrases should be completable from a single short request. If a trigger
+phrase routinely needs clarifying back-and-forth before work can start, the
+trigger design is wrong.
+
 ---
 
 ## Canonical protocol sources

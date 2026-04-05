@@ -7,6 +7,13 @@
 - Always prefer reading the source file over recalling a cached summary of it.
 - When a memory conflicts with a source file, the source file wins.
 
+## Use This File as a Hot Index
+
+- Keep this file short and quick to scan.
+- Store durable rules, short summaries, and pointers here.
+- Move detailed research notes, session-specific findings, and large inventories into named shard files or adjacent focused docs.
+- If a detail does not need to be loaded every time, link to it from here instead of pasting it inline.
+
 ## Copilot Memory coexistence
 
 VS Code's **built-in memory tool** (`/memories/`) provides persistent storage across sessions with three scopes. This file exists alongside that system — they are complementary, not competing:
