@@ -43,8 +43,7 @@ $blockedPatterns = @(
 
 function Test-ReadonlyPatternSearch {
     param(
-        [string]$InputCommand,
-        [string[]]$Patterns
+        [string]$InputCommand
     )
 
     $trimmed = $InputCommand.Trim()
@@ -56,17 +55,10 @@ function Test-ReadonlyPatternSearch {
         return $false
     }
 
-    $lowered = $InputCommand.ToLowerInvariant()
-    foreach ($pattern in $Patterns) {
-        if ($lowered.Contains($pattern.ToLowerInvariant())) {
-            return $true
-        }
-    }
-
-    return $false
+    return $true
 }
 
-if (Test-ReadonlyPatternSearch -InputCommand $command -Patterns $blockedPatterns) {
+if (Test-ReadonlyPatternSearch -InputCommand $command) {
     '{"continue": true}'
     exit 0
 }
