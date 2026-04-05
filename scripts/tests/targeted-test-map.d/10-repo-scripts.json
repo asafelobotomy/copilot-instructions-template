@@ -1,0 +1,173 @@
+{
+  "description": "Release, sync, workspace, validation, and audit script surfaces.",
+  "rules": [
+    {
+      "id": "shared-script-lib",
+      "matchType": "exact",
+      "pattern": "scripts/lib.sh",
+      "phaseStrategy": "broaden-aggressively",
+      "tests": [
+        "tests/scripts/test-release-plan.sh",
+        "tests/scripts/test-verify-version-references.sh",
+        "tests/scripts/test-stub-migration.sh",
+        "tests/scripts/test-sync-workspace-index.sh",
+        "tests/scripts/test-sync-models.sh",
+        "tests/scripts/test-validate-agent-frontmatter.sh",
+        "tests/scripts/test-sync-template-parity.sh",
+        "tests/scripts/test-permission-resilience.sh"
+      ],
+      "reason": "scripts/lib.sh is sourced by multiple release/sync/validate utilities."
+    },
+    {
+      "id": "release-verify-version-references",
+      "matchType": "exact",
+      "pattern": "scripts/release/verify-version-references.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-verify-version-references.sh",
+        "tests/scripts/test-security-edge-cases.sh"
+      ],
+      "reason": "verify-version-references has direct unit coverage plus an idempotency regression in security edge cases."
+    },
+    {
+      "id": "release-plan",
+      "matchType": "exact",
+      "pattern": "scripts/release/plan-release.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-release-plan.sh"
+      ],
+      "reason": "plan-release is covered by a dedicated behavior suite."
+    },
+    {
+      "id": "release-audit-settings",
+      "matchType": "exact",
+      "pattern": "scripts/release/audit-release-settings.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-audit-release-settings.sh"
+      ],
+      "reason": "audit-release-settings is covered by a dedicated GitHub-settings behavior suite."
+    },
+    {
+      "id": "release-stub-migration",
+      "matchType": "exact",
+      "pattern": "scripts/release/stub-migration.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-stub-migration.sh"
+      ],
+      "reason": "stub-migration is covered by a dedicated unit suite."
+    },
+    {
+      "id": "workspace-index-script",
+      "matchType": "exact",
+      "pattern": "scripts/workspace/sync-workspace-index.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-sync-workspace-index.sh"
+      ],
+      "reason": "sync-workspace-index has a dedicated direct test suite."
+    },
+    {
+      "id": "workspace-drift-script",
+      "matchType": "exact",
+      "pattern": "scripts/workspace/check-workspace-drift.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-workspace-drift.sh"
+      ],
+      "reason": "check-workspace-drift has a dedicated direct test suite."
+    },
+    {
+      "id": "sync-models-script",
+      "matchType": "exact",
+      "pattern": "scripts/sync/sync-models.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-sync-models.sh"
+      ],
+      "reason": "sync-models has a dedicated contract suite."
+    },
+    {
+      "id": "sync-template-parity-script",
+      "matchType": "exact",
+      "pattern": "scripts/sync/sync-template-parity.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-sync-template-parity.sh"
+      ],
+      "reason": "sync-template-parity has a dedicated behavior suite."
+    },
+    {
+      "id": "validate-template-sync-script",
+      "matchType": "exact",
+      "pattern": "scripts/ci/validate-template-sync.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-validate-template-sync.sh"
+      ],
+      "reason": "validate-template-sync delegates to the canonical parity check and has a dedicated behavior suite."
+    },
+    {
+      "id": "validate-required-files-script",
+      "matchType": "exact",
+      "pattern": "scripts/ci/validate-required-files.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-validate-required-files.sh"
+      ],
+      "reason": "validate-required-files has a dedicated behavior suite."
+    },
+    {
+      "id": "validate-cross-references-script",
+      "matchType": "exact",
+      "pattern": "scripts/ci/validate-cross-references.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-validate-cross-references.sh"
+      ],
+      "reason": "validate-cross-references has a dedicated behavior suite."
+    },
+    {
+      "id": "validate-attention-budget-script",
+      "matchType": "exact",
+      "pattern": "scripts/ci/validate-attention-budget.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-validate-attention-budget.sh"
+      ],
+      "reason": "validate-attention-budget has a dedicated behavior suite."
+    },
+    {
+      "id": "validate-agent-frontmatter-script",
+      "matchType": "exact",
+      "pattern": "scripts/validate/validate-agent-frontmatter.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-validate-agent-frontmatter.sh"
+      ],
+      "reason": "validate-agent-frontmatter has a dedicated unit suite."
+    },
+    {
+      "id": "copilot-audit-script",
+      "matchType": "exact",
+      "pattern": "scripts/copilot_audit.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-copilot-audit.sh"
+      ],
+      "reason": "copilot_audit.py is validated by its dedicated unit suite."
+    },
+    {
+      "id": "copilot-audit-package",
+      "matchType": "prefix",
+      "pattern": "scripts/copilot_audit/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-copilot-audit.sh"
+      ],
+      "reason": "copilot_audit package changes are covered by the audit unit suite."
+    }
+  ]
+}

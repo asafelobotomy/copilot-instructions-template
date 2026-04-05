@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# tests/scripts/test-sync-version.sh — unit tests for scripts/release/sync-version.sh
-# Run: bash tests/scripts/test-sync-version.sh
+# tests/scripts/test-verify-version-references.sh — unit tests for scripts/release/verify-version-references.sh
+# Run: bash tests/scripts/test-verify-version-references.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
 
@@ -10,7 +10,7 @@ init_test_context "$0"
 trap 'teardown_sandbox' EXIT
 
 # Path to the script under test (relative to repo root)
-SCRIPT="$REPO_ROOT/scripts/release/sync-version.sh"
+SCRIPT="$REPO_ROOT/scripts/release/verify-version-references.sh"
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -52,7 +52,7 @@ run_script() {
 
 # ── Tests ──────────────────────────────────────────────────────────────────────
 
-echo "=== sync-version.sh unit tests ==="
+echo "=== verify-version-references.sh unit tests ==="
 echo ""
 
 # ── 1. Happy path — matching files verify cleanly ─────────────────────────────

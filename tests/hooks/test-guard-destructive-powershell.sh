@@ -78,11 +78,14 @@ assert_continue "grep search for chmod guard regex continues" "$(make_input 'bas
 assert_decision "search chained with real rm still denies" "$(make_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh && rm -rf /")" "deny"
 echo ""
 
-echo "5. Malformed or empty input does not crash"
+echo "5. Malformed input stays stable and missing command asks"
 output=$(run_guard 'not-json')
 assert_contains "malformed JSON continues" "$output" '"continue": true'
 output=$(run_guard '{}')
 assert_contains "empty JSON continues" "$output" '"continue": true'
+assert_decision "missing tool_input asks" '{"tool_name":"bash"}' "ask"
+assert_decision "null command asks" '{"tool_name":"bash","tool_input":{"command":null}}' "ask"
+assert_decision "unsupported input key asks" '{"tool_name":"bash","tool_input":{"input":"rm -rf /"}}' "ask"
 echo ""
 
 echo "6. Decision reasons stay informative"

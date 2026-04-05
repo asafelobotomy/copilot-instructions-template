@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-# sync-version.sh — verify release-managed version references stay aligned.
+# verify-version-references.sh — verify release-managed version references stay aligned.
 #
-# Legacy name retained for compatibility.
 # Single source of truth: VERSION.md
 # Single writer: release-please (version-file, manifest-file, extra-files)
 # This script is read-only and fails if the managed files drift from VERSION.md.

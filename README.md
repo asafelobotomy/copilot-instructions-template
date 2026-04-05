@@ -55,26 +55,46 @@ Use `feat` only for a real consumer-facing capability. Use patch-level headers f
 
 Release-please is the only version writer. Do not bump `VERSION.md`, `.release-please-manifest.json`, or the `x-release-please-version` markers manually.
 
-## Terminal-safe strict mode
+## Terminal-safe shell protocol
 
-In zsh workspaces, do not issue top-level `set -euo pipefail` or `setopt errexit nounset pipefail` directly into a persistent terminal session. Use the repo wrappers so strict mode stays isolated to a child Bash process.
+Use this decision order whenever an agent needs the terminal:
 
-For one-line snippets:
+1. If an existing repo script already does the job, run that script directly.
+2. If the task is a single existing command with no shell control flow, tempfile plumbing, redirection, retries, or shell-specific syntax, direct execution is fine.
+3. For any ad hoc snippet beyond that, use an isolated child shell wrapper instead of relying on the persistent terminal's current shell or option state.
+
+In zsh workspaces, do not issue top-level `set -euo pipefail` or `setopt errexit nounset pipefail` directly into a persistent terminal session. Use the repo wrappers so strict mode stays isolated to a child shell.
+
+For one-line or multi-step snippets:
 
 ```bash
-bash scripts/tests/run-strict-bash.sh --command 'tmpdir=$(mktemp -d) && printf "ok\n" > "$tmpdir/out" && cat "$tmpdir/out" && rm -rf "$tmpdir"'
+bash scripts/tests/run-isolated-shell.sh --shell bash --strict --command 'tmpdir=$(mktemp -d) && printf "ok\n" > "$tmpdir/out" && cat "$tmpdir/out" && rm -rf "$tmpdir"'
+```
+
+For zsh-specific syntax:
+
+```bash
+bash scripts/tests/run-isolated-shell.sh --shell zsh --command 'print -r -- "$ZSH_VERSION"'
+```
+
+For PowerShell syntax:
+
+```bash
+bash scripts/tests/run-isolated-shell.sh --shell pwsh --strict --command '$value = "pwsh-ok"; Write-Output $value'
 ```
 
 For multi-line snippets:
 
 ```bash
-bash scripts/tests/run-strict-bash-stdin.sh <<'EOF'
+bash scripts/tests/run-isolated-shell-stdin.sh --shell bash --strict <<'EOF'
 tmpdir=$(mktemp -d)
 printf 'hello\n' > "$tmpdir/out.txt"
 cat "$tmpdir/out.txt"
 rm -rf "$tmpdir"
 EOF
 ```
+
+For Bash-specific strict mode, keep `--shell bash --strict` on the generic wrappers.
 
 ## Recommended GitHub settings
 

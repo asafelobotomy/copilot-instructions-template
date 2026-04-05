@@ -9,6 +9,8 @@
 
 VS Code's built-in memory tool (`/memories/`) has three scopes: user (persistent, cross-workspace), session (conversation-scoped), and repo (repository-scoped). This file complements built-in memory — it is **git-tracked and team-shared**, so knowledge here benefits all contributors. Use built-in memory for personal preferences; use this file for project-specific architectural decisions, conventions, and gotchas.
 
+Use `/memories/repo/` as a repo-local inbox while work is in flight. Promote only validated, team-relevant facts here once they are worth versioning and sharing.
+
 *(Updated as the memory system is used.)*
 
 ## Metrics Freshness
@@ -30,3 +32,9 @@ VS Code's built-in memory tool (`/memories/`) has three scopes: user (persistent
 
 - Doctor↔Security have circular handoffs — they delegate to each other. Consider merging into a unified Audit agent.
 - Explore agent's read-only guarantee (no editFiles) is critical for parallel subagent safety — do not add editFiles to it.
+
+## Maintenance
+
+- Keep this file short enough to scan during compaction or heartbeat checks.
+- Promote durable repo-memory notes here when they should survive machine changes and contributor turnover.
+- Prune entries that are now captured in instructions, tests, or source files.

@@ -136,11 +136,6 @@ make_guard_input_with_agent() {
   printf '{"tool_name": "%s", "tool_input": {"command": "%s"}, "agentName": "%s"}' "$tool_name" "$command" "$agent_name"
 }
 
-make_guard_input_key() {
-  local tool_name="$1" command="$2"
-  printf '{"tool_name": "%s", "tool_input": {"input": "%s"}}' "$tool_name" "$command"
-}
-
 run_guard() {
   echo "$1" | bash "${GUARD_SCRIPT:?GUARD_SCRIPT must be set}" 2>/dev/null
 }

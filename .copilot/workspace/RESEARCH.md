@@ -236,3 +236,10 @@
 | <https://github.com/Yeachan-Heo/oh-my-claudecode> | oh-my-claudecode (OMC) — Claude Code multi-agent plugin; staged pipeline (team-plan→team-prd→team-exec→team-verify→team-fix); 29 agents, 32 skills; project-scoped skills with trigger keywords; stop callbacks to Telegram/Discord/Slack; OpenClaw gateway integration | 2026-04-05 | agents, orchestration, claude-code, skills, hooks |
 | <https://raw.githubusercontent.com/Yeachan-Heo/oh-my-claudecode/main/docs/REFERENCE.md> | OMC full reference — hooks system, skills scoping (.omc/skills/ project vs ~/.omc/skills/ user), env vars (DISABLE_OMC, OMC_SKIP_HOOKS, OMC_STATE_DIR), stop callback config | 2026-04-05 | agents, reference, skills, hooks |
 | <https://github.com/Yeachan-Heo/oh-my-codex> | oh-my-codex (OMX) — workflow layer for OpenAI Codex CLI; $deep-interview (Socratic clarification), $ralplan (plan approval gate), $ralph (persistence loop), $team (parallel execution); .omx/ state dir convention | 2026-04-05 | agents, orchestration, codex, workflow |
+
+## VS Code Copilot — Agent Memory Systems (2026-04)
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://code.visualstudio.com/docs/copilot/agents/memory> | VS Code memory tool — three scopes (user/repo/session); first 200 user-scope lines auto-loaded; repo/session must be explicitly read; Copilot Memory (GitHub-hosted, 28-day TTL, citation-verified) is separate; local memory tool vs Copilot Memory comparison table | 2026-04-05 | memory, scopes, built-in, copilot-memory |
+| <https://github.blog/ai-and-ml/github-copilot/building-an-agentic-memory-system-for-github-copilot/> | GitHub Memory design blog — citation-anchored facts (source file:line references); just-in-time verification at read time rather than offline curation; 28-day TTL; cross-agent (code review ↔ coding agent); privacy: repo-scoped, write-access required | 2026-04-05 | memory, citations, verification, github-copilot-memory |

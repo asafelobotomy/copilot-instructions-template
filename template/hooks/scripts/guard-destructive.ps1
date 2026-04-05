@@ -22,7 +22,21 @@ if ($toolName -notmatch 'terminal|command|bash|shell') {
 }
 
 $ti = $data.tool_input
-$command = $ti.command ?? $ti.input ?? ''
+$command = ''
+if ($null -ne $ti -and $ti.command -is [string]) {
+    $command = $ti.command
+}
+
+if ([string]::IsNullOrWhiteSpace($command)) {
+    [PSCustomObject]@{
+        hookSpecificOutput = [PSCustomObject]@{
+            hookEventName            = 'PreToolUse'
+            permissionDecision       = 'ask'
+            permissionDecisionReason = 'tool_input.command is required for terminal tools. Falling back to manual confirmation.'
+        }
+    } | ConvertTo-Json -Depth 5
+    exit 0
+}
 
 # Blocked patterns — hard deny
 $blockedPatterns = @(

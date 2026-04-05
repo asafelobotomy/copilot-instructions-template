@@ -20,7 +20,7 @@ required_files=(
   "CHANGELOG.md"
   "scripts/release/plan-release.sh"
   "scripts/release/stub-migration.sh"
-  "scripts/release/sync-version.sh"
+  "scripts/release/verify-version-references.sh"
   "scripts/tests/run-all-captured.sh"
   "scripts/tests/suite-manifest.json"
   "scripts/tests/suite-manifest.py"

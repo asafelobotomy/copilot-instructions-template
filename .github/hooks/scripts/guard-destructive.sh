@@ -45,10 +45,24 @@ import sys, json
 try:
     data = json.load(sys.stdin)
     ti = data.get('tool_input', {})
-    print(ti.get('command', ti.get('input', '')))
+    command = ti.get('command', '')
+    print(command if isinstance(command, str) else '')
 except Exception:
     print('')
 " 2>/dev/null || echo "")
+
+if [[ -z "$TOOL_INPUT" ]]; then
+  cat <<'EOF'
+{
+  "hookSpecificOutput": {
+    "hookEventName": "PreToolUse",
+    "permissionDecision": "ask",
+    "permissionDecisionReason": "tool_input.command is required for terminal tools. Falling back to manual confirmation."
+  }
+}
+EOF
+  exit 0
+fi
 
 AGENT_NAME=$(echo "$INPUT" | python3 -c "
 import sys, json

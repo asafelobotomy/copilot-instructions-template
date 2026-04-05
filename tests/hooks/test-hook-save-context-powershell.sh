@@ -21,20 +21,39 @@ run_save_context_in_dir() {
 echo "=== save-context.ps1 (PowerShell) unit tests ==="
 echo ""
 
-echo "1. save-context.ps1 emits JSON and includes workspace summaries when present"
+echo "1. save-context.ps1 emits JSON, includes the trigger, and summarises workspace files"
 TMP_CTX=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CTX")
 mkdir -p "$TMP_CTX/.copilot/workspace"
 printf 'HEARTBEAT_OK\n' > "$TMP_CTX/.copilot/workspace/HEARTBEAT.md"
-printf 'recent memory entry\n' > "$TMP_CTX/.copilot/workspace/MEMORY.md"
-printf 'heuristic: verify before commit\n' > "$TMP_CTX/.copilot/workspace/SOUL.md"
-output=$(run_save_context_in_dir "$TMP_CTX" '{}')
+cat > "$TMP_CTX/.copilot/workspace/MEMORY.md" <<'EOF'
+# Memory Strategy
+
+## Known Gotchas
+
+| Gotcha | Affected files | Workaround | Severity |
+|--------|---------------|------------|----------|
+| Large commit batches hide failures | tests/ | Prefer smaller batches and rerun targeted suites | medium |
+EOF
+cat > "$TMP_CTX/.copilot/workspace/SOUL.md" <<'EOF'
+# Values & Reasoning Patterns
+
+- Keep changes reversible.
+
+## Reasoning heuristics
+
+- When uncertain, read the source.
+- Prefer the smaller batch.
+EOF
+output=$(run_save_context_in_dir "$TMP_CTX" '{"trigger":"auto"}')
 status=$?
 assert_success "save-context exits zero" "$status"
 assert_valid_json "save-context emits valid JSON" "$output"
 assert_contains "save-context hookEventName present" "$output" "PreCompact"
+assert_contains "save-context includes trigger" "$output" "Trigger: auto"
 assert_contains "save-context includes heartbeat" "$output" "HEARTBEAT_OK"
-assert_contains "save-context includes memory summary" "$output" "recent memory entry"
-assert_contains "save-context includes heuristics summary" "$output" "verify before commit"
+assert_contains "save-context includes memory section" "$output" "Known Gotchas"
+assert_contains "save-context includes memory workaround" "$output" "Prefer smaller batches"
+assert_contains "save-context includes heuristics summary" "$output" "When uncertain, read the source"
 echo ""
 
 echo "2. save-context.ps1 includes clock summary when timing files exist"

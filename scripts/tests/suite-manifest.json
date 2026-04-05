@@ -149,16 +149,16 @@
       "ciLabel": "Script behavior | release-plan.sh"
     },
     {
-      "id": "script-run-strict-bash",
-      "path": "tests/scripts/test-run-strict-bash.sh",
+      "id": "script-run-isolated-shell",
+      "path": "tests/scripts/test-run-isolated-shell.sh",
       "phase": "scripts",
-      "ciLabel": "Script behavior | run-strict-bash.sh"
+      "ciLabel": "Script behavior | run-isolated-shell.sh"
     },
     {
-      "id": "script-run-strict-bash-stdin",
-      "path": "tests/scripts/test-run-strict-bash-stdin.sh",
+      "id": "script-run-isolated-shell-stdin",
+      "path": "tests/scripts/test-run-isolated-shell-stdin.sh",
       "phase": "scripts",
-      "ciLabel": "Script behavior | run-strict-bash-stdin.sh"
+      "ciLabel": "Script behavior | run-isolated-shell-stdin.sh"
     },
     {
       "id": "script-audit-release-settings",
@@ -185,10 +185,10 @@
       "ciLabel": "Script behavior | run-all-captured.sh"
     },
     {
-      "id": "script-sync-version",
-      "path": "tests/scripts/test-sync-version.sh",
+      "id": "script-verify-version-references",
+      "path": "tests/scripts/test-verify-version-references.sh",
       "phase": "scripts",
-      "ciLabel": "Script behavior | sync-version.sh"
+      "ciLabel": "Script behavior | verify-version-references.sh"
     },
     {
       "id": "script-stub-migration",

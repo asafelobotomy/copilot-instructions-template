@@ -36,9 +36,47 @@ if not SUITE_MANIFEST_PATH.is_file():
     raise SystemExit(f"suite manifest not found: {SUITE_MANIFEST_PATH}")
 
 config = json.loads(MAP_FILE.read_text(encoding="utf-8"))
-rules = config.get("rules", [])
 defaults = config.get("defaults", {})
+rule_files = config.get("ruleFiles", [])
 suite_manifest = json.loads(SUITE_MANIFEST_PATH.read_text(encoding="utf-8"))
+
+
+def load_rules() -> list[dict[str, object]]:
+    loaded_rules: list[dict[str, object]] = []
+
+    def extend_rules(payload: object, source: pathlib.Path) -> None:
+        if not isinstance(payload, list):
+            raise SystemExit(f"invalid rules payload in {source}: expected a list")
+        for rule in payload:
+            if not isinstance(rule, dict):
+                raise SystemExit(f"invalid rule entry in {source}: {rule!r}")
+            loaded_rules.append(rule)
+
+    if "rules" in config:
+        extend_rules(config.get("rules"), MAP_FILE)
+
+    if rule_files:
+        if not isinstance(rule_files, list) or not all(isinstance(item, str) and item for item in rule_files):
+            raise SystemExit(f"invalid ruleFiles list in {MAP_FILE}")
+        for rule_file in rule_files:
+            shard_path = (ROOT / rule_file).resolve()
+            if not shard_path.is_file():
+                raise SystemExit(f"targeted test map shard not found: {rule_file}")
+            shard_payload = json.loads(shard_path.read_text(encoding="utf-8"))
+            if isinstance(shard_payload, dict):
+                extend_rules(shard_payload.get("rules"), shard_path)
+            elif isinstance(shard_payload, list):
+                extend_rules(shard_payload, shard_path)
+            else:
+                raise SystemExit(f"invalid shard payload in {shard_path}: expected object or list")
+
+    if not loaded_rules:
+        raise SystemExit(f"targeted test map has no rules: {MAP_FILE}")
+
+    return loaded_rules
+
+
+rules = load_rules()
 
 suite_order: dict[str, int] = {}
 for index, suite in enumerate(suite_manifest.get("suites", [])):
@@ -103,6 +141,9 @@ def ordered_suite_paths(items: list[str]) -> list[str]:
 
 
 for rule in rules:
+    rule_id = rule.get("id")
+    if not isinstance(rule_id, str) or not rule_id:
+        raise SystemExit(f"invalid rule id in {MAP_FILE}: {rule}")
     if rule.get("matchType") not in {"exact", "prefix", "glob"}:
         raise SystemExit(f"invalid matchType in {MAP_FILE}: {rule}")
     if rule.get("phaseStrategy") not in PHASE_RANK:

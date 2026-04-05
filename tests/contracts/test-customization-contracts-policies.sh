@@ -251,23 +251,30 @@ required_by_file = {
         "bash scripts/tests/run-all-captured.sh",
         "For high-volume commands, capture the full output to a log file and print only a bounded tail",
         "Prefer repo bash scripts over ad hoc zsh control flow",
+        "single existing command with no shell control flow",
+        "scripts/tests/run-isolated-shell.sh",
+        "scripts/tests/run-isolated-shell-stdin.sh",
+        "--shell <bash|sh|zsh|pwsh>",
         "Never run `set -euo pipefail` or `setopt errexit nounset pipefail` as a standalone terminal command",
-        "scripts/tests/run-strict-bash.sh",
-        "scripts/tests/run-strict-bash-stdin.sh",
         "--command",
         "EOF",
         "avoid reserved variable names such as `status`",
+        "Do not rely on profile files, aliases, or exported shell options",
         "stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation",
     ],
     "template/copilot-instructions.md": [
         "For high-volume commands, capture the full output to a log file and print only a bounded tail instead of streaming everything",
         "If the repo documents a terminal-safe wrapper for a noisy command, prefer it",
         "Prefer repo scripts or bash wrappers over ad hoc shell control flow",
+        "single existing command with no shell control flow",
+        "generic isolated-shell wrapper",
+        "stdin or here-doc isolated-shell wrapper",
         "Never run `set -euo pipefail` or `setopt errexit nounset pipefail` as a standalone terminal command",
         "prefer a repo wrapper if one exists",
         "prefer a dedicated stdin or here-doc wrapper when the repo provides one",
         "run the snippet through a child Bash process with strict mode enabled",
         "avoid reserved variable names such as `status`",
+        "Do not rely on profile files, aliases, or exported shell options",
         "stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation",
     ],
 }
@@ -276,6 +283,11 @@ for rel, needles in required_by_file.items():
     for needle in needles:
         if " ".join(needle.split()) not in text:
             raise SystemExit(rel + " missing terminal discipline guidance: " + needle)
+dev_text = (root / ".github/copilot-instructions.md").read_text(encoding="utf-8")
+if "scripts/tests/run-strict-bash.sh" in dev_text:
+    raise SystemExit(".github/copilot-instructions.md must not reference deleted strict wrapper paths")
+if "scripts/tests/run-strict-bash-stdin.sh" in dev_text:
+    raise SystemExit(".github/copilot-instructions.md must not reference deleted strict wrapper stdin paths")
 template_text = (root / "template/copilot-instructions.md").read_text(encoding="utf-8")
 if "scripts/tests/run-strict-bash.sh" in template_text:
     raise SystemExit("template/copilot-instructions.md must not reference repo-only strict wrapper paths")

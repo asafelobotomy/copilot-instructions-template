@@ -31,10 +31,13 @@ VS Code's **built-in memory tool** (`/memories/`) provides persistent storage ac
 
 **Avoid duplication**: Do not record personal preferences here if built-in user memory already tracks them. This file is for project-specific knowledge that would be lost if you switched machines or cleared native memory.
 
+**Promotion rule**: Use built-in `/memories/repo/` as a repo-local inbox while a task is in flight. Promote only validated, team-relevant facts into this file once they are stable enough to version-control and share.
+
 ## What to remember
 
 - Hard-won architectural decisions.
 - Cross-cutting patterns that are not yet in the instructions file.
+- Durable repo-memory notes that now need to be shared with the team.
 - User preferences observed over time (link to USER.md).
 
 ## What not to remember
@@ -78,6 +81,8 @@ Append rows for non-obvious behaviours, environment quirks, or dependency traps.
 ## Maintenance Protocol
 
 - Review and prune this file quarterly (or when it exceeds 100 rows total).
+- Keep rows concise so compaction snapshots can lift the latest durable entries without tailing the whole file.
 - Remove entries that are now captured in the instructions file.
 - Archive pruned entries to `.github/archive/memory-pruned-YYYY-MM-DD.md` if historical record is needed.
+- When `/memories/repo/` accumulates validated facts that should survive machine changes or contributor turnover, fold the durable subset into this file and trim stale repo-local notes.
 - Rules in this file must be falsifiable — remove any entry that no longer improves agent output.

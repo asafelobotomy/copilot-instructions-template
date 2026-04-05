@@ -13,10 +13,11 @@ trap cleanup_dirs EXIT
 echo "=== save-context.sh ==="
 echo ""
 
-echo "1. Output is valid JSON"
-output=$(echo '{}' | bash "$SCRIPT" 2>/dev/null)
+echo "1. Output is valid JSON and includes the compaction trigger when provided"
+output=$(echo '{"trigger":"auto"}' | bash "$SCRIPT" 2>/dev/null)
 assert_success "exits 0" $?
 assert_valid_json "valid JSON output" "$output"
+assert_matches "trigger label appears in context" "$output" "Trigger: auto"
 echo ""
 
 echo "2. Output contains hookEventName=PreCompact"
@@ -40,13 +41,22 @@ TMPDIR_EMPTY=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_EMPTY")
 assert_success "no workspace files" $?
 echo ""
 
-echo "5. MEMORY.md recent entries appear in additionalContext"
+echo "5. MEMORY.md table entries appear in additionalContext"
 TMPDIR_MEM=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_MEM")
 mkdir -p "$TMPDIR_MEM/.copilot/workspace"
 printf 'HEARTBEAT: ok\n' > "$TMPDIR_MEM/.copilot/workspace/HEARTBEAT.md"
-printf 'Learned: always prefer small commits over large ones.\n' > "$TMPDIR_MEM/.copilot/workspace/MEMORY.md"
+cat > "$TMPDIR_MEM/.copilot/workspace/MEMORY.md" <<'EOF'
+# Memory Strategy
+
+## Known Gotchas
+
+| Gotcha | Affected files | Workaround | Severity |
+|--------|---------------|------------|----------|
+| Large commit batches hide failures | tests/ | Prefer smaller batches and rerun targeted suites | medium |
+EOF
 output=$(cd "$TMPDIR_MEM" && echo '{}' | bash "$SCRIPT" 2>/dev/null)
-assert_matches "MEMORY content in context" "$output" "small commits"
+assert_matches "MEMORY section label in context" "$output" "Known Gotchas"
+assert_matches "MEMORY row content in context" "$output" "Prefer smaller batches"
 assert_valid_json "valid JSON with MEMORY.md" "$output"
 echo ""
 
@@ -54,9 +64,18 @@ echo "6. SOUL.md heuristics appear in additionalContext"
 TMPDIR_SOUL=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_SOUL")
 mkdir -p "$TMPDIR_SOUL/.copilot/workspace"
 printf 'HEARTBEAT: ok\n' > "$TMPDIR_SOUL/.copilot/workspace/HEARTBEAT.md"
-printf '## Key heuristics\npattern: test before committing\n' > "$TMPDIR_SOUL/.copilot/workspace/SOUL.md"
+cat > "$TMPDIR_SOUL/.copilot/workspace/SOUL.md" <<'EOF'
+# Values & Reasoning Patterns
+
+- Keep changes reversible.
+
+## Reasoning heuristics
+
+- When uncertain, read the source.
+- Prefer the smaller batch.
+EOF
 output=$(cd "$TMPDIR_SOUL" && echo '{}' | bash "$SCRIPT" 2>/dev/null)
-assert_matches "SOUL heuristics in context" "$output" "test before committing"
+assert_matches "SOUL heuristics in context" "$output" "When uncertain, read the source"
 assert_valid_json "valid JSON with SOUL.md" "$output"
 echo ""
 

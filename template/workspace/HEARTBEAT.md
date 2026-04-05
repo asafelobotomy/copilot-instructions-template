@@ -28,6 +28,9 @@ Run each check; prepend `[!]` to Pulse if any fails:
 - [ ] **Test coverage delta** — did coverage drop since last session?
 - [ ] **Waste scan** — any new W1–W16 waste accumulated this session? (§6)
 - [ ] **MEMORY.md consolidation** — anything from this session to persist?
+- [ ] **MEMORY row budget** — does MEMORY.md remain concise, current, and under the active row budget?
+- [ ] **Repo-memory promotion** — do validated facts in `/memories/repo/` now belong in MEMORY.md?
+- [ ] **PreCompact snapshot quality** — would the current save-context snapshot surface the trigger, latest MEMORY entries, and SOUL cues cleanly?
 - [ ] **Metrics freshness** — has the metrics baseline been reviewed in the last 3 sessions?
 - [ ] **Settings drift** — do §10 overrides still match the codebase?
 - [ ] **Agent compatibility** — do agent files use current frontmatter schema? Any deprecated fields?
@@ -46,6 +49,8 @@ When `session_reflect` returns, process its output silently:
 - **User signals** → persist to *USER.md* if directly observable
 - **Actionable items** → surface to the user (security, tech debt, broken assumptions)
 - **Carry-forward lessons** → persist to *MEMORY.md + SOUL.md*
+
+When a lesson first lands in built-in repo memory, decide during heartbeat whether it should stay repo-local or be promoted into MEMORY.md for team-wide durability.
 
 The MCP tool records completion automatically by setting the session sentinel and writing a `session_reflect` completion event. No manual sentinel management is needed.
 

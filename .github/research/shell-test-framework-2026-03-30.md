@@ -13,19 +13,20 @@ execution — but both require an installation step and carry a learning curve. 
 high-value, low-risk improvements are **trap-based cleanup guards**, **a shared git-repo fixture
 helper**, and **TAP-format summary output** — all achievable without migrating frameworks.
 
-When these shell snippets are run through terminal tools in a zsh workspace, use the repo's strict
-mode wrappers instead of issuing top-level `set -euo pipefail` into the persistent session.
+When these shell snippets are run through terminal tools in a zsh workspace, use the repo's
+isolated-shell wrappers instead of issuing top-level `set -euo pipefail` into the persistent
+session.
 
-One-line strict snippet:
+One-line strict Bash snippet:
 
 ```bash
-bash scripts/tests/run-strict-bash.sh --command 'printf "framework-note\n"'
+bash scripts/tests/run-isolated-shell.sh --shell bash --strict --command 'printf "framework-note\n"'
 ```
 
-Multi-line strict snippet:
+Multi-line strict Bash snippet:
 
 ```bash
-bash scripts/tests/run-strict-bash-stdin.sh <<'EOF'
+bash scripts/tests/run-isolated-shell-stdin.sh --shell bash --strict <<'EOF'
 printf 'framework-note\n'
 EOF
 ```
@@ -78,7 +79,7 @@ EOF
 | `test-release-contracts.sh` | 85 | 5 | 5 | Pure `assert_python` | No bash assertions; depends entirely on Python |
 | `test-hooks-powershell.sh` | 113 | 22 | 7 | `run_ps_script` helper; `mktemp -d` per test | Coverage-aware; reasonable factoring |
 | `test-guard-destructive-powershell.sh` | 92 | 20 | 6 | mirrors guard-destructive.sh patterns | Duplicates `make_input`, `assert_decision`, `assert_continue` from bash counterpart |
-| `test-sync-version.sh` | 166 | 25 | 8 | `setup_sandbox`/`teardown_sandbox` pattern; `ROOT_DIR` env override; SHA comparison | Good pattern; no trap guard for teardown |
+| `test-verify-version-references.sh` | 166 | 25 | 8 | `setup_sandbox`/`teardown_sandbox` pattern; `ROOT_DIR` env override; SHA comparison | Good pattern; no trap guard for teardown |
 | `test-stub-migration.sh` | 99 | 9 | 4 | same sandbox pattern | Clean |
 | `test-sync-workspace-index.sh` | 132 | 17 | 6 | `make_fixture` helper; `assert_python_in_root` | Fixture helper is well-extracted |
 | `test-sync-models.sh` | 208 | 16 | 10 | `make_fixture` with sub-helpers; real-repo regression guard (test 9) | Python inline calls to mutate fixture files; fragile with temp path embedding |

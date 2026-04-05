@@ -1,0 +1,364 @@
+{
+  "description": "Template and repo-live hook surfaces, helper modules, and parity rules.",
+  "rules": [
+    {
+      "id": "template-hooks-parity",
+      "matchType": "prefix",
+      "pattern": "template/hooks/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-template-parity.sh"
+      ],
+      "reason": "Template hook assets are guarded by the template parity contract suite."
+    },
+    {
+      "id": "github-hooks-parity",
+      "matchType": "prefix",
+      "pattern": ".github/hooks/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-template-parity.sh"
+      ],
+      "reason": "Repo-live hook copies are guarded by the template parity contract suite."
+    },
+    {
+      "id": "template-hook-shell-broad",
+      "matchType": "glob",
+      "pattern": "template/hooks/scripts/*.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-permission-resilience.sh"
+      ],
+      "reason": "Template shell hook scripts should keep permissions, strict mode, and shebang guarantees."
+    },
+    {
+      "id": "github-hook-shell-broad",
+      "matchType": "glob",
+      "pattern": ".github/hooks/scripts/*.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-permission-resilience.sh"
+      ],
+      "reason": "Repo-live shell hook copies should keep permissions and executability guarantees."
+    },
+    {
+      "id": "template-hook-powershell-broad",
+      "matchType": "glob",
+      "pattern": "template/hooks/scripts/*.ps1",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hooks-powershell.sh"
+      ],
+      "reason": "Template PowerShell hook scripts are exercised by the PowerShell hook umbrella suite."
+    },
+    {
+      "id": "hook-session-start",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/session-start.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-session-start.sh"
+      ],
+      "reason": "session-start.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-pulse",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/pulse.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-pulse.sh"
+      ],
+      "reason": "pulse.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-post-edit-lint",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/post-edit-lint.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-post-edit-lint.sh"
+      ],
+      "reason": "post-edit-lint.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-save-context",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/save-context.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-save-context.sh"
+      ],
+      "reason": "save-context.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-save-context-python-helper",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/heartbeat_clock_summary.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-heartbeat-clock-summary.sh",
+        "tests/hooks/test-hook-save-context.sh"
+      ],
+      "reason": "heartbeat_clock_summary.py has a direct helper suite plus save-context integration coverage."
+    },
+    {
+      "id": "hook-save-context-python-helper-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/heartbeat_clock_summary.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-heartbeat-clock-summary.sh",
+        "tests/hooks/test-hook-save-context.sh"
+      ],
+      "reason": "Repo-live heartbeat_clock_summary.py has a direct helper suite plus save-context integration coverage."
+    },
+    {
+      "id": "hook-pulse-paths-helper",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/pulse_paths.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-pulse-paths.sh",
+        "tests/hooks/test-hook-pulse.sh"
+      ],
+      "reason": "pulse_paths.py has a direct helper suite plus pulse integration coverage."
+    },
+    {
+      "id": "hook-pulse-paths-helper-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/pulse_paths.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-pulse-paths.sh",
+        "tests/hooks/test-hook-pulse.sh"
+      ],
+      "reason": "Repo-live pulse_paths.py has a direct helper suite plus pulse integration coverage."
+    },
+    {
+      "id": "hook-pulse-state-helper",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/pulse_state.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-pulse-state.sh",
+        "tests/hooks/test-hook-pulse.sh"
+      ],
+      "reason": "pulse_state.py has a direct helper suite plus pulse integration coverage."
+    },
+    {
+      "id": "hook-pulse-state-helper-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/pulse_state.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-pulse-state.sh",
+        "tests/hooks/test-hook-pulse.sh"
+      ],
+      "reason": "Repo-live pulse_state.py has a direct helper suite plus pulse integration coverage."
+    },
+    {
+      "id": "hook-pulse-python-helpers",
+      "matchType": "glob",
+      "pattern": "template/hooks/scripts/pulse_*.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-pulse.sh"
+      ],
+      "reason": "Python pulse helpers are exercised by the pulse hook suite."
+    },
+    {
+      "id": "hook-pulse-python-helpers-github",
+      "matchType": "glob",
+      "pattern": ".github/hooks/scripts/pulse_*.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-pulse.sh"
+      ],
+      "reason": "Repo-live Python pulse helpers are exercised by the pulse hook suite."
+    },
+    {
+      "id": "hook-mcp-heartbeat-server",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/mcp-heartbeat-server.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-mcp-heartbeat-server.sh"
+      ],
+      "reason": "The heartbeat MCP server has a dedicated unit suite."
+    },
+    {
+      "id": "hook-mcp-heartbeat-server-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/mcp-heartbeat-server.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-mcp-heartbeat-server.sh"
+      ],
+      "reason": "The repo-live heartbeat MCP server has a dedicated unit suite."
+    },
+    {
+      "id": "hook-lib-hooks",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/lib-hooks.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-lib-hooks.sh",
+        "tests/scripts/test-permission-resilience.sh"
+      ],
+      "reason": "lib-hooks.sh has a direct helper suite plus permission resilience coverage."
+    },
+    {
+      "id": "hook-lib-hooks-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/lib-hooks.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-lib-hooks.sh",
+        "tests/scripts/test-permission-resilience.sh"
+      ],
+      "reason": "Repo-live lib-hooks.sh has a direct helper suite plus permission resilience coverage."
+    },
+    {
+      "id": "hook-scan-secrets",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/scan-secrets.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-scan-secrets.sh"
+      ],
+      "reason": "scan-secrets.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-scan-secrets-powershell",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/scan-secrets.ps1",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-scan-secrets-powershell.sh"
+      ],
+      "reason": "scan-secrets.ps1 has a dedicated PowerShell suite."
+    },
+    {
+      "id": "hook-scan-secrets-powershell-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/scan-secrets.ps1",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-scan-secrets-powershell.sh"
+      ],
+      "reason": "Repo-live scan-secrets.ps1 has a dedicated PowerShell suite."
+    },
+    {
+      "id": "hook-guard-destructive",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/guard-destructive.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-guard-destructive.sh",
+        "tests/scripts/test-security-edge-cases.sh"
+      ],
+      "reason": "guard-destructive.sh has direct hook coverage plus security edge-case coverage."
+    },
+    {
+      "id": "hook-mcp-launchers",
+      "matchType": "glob",
+      "pattern": "template/hooks/scripts/mcp-*.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-mcp-launchers.sh"
+      ],
+      "reason": "MCP launcher wrappers are covered by the mcp-launchers suite."
+    },
+    {
+      "id": "hook-guard-destructive-powershell",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/guard-destructive.ps1",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-guard-destructive-powershell.sh"
+      ],
+      "reason": "guard-destructive.ps1 has a dedicated PowerShell suite."
+    },
+    {
+      "id": "hook-subagent-start",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/subagent-start.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-subagent-start.sh"
+      ],
+      "reason": "subagent-start.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-subagent-start-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/subagent-start.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-subagent-start.sh"
+      ],
+      "reason": "Repo-live subagent-start.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-subagent-stop",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/subagent-stop.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-subagent-stop.sh"
+      ],
+      "reason": "subagent-stop.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-subagent-stop-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/subagent-stop.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-subagent-stop.sh"
+      ],
+      "reason": "Repo-live subagent-stop.sh has a dedicated hook unit suite."
+    },
+    {
+      "id": "hook-subagent-start-powershell",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/subagent-start.ps1",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-subagent-start-powershell.sh"
+      ],
+      "reason": "subagent-start.ps1 has a dedicated PowerShell suite."
+    },
+    {
+      "id": "hook-subagent-start-powershell-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/subagent-start.ps1",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-subagent-start-powershell.sh"
+      ],
+      "reason": "Repo-live subagent-start.ps1 has a dedicated PowerShell suite."
+    },
+    {
+      "id": "hook-subagent-stop-powershell",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/subagent-stop.ps1",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-subagent-stop-powershell.sh"
+      ],
+      "reason": "subagent-stop.ps1 has a dedicated PowerShell suite."
+    },
+    {
+      "id": "hook-subagent-stop-powershell-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/subagent-stop.ps1",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-subagent-stop-powershell.sh"
+      ],
+      "reason": "Repo-live subagent-stop.ps1 has a dedicated PowerShell suite."
+    }
+  ]
+}

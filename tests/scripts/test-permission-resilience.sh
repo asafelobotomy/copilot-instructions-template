@@ -149,7 +149,7 @@ UTIL_SCRIPTS=(
   scripts/release/plan-release.sh
   scripts/tests/run-all-captured.sh
   scripts/tests/select-targeted-tests.sh
-  scripts/release/sync-version.sh
+  scripts/release/verify-version-references.sh
   scripts/workspace/sync-workspace-index.sh
   scripts/sync/sync-models.sh
   scripts/sync/sync-template-parity.sh

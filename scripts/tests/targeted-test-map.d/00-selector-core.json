@@ -1,0 +1,240 @@
+{
+  "description": "Selector internals, shared test helpers, and aggregate suite routing for selector shards.",
+  "rules": [
+    {
+      "id": "selector-script",
+      "matchType": "exact",
+      "pattern": "scripts/tests/select-targeted-tests.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-select-targeted-tests.sh"
+      ],
+      "reason": "The selector script has a dedicated unit suite."
+    },
+    {
+      "id": "run-all-captured-script",
+      "matchType": "exact",
+      "pattern": "scripts/tests/run-all-captured.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-run-all-captured.sh"
+      ],
+      "reason": "run-all-captured has a dedicated wrapper behavior suite."
+    },
+    {
+      "id": "suite-manifest-script",
+      "matchType": "exact",
+      "pattern": "scripts/tests/suite-manifest.py",
+      "phaseStrategy": "broaden-aggressively",
+      "tests": [
+        "tests/scripts/test-suite-manifest.sh",
+        "tests/scripts/test-select-targeted-tests.sh",
+        "tests/scripts/test-run-all-captured.sh"
+      ],
+      "reason": "suite-manifest.py defines the canonical suite inventory for the local runner, CI matrix, and selector validation."
+    },
+    {
+      "id": "suite-manifest-data",
+      "matchType": "exact",
+      "pattern": "scripts/tests/suite-manifest.json",
+      "phaseStrategy": "broaden-aggressively",
+      "tests": [
+        "tests/scripts/test-suite-manifest.sh",
+        "tests/scripts/test-select-targeted-tests.sh",
+        "tests/scripts/test-run-all-captured.sh"
+      ],
+      "reason": "suite-manifest.json is the canonical suite inventory for the local runner, CI matrix, and selector validation."
+    },
+    {
+      "id": "run-isolated-shell-script",
+      "matchType": "exact",
+      "pattern": "scripts/tests/run-isolated-shell.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-run-isolated-shell.sh"
+      ],
+      "reason": "run-isolated-shell has a dedicated cross-shell wrapper behavior suite."
+    },
+    {
+      "id": "run-isolated-shell-stdin-script",
+      "matchType": "exact",
+      "pattern": "scripts/tests/run-isolated-shell-stdin.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-run-isolated-shell-stdin.sh"
+      ],
+      "reason": "run-isolated-shell-stdin has a dedicated cross-shell stdin wrapper behavior suite."
+    },
+    {
+      "id": "selector-map",
+      "matchType": "exact",
+      "pattern": "scripts/tests/targeted-test-map.json",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-select-targeted-tests.sh"
+      ],
+      "reason": "The selector manifest is validated by the selector unit suite."
+    },
+    {
+      "id": "selector-map-shards",
+      "matchType": "prefix",
+      "pattern": "scripts/tests/targeted-test-map.d/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-select-targeted-tests.sh"
+      ],
+      "reason": "Selector map shards are validated by the selector unit suite."
+    },
+    {
+      "id": "selector-test-shards",
+      "matchType": "prefix",
+      "pattern": "tests/scripts/test-select-targeted-tests.d/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-select-targeted-tests.sh"
+      ],
+      "reason": "Selector test shards run through the aggregate selector unit suite."
+    },
+    {
+      "id": "tests-run-all",
+      "matchType": "exact",
+      "pattern": "tests/run-all.sh",
+      "phaseStrategy": "full-suite",
+      "tests": [],
+      "reason": "The canonical runner defines the full-suite gate and is safest to validate with the full suite."
+    },
+    {
+      "id": "suite-manifest-test",
+      "matchType": "exact",
+      "pattern": "tests/scripts/test-suite-manifest.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "self"
+      ],
+      "reason": "The suite-manifest helper suite is directly runnable and should self-validate when edited."
+    },
+    {
+      "id": "powershell-resolver",
+      "matchType": "exact",
+      "pattern": "scripts/tests/resolve-powershell.sh",
+      "phaseStrategy": "broaden-aggressively",
+      "tests": [
+        "tests/scripts/test-resolve-powershell.sh",
+        "tests/hooks/test-hooks-powershell.sh",
+        "tests/hooks/test-guard-destructive-powershell.sh",
+        "tests/hooks/test-hook-scan-secrets-powershell.sh",
+        "tests/hooks/test-hook-subagent-start-powershell.sh",
+        "tests/hooks/test-hook-subagent-stop-powershell.sh"
+      ],
+      "reason": "The shared PowerShell resolver affects the full PowerShell hook surface and its deterministic resolver unit test."
+    },
+    {
+      "id": "test-helpers",
+      "matchType": "exact",
+      "pattern": "tests/lib/test-helpers.sh",
+      "phaseStrategy": "full-suite",
+      "tests": [],
+      "reason": "Shared shell test helpers affect most shell suites, so no reliable narrow subset exists."
+    },
+    {
+      "id": "copilot-audit-sandbox-helper",
+      "matchType": "exact",
+      "pattern": "tests/lib/copilot-audit-sandbox.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-copilot-audit.sh"
+      ],
+      "reason": "The copilot audit sandbox helper is only used by the audit unit suite."
+    },
+    {
+      "id": "powershell-test-helpers",
+      "matchType": "exact",
+      "pattern": "tests/lib/powershell-hook-test-helpers.sh",
+      "phaseStrategy": "broaden-aggressively",
+      "tests": [
+        "tests/scripts/test-resolve-powershell.sh",
+        "tests/hooks/test-hooks-powershell.sh",
+        "tests/hooks/test-guard-destructive-powershell.sh",
+        "tests/hooks/test-hook-scan-secrets-powershell.sh",
+        "tests/hooks/test-hook-subagent-start-powershell.sh",
+        "tests/hooks/test-hook-subagent-stop-powershell.sh"
+      ],
+      "reason": "Shared PowerShell hook helpers affect the full PowerShell hook surface."
+    },
+    {
+      "id": "powershell-coverage-tools",
+      "matchType": "prefix",
+      "pattern": "tests/coverage/",
+      "phaseStrategy": "broaden-aggressively",
+      "tests": [
+        "tests/scripts/test-resolve-powershell.sh",
+        "tests/hooks/test-hooks-powershell.sh",
+        "tests/hooks/test-guard-destructive-powershell.sh",
+        "tests/hooks/test-hook-scan-secrets-powershell.sh",
+        "tests/hooks/test-hook-subagent-start-powershell.sh",
+        "tests/hooks/test-hook-subagent-stop-powershell.sh"
+      ],
+      "reason": "PowerShell coverage wrappers affect every PowerShell hook suite."
+    },
+    {
+      "id": "runnable-hook-tests",
+      "matchType": "prefix",
+      "pattern": "tests/hooks/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "self"
+      ],
+      "reason": "Hook test suites are runnable directly and should self-validate when edited."
+    },
+    {
+      "id": "runnable-script-tests",
+      "matchType": "prefix",
+      "pattern": "tests/scripts/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "self"
+      ],
+      "reason": "Script test suites are runnable directly and should self-validate when edited."
+    },
+    {
+      "id": "runnable-contract-tests",
+      "matchType": "prefix",
+      "pattern": "tests/contracts/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "self"
+      ],
+      "reason": "Contract suites are runnable directly and should self-validate when edited."
+    },
+    {
+      "id": "customization-contract-subsuite-surfaces",
+      "matchType": "exact",
+      "pattern": "tests/contracts/test-customization-contracts-surfaces.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-customization-contracts.sh"
+      ],
+      "reason": "Customization contract sub-suites run through the aggregate customization contract suite in the canonical manifest."
+    },
+    {
+      "id": "customization-contract-subsuite-agents",
+      "matchType": "exact",
+      "pattern": "tests/contracts/test-customization-contracts-agents.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-customization-contracts.sh"
+      ],
+      "reason": "Customization contract sub-suites run through the aggregate customization contract suite in the canonical manifest."
+    },
+    {
+      "id": "customization-contract-subsuite-policies",
+      "matchType": "exact",
+      "pattern": "tests/contracts/test-customization-contracts-policies.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-customization-contracts.sh"
+      ],
+      "reason": "Customization contract sub-suites run through the aggregate customization contract suite in the canonical manifest."
+    }
+  ]
+}
