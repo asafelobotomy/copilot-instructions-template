@@ -7,6 +7,21 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [5.6.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.5.0...v5.6.0) (2026-04-05)
+
+
+### Features
+
+* **template:** add task-brief and verification guidance ([59a910b](https://github.com/asafelobotomy/copilot-instructions-template/commit/59a910b0db91767368a31b33903b9d6d8ff92c7e))
+* **workspace:** expand workspace index companion inventory ([3873b34](https://github.com/asafelobotomy/copilot-instructions-template/commit/3873b34e4cb98adc1e117cf8b12e493156f24a2d))
+
+
+### Bug Fixes
+
+* **hooks:** harden stop-loop and PowerShell handling ([c178fcd](https://github.com/asafelobotomy/copilot-instructions-template/commit/c178fcdbcd88719185887870803138591d54268c))
+* **release:** exclude internal-only changes from releases ([0177bcc](https://github.com/asafelobotomy/copilot-instructions-template/commit/0177bcc365dbf2b94e87e4ff1cec088967a722f8))
+* **scripts:** harden consumer audit compatibility ([a480b5c](https://github.com/asafelobotomy/copilot-instructions-template/commit/a480b5c57bf3625601e17db2b4e8e9783ca993ac))
+
 ## [5.5.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.4.0...v5.5.0) (2026-04-04)
 
 
