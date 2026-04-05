@@ -89,8 +89,3 @@ def format_json(results: list[CheckResult]) -> str:
         ],
     }
     return json.dumps(payload, indent=2)
-
-
-# Backward-compatible aliases for existing imports.
-_summary_counts = summary_counts
-_overall_status = overall_status

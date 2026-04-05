@@ -31,15 +31,21 @@ Read `.github/copilot-instructions.md` and `.github/copilot-version.md`. Extract
 
 - **Installed version** (semver; `unknown` if absent/invalid), **Applied/Updated dates**
 - **Section fingerprints**: `<!-- section-fingerprints -->` → `§N → stored_fp`. If absent: `fingerprints_available = false`
+- **File manifest**: `<!-- file-manifest -->` → managed-path hashes. If absent: `file_manifest_available = false`
 - **Setup answers**: `<!-- setup-answers -->` → `PLACEHOLDER → value`. If absent: `{}`
 - **§10 content**: entire `## §10 — Project-Specific Overrides` — preserved unconditionally, never diffed
+
+Supported in-place updates require a tagged installed version `v3.4.0` or newer plus all three metadata blocks in `.github/copilot-version.md`: `section-fingerprints`, `file-manifest`, and `setup-answers`.
+
+If the installed version is `unknown`, earlier than `v3.4.0`, or any required metadata block is missing, stop the normal update flow and direct the user to **Factory restore** instead of attempting a heuristic merge.
 
 ### U2 — Fetch the current template version
 ```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/VERSION.md
 ```
 
-If fetched = installed → "Already up to date (vX.Y.Z). Say 'Force check instruction updates' for full comparison." → stop. If installed = `unknown`, proceed regardless.
+If fetched = installed → "Already up to date (vX.Y.Z). Say 'Force check instruction updates' for full comparison." → stop.
+If installed = `unknown`, do not continue with the version-walk. Direct the user to **Factory restore**.
 
 ### U3 — Fetch migration registry and changelog
 > **Parallelization**: U3, U3b, and U4 fetches are independent — batch all.
@@ -49,12 +55,7 @@ Always fetch:
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/MIGRATION.md
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/CHANGELOG.md
 ```
-If the installed version is earlier than `v3.4.0`, also fetch:
-```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/MIGRATION.archive.md
-```
-Merge `MIGRATION.md` with `MIGRATION.archive.md` before the version-walk when the archive is fetched.
-From `MIGRATION.md` and, when fetched, `MIGRATION.archive.md`: entries newer than installed (sections changed, companions, placeholders, breaking changes, manual actions). From `CHANGELOG.md`: entries newer than installed for narrative.
+From `MIGRATION.md`: entries newer than installed (sections changed, companions, placeholders, breaking changes, manual actions). From `CHANGELOG.md`: entries newer than installed for narrative.
 
 ### U3b — GitHub API compare (authoritative file diff)
 ```text
@@ -63,12 +64,14 @@ GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/com
 
 Parse `files[]` → record `filename`, `status`, `previous_filename`. Store as `API_FILE_DIFF`.
 
-**Fallback A** (404 / no tag): fetch `git/trees/main?recursive=1`, set all statuses to `modified`. If `"truncated": true`, set `API_FILE_DIFF = null`.
-**Fallback B** (API unavailable): set `API_FILE_DIFF = null`, use the fetched migration registries only.
+**404 / no tag**: stop the normal update flow and direct the user to **Factory restore**. Supported installs must have a tagged installed version.
+**Fallback** (API unavailable): set `API_FILE_DIFF = null`, use the fetched migration registries only.
 
 ### U4 — Fetch templates for three-way merge
-- **Old baseline**: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/v<INSTALLED_VERSION>/template/copilot-instructions.md` (`OLD_BASELINE = null` if no tag / fetch fails)
+- **Old baseline**: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/v<INSTALLED_VERSION>/template/copilot-instructions.md`
 - **New template**: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/copilot-instructions.md`
+
+If the old baseline fetch fails, stop and direct the user to retry later or use **Factory restore**. Supported in-place updates require a tagged baseline.
 
 ### U5 — Build the change manifest (version-walk)
 #### Step 1 — Identify intermediate versions
@@ -83,9 +86,9 @@ fp=$(awk "/^## §${i} —/{found=1; next} /^## §/{if(found) exit} found{print}"
   .github/copilot-instructions.md | sha256sum | cut -c1-12)
 ```
 
-Match = not modified. Mismatch = modified. If unavailable → legacy heuristic.
+Match = not modified. Mismatch = modified. If unavailable, stop and direct the user to **Factory restore**.
 
-**Upstream change**: compare old baseline vs new template (ignore resolved placeholders). If OLD_BASELINE unavailable, compare installed vs new template.
+**Upstream change**: compare old baseline vs new template (ignore resolved placeholders).
 
 **Status assignment**:
 
@@ -98,8 +101,6 @@ Match = not modified. Mismatch = modified. If unavailable → legacy heuristic.
 | `NEW_SECTION` | In new template only | Offer |
 | `REMOVED_FROM_TEMPLATE` | In installed only | Warn; preserve |
 | `BREAKING` | Marked breaking in MIGRATION.md | Flag ⚠; confirm |
-
-**Legacy fallback** (`fingerprints_available = false` AND `OLD_BASELINE = null`): compare installed vs new directly. Substantial modifications → `USER_MODIFIED`, else `UPDATED`.
 #### Step 3 — Companion file manifest (API-driven)
 **Primary**: `API_FILE_DIFF` filtered through Path Mapping Table. **Secondary**: the fetched migration registries for metadata. Include paths from `API_FILE_DIFF` even if absent from the migration entries.
 

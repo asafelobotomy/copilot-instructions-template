@@ -767,11 +767,12 @@ assert_success "consumer profile allows missing opted-out VS Code files" "$CASE_
 assert_contains "consumer profile stays HEALTHY without VS Code files" "$CASE_OUTPUT" '"status": "HEALTHY"'
 echo ""
 
-# ── 23c. Consumer profile — legacy workspace-index stays conservative ───────
-echo "23c. consumer profile: legacy workspace-index remains HEALTHY without optional prompts or instructions"
+# ── 23c. Consumer profile — legacy workspace-index is no longer supported ───
+echo "23c. consumer profile: legacy workspace-index fails when required inventories are missing"
 run_audit_case json mutate_consumer_legacy_workspace_index_without_optional_files consumer
-assert_success "consumer profile allows legacy workspace-index without optional inventories" "$CASE_STATUS"
-assert_contains "consumer profile stays HEALTHY for legacy workspace-index" "$CASE_OUTPUT" '"status": "HEALTHY"'
+assert_failure "consumer profile rejects legacy workspace-index without optional inventories" "$CASE_STATUS"
+assert_contains "consumer profile reports C1 for legacy workspace-index" "$CASE_OUTPUT" '"check_id": "C1"'
+assert_contains "consumer profile flags missing prompts inventory" "$CASE_OUTPUT" 'workspace-index missing required inventory list: prompts'
 echo ""
 
 # ── 24. Consumer profile — A4 repo policy skipped ──────────────────────────

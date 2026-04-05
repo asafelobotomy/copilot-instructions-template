@@ -55,6 +55,35 @@ def _check_counts(result: CheckResult, rel: str, data: dict[str, object], invent
             ))
 
 
+def _require_inventory_lists(result: CheckResult, rel: str, data: dict[str, object]) -> None:
+    required_lists = (
+        ("agents", "agents"),
+        ("skills.repo", "skills.repo"),
+        ("prompts", "prompts"),
+        ("instructions", "instructions"),
+        ("workspaceFiles", "workspaceFiles"),
+        ("workflowFiles", "workflowFiles"),
+        ("hookScripts.shell", "hookScripts.shell"),
+        ("hookScripts.powershell", "hookScripts.powershell"),
+        ("hookScripts.python", "hookScripts.python"),
+        ("hookScripts.json", "hookScripts.json"),
+    )
+    for dotted_key, label in required_lists:
+        current: object = data
+        for key in dotted_key.split("."):
+            if not isinstance(current, dict):
+                current = None
+                break
+            current = current.get(key)
+        if not isinstance(current, list):
+            result.findings.append(Finding(
+                "C1",
+                rel,
+                HIGH,
+                f"workspace-index missing required inventory list: {label}",
+            ))
+
+
 def check_c1_consumer_companion_inventory(root: pathlib.Path | AuditContext) -> CheckResult:
     """C1 — consumer companion inventory from workspace-index is complete on disk."""
     ctx = ensure_context(root)
@@ -82,6 +111,7 @@ def check_c1_consumer_companion_inventory(root: pathlib.Path | AuditContext) -> 
                                        "workspace-index.json must be a JSON object"))
         return result
 
+    _require_inventory_lists(result, rel, data)
     inventory = inventory_from_workspace_index(data, ctx)
     _check_counts(result, rel, data, inventory)
 

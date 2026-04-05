@@ -528,4 +528,27 @@ assert_file_contains "Restore flow uses backup manifests to restore managed surf
     "$UPDATE" "Restore the managed surfaces recorded in .*BACKUP-MANIFEST\\.md"
 echo ""
 
+# ──────────────────────────────────────────────────────────────
+echo "25. UPDATE.md defines a supported in-place update floor"
+# ──────────────────────────────────────────────────────────────
+
+assert_file_contains "UPDATE.md requires v3.4.0 or newer for in-place updates" \
+    "$UPDATE" 'tagged installed version `v3\.4\.0` or newer'
+
+assert_file_contains "UPDATE.md requires section-fingerprints for supported updates" \
+    "$UPDATE" "section-fingerprints"
+
+assert_file_contains "UPDATE.md requires file-manifest for supported updates" \
+    "$UPDATE" "file-manifest"
+
+assert_file_contains "UPDATE.md directs unsupported installs to Factory restore" \
+    "$UPDATE" "direct the user to \*\*Factory restore\*\*"
+
+assert_file_not_contains "UPDATE.md no longer fetches MIGRATION.archive for supported updates" \
+    "$UPDATE" "MIGRATION\.archive\.md"
+
+assert_file_not_contains "UPDATE.md no longer documents the legacy heuristic merge path" \
+    "$UPDATE" "Legacy fallback"
+echo ""
+
 finish_tests

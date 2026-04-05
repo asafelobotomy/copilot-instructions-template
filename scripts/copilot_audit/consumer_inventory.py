@@ -21,79 +21,35 @@ STARTER_KIT_MANIFEST_GLOBS = (
     ".github/starter-kits/*/prompts/*.prompt.md",
 )
 
-# Backward-compatibility fallbacks for consumers that predate the richer
-# workspace-index inventories introduced in this repo. Prompt and instruction
-# installs are conditional, so a missing inventory cannot safely imply that all
-# template files should exist on disk.
-FALLBACK_WORKSPACE_FILES = (
-    "BOOTSTRAP.md",
-    "HEARTBEAT.md",
-    "IDENTITY.md",
-    "MEMORY.md",
-    "RESEARCH.md",
-    "SOUL.md",
-    "TOOLS.md",
-    "USER.md",
-    "commit-style.md",
-    "workspace-index.json",
-)
-FALLBACK_WORKFLOW_FILES = (
-    "copilot-setup-steps.yml",
-)
-
 
 def workspace_index_path(ctx: AuditContext):
     """Return the local consumer workspace-index path."""
     return ctx.root / WORKSPACE_INDEX_REL
 
 
-def _string_list(payload: object, *keys: str, fallback: tuple[str, ...] = ()) -> tuple[str, ...]:
+def _string_list(payload: object, *keys: str) -> tuple[str, ...]:
     current = payload
     for key in keys:
         if not isinstance(current, dict):
-            return fallback
+            return ()
         current = current.get(key)
     if not isinstance(current, list):
-        return fallback
-    return tuple(item for item in current if isinstance(item, str))
-
-
-def _has_list(payload: object, *keys: str) -> bool:
-    current = payload
-    for key in keys[:-1]:
-        if not isinstance(current, dict):
-            return False
-        current = current.get(key)
-    return isinstance(current, dict) and isinstance(current.get(keys[-1]), list)
-
-
-def _installed_filenames(ctx: AuditContext, rel_dir: str, pattern: str) -> tuple[str, ...]:
-    root = ctx.root / rel_dir
-    if not root.is_dir():
         return ()
-    return tuple(sorted(path.name for path in root.glob(pattern) if path.is_file()))
+    return tuple(item for item in current if isinstance(item, str))
 
 
 def inventory_from_workspace_index(
     payload: object,
     ctx: AuditContext | None = None,
 ) -> dict[str, tuple[str, ...]]:
-    """Normalise the workspace-index inventory for consumer completeness checks."""
-    prompts = _string_list(payload, "prompts")
-    if not prompts and ctx is not None and not _has_list(payload, "prompts"):
-        prompts = _installed_filenames(ctx, ".github/prompts", "*.prompt.md")
-
-    instructions = _string_list(payload, "instructions")
-    if not instructions and ctx is not None and not _has_list(payload, "instructions"):
-        instructions = _installed_filenames(ctx, ".github/instructions", "*.instructions.md")
-
+    """Normalise the explicit workspace-index inventory for consumer checks."""
     return {
         "agents": _string_list(payload, "agents"),
         "skills": _string_list(payload, "skills", "repo"),
-        "prompts": prompts,
-        "instructions": instructions,
-        "workspace_files": _string_list(payload, "workspaceFiles", fallback=FALLBACK_WORKSPACE_FILES),
-        "workflow_files": _string_list(payload, "workflowFiles", fallback=FALLBACK_WORKFLOW_FILES),
+        "prompts": _string_list(payload, "prompts"),
+        "instructions": _string_list(payload, "instructions"),
+        "workspace_files": _string_list(payload, "workspaceFiles"),
+        "workflow_files": _string_list(payload, "workflowFiles"),
         "hook_shell": _string_list(payload, "hookScripts", "shell"),
         "hook_powershell": _string_list(payload, "hookScripts", "powershell"),
         "hook_python": _string_list(payload, "hookScripts", "python"),
