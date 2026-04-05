@@ -163,8 +163,76 @@
 | <https://code.visualstudio.com/docs/copilot/reference/mcp-configuration> | MCP config full reference — `${env:VAR}`, `envFile`, `${workspaceFolder}`, `${userHome}` variables; sandbox, input variables | 2026-03-30 | mcp, cross-distro, variables |
 | <https://code.visualstudio.com/docs/editor/variables-reference> | Full VS Code variable substitution reference; `settings.json` support limited to terminal keys only | 2026-03-30 | variables, settings, cross-distro |
 | <https://code.visualstudio.com/docs/configure/settings> | Settings scopes; machine-scoped settings excluded from sync; no per-OS override in `settings.json` | 2026-03-30 | settings, cross-distro, sync |
+
+## Autonomous Agent Harnesses — claw-code
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://github.com/ultraworkers/claw-code> | Community open-source reimplementation of Claude Code; Python parity tracker + ~20K-line Rust CLI harness; GreenContract, LaneEvents, TaskPacket, RecoveryRecipes, PolicyEngine, WorkerBoot concepts | 2026-04-05 | agent-harness, rust, autonomous, claude-code |
+| <https://github.com/ultraworkers/claw-code/blob/main/PHILOSOPHY.md> | Philosophy: humans set direction, claws execute; Discord as human interface; three-part system (OmX, clawhip, OmO); bottleneck is now taste/judgment not typing speed | 2026-04-05 | agent-harness, philosophy, autonomous |
+| <https://github.com/ultraworkers/claw-code/blob/main/USAGE.md> | Task-oriented CLI guide: auth, build, REPL, one-shot, JSON output, session management, mock parity harness, model aliases, permission modes | 2026-04-05 | agent-harness, cli, usage |
+| <https://github.com/ultraworkers/claw-code/blob/main/rust/README.md> | Rust workspace overview: 9 crates, feature table (hooks=config-only, plugins=planned, skills=planned), slash command table, model alias table | 2026-04-05 | agent-harness, rust, features |
+| <https://raw.githubusercontent.com/ultraworkers/claw-code/main/rust/crates/runtime/src/lib.rs> | Runtime crate public API: ConversationRuntime, GreenContract, LaneEvents, PolicyEngine, RecoveryRecipes, WorkerBoot, TaskPacket, HookRunner, McpLifecycleHardened — full module surface | 2026-04-05 | agent-harness, rust, runtime |
+| <https://raw.githubusercontent.com/ultraworkers/claw-code/main/rust/crates/runtime/src/green_contract.rs> | GreenContract: 4-level ordered test coverage enum (TargetedTests/Package/Workspace/MergeReady); evaluate() compare observed vs required; Satisfied/Unsatisfied typed outcome | 2026-04-05 | green-contract, testing, patterns |
+| <https://raw.githubusercontent.com/ultraworkers/claw-code/main/rust/crates/runtime/src/lane_events.rs> | LaneEvent lifecycle: 16 named events, 10 status values, 11 LaneFailureClass variants for structured diagnostic routing | 2026-04-05 | lane-events, agent-harness, patterns |
+| <https://raw.githubusercontent.com/ultraworkers/claw-code/main/rust/crates/runtime/src/task_packet.rs> | TaskPacket: 8-field validated struct (objective/scope/repo/branch_policy/acceptance_tests/commit_policy/reporting_contract/escalation_policy); non-empty validation | 2026-04-05 | task-packet, agent-harness, patterns |
+| <https://raw.githubusercontent.com/ultraworkers/claw-code/main/rust/crates/runtime/src/recovery_recipes.rs> | RecoveryRecipes: 7 FailureScenario → RecoveryRecipe mapping; RecoveryStep enum; EscalationPolicy (AlertHuman/LogAndContinue/Abort); RecoveryContext with per-scenario attempt tracking | 2026-04-05 | recovery, agent-harness, patterns |
+| <https://raw.githubusercontent.com/ultraworkers/claw-code/main/rust/crates/runtime/src/worker_boot.rs> | WorkerBoot state machine: Spawning to TrustRequired or ReadyForPrompt, then Running to Finished or Failed; trust auto-allowlist by cwd; prompt misdelivery detection + replay recovery | 2026-04-05 | worker-boot, agent-harness, patterns |
+| <https://raw.githubusercontent.com/ultraworkers/claw-code/main/rust/crates/runtime/src/policy_engine.rs> | PolicyEngine: composable And/Or conditions, Chain actions, LaneContext evaluation; STALE_BRANCH_THRESHOLD=1h hardcoded; ReconcileReason enum | 2026-04-05 | policy-engine, agent-harness, patterns |
+| <https://raw.githubusercontent.com/ultraworkers/claw-code/main/rust/crates/runtime/src/hooks.rs> | HookRunner: PreToolUse/PostToolUse/PostToolUseFailure events; abort signals (AtomicBool); progress reporter trait; stdin/stdout JSON protocol; process-per-invocation execution | 2026-04-05 | hooks, agent-harness, patterns |
+| <https://raw.githubusercontent.com/ultraworkers/claw-code/main/src/tools.py> | Python tools.py: loads tools_snapshot.json into PortingModule dataclasses via @lru_cache; execute_tool returns shims only — NOT a runtime | 2026-04-05 | python, parity-tracker, not-runtime |
+| <https://raw.githubusercontent.com/ultraworkers/claw-code/main/src/runtime.py> | Python PortRuntime: token-match routing, bootstrap_session assembles RuntimeSession with shim executions; route_prompt interleaves command/tool matches by kind | 2026-04-05 | python, parity-tracker, runtime |
 | <https://code.visualstudio.com/docs/configure/profiles> | Profiles: full config isolation per machine; own settings.json, MCP servers, extensions | 2026-03-30 | profiles, cross-distro, settings |
 | <https://code.visualstudio.com/docs/editor/settings-sync> | Settings Sync: `machine` scope excluded by default; `settingsSync.ignoredSettings` for exclusions | 2026-03-30 | sync, machine-settings, cross-distro |
 | <https://code.visualstudio.com/docs/terminal/profiles> | Terminal profiles: first-class `terminal.integrated.profiles.linux/.osx/.windows` per-platform settings | 2026-03-30 | terminal, platform-settings, cross-distro |
 | <https://code.visualstudio.com/docs/reference/tasks-appendix> | `tasks.json` schema: top-level `linux`, `osx`, `windows` fields in `TaskConfiguration` interface | 2026-03-30 | tasks, platform-settings, schema |
 | <https://code.visualstudio.com/docs/debugtest/debugging-configuration> | `launch.json` platform-specific literals: `windows`, `linux`, `osx` within individual configurations | 2026-03-30 | launch, platform-settings, debugging |
+
+## VS Code Copilot — Agent Architecture and Agent Types (2026-04)
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://code.visualstudio.com/docs/copilot/agents/overview> | Agent types: Local, Copilot CLI, Cloud, Third-party; permission levels (Default/Bypass/Autopilot); handoff workflow; /delegate command; task assignment via TODO comments | 2026-04-05 | agents, overview, permissions |
+| <https://code.visualstudio.com/docs/copilot/concepts/agents> | Agent loop: Understand→Act→Validate; subagents (context isolation, synchronous/parallel); planning 4-phase workflow; memory scopes (user/repo/session); VS Code assembles context per turn | 2026-04-05 | agents, concepts, loop, subagents |
+| <https://code.visualstudio.com/docs/copilot/agents/subagents> | Subagent invocation: agent-initiated only; runSubagent tool; context isolation (inherits only task prompt); synchronous and parallel modes; restrict via `agents` experimental property | 2026-04-05 | subagents, delegation, isolation |
+| <https://code.visualstudio.com/docs/copilot/agents/planning> | Plan agent: 4-phase (Discovery/Alignment/Design/Refinement); saves plan to `/memories/session/plan.md`; `chat.planAgent.defaultModel` setting; handoff to Copilot CLI via "Start Implementation" | 2026-04-05 | plan-agent, phases, session-memory |
+| <https://code.visualstudio.com/docs/copilot/agents/copilot-cli> | Copilot CLI (background agent): worktree isolation (auto-commit per turn, Bypass Approvals); workspace isolation; /yolo /autoApprove /compact /delegate; local unauthenticated MCP only | 2026-04-05 | copilot-cli, background, worktree, isolation |
+| <https://code.visualstudio.com/docs/copilot/agents/cloud-agents> | Cloud agents: run remotely; integrate with GitHub PRs; can't access VS Code built-in tools or run-time context (test failures, selections); limited to local unauthenticated MCP | 2026-04-05 | cloud-agents, github-pr, constraints |
+| <https://code.visualstudio.com/docs/copilot/concepts/customization> | Customisation hierarchy: always-on instructions → file-based instructions → prompt files → skills → custom agents → MCP → hooks → plugins; incrementally additive | 2026-04-05 | customisation, hierarchy, overview |
+| <https://code.visualstudio.com/docs/copilot/customization/overview> | Customisation overview; Chat Customisations editor; parent-repository discovery (`chat.useCustomizationsInParentRepositories`); /init, /create-prompt, /create-agent, /create-hook slash commands | 2026-04-05 | customisation, monorepo, parent-discovery |
+
+## GitHub Copilot Cloud Agent — Custom Agents and Session Management (2026-04)
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://docs.github.com/en/copilot/how-tos/use-copilot-agents/manage-agents> | Cloud agent 5-step lifecycle: start, monitor, steer (steering=1 premium req), "Open in VS Code", review+merge PR; session archive; available on Pro/Pro+/Business/Enterprise | 2026-04-05 | cloud-agent, lifecycle, steering |
+| <https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/create-custom-agents> | Custom agent profiles: repo-level (.github/agents/), org/enterprise-level (/agents/); frontmatter: name, description, tools, mcp-servers; works across GitHub.com + VS Code + JetBrains + Eclipse + Xcode | 2026-04-05 | custom-agents, profiles, multi-platform |
+| <https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-custom-agents> | Custom agent concepts: tailored teammates; define once vs repeat in every prompt; profile = Markdown + YAML frontmatter; scope: repo / org / enterprise | 2026-04-05 | custom-agents, concepts, scope |
+
+## MCP Specification — Lifecycle, Ping, Cancellation, Transports (2026-04)
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://modelcontextprotocol.io/specification/2025-03-26/basic/lifecycle> | MCP session lifecycle: Initialization (capability negotiation, version) → Operation → Shutdown; 3 error cases: version mismatch, capability failure, timeout; SIGTERM/SIGKILL shutdown for stdio | 2026-04-05 | mcp, lifecycle, error-handling |
+| <https://modelcontextprotocol.io/specification/2025-03-26/basic/utilities/ping> | MCP ping: liveness check via request/response; timeout → stale → terminate or reconnect; multiple failures MAY trigger connection reset; frequency should be configurable | 2026-04-05 | mcp, ping, liveness, recovery |
+| <https://modelcontextprotocol.io/specification/2025-03-26/basic/utilities/cancellation> | MCP cancellation: `notifications/cancelled` with requestId + reason; fire-and-forget; race conditions must be handled gracefully; log cancellation reasons for diagnostics | 2026-04-05 | mcp, cancellation, recovery |
+| <https://modelcontextprotocol.io/docs/concepts/transports> | MCP transports: stdio (subprocess stdin/stdout, newline delimited) and Streamable HTTP/SSE; session management via Mcp-Session-Id header; resumability via Last-Event-ID; DNS rebinding protection required | 2026-04-05 | mcp, transports, stdio, security |
+
+## App Configuration Principles
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://12factor.net/config> | 12-factor III: store config in env vars; strict separation of config from code; named-environment groups (dev/staging/prod) do not scale; prefer granular orthogonal vars per deploy | 2026-04-05 | config, 12-factor, env-vars, best-practices |
+
+## Sisyphus/OpenClaw Ecosystem — Autonomous Coding Agent Coordination
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://github.com/Yeachan-Heo/clawhip> | clawhip — daemon-first Discord notification router with typed session.* event pipeline, renderer/sink separation, filesystem memory scaffold (MEMORY.md + shards), plugin bridge architecture | 2026-04-05 | agents, events, notifications, orchestration |
+| <https://github.com/Yeachan-Heo/clawhip/blob/main/ARCHITECTURE.md> | clawhip v0.4.0 architecture: MPSC queue, Source→Dispatcher→Router→Renderer→Sink, multi-delivery (0..N routes per event), best-effort delivery semantics | 2026-04-05 | agents, architecture, events |
+| <https://raw.githubusercontent.com/Yeachan-Heo/clawhip/main/docs/native-event-contract.md> | clawhip canonical session.* event vocabulary: 10 canonical names (session.started/blocked/finished/failed/retry-needed/pr-created/test-started/test-finished/test-failed/handoff-needed); normalization contract for OMC/OMX upstream events | 2026-04-05 | agents, events, vocabulary, hooks |
+| <https://github.com/code-yeongyu/oh-my-openagent> | oh-my-openagent (OmO) — multi-model orchestration harness; Sisyphus orchestrator; IntentGate (intent analysis before action); 19 specialist agents; hash-anchored edit tool; skill-embedded MCPs; Ralph persistence loop; TodoEnforcer | 2026-04-05 | agents, orchestration, multi-model, skills |
+| <https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/refs/heads/dev/docs/guide/installation.md> | OmO installation guide — per-agent model resolution via subscription flags; doctor verification step; provider-specific fallback chains | 2026-04-05 | agents, installation, verification |
+| <https://github.com/Yeachan-Heo/oh-my-claudecode> | oh-my-claudecode (OMC) — Claude Code multi-agent plugin; staged pipeline (team-plan→team-prd→team-exec→team-verify→team-fix); 29 agents, 32 skills; project-scoped skills with trigger keywords; stop callbacks to Telegram/Discord/Slack; OpenClaw gateway integration | 2026-04-05 | agents, orchestration, claude-code, skills, hooks |
+| <https://raw.githubusercontent.com/Yeachan-Heo/oh-my-claudecode/main/docs/REFERENCE.md> | OMC full reference — hooks system, skills scoping (.omc/skills/ project vs ~/.omc/skills/ user), env vars (DISABLE_OMC, OMC_SKIP_HOOKS, OMC_STATE_DIR), stop callback config | 2026-04-05 | agents, reference, skills, hooks |
+| <https://github.com/Yeachan-Heo/oh-my-codex> | oh-my-codex (OMX) — workflow layer for OpenAI Codex CLI; $deep-interview (Socratic clarification), $ralplan (plan approval gate), $ralph (persistence loop), $team (parallel execution); .omx/ state dir convention | 2026-04-05 | agents, orchestration, codex, workflow |
