@@ -4,6 +4,7 @@
 # inputs:   JSON via stdin with subagent details
 # outputs:  JSON with additionalContext reminding depth limit and protocols
 # risk:     safe
+# ESCALATION: none
 set -euo pipefail
 
 # shellcheck source=.github/hooks/scripts/lib-hooks.sh

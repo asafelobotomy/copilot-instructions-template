@@ -100,6 +100,12 @@ assert_decision "lowercase delete from where1" "$(make_input 'terminal' 'delete 
 assert_decision "lowercase delete from"        "$(make_input 'terminal' 'delete from sessions')"       "ask"
 echo ""
 
+# ── 5a. Guard-pattern searches stay read-only ────────────────────────────────
+echo "5a. Read-only searches for blocked pattern text continue"
+assert_continue "rg search for rm guard regex continues" "$(make_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh")"
+assert_continue "grep search for chmod guard regex continues" "$(make_input 'bash' "grep -n 'chmod -R 777 /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh")"
+echo ""
+
 # ── 6. sync-version.sh read-only stability ───────────────────────────────────
 # Running sync-version.sh twice should leave the managed files unchanged.
 # The script is a verifier now, so any mutation would reintroduce a second

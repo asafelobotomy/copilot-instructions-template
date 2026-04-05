@@ -8,10 +8,10 @@ set -uo pipefail
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
 SCRIPT="$REPO_ROOT/template/hooks/scripts/guard-destructive.ps1"
-PWSH=$(command -v pwsh || true)
+PWSH=$(bash "$REPO_ROOT/scripts/tests/resolve-powershell.sh" || true)
 
 if [[ -z "$PWSH" ]]; then
-  echo "pwsh is required for tests/hooks/test-guard-destructive-powershell.sh"
+  echo "PowerShell is required for tests/hooks/test-guard-destructive-powershell.sh"
   exit 1
 fi
 
@@ -70,6 +70,12 @@ echo ""
 echo "4. Safe commands continue"
 assert_continue "git status continues" "$(make_input 'bash' 'git status')"
 assert_continue "echo continues" "$(make_input 'terminal' 'echo safe')"
+echo ""
+
+echo "4a. Read-only searches mentioning blocked patterns continue"
+assert_continue "rg search for rm guard regex continues" "$(make_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh")"
+assert_continue "grep search for chmod guard regex continues" "$(make_input 'bash' "grep -n 'chmod -R 777 /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh")"
+assert_decision "search chained with real rm still denies" "$(make_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh && rm -rf /")" "deny"
 echo ""
 
 echo "5. Malformed or empty input does not crash"

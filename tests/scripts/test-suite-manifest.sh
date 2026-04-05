@@ -147,6 +147,10 @@ if "tests/hooks/test-heartbeat-clock-summary.sh" not in paths:
   raise SystemExit("missing heartbeat clock summary suite")
 if "tests/hooks/test-hook-subagent-start-powershell.sh" not in paths:
   raise SystemExit("missing subagent-start PowerShell suite")
+if "tests/hooks/test-pulse-state.sh" not in paths:
+  raise SystemExit("missing pulse_state helper suite")
+if "tests/hooks/test-lib-hooks.sh" not in paths:
+  raise SystemExit("missing lib-hooks helper suite")
 '
 echo ""
 

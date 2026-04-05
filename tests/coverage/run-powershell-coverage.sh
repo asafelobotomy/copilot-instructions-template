@@ -3,12 +3,12 @@
 set -euo pipefail
 
 REPO_ROOT=$(cd "$(dirname "$0")/../.." && pwd)
-PWSH_BIN=$(command -v pwsh || true)
+PWSH_BIN=$(bash "$REPO_ROOT/scripts/tests/resolve-powershell.sh" || true)
 TRACE_PATH="${PWSH_COVERAGE_TRACE:-}"
 WRAPPER="$REPO_ROOT/tests/coverage/invoke-powershell-with-coverage.ps1"
 
 if [[ -z "$PWSH_BIN" ]]; then
-  echo "pwsh is required for PowerShell coverage collection" >&2
+  echo "PowerShell is required for PowerShell coverage collection" >&2
   exit 1
 fi
 

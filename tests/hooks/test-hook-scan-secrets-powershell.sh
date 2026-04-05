@@ -77,7 +77,16 @@ assert_contains "block mode reports the AWS finding" "$output" 'AWS_ACCESS_KEY'
 assert_contains "block mode returns continue=false" "$output" '"continue": false'
 echo ""
 
-echo "6. Placeholder values are ignored"
+echo "6. stop_hook_active=true bypasses repeat blocking"
+TMP_REPEAT=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_REPEAT")
+printf 'aws_key=AKIAZ3MGNRTWFD7GHXQL\n' > "$TMP_REPEAT/config.env"
+output=$(run_scan_in_dir "$TMP_REPEAT" '{"stop_hook_active": true}' 'SCAN_MODE=block')
+status=$?
+assert_success "repeat block scan exits zero" "$status"
+assert_contains "repeat block scan continues" "$output" '"continue": true'
+echo ""
+
+echo "7. Placeholder values are ignored"
 TMP_PLACEHOLDER=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_PLACEHOLDER")
 printf 'token=ghp_example000000000000000000000000000000\n' > "$TMP_PLACEHOLDER/example.env"
 output=$(run_scan_in_dir "$TMP_PLACEHOLDER" '{}' 'SCAN_MODE=block')
@@ -86,7 +95,7 @@ assert_success "placeholder scan exits zero" "$status"
 assert_contains "placeholder scan continues" "$output" '"continue": true'
 echo ""
 
-echo "7. Allowlist suppresses matching findings"
+echo "8. Allowlist suppresses matching findings"
 TMP_ALLOW=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_ALLOW")
 printf 'aws_key=AKIAZ3MGNRTWFD7GHXQL\n' > "$TMP_ALLOW/config.env"
 output=$(run_scan_in_dir "$TMP_ALLOW" '{}' 'SCAN_MODE=block' 'SECRETS_ALLOWLIST=AKIAZ3MGNRTWFD7GHXQL')
@@ -95,7 +104,7 @@ assert_success "allowlisted scan exits zero" "$status"
 assert_contains "allowlisted scan continues" "$output" '"continue": true'
 echo ""
 
-echo "8. Lock files are skipped"
+echo "9. Lock files are skipped"
 TMP_LOCK=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_LOCK")
 printf 'aws_key=AKIAZ3MGNRTWFD7GHXQ2\n' > "$TMP_LOCK/package-lock.json"
 output=$(run_scan_in_dir "$TMP_LOCK" '{}' 'SCAN_MODE=block')

@@ -4,6 +4,10 @@
 # shellcheck source=test-helpers.sh
 source "$(dirname "${BASH_SOURCE[0]}")/test-helpers.sh"
 
+resolve_powershell_bin() {
+  bash "$REPO_ROOT/scripts/tests/resolve-powershell.sh"
+}
+
 init_powershell_hook_test_context() {
   local script_path="$1"
   init_test_context "$script_path"
@@ -16,12 +20,12 @@ init_powershell_hook_test_context() {
   SAVE_CTX="$SCRIPTS_DIR/save-context.ps1"
   # shellcheck disable=SC2034
   PULSE="$SCRIPTS_DIR/pulse.ps1"
-  PWSH=$(command -v pwsh || true)
+  PWSH=$(resolve_powershell_bin || true)
 }
 
 ensure_pwsh_available() {
   if [[ -z "${PWSH:-}" ]]; then
-    echo "pwsh is required for ${SUITE_NAME:-PowerShell hook tests}"
+    echo "PowerShell is required for ${SUITE_NAME:-PowerShell hook tests}"
     exit 1
   fi
 }

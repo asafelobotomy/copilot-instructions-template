@@ -4,6 +4,7 @@
 # inputs:   JSON via stdin with tool_name and tool_input
 # outputs:  JSON with permissionDecision (allow/deny/ask)
 # risk:     safe
+# ESCALATION: ask
 #
 # This hook is complementary to VS Code's built-in terminal auto-approval
 # (github.copilot.chat.agent.terminal.allowList / denyList). This hook runs
@@ -87,6 +88,37 @@ BLOCKED_PATTERNS=(
   'curl .*[|].*sh'
   'wget .*[|].*sh'
 )
+
+# Allow pure read-only pattern searches so investigations can inspect the guard
+# definitions without tripping on the blocked regex literals themselves.
+is_readonly_pattern_search() {
+  local command_text="$1"
+  local lowered_command="$1"
+
+  lowered_command=${lowered_command,,}
+
+  if [[ ! "$command_text" =~ ^[[:space:]]*(rg|grep|findstr)($|[[:space:]]) && ! "$command_text" =~ ^[[:space:]]*git[[:space:]]+grep($|[[:space:]]) ]]; then
+    return 1
+  fi
+
+  if [[ "$command_text" == *'&&'* || "$command_text" == *'||'* || "$command_text" == *';'* || "$command_text" == *'$('* || "$command_text" == *'`'* || "$command_text" == *'<'* || "$command_text" == *'>'* || "$command_text" == *' | '* ]]; then
+    return 1
+  fi
+
+  local pattern
+  for pattern in "${BLOCKED_PATTERNS[@]}"; do
+    if [[ "$lowered_command" == *"${pattern,,}"* ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+if is_readonly_pattern_search "$TOOL_INPUT"; then
+  echo '{"continue": true}'
+  exit 0
+fi
 
 for pattern in "${BLOCKED_PATTERNS[@]}"; do
   if echo "$TOOL_INPUT" | grep -qiE "$pattern"; then

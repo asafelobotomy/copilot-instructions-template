@@ -88,6 +88,13 @@ assert_continue "show command"        "$(make_input 'bash' 'git show HEAD')"
 assert_continue "curl without pipe"   "$(make_input 'bash' 'curl -fsSL https://example.com -o file.sh')"
 echo ""
 
+# ── 4c. Read-only searches mentioning blocked patterns continue ──────────────
+echo "4c. Read-only searches mentioning blocked patterns continue"
+assert_continue "rg search for rm guard regex"   "$(make_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh")"
+assert_continue "grep search for chmod guard regex" "$(make_input 'bash' "grep -n 'chmod -R 777 /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh")"
+assert_decision "search chained with real rm still denies" "$(make_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh && rm -rf /")" "deny"
+echo ""
+
 # ── 5. Robustness — malformed or empty input ──────────────────────────────────
 echo "5. Robustness — malformed/empty input does not crash"
 assert_no_crash "empty JSON object" '{}'

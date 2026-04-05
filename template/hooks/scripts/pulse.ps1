@@ -4,6 +4,8 @@
 # outputs:  JSON hook response (`continue` or Stop `decision:block`).
 # risk:     safe
 # source:   original
+# ESCALATION: none
+# STOP LOOP: if stop_hook_active is true in the Stop payload, do not re-enter blocking Stop logic.
 
 [CmdletBinding()]
 param(

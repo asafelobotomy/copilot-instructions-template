@@ -477,5 +477,45 @@ if payload["intermediate_phase_strategy"] != "broaden-aggressively":
 '
 echo ""
 
+echo "30. pulse_state.py maps to direct and integration suites"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/hooks/scripts/pulse_state.py")
+status=$?
+assert_success "selector exits zero on pulse_state.py" "$status"
+SELECTOR_OUTPUT="$output" assert_python "pulse_state.py includes direct and pulse coverage" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+selected = set(payload["selected_tests"])
+required = {
+    "tests/hooks/test-pulse-state.sh",
+    "tests/hooks/test-hook-pulse.sh",
+    "tests/contracts/test-template-parity.sh",
+}
+missing = sorted(required - selected)
+if missing:
+    raise SystemExit(str(payload["selected_tests"]))
+if payload["intermediate_phase_strategy"] != "targeted":
+    raise SystemExit(payload["intermediate_phase_strategy"])
+'
+echo ""
+
+echo "31. lib-hooks.sh maps to direct and resilience suites"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/hooks/scripts/lib-hooks.sh")
+status=$?
+assert_success "selector exits zero on lib-hooks.sh" "$status"
+SELECTOR_OUTPUT="$output" assert_python "lib-hooks.sh includes direct and resilience coverage" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+selected = set(payload["selected_tests"])
+required = {
+    "tests/hooks/test-lib-hooks.sh",
+    "tests/scripts/test-permission-resilience.sh",
+    "tests/contracts/test-template-parity.sh",
+}
+missing = sorted(required - selected)
+if missing:
+    raise SystemExit(str(payload["selected_tests"]))
+if payload["intermediate_phase_strategy"] != "targeted":
+    raise SystemExit(payload["intermediate_phase_strategy"])
+'
+echo ""
+
 
 finish_tests

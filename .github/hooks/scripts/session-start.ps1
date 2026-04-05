@@ -3,6 +3,7 @@
 # inputs:   JSON via stdin (common hook fields)
 # outputs:  JSON with additionalContext for the agent
 # risk:     safe
+# ESCALATION: none
 
 $ErrorActionPreference = 'SilentlyContinue'
 

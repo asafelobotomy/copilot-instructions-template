@@ -4,6 +4,7 @@
 # inputs:   JSON via stdin with trigger field
 # outputs:  JSON with additionalContext summarising saved state
 # risk:     safe
+# ESCALATION: none
 set -euo pipefail
 
 # shellcheck source=.github/hooks/scripts/lib-hooks.sh

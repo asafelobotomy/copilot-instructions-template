@@ -460,4 +460,24 @@ assert state.get("digest_emit_count") == 0
 assert state.get("changed_path_families") == []
 '
 
+echo ""
+
+echo "24. stop_hook_active=true bypasses repeat blocking"
+TMPDIR_STOP_LOOP=$(make_git_sandbox); CLEANUP_DIRS+=("$TMPDIR_STOP_LOOP")
+printf '.copilot/\n' >> "$TMPDIR_STOP_LOOP/.git/info/exclude"
+mkdir -p "$TMPDIR_STOP_LOOP/.copilot/workspace"
+run_pulse "$TMPDIR_STOP_LOOP" session_start '{"sessionId":"sess-stop-loop"}' >/dev/null
+for i in 1 2 3 4 5 6 7 8; do
+  printf 'change %s\n' "$i" > "$TMPDIR_STOP_LOOP/stop-loop-$i.txt"
+done
+output=$(run_pulse "$TMPDIR_STOP_LOOP" stop '{"stop_hook_active": true}')
+assert_matches "repeat stop continues" "$output" '"continue": true'
+assert_python_in_root "repeat stop preserves pending state and avoids new events" "$TMPDIR_STOP_LOOP" '
+state = json.loads((root / ".copilot/workspace/state.json").read_text(encoding="utf-8"))
+events = [json.loads(line) for line in (root / ".copilot/workspace/.heartbeat-events.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
+assert state["retrospective_state"] == "idle"
+assert state["session_state"] == "pending"
+assert len(events) == 1
+'
+
 finish_tests

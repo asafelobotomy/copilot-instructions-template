@@ -10,13 +10,11 @@
       "id": "hooks-powershell",
       "label": "Hook Behavior (PowerShell parity)",
       "optionalRequirement": {
-        "command": "pwsh",
-        "label": "pwsh",
+        "command": "bash",
+        "label": "PowerShell",
         "probeArgs": [
-          "-NoProfile",
-          "-NonInteractive",
-          "-Command",
-          "exit 0"
+          "scripts/tests/resolve-powershell.sh",
+          "--check"
         ]
       }
     },
@@ -65,6 +63,18 @@
       "path": "tests/hooks/test-pulse-paths.sh",
       "phase": "hooks",
       "ciLabel": "Hook behavior | pulse_paths.py"
+    },
+    {
+      "id": "hook-pulse-state",
+      "path": "tests/hooks/test-pulse-state.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | pulse_state.py"
+    },
+    {
+      "id": "hook-lib-hooks",
+      "path": "tests/hooks/test-lib-hooks.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | lib-hooks.sh"
     },
     {
       "id": "hook-mcp-heartbeat-server",
@@ -125,6 +135,12 @@
       "path": "tests/hooks/test-hook-subagent-stop-powershell.sh",
       "phase": "hooks-powershell",
       "ciLabel": "Hook behavior | subagent-stop PowerShell parity"
+    },
+    {
+      "id": "script-resolve-powershell",
+      "path": "tests/scripts/test-resolve-powershell.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | resolve-powershell.sh"
     },
     {
       "id": "script-release-plan",

@@ -3,6 +3,7 @@
 # inputs:   JSON via stdin with trigger field
 # outputs:  JSON with additionalContext summarising saved state
 # risk:     safe
+# ESCALATION: none
 
 $ErrorActionPreference = 'SilentlyContinue'
 $summary = ''

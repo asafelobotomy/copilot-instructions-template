@@ -515,6 +515,13 @@ mutate_h2_missing_powershell_script() {
 JSON
 }
 
+mutate_ps1_resolver_without_bash() {
+  write_sandbox_file "scripts/tests/resolve-powershell.sh" <<'SH'
+#!/usr/bin/env bash
+exit 1
+SH
+}
+
 mutate_vs1_invalid_settings_paths() {
   write_sandbox_file ".vscode/settings.json" <<'JSON'
 {
@@ -705,6 +712,23 @@ echo "19. H2: missing PowerShell hook script triggers WARN"
 run_audit_case json mutate_h2_missing_powershell_script
 assert_success "exits 0 on WARN-only H2" "$CASE_STATUS"
 assert_contains "H2 reports missing PowerShell script" "$CASE_OUTPUT" 'missing-session-start.ps1'
+echo ""
+
+# ── 19b. PS1 — resolver degrades gracefully without bash ────────────────────
+echo "19b. PS1: resolver does not crash audit when bash is unavailable"
+setup_sandbox
+mutate_ps1_resolver_without_bash
+NO_BASH_PATH="$SANDBOX/no-bash-bin"
+mkdir -p "$NO_BASH_PATH"
+PYTHON_BIN=$(command -v python3)
+if CASE_OUTPUT=$(PATH="$NO_BASH_PATH" "$PYTHON_BIN" "$SCRIPT" --root "$SANDBOX" --output json 2>&1); then
+  CASE_STATUS=0
+else
+  CASE_STATUS=$?
+fi
+teardown_sandbox
+assert_success "audit exits zero when resolver exists but bash is unavailable" "$CASE_STATUS"
+assert_contains "audit remains healthy without bash" "$CASE_OUTPUT" '"status": "HEALTHY"'
 echo ""
 
 # ── 20. VS1 — invalid customization locations in settings.json ──────────────

@@ -3,6 +3,7 @@
 # inputs:   JSON via stdin with subagent result details
 # outputs:  JSON with additionalContext summarising outcome
 # risk:     safe
+# ESCALATION: none
 
 $ErrorActionPreference = 'SilentlyContinue'
 

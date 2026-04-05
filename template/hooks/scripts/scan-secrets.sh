@@ -4,6 +4,8 @@
 # inputs:   JSON via stdin (consumed and ignored)
 # outputs:  JSON continuation signal; scan results on stdout
 # risk:     read-only
+# ESCALATION: block
+# STOP LOOP: if stop_hook_active is true in the Stop payload, do not re-enter blocking Stop logic.
 #
 # Environment variables:
 #   SCAN_MODE          - "warn" (log only) or "block" (exit non-zero on findings) (default: warn)
@@ -15,6 +17,11 @@ set -euo pipefail
 
 # Consume stdin (Stop hook sends JSON input we do not need)
 _INPUT=$(cat)
+
+if printf '%s' "$_INPUT" | grep -Eq '"stop_hook_active"[[:space:]]*:[[:space:]]*true'; then
+  printf '{"continue": true}'
+  exit 0
+fi
 
 # ---------------------------------------------------------------------------
 # Secret detection patterns (edit this list to add or remove patterns)

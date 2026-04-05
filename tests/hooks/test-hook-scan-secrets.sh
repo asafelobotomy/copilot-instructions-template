@@ -66,9 +66,19 @@ assert_contains "blocks on findings" "$output" '"continue": false'
 echo ""
 
 # ---------------------------------------------------------------------------
-# 6. Placeholder values are ignored
+# 6. stop_hook_active bypasses repeat blocking
 # ---------------------------------------------------------------------------
-echo "6. Placeholder secrets are ignored"
+echo "6. stop_hook_active=true bypasses repeat blocking"
+TMPDIR_REPEAT=$(make_git_sandbox); CLEANUP_DIRS+=("$TMPDIR_REPEAT")
+echo "aws_key=AKIAZ3MGNRTWFD7GHXQL" > "$TMPDIR_REPEAT/config.env"
+output=$(cd "$TMPDIR_REPEAT" && printf '{"stop_hook_active": true}' | SCAN_MODE=block bash "$SCRIPT" 2>/dev/null)
+assert_contains "repeat stop continues" "$output" '"continue": true'
+echo ""
+
+# ---------------------------------------------------------------------------
+# 7. Placeholder values are ignored
+# ---------------------------------------------------------------------------
+echo "7. Placeholder secrets are ignored"
 TMPDIR_PLACEHOLDER=$(make_git_sandbox); CLEANUP_DIRS+=("$TMPDIR_PLACEHOLDER")
 echo "token=ghp_example000000000000000000000000000000" > "$TMPDIR_PLACEHOLDER/example.env"
 output=$(cd "$TMPDIR_PLACEHOLDER" && echo '{}' | SCAN_MODE=block bash "$SCRIPT" 2>/dev/null)
@@ -76,9 +86,9 @@ assert_contains "placeholder continues" "$output" '"continue": true'
 echo ""
 
 # ---------------------------------------------------------------------------
-# 7. Allowlist suppresses matching findings
+# 8. Allowlist suppresses matching findings
 # ---------------------------------------------------------------------------
-echo "7. Allowlist suppresses findings"
+echo "8. Allowlist suppresses findings"
 TMPDIR_ALLOW=$(make_git_sandbox); CLEANUP_DIRS+=("$TMPDIR_ALLOW")
 echo "aws_key=AKIAZ3MGNRTWFD7GHXQL" > "$TMPDIR_ALLOW/config.env"
 output=$(cd "$TMPDIR_ALLOW" && echo '{}' | SCAN_MODE=block SECRETS_ALLOWLIST="AKIAZ3MGNRTWFD7GHXQL" bash "$SCRIPT" 2>/dev/null)
@@ -86,9 +96,9 @@ assert_contains "allowlisted continues" "$output" '"continue": true'
 echo ""
 
 # ---------------------------------------------------------------------------
-# 8. Lock files are skipped
+# 9. Lock files are skipped
 # ---------------------------------------------------------------------------
-echo "8. Lock files are skipped"
+echo "9. Lock files are skipped"
 TMPDIR_LOCK=$(make_git_sandbox); CLEANUP_DIRS+=("$TMPDIR_LOCK")
 echo "aws_key=AKIAZ3MGNRTWFD7GHXQ2" > "$TMPDIR_LOCK/package-lock.json"
 output=$(cd "$TMPDIR_LOCK" && echo '{}' | SCAN_MODE=block bash "$SCRIPT" 2>/dev/null)
@@ -96,9 +106,9 @@ assert_contains "lock file skipped" "$output" '"continue": true'
 echo ""
 
 # ---------------------------------------------------------------------------
-# 9. Only JSON on stdout (no human text leaks)
+# 10. Only JSON on stdout (no human text leaks)
 # ---------------------------------------------------------------------------
-echo "9. Only JSON on stdout"
+echo "10. Only JSON on stdout"
 TMPDIR_JSON=$(make_git_sandbox); CLEANUP_DIRS+=("$TMPDIR_JSON")
 echo "aws_key=AKIAZ3MGNRTWFD7GHXQ3" > "$TMPDIR_JSON/config.env"
 stdout_output=$(cd "$TMPDIR_JSON" && echo '{}' | bash "$SCRIPT" 2>/dev/null)
@@ -117,9 +127,9 @@ fi
 echo ""
 
 # ---------------------------------------------------------------------------
-# 10. GitHub PAT detection
+# 11. GitHub PAT detection
 # ---------------------------------------------------------------------------
-echo "10. GitHub PAT detected"
+echo "11. GitHub PAT detected"
 TMPDIR_GH=$(make_git_sandbox); CLEANUP_DIRS+=("$TMPDIR_GH")
 echo "GITHUB_TOKEN=ghp_R7qZ3mGnRtWfD7GhXqL9pN2kJ5vB8cY4sA1w" > "$TMPDIR_GH/.env"
 stderr_output=$(cd "$TMPDIR_GH" && echo '{}' | bash "$SCRIPT" 2>&1 1>/dev/null)
@@ -127,9 +137,9 @@ assert_matches "GitHub PAT reported" "$stderr_output" "GITHUB_PAT"
 echo ""
 
 # ---------------------------------------------------------------------------
-# 11. Private key header detected
+# 12. Private key header detected
 # ---------------------------------------------------------------------------
-echo "11. Private key header detected"
+echo "12. Private key header detected"
 TMPDIR_KEY=$(make_git_sandbox); CLEANUP_DIRS+=("$TMPDIR_KEY")
 printf '%s\n' '-----BEGIN RSA PRIVATE KEY-----' 'MIIEpAIBAAK' '-----END RSA PRIVATE KEY-----' > "$TMPDIR_KEY/key.pem"
 stderr_output=$(cd "$TMPDIR_KEY" && echo '{}' | bash "$SCRIPT" 2>&1 1>/dev/null)

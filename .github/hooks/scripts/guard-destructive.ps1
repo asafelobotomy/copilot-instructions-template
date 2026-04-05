@@ -3,6 +3,7 @@
 # inputs:   JSON via stdin with tool_name and tool_input
 # outputs:  JSON with permissionDecision (allow/deny/ask)
 # risk:     safe
+# ESCALATION: ask
 
 $ErrorActionPreference = 'SilentlyContinue'
 $input_json = $input | Out-String
@@ -39,6 +40,36 @@ $blockedPatterns = @(
     'curl\s+.+\|\s*sh',
     'wget\s+.+\|\s*sh'
 )
+
+function Test-ReadonlyPatternSearch {
+    param(
+        [string]$InputCommand,
+        [string[]]$Patterns
+    )
+
+    $trimmed = $InputCommand.Trim()
+    if ($trimmed -notmatch '^(rg|grep|findstr)\b' -and $trimmed -notmatch '^git\s+grep\b') {
+        return $false
+    }
+
+    if ($InputCommand -match '&&|\|\||;|[<>]|\s\|\s' -or $InputCommand.Contains('$(') -or $InputCommand.Contains('`')) {
+        return $false
+    }
+
+    $lowered = $InputCommand.ToLowerInvariant()
+    foreach ($pattern in $Patterns) {
+        if ($lowered.Contains($pattern.ToLowerInvariant())) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+if (Test-ReadonlyPatternSearch -InputCommand $command -Patterns $blockedPatterns) {
+    '{"continue": true}'
+    exit 0
+}
 
 foreach ($pattern in $blockedPatterns) {
     if ($command -imatch $pattern) {

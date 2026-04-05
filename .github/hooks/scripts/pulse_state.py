@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import tempfile
 import time
 from pathlib import Path
 
@@ -105,10 +106,28 @@ def load_state(state_path: Path) -> dict:
 
 
 def atomic_write(path: Path, text: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(text, encoding="utf-8")
-    os.replace(tmp, path)
+    last_error = None
+    for _attempt in range(2):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        file_descriptor, tmp_name = tempfile.mkstemp(
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            dir=path.parent,
+        )
+        tmp_path = Path(tmp_name)
+        try:
+            with os.fdopen(file_descriptor, "w", encoding="utf-8") as handle:
+                handle.write(text)
+            os.replace(tmp_path, path)
+            return
+        except FileNotFoundError as exc:
+            last_error = exc
+            tmp_path.unlink(missing_ok=True)
+        except Exception:
+            tmp_path.unlink(missing_ok=True)
+            raise
+    if last_error is not None:
+        raise last_error
 
 
 def save_state(state: dict, workspace: Path, state_path: Path) -> None:

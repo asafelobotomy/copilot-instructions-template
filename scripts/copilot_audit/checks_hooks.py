@@ -132,7 +132,28 @@ def check_ps1_basic_sanity(root: pathlib.Path | AuditContext) -> CheckResult:
     ctx = ensure_context(root)
     result = CheckResult("PS1", "PowerShell hook scripts: basic sanity")
     found = False
-    has_pwsh = has_command("pwsh")
+    resolver = ctx.root / "scripts/tests/resolve-powershell.sh"
+    pwsh_path = None
+    if resolver.is_file() and has_command("bash"):
+        try:
+            proc = subprocess.run(
+                ["bash", str(resolver)],
+                capture_output=True,
+                text=True,
+                cwd=ctx.root,
+                check=False,
+            )
+        except OSError:
+            proc = None
+        if proc and proc.returncode == 0:
+            candidate = (proc.stdout or "").strip()
+            if candidate:
+                pwsh_path = candidate
+    if not pwsh_path:
+        for candidate in ("pwsh", "powershell"):
+            if has_command(candidate):
+                pwsh_path = candidate
+                break
     for ps1 in ctx.ps_scripts:
         found = True
         rel = ctx.rel(ps1)
@@ -144,7 +165,7 @@ def check_ps1_basic_sanity(root: pathlib.Path | AuditContext) -> CheckResult:
         if "Set-StrictMode" not in text:
             result.findings.append(Finding("PS1", rel, INFO,
                                            "Set-StrictMode not enabled — consider adding for safer hooks"))
-        if has_pwsh:
+        if pwsh_path:
             ps_path = str(ps1).replace("'", "''")
             cmd = (
                 "$errors = $null; "
@@ -153,13 +174,13 @@ def check_ps1_basic_sanity(root: pathlib.Path | AuditContext) -> CheckResult:
                 "if ($errors -and $errors.Count -gt 0) { $errors | Out-String; exit 1 }"
             )
             proc = subprocess.run(
-                ["pwsh", "-NoLogo", "-NoProfile", "-Command", cmd],
+                [pwsh_path, "-NoLogo", "-NoProfile", "-Command", cmd],
                 capture_output=True, text=True,
             )
             if proc.returncode != 0:
                 msg = (proc.stderr or proc.stdout).strip()
                 if not msg:
-                    msg = "PowerShell syntax error (see pwsh output)"
+                    msg = "PowerShell syntax error (see PowerShell output)"
                 result.findings.append(Finding("PS1", rel, HIGH, msg))
     if not found:
         result.findings.append(Finding("PS1", ".github/hooks/scripts/", INFO,

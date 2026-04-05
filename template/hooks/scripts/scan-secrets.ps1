@@ -3,9 +3,27 @@
 # inputs:   JSON via stdin
 # outputs:  JSON continuation signal; scan results on stderr
 # risk:     read-only
+# ESCALATION: block
+# STOP LOOP: if stop_hook_active is true in the Stop payload, do not re-enter blocking Stop logic.
 
 $ErrorActionPreference = 'SilentlyContinue'
-$null = $input | Out-String
+$inputJson = $input | Out-String
+
+$stopHookActive = $false
+if ($inputJson) {
+    try {
+        $payload = $inputJson | ConvertFrom-Json -ErrorAction Stop
+        if ($payload.stop_hook_active -eq $true) {
+            $stopHookActive = $true
+        }
+    } catch {
+        $stopHookActive = $false
+    }
+}
+
+if ($stopHookActive) {
+    '{"continue": true}'; exit 0
+}
 
 # ---------------------------------------------------------------------------
 # Environment variables

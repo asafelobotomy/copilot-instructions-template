@@ -87,6 +87,21 @@
       "reason": "The suite-manifest helper suite is directly runnable and should self-validate when edited."
     },
     {
+      "id": "powershell-resolver",
+      "matchType": "exact",
+      "pattern": "scripts/tests/resolve-powershell.sh",
+      "phaseStrategy": "broaden-aggressively",
+      "tests": [
+        "tests/scripts/test-resolve-powershell.sh",
+        "tests/hooks/test-hooks-powershell.sh",
+        "tests/hooks/test-guard-destructive-powershell.sh",
+        "tests/hooks/test-hook-scan-secrets-powershell.sh",
+        "tests/hooks/test-hook-subagent-start-powershell.sh",
+        "tests/hooks/test-hook-subagent-stop-powershell.sh"
+      ],
+      "reason": "The shared PowerShell resolver affects the full PowerShell hook surface and its deterministic resolver unit test."
+    },
+    {
       "id": "test-helpers",
       "matchType": "exact",
       "pattern": "tests/lib/test-helpers.sh",
@@ -108,6 +123,7 @@
       "pattern": "tests/lib/powershell-hook-test-helpers.sh",
       "phaseStrategy": "broaden-aggressively",
       "tests": [
+        "tests/scripts/test-resolve-powershell.sh",
         "tests/hooks/test-hooks-powershell.sh",
         "tests/hooks/test-guard-destructive-powershell.sh",
         "tests/hooks/test-hook-scan-secrets-powershell.sh",
@@ -122,6 +138,7 @@
       "pattern": "tests/coverage/",
       "phaseStrategy": "broaden-aggressively",
       "tests": [
+        "tests/scripts/test-resolve-powershell.sh",
         "tests/hooks/test-hooks-powershell.sh",
         "tests/hooks/test-guard-destructive-powershell.sh",
         "tests/hooks/test-hook-scan-secrets-powershell.sh",
@@ -435,6 +452,28 @@
       "reason": "Repo-live pulse_paths.py has a direct helper suite plus pulse integration coverage."
     },
     {
+      "id": "hook-pulse-state-helper",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/pulse_state.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-pulse-state.sh",
+        "tests/hooks/test-hook-pulse.sh"
+      ],
+      "reason": "pulse_state.py has a direct helper suite plus pulse integration coverage."
+    },
+    {
+      "id": "hook-pulse-state-helper-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/pulse_state.py",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-pulse-state.sh",
+        "tests/hooks/test-hook-pulse.sh"
+      ],
+      "reason": "Repo-live pulse_state.py has a direct helper suite plus pulse integration coverage."
+    },
+    {
       "id": "hook-pulse-python-helpers",
       "matchType": "glob",
       "pattern": "template/hooks/scripts/pulse_*.py",
@@ -465,6 +504,28 @@
       "phaseStrategy": "targeted",
       "tests": ["tests/hooks/test-mcp-heartbeat-server.sh"],
       "reason": "The repo-live heartbeat MCP server has a dedicated unit suite."
+    },
+    {
+      "id": "hook-lib-hooks",
+      "matchType": "exact",
+      "pattern": "template/hooks/scripts/lib-hooks.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-lib-hooks.sh",
+        "tests/scripts/test-permission-resilience.sh"
+      ],
+      "reason": "lib-hooks.sh has a direct helper suite plus permission resilience coverage."
+    },
+    {
+      "id": "hook-lib-hooks-github",
+      "matchType": "exact",
+      "pattern": ".github/hooks/scripts/lib-hooks.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-lib-hooks.sh",
+        "tests/scripts/test-permission-resilience.sh"
+      ],
+      "reason": "Repo-live lib-hooks.sh has a direct helper suite plus permission resilience coverage."
     },
     {
       "id": "hook-scan-secrets",
