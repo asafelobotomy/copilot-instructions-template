@@ -62,4 +62,5 @@ squash-fixups: false
 - Scopes are typically directory names: `template`, `hooks`, `skills`, `agents`, `tests`, `scripts`, `docs`.
 - Do not use the root package name as a scope.
 - Breaking changes must include a `BREAKING CHANGE:` footer.
+- For release-driving changes, use `feat` only for a real consumer-facing addition. Use `fix`, `deps`, `docs`, `refactor`, `perf`, `build`, `ci`, `test`, or `chore` for patch-level work.
 - Release commits follow `release-please` format and should not be hand-authored.

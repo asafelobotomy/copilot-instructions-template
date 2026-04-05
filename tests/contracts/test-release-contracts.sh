@@ -112,6 +112,10 @@ required = [
     "gh pr view \"$pr_number\"",
     "git push origin HEAD:\"$pr_branch\"",
     "gh pr merge \"$pr_number\"",
+    "skip-github-release: true",
+    "skip-github-pull-request: true",
+    "Refresh merged main for publish pass",
+    "steps.refresh_release_main.outputs.merged == true",
 ]
 for needle in required:
     if needle not in normalized:
@@ -132,6 +136,10 @@ required = [
     "Enable auto-merge and squash merge.",
     "GitHub Actions to create and approve pull requests.",
     "Only release-driving changes produce a release.",
+    "Major: any commit marked as a breaking change",
+    "Minor: `feat:` for a consumer-facing addition.",
+    "Patch: `fix:`, `deps:`",
+    "Use `feat` only for a real consumer-facing capability.",
     "scripts/workspace/check-workspace-drift.sh",
 ]
 for needle in required:

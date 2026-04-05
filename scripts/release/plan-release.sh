@@ -93,7 +93,7 @@ def fallback_bump(message: str) -> str:
         return "major"
     if re.search(r"(^|\n)\s*[-*]?\s*feat(?:\([^)]+\))?:\s", message, re.MULTILINE):
         return "minor"
-    if re.search(r"(^|\n)\s*[-*]?\s*(fix|deps)(?:\([^)]+\))?:\s", message, re.MULTILINE):
+    if re.search(r"(^|\n)\s*[-*]?\s*(fix|deps|docs|refactor|perf|build|ci|test|chore)(?:\([^)]+\))?:\s", message, re.MULTILINE):
         return "patch"
     return "none"
 
@@ -130,11 +130,16 @@ elif native_bump != "none":
     force_release_as = False
     next_version = bump_version(current_version, bump)
     reason = "release-driving commits include releasable conventional headers"
-else:
-    bump = inferred_bump if inferred_bump != "none" else "patch"
+elif inferred_bump != "none":
+    bump = inferred_bump
     force_release_as = True
     next_version = bump_version(current_version, bump)
-    reason = "release-driving commits need forced release-as fallback"
+    reason = "release-driving commits imply a semver bump through fallback rules"
+else:
+    bump = "patch"
+    force_release_as = True
+    next_version = bump_version(current_version, bump)
+    reason = "release-driving changes default to a patch release because no semver signal was present"
 
 outputs = {
     "should_release": "true" if should_release else "false",

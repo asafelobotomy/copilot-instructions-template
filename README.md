@@ -42,7 +42,16 @@ Current template version: **5.6.0** <!-- x-release-please-version --> — see [`
 
 Pushes to `main` run the full validation workflow first. A final CI release job runs only after the validation jobs succeed, so the same workflow both validates the commit and drives release-please.
 
-Only release-driving changes produce a release. The allowlist is: `template/`, `.github/agents/`, `starter-kits/`, `SETUP.md`, `UPDATE.md`, `AGENTS.md`, and `scripts/workspace/check-workspace-drift.sh`. Workflow changes, docs-only maintainer changes, tests, and other internal maintenance do not release by themselves. Within the release-driving set, `feat` keeps a minor bump, `fix` and `deps` keep a patch bump, and non-releasable commit headers fall back to a forced patch release so direct-purpose changes are still tagged and published.
+Only release-driving changes produce a release. The allowlist is: `template/`, `.github/agents/`, `starter-kits/`, `SETUP.md`, `UPDATE.md`, `AGENTS.md`, and `scripts/workspace/check-workspace-drift.sh`. Workflow changes, docs-only maintainer changes, tests, and other internal maintenance do not release by themselves.
+
+Within the release-driving set, the SemVer policy is explicit:
+
+- Major: any commit marked as a breaking change with `!` or a `BREAKING CHANGE:` footer. Releasable headers such as `fix!:` stay native; non-releasable headers such as `refactor!:` still publish through the forced fallback path.
+- Minor: `feat:` for a consumer-facing addition.
+- Patch: `fix:`, `deps:`, and release-driving `docs:`, `refactor:`, `perf:`, `build:`, `ci:`, `test:`, or `chore:` changes.
+- No release: changes outside the release-driving allowlist.
+
+Use `feat` only for a real consumer-facing capability. Use patch-level headers for corrections, maintenance, wording updates, and refactors. This keeps the minor digit meaningful instead of incrementing it for every release-driving change.
 
 Release-please is the only version writer. Do not bump `VERSION.md`, `.release-please-manifest.json`, or the `x-release-please-version` markers manually.
 

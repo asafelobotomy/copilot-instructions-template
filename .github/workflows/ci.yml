@@ -354,29 +354,29 @@ jobs:
           echo "Skipping release: ${{ steps.plan.outputs.reason }}"
 
       - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
-        id: release_native
-        if: >-
-          steps.release_commit.outputs.is_release_commit == 'true' ||
-          (steps.plan.outputs.should_release == 'true' && steps.plan.outputs.force_release_as != 'true')
+        id: release_pr_native
+        if: steps.release_commit.outputs.is_release_commit != 'true' && steps.plan.outputs.should_release == 'true' && steps.plan.outputs.force_release_as != 'true'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          skip-github-release: true
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
       - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
-        id: release_forced
+        id: release_pr_forced
         if: steps.release_commit.outputs.is_release_commit != 'true' && steps.plan.outputs.should_release == 'true' && steps.plan.outputs.force_release_as == 'true'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-as: ${{ steps.plan.outputs.next_version }}
+          skip-github-release: true
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
       - name: Prepare MIGRATION stub on release PR
-        if: (steps.release_native.outputs.pr || steps.release_forced.outputs.pr) && !(steps.release_native.outputs.release_created == 'true' || steps.release_forced.outputs.release_created == 'true')
+        if: steps.release_pr_native.outputs.pr || steps.release_pr_forced.outputs.pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_PR: ${{ steps.release_native.outputs.pr || steps.release_forced.outputs.pr }}
+          RELEASE_PR: ${{ steps.release_pr_native.outputs.pr || steps.release_pr_forced.outputs.pr }}
           NEXT_TAG: v${{ steps.plan.outputs.next_version }}
         run: |
           pr_number=$(python3 -c 'import json, os; print(json.loads(os.environ["RELEASE_PR"])["number"])')
@@ -392,14 +392,47 @@ jobs:
           git push origin HEAD:"$pr_branch"
 
       - name: Merge release PR
-        if: (steps.release_native.outputs.pr || steps.release_forced.outputs.pr) && !(steps.release_native.outputs.release_created == 'true' || steps.release_forced.outputs.release_created == 'true')
+        id: merge_release_pr
+        if: steps.release_pr_native.outputs.pr || steps.release_pr_forced.outputs.pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_PR: ${{ steps.release_native.outputs.pr || steps.release_forced.outputs.pr }}
+          RELEASE_PR: ${{ steps.release_pr_native.outputs.pr || steps.release_pr_forced.outputs.pr }}
         run: |
           pr_number=$(python3 -c 'import json, os; print(json.loads(os.environ["RELEASE_PR"])["number"])')
           gh pr merge "$pr_number" \
             --repo ${{ github.repository }} \
             --squash \
-            --auto \
-            || echo '::warning::Auto-merge failed or unavailable. Merge the release PR manually.'
+            || gh pr merge "$pr_number" \
+              --repo ${{ github.repository }} \
+              --squash \
+              --auto \
+            || echo '::warning::Immediate merge failed and auto-merge was unavailable. Merge the release PR manually.'
+
+      - name: Refresh merged main for publish pass
+        id: refresh_release_main
+        if: steps.release_pr_native.outputs.pr || steps.release_pr_forced.outputs.pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_PR: ${{ steps.release_pr_native.outputs.pr || steps.release_pr_forced.outputs.pr }}
+        run: |
+          pr_number=$(python3 -c 'import json, os; print(json.loads(os.environ["RELEASE_PR"])["number"])')
+          merged_at=$(gh pr view "$pr_number" --repo ${{ github.repository }} --json mergedAt --jq .mergedAt)
+          if [[ "$merged_at" == "null" || -z "$merged_at" ]]; then
+            echo 'merged=false' >> "$GITHUB_OUTPUT"
+            echo '::warning::Release PR is not merged yet; skipping publish pass in this run.'
+            exit 0
+          fi
+
+          merge_commit=$(gh pr view "$pr_number" --repo ${{ github.repository }} --json mergeCommit --jq .mergeCommit.oid)
+          git fetch origin "$merge_commit"
+          git checkout --force "$merge_commit"
+          echo 'merged=true' >> "$GITHUB_OUTPUT"
+
+      - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
+        id: release_publish
+        if: steps.release_commit.outputs.is_release_commit == 'true' || steps.refresh_release_main.outputs.merged == 'true'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          skip-github-pull-request: true
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

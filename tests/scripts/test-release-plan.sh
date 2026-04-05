@@ -215,4 +215,49 @@ assert_contains "drift helper change bumps patch" "$output" "version_bump=patch"
 assert_contains "drift helper change does not force release-as" "$output" "force_release_as=false"
 echo ""
 
+echo "9. Conventional docs changes on release-driving files stay patch releases"
+sandbox=$(make_release_sandbox)
+(
+  cd "$sandbox" || exit 1
+  printf 'clarify\n' >> UPDATE.md
+  git add UPDATE.md
+  git commit -q -m "docs: clarify update migration guidance"
+)
+output=$(run_plan "$sandbox")
+assert_contains "release-driving docs change triggers release" "$output" "should_release=true"
+assert_contains "release-driving docs change bumps patch" "$output" "version_bump=patch"
+assert_contains "release-driving docs change forces release-as" "$output" "force_release_as=true"
+assert_contains "release-driving docs change uses fallback reason" "$output" "reason=release-driving commits imply a semver bump through fallback rules"
+echo ""
+
+echo "10. Breaking non-releasable conventional headers still force a major release"
+sandbox=$(make_release_sandbox)
+(
+  cd "$sandbox" || exit 1
+  printf 'breaking\n' >> UPDATE.md
+  git add UPDATE.md
+  git commit -q -m "refactor!: remove legacy update flow"
+)
+output=$(run_plan "$sandbox")
+assert_contains "breaking non-releasable commit triggers release" "$output" "should_release=true"
+assert_contains "breaking non-releasable commit bumps major" "$output" "version_bump=major"
+assert_contains "breaking non-releasable commit forces release-as" "$output" "force_release_as=true"
+assert_contains "breaking non-releasable commit computes next major" "$output" "next_version=2.0.0"
+echo ""
+
+echo "11. Breaking releasable conventional headers keep native major bumping"
+sandbox=$(make_release_sandbox)
+(
+  cd "$sandbox" || exit 1
+  printf 'breaking\n' >> UPDATE.md
+  git add UPDATE.md
+  git commit -q -m "fix!: remove legacy update flow"
+)
+output=$(run_plan "$sandbox")
+assert_contains "breaking releasable commit triggers release" "$output" "should_release=true"
+assert_contains "breaking releasable commit bumps major" "$output" "version_bump=major"
+assert_contains "breaking releasable commit keeps native release" "$output" "force_release_as=false"
+assert_contains "breaking releasable commit computes next major" "$output" "next_version=2.0.0"
+echo ""
+
 finish_tests
