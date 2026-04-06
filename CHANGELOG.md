@@ -7,6 +7,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [5.7.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.6.0...v5.7.0) (2026-04-06)
+
+
+### Features
+
+* **agents:** add routing manifest, hooks, and tests ([d692d7a](https://github.com/asafelobotomy/copilot-instructions-template/commit/d692d7a42d811de5e17b0b8015495593a693845d))
+
+
+### Bug Fixes
+
+* **agents:** restore trailing newlines for markdownlint ([b64ff7f](https://github.com/asafelobotomy/copilot-instructions-template/commit/b64ff7f1d91cd7e01b2b74ed18d067685a95b335))
+* **audit:** require explicit inventory metadata ([7403f85](https://github.com/asafelobotomy/copilot-instructions-template/commit/7403f85b7c9bebd6a8be9e012506c9cccb42290d))
+* **release:** publish merged releases with semver rules ([d0a0f14](https://github.com/asafelobotomy/copilot-instructions-template/commit/d0a0f147edc56de0093cde7d9e09c9927adbc444))
+
 ## [5.6.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.5.0...v5.6.0) (2026-04-05)
 
 
