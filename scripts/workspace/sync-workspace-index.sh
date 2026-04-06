@@ -57,6 +57,7 @@ def ordered(existing, baseline):
 
 
 agents_existing = [p.name for p in (root / ".github/agents").glob("*.agent.md")]
+agent_support_existing = [p.name for p in (root / ".github/agents").glob("*.json")]
 skills_repo_existing = [p.parent.name for p in (root / ".github/skills").glob("*/SKILL.md")]
 skills_template_existing = [p.parent.name for p in (root / "template/skills").glob("*/SKILL.md")]
 prompts_existing = [p.name for p in (root / "template/prompts").glob("*.prompt.md")]
@@ -71,6 +72,7 @@ json_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*
 baseline = load_order_baseline(template_index_path, index_path)
 
 agents = ordered(agents_existing, list_or_empty(baseline, "agents"))
+agent_support_files = ordered(agent_support_existing, list_or_empty(baseline, "agentSupportFiles"))
 skills_repo = ordered(skills_repo_existing, list_or_empty(baseline, "skills", "repo"))
 skills_template = ordered(skills_template_existing, list_or_empty(baseline, "skills", "template"))
 prompts = ordered(prompts_existing, list_or_empty(baseline, "prompts"))
@@ -89,6 +91,7 @@ generated = {
     "purpose": "Canonical machine-readable inventory for repository metadata.",
     "counts": {
         "agents": len(agents),
+        "agentSupportFiles": len(agent_support_files),
         "skillsRepo": len(skills_repo),
         "skillsTemplate": len(skills_template),
         "hookScriptsShell": len(shell_hooks),
@@ -97,6 +100,7 @@ generated = {
         "hookScriptsJson": len(json_hooks),
     },
     "agents": agents,
+    "agentSupportFiles": agent_support_files,
     "skills": {
         "repo": skills_repo,
         "template": skills_template,

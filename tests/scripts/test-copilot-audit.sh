@@ -55,7 +55,7 @@ description: Coding agent
 model:
   - Claude Sonnet 4.6
 tools: [agent, codebase]
-agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Extensions', 'Commit', 'Organise']
+agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Extensions', 'Commit', 'Organise', 'Planner', 'Docs', 'Debugger']
 ---
 # Code Agent
 AGENT
@@ -143,6 +143,12 @@ MD
 
   mkdir -p "$SANDBOX/.github/workflows"
   mkdir -p "$SANDBOX/.copilot/workspace"
+  write_sandbox_file ".github/agents/routing-manifest.json" <<'JSON'
+{
+  "version": "1.0",
+  "routes": []
+}
+JSON
   write_sandbox_file ".github/workflows/copilot-setup-steps.yml" <<'YAML'
 name: Copilot Setup Steps
 YAML
@@ -161,6 +167,7 @@ MD
   "schemaVersion": "1.0",
   "counts": {
     "agents": 1,
+    "agentSupportFiles": 1,
     "skillsRepo": 1,
     "skillsTemplate": 1,
     "hookScriptsShell": 1,
@@ -169,6 +176,7 @@ MD
     "hookScriptsJson": 0
   },
   "agents": ["code.agent.md"],
+  "agentSupportFiles": ["routing-manifest.json"],
   "skills": {
     "repo": ["my-skill"]
   },
@@ -232,6 +240,7 @@ Updated: 2026-04-04
 -->
 <!-- file-manifest
 .github/agents/code.agent.md=bbbbbbbbbbbb
+.github/agents/routing-manifest.json=bbbbbbbbbbbb
 .github/hooks/copilot-hooks.json=bbbbbbbbbbbb
 .github/hooks/scripts/session-start.sh=bbbbbbbbbbbb
 .github/instructions/api.instructions.md=bbbbbbbbbbbb
@@ -281,6 +290,7 @@ Updated: 2026-04-04
 -->
 <!-- file-manifest
 .github/agents/code.agent.md=bbbbbbbbbbbb
+.github/agents/routing-manifest.json=bbbbbbbbbbbb
 .github/hooks/copilot-hooks.json=bbbbbbbbbbbb
 .github/hooks/scripts/session-start.sh=bbbbbbbbbbbb
 .github/instructions/api.instructions.md=bbbbbbbbbbbb
@@ -321,6 +331,7 @@ mutate_consumer_legacy_workspace_index_without_optional_files() {
   "schemaVersion": "0.9",
   "counts": {
     "agents": 1,
+    "agentSupportFiles": 1,
     "skillsRepo": 1,
     "skillsTemplate": 1,
     "hookScriptsShell": 1,
@@ -329,6 +340,7 @@ mutate_consumer_legacy_workspace_index_without_optional_files() {
     "hookScriptsJson": 0
   },
   "agents": ["code.agent.md"],
+  "agentSupportFiles": ["routing-manifest.json"],
   "skills": {
     "repo": ["my-skill"]
   },
@@ -426,6 +438,7 @@ Updated: 2026-04-04
 -->
 <!-- file-manifest
 .github/agents/code.agent.md=bbbbbbbbbbbb
+.github/agents/routing-manifest.json=bbbbbbbbbbbb
 .github/hooks/copilot-hooks.json=bbbbbbbbbbbb
 .github/hooks/scripts/session-start.sh=bbbbbbbbbbbb
 .github/instructions/api.instructions.md=bbbbbbbbbbbb

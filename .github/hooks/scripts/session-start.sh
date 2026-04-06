@@ -84,8 +84,63 @@ if [[ -f .copilot/workspace/HEARTBEAT.md ]]; then
   PULSE=$(grep -m1 'HEARTBEAT' .copilot/workspace/HEARTBEAT.md 2>/dev/null | head -1 || echo "unknown")
 fi
 
+# Build compact specialist roster from routing manifest (fallback to defaults).
+ROSTER=$(python3 - <<'PY'
+import json
+from pathlib import Path
+
+default = {
+  "agents": [
+    {"name": "Code", "route": "active", "visibility": "picker-visible"},
+    {"name": "Review", "route": "active", "visibility": "picker-visible"},
+    {"name": "Fast", "route": "active", "visibility": "picker-visible"},
+    {"name": "Audit", "route": "active", "visibility": "picker-visible"},
+    {"name": "Commit", "route": "active", "visibility": "picker-visible"},
+    {"name": "Explore", "route": "active", "visibility": "picker-visible"},
+    {"name": "Organise", "route": "active", "visibility": "internal"},
+    {"name": "Extensions", "route": "active", "visibility": "internal"},
+    {"name": "Researcher", "route": "active", "visibility": "internal"},
+    {"name": "Planner", "route": "active", "visibility": "internal"},
+    {"name": "Docs", "route": "active", "visibility": "internal"},
+    {"name": "Debugger", "route": "active", "visibility": "internal"},
+    {"name": "Setup", "route": "guarded", "visibility": "picker-visible"},
+  ]
+}
+
+manifest_path = Path('.github/agents/routing-manifest.json')
+try:
+  data = json.loads(manifest_path.read_text(encoding='utf-8')) if manifest_path.exists() else default
+except Exception:
+  data = default
+
+direct, internal, guarded = [], [], []
+for entry in data.get('agents', []):
+  route = str(entry.get('route') or 'inactive')
+  if route not in {'active', 'guarded'}:
+    continue
+  name = str(entry.get('name') or '').strip()
+  if not name:
+    continue
+  if route == 'guarded':
+    guarded.append(name)
+  elif str(entry.get('visibility') or 'internal') == 'picker-visible':
+    direct.append(name)
+  else:
+    internal.append(name)
+
+parts = []
+if direct:
+  parts.append('specialists: ' + ', '.join(direct))
+if internal:
+  parts.append('internal: ' + ', '.join(internal))
+if guarded:
+  parts.append('guarded: ' + ', '.join(guarded))
+print(' | '.join(parts) if parts else 'specialists: Code, Review, Fast, Audit, Commit, Explore | internal: Organise, Extensions, Researcher, Planner, Docs, Debugger | guarded: Setup')
+PY
+)
+
 # Emit context for the agent — JSON-escape to handle special characters
-CONTEXT="OS: ${OS_DISPLAY} | Pkg: ${PKG_MGR} | Immutable: ${OS_IMMUTABLE} | Project: ${PROJECT_NAME} v${PROJECT_VER} | Branch: ${BRANCH} (${COMMIT}) | Node: ${NODE_VER} | Python: ${PYTHON_VER} | Heartbeat: ${PULSE}"
+CONTEXT="OS: ${OS_DISPLAY} | Pkg: ${PKG_MGR} | Immutable: ${OS_IMMUTABLE} | Project: ${PROJECT_NAME} v${PROJECT_VER} | Branch: ${BRANCH} (${COMMIT}) | Node: ${NODE_VER} | Python: ${PYTHON_VER} | Heartbeat: ${PULSE} | Routing: ${ROSTER}"
 CONTEXT_ESC=$(json_escape "$CONTEXT")
 
 cat <<EOF

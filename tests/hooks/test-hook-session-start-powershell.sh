@@ -30,4 +30,12 @@ assert_contains "package.json name is surfaced" "$output" "pwsh-project"
 assert_contains "package.json version is surfaced" "$output" "1.2.3"
 echo ""
 
+echo "3. session-start.ps1 includes compact routing roster"
+output=$(run_ps_script "$SESSION_START" '{}')
+assert_contains "routing field is surfaced" "$output" "Routing:"
+assert_contains "routing guarded marker is surfaced" "$output" "guarded:"
+assert_contains "routing includes Stage 4 surfaced code agent" "$output" "Code"
+assert_contains "routing includes Stage 4 surfaced fast agent" "$output" "Fast"
+echo ""
+
 finish_tests

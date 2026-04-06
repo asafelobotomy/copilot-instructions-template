@@ -83,5 +83,13 @@ output=$(echo '{}' | bash "$SCRIPT" 2>/dev/null)
 assert_matches "OS: field present" "$output" "OS:"
 assert_matches "Pkg: field present" "$output" "Pkg:"
 assert_matches "Immutable: field present" "$output" "Immutable:"
+echo ""
+
+echo "12. Output contains compact routing roster"
+output=$(echo '{}' | bash "$SCRIPT" 2>/dev/null)
+assert_matches "Routing roster field present" "$output" "Routing:"
+assert_matches "Routing roster includes guarded marker" "$output" "guarded:"
+assert_matches "Routing roster includes Stage 4 surfaced code agent" "$output" "Code"
+assert_matches "Routing roster includes Stage 4 surfaced fast agent" "$output" "Fast"
 
 finish_tests

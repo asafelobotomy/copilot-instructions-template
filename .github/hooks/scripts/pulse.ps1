@@ -1,6 +1,6 @@
 # purpose:  Orchestrate heartbeat trigger state and retrospective gating.
 # when:     Invoked by lifecycle hooks (SessionStart/PostToolUse/PreCompact/Stop/UserPromptSubmit).
-# inputs:   JSON on stdin + -Trigger <session_start|soft_post_tool|compaction|stop|user_prompt|explicit>.
+# inputs:   JSON on stdin + -Trigger <session_start|pre_tool|soft_post_tool|compaction|stop|user_prompt|explicit>.
 # outputs:  JSON hook response (`continue` or Stop `decision:block`).
 # risk:     safe
 # source:   original

@@ -47,6 +47,9 @@ Recommended effort levels per agent:
 | extensions | Medium | Evaluation involves trade-offs but not deep reasoning |
 | researcher | High | Research synthesis benefits from deep analytical thinking |
 | commit | Low | Commit operations are low-context; fast responses preferred |
+| planner | High | Read-only planning and task decomposition benefit from deep reasoning before implementation |
+| docs | Medium | Documentation synthesis needs accuracy and structure without the full cost of architectural review |
+| debugger | High | Root-cause analysis and regression triage need disciplined narrowing and deep reasoning |
 
 > **User override**: these are recommendations. Users set thinking effort per model
 > in the VS Code model picker (click `>` next to the model name). The setting
@@ -150,3 +153,27 @@ models are preferred for commit message formatting.
 - GPT-5.1
 - Claude Sonnet 4.6
 - GPT-5 mini
+
+## planner
+
+Read-only planning, scoping, and execution sequencing before implementation.
+
+- Claude Sonnet 4.6
+- GPT-5.1
+- GPT-5 mini
+
+## docs
+
+Documentation generation, migration notes, README work, and user-facing guides.
+
+- Claude Sonnet 4.6
+- GPT-5.1
+- GPT-5 mini
+
+## debugger
+
+Root-cause analysis, error diagnosis, and regression triage.
+
+- GPT-5.4
+- Claude Sonnet 4.6
+- GPT-5.1

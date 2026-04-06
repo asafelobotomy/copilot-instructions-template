@@ -28,6 +28,12 @@
         "command": "./.github/hooks/scripts/guard-destructive.sh",
         "windows": "powershell -File .github\\hooks\\scripts\\guard-destructive.ps1",
         "timeout": 5
+      },
+      {
+        "type": "command",
+        "command": "./.github/hooks/scripts/pulse.sh --trigger pre_tool",
+        "windows": "powershell -File .github\\hooks\\scripts\\pulse.ps1 -Trigger pre_tool",
+        "timeout": 4
       }
     ],
     "PostToolUse": [

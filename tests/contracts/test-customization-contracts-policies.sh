@@ -339,14 +339,17 @@ def parse_tools_or_agents(frontmatter, field):
 
 expected = {
     "audit.agent.md": {"Code", "Setup", "Researcher", "Extensions", "Organise"},
-    "coding.agent.md": {"Review", "Audit", "Researcher", "Explore", "Extensions", "Commit", "Setup", "Organise"},
+    "coding.agent.md": {"Review", "Audit", "Researcher", "Explore", "Extensions", "Commit", "Setup", "Organise", "Planner", "Docs", "Debugger"},
     "commit.agent.md": {"Code", "Review", "Audit"},
+    "debugger.agent.md": {"Code", "Researcher", "Audit"},
+    "docs.agent.md": {"Code", "Researcher", "Review"},
     "explore.agent.md": {"Researcher"},
     "extensions.agent.md": {"Code", "Audit", "Organise"},
-    "fast.agent.md": {"Code", "Review", "Audit", "Explore", "Researcher", "Extensions", "Commit", "Setup", "Organise"},
+    "fast.agent.md": {"Code", "Review", "Audit", "Explore", "Researcher", "Extensions", "Commit", "Setup", "Organise", "Planner", "Docs", "Debugger"},
     "organise.agent.md": {"Code", "Explore"},
+    "planner.agent.md": {"Code", "Explore", "Researcher"},
     "researcher.agent.md": {"Code", "Audit", "Explore"},
-    "review.agent.md": {"Code", "Audit", "Organise"},
+    "review.agent.md": {"Code", "Audit", "Organise", "Docs", "Debugger"},
     "setup.agent.md": {"Audit", "Extensions", "Organise"},
 }
 
@@ -366,6 +369,9 @@ for name, expected_agents in expected.items():
 checks = {
     "audit.agent.md": ["Use `Extensions` when a finding is specifically about VS Code extension"],
     "coding.agent.md": [
+        "Use `Planner` when the request is large, ambiguous, or needs a scoped execution plan before implementation.",
+        "Use `Debugger` when the main task is to diagnose a failure, regression, or unclear root cause before editing.",
+        "Use `Docs` when the work is primarily documentation, migration guidance, or user-facing technical explanation rather than product behavior.",
         "Use `Explore` for read-only codebase inventory across multiple files",
         "Use `Researcher` when a task depends on current external documentation",
         "Use `Extensions` when the work shifts into VS Code extension recommendations",
@@ -375,8 +381,21 @@ checks = {
         "Use `Code` when preflight or review finds implementation work",
         "Use `Audit` when the user requests a deeper security or health check",
     ],
+    "debugger.agent.md": [
+        "Focus on reproduction, symptom isolation, root cause, and the smallest credible fix path.",
+        "Use `Researcher` when the failure depends on current external docs, release notes, or API behavior.",
+        "Use `Code` only after the diagnosis is specific enough to implement without guessing.",
+    ],
+    "docs.agent.md": [
+        "Prefer documentation files, guides, prompts, instructions, and user-facing examples over code changes.",
+        "Use `Researcher` when the docs depend on current external references or upstream behavior.",
+        "Do not silently change runtime behavior while doing docs-only work.",
+    ],
     "fast.agent.md": [
         "If the user is asking for a formal code review or architectural critique, use",
+        "If the user is mainly asking for task decomposition, phased planning, or scope control, use `Planner`.",
+        "If the user is primarily debugging a failure or regression, use `Debugger`.",
+        "If the task is really documentation generation, migration notes, or guide writing, use `Docs`.",
         "If the user is asking for a health check, security audit, or vulnerability",
         "If the question expands beyond a single file but stays read-only, use",
         "If the answer depends on current external documentation or version-specific",
@@ -388,8 +407,17 @@ checks = {
     "organise.agent.md": [
         "Use `Code` when the task expands from structural cleanup into semantic",
     ],
+    "planner.agent.md": [
+        "Stay read-only. Do not modify files.",
+        "Use `Explore` when the task needs a broader read-only inventory before the plan is credible.",
+        "Use `Researcher` when the plan depends on current external docs or version-specific behavior.",
+    ],
     "researcher.agent.md": [
         "Use `Explore` when you need a broader read-only inventory of local callers,",
+    ],
+    "review.agent.md": [
+        "Use `Debugger` when a finding cannot be substantiated without isolating the underlying root cause first.",
+        "Use `Docs` when the review outcome is primarily missing documentation, migration guidance, or user-facing explanation.",
     ],
     "setup.agent.md": [
         "Use `Extensions` when setup or update work shifts into VS Code extension",

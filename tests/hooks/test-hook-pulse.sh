@@ -480,4 +480,184 @@ assert state["session_state"] == "pending"
 assert len(events) == 1
 '
 
+echo ""
+
+echo "25. user_prompt captures high-confidence Commit route candidate"
+TMPDIR_ROUTE_COMMIT=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_ROUTE_COMMIT")
+mkdir -p "$TMPDIR_ROUTE_COMMIT/.copilot/workspace"
+run_pulse "$TMPDIR_ROUTE_COMMIT" session_start '{"sessionId":"sess-route-commit"}' >/dev/null
+run_pulse "$TMPDIR_ROUTE_COMMIT" user_prompt '{"prompt":"Please stage and commit my changes"}' >/dev/null
+assert_python_in_root "commit route candidate captured from prompt" "$TMPDIR_ROUTE_COMMIT" '
+state = json.loads((root / ".copilot/workspace/state.json").read_text(encoding="utf-8"))
+assert state["route_candidate"] == "Commit"
+assert state["route_source"] == "prompt"
+assert state["route_confidence"] >= 0.74
+'
+echo ""
+
+echo "26. pre_tool emits sparse Commit routing hint once"
+output=$(run_pulse "$TMPDIR_ROUTE_COMMIT" pre_tool '{"tool_name":"run_in_terminal","tool_input":{"command":"git commit -m \"wip\""}}')
+assert_matches "commit pre_tool emits routing hint" "$output" 'Routing hint: Commit specialist'
+output=$(run_pulse "$TMPDIR_ROUTE_COMMIT" pre_tool '{"tool_name":"run_in_terminal","tool_input":{"command":"git push"}}')
+if echo "$output" | grep -q 'Routing hint:'; then
+  fail_note "commit hint is not repeated" "     unexpected repeated hint: $output"
+else
+  pass_note "commit hint is not repeated"
+fi
+assert_python_in_root "commit hint marks emitted state" "$TMPDIR_ROUTE_COMMIT" '
+state = json.loads((root / ".copilot/workspace/state.json").read_text(encoding="utf-8"))
+assert state["route_emitted"] is True
+assert "Commit" in state["route_emitted_agents"]
+'
+echo ""
+
+echo "27. guarded Setup does not auto-route from behavior without strict prompt candidate"
+TMPDIR_ROUTE_SETUP=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_ROUTE_SETUP")
+mkdir -p "$TMPDIR_ROUTE_SETUP/.copilot/workspace"
+run_pulse "$TMPDIR_ROUTE_SETUP" session_start '{"sessionId":"sess-route-setup"}' >/dev/null
+output=$(run_pulse "$TMPDIR_ROUTE_SETUP" pre_tool '{"tool_name":"run_in_terminal","tool_input":{"command":"bash SETUP.md"}}')
+assert_valid_json "setup behavior-only output is valid JSON" "$output"
+if echo "$output" | grep -q 'Routing hint:'; then
+  fail_note "setup behavior-only does not emit hint" "     unexpected hint: $output"
+else
+  pass_note "setup behavior-only does not emit hint"
+fi
+assert_python_in_root "setup behavior-only leaves candidate empty" "$TMPDIR_ROUTE_SETUP" '
+state = json.loads((root / ".copilot/workspace/state.json").read_text(encoding="utf-8"))
+assert state["route_candidate"] == ""
+'
+echo ""
+
+echo "28. guarded Setup is blocked when running in template repo"
+TMPDIR_ROUTE_TEMPLATE=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_ROUTE_TEMPLATE")
+mkdir -p "$TMPDIR_ROUTE_TEMPLATE/.copilot/workspace" "$TMPDIR_ROUTE_TEMPLATE/.github" "$TMPDIR_ROUTE_TEMPLATE/template"
+printf '# test\n' > "$TMPDIR_ROUTE_TEMPLATE/.github/copilot-instructions.md"
+printf '# test\n' > "$TMPDIR_ROUTE_TEMPLATE/template/copilot-instructions.md"
+run_pulse "$TMPDIR_ROUTE_TEMPLATE" session_start '{"sessionId":"sess-route-template"}' >/dev/null
+run_pulse "$TMPDIR_ROUTE_TEMPLATE" user_prompt '{"prompt":"Update your instructions"}' >/dev/null
+output=$(run_pulse "$TMPDIR_ROUTE_TEMPLATE" pre_tool '{"tool_name":"run_in_terminal","tool_input":{"command":"bash UPDATE.md"}}')
+if echo "$output" | grep -q 'Routing hint: Setup'; then
+  fail_note "setup hint is blocked in template repo" "     unexpected setup hint: $output"
+else
+  pass_note "setup hint is blocked in template repo"
+fi
+
+echo ""
+
+echo "29. Stage 3 prompt+behavior routes are deterministic for newly active specialists"
+for agent in Planner Docs Debugger Review Audit Extensions Organise; do
+  tmpdir_agent=$(mktemp -d); CLEANUP_DIRS+=("$tmpdir_agent")
+  mkdir -p "$tmpdir_agent/.copilot/workspace"
+  run_pulse "$tmpdir_agent" session_start '{"sessionId":"sess-route-stage3"}' >/dev/null
+  case "$agent" in
+    Planner)
+      prompt='Please break this down into an execution plan'
+      pre_payload='{"tool_name":"read_file"}'
+      ;;
+    Docs)
+      prompt='Please document this in the README'
+      pre_payload='{"tool_name":"create_file","tool_input":{"path":"README.md"}}'
+      ;;
+    Debugger)
+      prompt='Please debug this failing test regression and find the root cause'
+      pre_payload='{"tool_name":"run_in_terminal","tool_input":{"command":"pytest tests/hooks/test-hook-pulse.sh"}}'
+      ;;
+    Review)
+      prompt='Please run a formal code review and provide findings'
+      pre_payload='{"tool_name":"get_changed_files"}'
+      ;;
+    Audit)
+      prompt='Run a security audit and check for residual risk'
+      pre_payload='{"tool_name":"run_in_terminal","tool_input":{"command":"python scripts/copilot_audit.py --help"}}'
+      ;;
+    Extensions)
+      prompt='Review my VS Code extensions profile and sync recommendations'
+      pre_payload='{"tool_name":"get_active_profile"}'
+      ;;
+    Organise)
+      prompt='Reorganize this repo and move files to fix paths'
+      pre_payload='{"tool_name":"run_in_terminal","tool_input":{"command":"git mv old.md new.md"}}'
+      ;;
+  esac
+
+  run_pulse "$tmpdir_agent" user_prompt "{\"prompt\":\"$prompt\"}" >/dev/null
+  assert_python_in_root "$agent prompt candidate captured" "$tmpdir_agent" "
+state = json.loads((root / '.copilot/workspace/state.json').read_text(encoding='utf-8'))
+assert state['route_candidate'] == '$agent'
+assert state['route_source'] == 'prompt'
+"
+
+  output=$(run_pulse "$tmpdir_agent" pre_tool "$pre_payload")
+  assert_matches "$agent pre_tool emits routing hint" "$output" "Routing hint: $agent specialist"
+  assert_python_in_root "$agent hint records emitted state" "$tmpdir_agent" "
+state = json.loads((root / '.copilot/workspace/state.json').read_text(encoding='utf-8'))
+assert state['route_emitted'] is True
+assert '$agent' in state['route_emitted_agents']
+"
+done
+
+echo ""
+
+echo "30. overlap-sensitive Fast and Code do not auto-route from behavior alone"
+for agent in Fast Code; do
+  tmpdir_agent=$(mktemp -d); CLEANUP_DIRS+=("$tmpdir_agent")
+  mkdir -p "$tmpdir_agent/.copilot/workspace"
+  run_pulse "$tmpdir_agent" session_start '{"sessionId":"sess-route-stage4-behavior-only"}' >/dev/null
+  case "$agent" in
+    Fast)
+      pre_payload='{"tool_name":"run_in_terminal","tool_input":{"command":"wc -l CHANGELOG.md"}}'
+      ;;
+    Code)
+      pre_payload='{"tool_name":"create_file","tool_input":{"path":"feature.py"}}'
+      ;;
+  esac
+
+  output=$(run_pulse "$tmpdir_agent" pre_tool "$pre_payload")
+  assert_valid_json "$agent behavior-only output is valid JSON" "$output"
+  if echo "$output" | grep -q 'Routing hint:'; then
+    fail_note "$agent behavior-only does not emit hint" "     unexpected hint: $output"
+  else
+    pass_note "$agent behavior-only does not emit hint"
+  fi
+  assert_python_in_root "$agent behavior-only leaves candidate empty" "$tmpdir_agent" "
+state = json.loads((root / '.copilot/workspace/state.json').read_text(encoding='utf-8'))
+assert state['route_candidate'] == ''
+"
+done
+
+echo ""
+
+echo "31. Stage 4 prompt+behavior routes are deterministic for overlap-sensitive specialists"
+for agent in Fast Code; do
+  tmpdir_agent=$(mktemp -d); CLEANUP_DIRS+=("$tmpdir_agent")
+  mkdir -p "$tmpdir_agent/.copilot/workspace"
+  run_pulse "$tmpdir_agent" session_start '{"sessionId":"sess-route-stage4"}' >/dev/null
+  case "$agent" in
+    Fast)
+      prompt='This is a quick question: what does this regex match?'
+      pre_payload='{"tool_name":"run_in_terminal","tool_input":{"command":"wc -l CHANGELOG.md"}}'
+      ;;
+    Code)
+      prompt='Implement this feature and write tests for it'
+      pre_payload='{"tool_name":"create_file","tool_input":{"path":"feature.py"}}'
+      ;;
+  esac
+
+  run_pulse "$tmpdir_agent" user_prompt "{\"prompt\":\"$prompt\"}" >/dev/null
+  assert_python_in_root "$agent prompt candidate captured" "$tmpdir_agent" "
+state = json.loads((root / '.copilot/workspace/state.json').read_text(encoding='utf-8'))
+assert state['route_candidate'] == '$agent'
+assert state['route_source'] == 'prompt'
+"
+
+  output=$(run_pulse "$tmpdir_agent" pre_tool "$pre_payload")
+  assert_matches "$agent pre_tool emits routing hint" "$output" "Routing hint: $agent specialist"
+  assert_python_in_root "$agent hint records emitted state" "$tmpdir_agent" "
+state = json.loads((root / '.copilot/workspace/state.json').read_text(encoding='utf-8'))
+assert state['route_emitted'] is True
+assert '$agent' in state['route_emitted_agents']
+assert state['route_source'] == 'prompt+behavior'
+"
+done
+
 finish_tests

@@ -22,13 +22,13 @@ inventory of supporting upstream sources so `AGENTS.md` and
 
 ## Agent files (§ 2.5)
 
-Use **dynamic discovery** via GitHub API tree to enumerate all agents:
+Use **dynamic discovery** via GitHub API tree to enumerate all agent assets:
 
 ```text
 GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/git/trees/main?recursive=1
 ```
 
-Filter for `type == "blob"` and `path` matching `.github/agents/*.agent.md`. Fetch each verbatim. If `"truncated": true`, fall back to the `agents` array in the workspace-index payload prefetched by SETUP.md §2. Write that same payload to `.copilot/workspace/workspace-index.json` later in §3.
+Filter for `type == "blob"` and `path` matching `.github/agents/*.agent.md` or `.github/agents/*.json`. Fetch each verbatim. This currently includes the routing sidecar `.github/agents/routing-manifest.json`. If `"truncated": true`, fall back to the `agents` and `agentSupportFiles` arrays in the workspace-index payload prefetched by SETUP.md §2. Write that same payload to `.copilot/workspace/workspace-index.json` later in §3.
 
 ---
 
@@ -280,7 +280,7 @@ for i in $(seq 1 9); do
   echo "§${i}=${fp}"
 done
 # File manifest
-for f in .github/agents/*.agent.md .github/skills/*/SKILL.md \
+for f in .github/agents/*.agent.md .github/agents/*.json .github/skills/*/SKILL.md \
   .github/starter-kits/*/plugin.json \
   .github/starter-kits/*/skills/*/SKILL.md \
   .github/starter-kits/*/instructions/*.instructions.md \
@@ -312,7 +312,7 @@ for i in range(1, 10):
 
 # File manifest
 patterns = [
-    '.github/agents/*.agent.md', '.github/skills/*/SKILL.md',
+  '.github/agents/*.agent.md', '.github/agents/*.json', '.github/skills/*/SKILL.md',
     '.github/starter-kits/*/plugin.json',
     '.github/starter-kits/*/skills/*/SKILL.md',
     '.github/starter-kits/*/instructions/*.instructions.md',

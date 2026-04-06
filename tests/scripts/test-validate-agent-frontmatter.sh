@@ -141,7 +141,8 @@ echo "9. Real repo agents pass validation"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" 2>&1)
 status=$?
 assert_success "real repo exits zero" "$status"
-assert_contains "real repo all valid" "$output" "10 agent files"
+expected_count=$(find "$REPO_ROOT/.github/agents" -name '*.agent.md' | wc -l | tr -d ' ')
+assert_contains "real repo all valid" "$output" "$expected_count agent files"
 echo ""
 
 finish_tests

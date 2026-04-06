@@ -15,6 +15,42 @@
       "reason": "Agent definitions participate in customization contracts, audit checks, model sync, and frontmatter validation."
     },
     {
+      "id": "routing-manifest",
+      "matchType": "exact",
+      "pattern": ".github/agents/routing-manifest.json",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hook-session-start.sh",
+        "tests/hooks/test-hook-pulse.sh",
+        "tests/hooks/test-hooks-powershell.sh",
+        "tests/scripts/test-copilot-audit.sh",
+        "tests/scripts/test-sync-workspace-index.sh"
+      ],
+      "reason": "The routing manifest drives hook routing behavior and participates in the canonical consumer inventory."
+    },
+    {
+      "id": "repo-workspace-index",
+      "matchType": "exact",
+      "pattern": ".copilot/workspace/workspace-index.json",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-copilot-audit.sh",
+        "tests/scripts/test-sync-workspace-index.sh"
+      ],
+      "reason": "The repo workspace-index is the canonical inventory consumed by sync and audit checks."
+    },
+    {
+      "id": "template-workspace-index",
+      "matchType": "exact",
+      "pattern": "template/workspace/workspace-index.json",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-copilot-audit.sh",
+        "tests/scripts/test-sync-workspace-index.sh"
+      ],
+      "reason": "The template workspace-index is the canonical inventory consumed by sync and audit checks."
+    },
+    {
       "id": "models-registry",
       "matchType": "exact",
       "pattern": "MODELS.md",

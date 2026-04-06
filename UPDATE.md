@@ -108,6 +108,7 @@ Match = not modified. Mismatch = modified. If unavailable, stop and direct the u
 | Template repo glob | Consumer destination |
 |-------------------|---------------------|
 | `.github/agents/*.agent.md` | `.github/agents/*.agent.md` (verbatim) |
+| `.github/agents/*.json` | `.github/agents/*.json` (verbatim support files) |
 | `template/skills/*/SKILL.md` | `.github/skills/*/SKILL.md` |
 | `template/hooks/**` | `.github/hooks/**` |
 | `template/instructions/*` | `.github/instructions/*` |
@@ -122,7 +123,7 @@ Match = not modified. Mismatch = modified. If unavailable, stop and direct the u
 
 **Excluded** (template internals): `tests/`, `scripts/`, `.github/workflows/`, `.github/copilot-instructions.md`, `.github/instructions/`, `.github/prompts/`, `.github/hooks/`, `.github/skills/`, `SETUP.md`, `UPDATE.md`, `MIGRATION.md`, `AGENTS.md`, `MODELS.md`, `VERSION.md`, `CHANGELOG.md`, `README.md`, `llms.txt`, `release-please-config.json`, `CLAUDE.md` (dev copy), `.markdownlint*`, `.gitignore`, `.github/copilot-version.md`.
 
-**Roster completeness**: fetch `git/trees/main?recursive=1` (reuse U3b cache). Filter for agents and skills. Add missing items with status `NEW`.
+**Roster completeness**: fetch `git/trees/main?recursive=1` (reuse U3b cache). Filter for `.github/agents/*.agent.md`, `.github/agents/*.json`, and `template/skills/*/SKILL.md`. Add missing items with status `NEW`.
 
 **Status per companion file**: `NEW` (absent → create), `UPDATABLE` (unmodified, template differs → update), `USER_CUSTOMISED` (modified, template differs → flag), `CURRENT` (matches template → skip), `DELETED_FROM_TEMPLATE` (removed → inform, default keep, require explicit confirmation).
 
@@ -305,7 +306,7 @@ for i in $(seq 1 9); do
   echo "§${i}=${fp}"
 done
 # File manifest
-for f in .github/agents/*.agent.md .github/skills/*/SKILL.md \
+for f in .github/agents/*.agent.md .github/agents/*.json .github/skills/*/SKILL.md \
   .github/starter-kits/*/plugin.json \
   .github/starter-kits/*/skills/*/SKILL.md \
   .github/starter-kits/*/instructions/*.instructions.md \
@@ -336,7 +337,7 @@ for i in range(1, 10):
 
 # File manifest
 for pattern in [
-    '.github/agents/*.agent.md', '.github/skills/*/SKILL.md',
+  '.github/agents/*.agent.md', '.github/agents/*.json', '.github/skills/*/SKILL.md',
     '.github/starter-kits/*/plugin.json',
     '.github/starter-kits/*/skills/*/SKILL.md',
     '.github/starter-kits/*/instructions/*.instructions.md',

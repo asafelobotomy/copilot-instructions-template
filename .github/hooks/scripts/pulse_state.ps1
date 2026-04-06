@@ -76,6 +76,15 @@ function Get-DefaultState {
         signal_cross_cutting = $false
         signal_scope_widening = $false
         signal_reflection_likely = $false
+        route_candidate = ''
+        route_reason = ''
+        route_confidence = 0.0
+        route_source = ''
+        route_emitted = $false
+        route_epoch = 0
+        route_last_hint_epoch = 0
+        route_emitted_agents = @()
+        route_signal_counts = [ordered]@{}
         changed_path_families = @()
         touched_files_sample = @()
         unique_touched_file_count = 0

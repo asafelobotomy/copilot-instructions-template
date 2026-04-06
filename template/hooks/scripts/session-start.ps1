@@ -84,9 +84,40 @@ if (Test-Path '.copilot/workspace/HEARTBEAT.md') {
               Select-Object -First 1).Line ?? 'unknown'
 }
 
+$routingRoster = 'specialists: Code, Review, Fast, Audit, Commit, Explore | internal: Organise, Extensions, Researcher, Planner, Docs, Debugger | guarded: Setup'
+if (Test-Path '.github/agents/routing-manifest.json') {
+    try {
+        $manifest = Get-Content '.github/agents/routing-manifest.json' -Raw | ConvertFrom-Json -AsHashtable
+        $direct = New-Object System.Collections.Generic.List[string]
+        $internal = New-Object System.Collections.Generic.List[string]
+        $guarded = New-Object System.Collections.Generic.List[string]
+        foreach ($entry in @($manifest['agents'])) {
+            if ($null -eq $entry) { continue }
+            $route = [string]($entry['route'] ?? 'inactive')
+            if ($route -notin @('active', 'guarded')) { continue }
+            $name = [string]($entry['name'] ?? '')
+            if (-not $name) { continue }
+            if ($route -eq 'guarded') {
+                $guarded.Add($name)
+            } elseif ([string]($entry['visibility'] ?? 'internal') -eq 'picker-visible') {
+                $direct.Add($name)
+            } else {
+                $internal.Add($name)
+            }
+        }
+        $parts = New-Object System.Collections.Generic.List[string]
+        if ($direct.Count -gt 0) { $parts.Add('specialists: ' + ($direct -join ', ')) }
+        if ($internal.Count -gt 0) { $parts.Add('internal: ' + ($internal -join ', ')) }
+        if ($guarded.Count -gt 0) { $parts.Add('guarded: ' + ($guarded -join ', ')) }
+        if ($parts.Count -gt 0) {
+            $routingRoster = $parts -join ' | '
+        }
+    } catch {}
+}
+
 [PSCustomObject]@{
     hookSpecificOutput = [PSCustomObject]@{
         hookEventName     = 'SessionStart'
-        additionalContext = "OS: $osDisplay | Pkg: $pkgMgr | Immutable: $immutable | Project: $projectName v$projectVer | Branch: $branch ($commit) | Node: $nodeVer | Python: $pyVer | Heartbeat: $pulse"
+        additionalContext = "OS: $osDisplay | Pkg: $pkgMgr | Immutable: $immutable | Project: $projectName v$projectVer | Branch: $branch ($commit) | Node: $nodeVer | Python: $pyVer | Heartbeat: $pulse | Routing: $routingRoster"
     }
 } | ConvertTo-Json -Depth 5

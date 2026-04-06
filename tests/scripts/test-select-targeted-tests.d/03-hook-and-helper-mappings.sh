@@ -182,3 +182,59 @@ if payload["intermediate_phase_strategy"] != "targeted":
     raise SystemExit(payload["intermediate_phase_strategy"])
 '
 echo ""
+
+echo "34. routing-manifest.json maps to routing hook and inventory suites"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" ".github/agents/routing-manifest.json")
+status=$?
+assert_success "selector exits zero on routing-manifest.json" "$status"
+SELECTOR_OUTPUT="$output" assert_python "routing-manifest.json maps to routing hook and inventory suites" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+selected = set(payload["selected_tests"])
+required = {
+    "tests/hooks/test-hook-session-start.sh",
+    "tests/hooks/test-hook-pulse.sh",
+    "tests/hooks/test-hooks-powershell.sh",
+    "tests/scripts/test-copilot-audit.sh",
+    "tests/scripts/test-sync-workspace-index.sh",
+}
+missing = sorted(required - selected)
+if missing:
+    raise SystemExit(str(payload["selected_tests"]))
+if payload["intermediate_phase_strategy"] != "targeted":
+    raise SystemExit(payload["intermediate_phase_strategy"])
+if payload["unmapped_paths"]:
+    raise SystemExit(str(payload["unmapped_paths"]))
+'
+echo ""
+
+echo "35. repo workspace-index maps to sync and audit suites"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" ".copilot/workspace/workspace-index.json")
+status=$?
+assert_success "selector exits zero on repo workspace-index" "$status"
+SELECTOR_OUTPUT="$output" assert_python "repo workspace-index maps to sync and audit suites" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if set(payload["selected_tests"]) != {
+    "tests/scripts/test-copilot-audit.sh",
+    "tests/scripts/test-sync-workspace-index.sh",
+}:
+    raise SystemExit(str(payload["selected_tests"]))
+if payload["intermediate_phase_strategy"] != "targeted":
+    raise SystemExit(payload["intermediate_phase_strategy"])
+'
+echo ""
+
+echo "36. template workspace-index maps to sync and audit suites"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/workspace/workspace-index.json")
+status=$?
+assert_success "selector exits zero on template workspace-index" "$status"
+SELECTOR_OUTPUT="$output" assert_python "template workspace-index maps to sync and audit suites" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if set(payload["selected_tests"]) != {
+    "tests/scripts/test-copilot-audit.sh",
+    "tests/scripts/test-sync-workspace-index.sh",
+}:
+    raise SystemExit(str(payload["selected_tests"]))
+if payload["intermediate_phase_strategy"] != "targeted":
+    raise SystemExit(payload["intermediate_phase_strategy"])
+'
+echo ""

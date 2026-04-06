@@ -45,6 +45,7 @@ def inventory_from_workspace_index(
     """Normalise the explicit workspace-index inventory for consumer checks."""
     return {
         "agents": _string_list(payload, "agents"),
+        "agent_support_files": _string_list(payload, "agentSupportFiles"),
         "skills": _string_list(payload, "skills", "repo"),
         "prompts": _string_list(payload, "prompts"),
         "instructions": _string_list(payload, "instructions"),
@@ -65,6 +66,11 @@ def managed_consumer_file_paths(
     files: set[str] = set()
 
     for filename in inventory["agents"]:
+        candidate = ctx.root / ".github" / "agents" / filename
+        if candidate.is_file():
+            files.add(ctx.rel(candidate))
+
+    for filename in inventory["agent_support_files"]:
         candidate = ctx.root / ".github" / "agents" / filename
         if candidate.is_file():
             files.add(ctx.rel(candidate))

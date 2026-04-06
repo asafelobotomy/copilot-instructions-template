@@ -308,6 +308,12 @@ assert_file_contains "manifests.md includes commit-style workspace stub" \
 
 assert_file_contains "manifests.md fetches python hook support files" \
     "$MANIFESTS" "hookScripts.python"
+
+assert_file_contains "manifests.md discovers agent JSON support files" \
+    "$MANIFESTS" "\\.github/agents/\\*\\.json"
+
+assert_file_contains "manifests.md documents agent support fallback inventory" \
+    "$MANIFESTS" "agentSupportFiles"
 echo ""
 
 # ──────────────────────────────────────────────────────────────
@@ -323,11 +329,17 @@ assert_file_contains "manifests.md file manifest tracks hook JSON helpers" \
 assert_file_contains "manifests.md file manifest tracks hook Python helpers" \
     "$MANIFESTS" "\\.github/hooks/scripts/\\*\\.py"
 
+assert_file_contains "manifests.md file manifest tracks agent JSON support files" \
+    "$MANIFESTS" "\\.github/agents/\\*\\.json"
+
 assert_file_contains "UPDATE.md file manifest tracks hook JSON helpers" \
     "$UPDATE" "\\.github/hooks/scripts/\\*\\.json"
 
 assert_file_contains "UPDATE.md file manifest tracks hook Python helpers" \
     "$UPDATE" "\\.github/hooks/scripts/\\*\\.py"
+
+assert_file_contains "UPDATE.md file manifest tracks agent JSON support files" \
+    "$UPDATE" "\\.github/agents/\\*\\.json"
 echo ""
 
 # ──────────────────────────────────────────────────────────────
@@ -336,6 +348,9 @@ echo "19. VS Code and starter-kit companion manifests are tracked"
 
 assert_file_contains "UPDATE.md maps template VS Code settings" \
     "$UPDATE" "template/vscode/settings\.json"
+
+assert_file_contains "UPDATE.md maps agent JSON support files" \
+    "$UPDATE" "\\.github/agents/\\*\\.json"
 
 assert_file_contains "UPDATE.md keeps VS Code settings conditional" \
     "$UPDATE" "template/vscode/settings\.json.*only if the consumer already has this file from setup"

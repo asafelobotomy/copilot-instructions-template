@@ -132,6 +132,9 @@ expected = {
     "extensions.agent.md": "You are the Extensions agent for the current project.",
     "setup.agent.md": "You are the Setup agent for the current project.",
     "audit.agent.md": "You are the Audit agent for the current project.",
+    "planner.agent.md": "You are the Planner agent for the current project.",
+    "docs.agent.md": "You are the Docs agent for the current project.",
+    "debugger.agent.md": "You are the Debugger agent for the current project.",
 }
 for filename, needle in expected.items():
     text = (root / ".github/agents" / filename).read_text(encoding="utf-8")
@@ -157,6 +160,9 @@ expected_hidden = {
     "researcher.agent.md": ["name: Researcher", "user-invocable: false"],
     "extensions.agent.md": ["name: Extensions", "user-invocable: false"],
     "organise.agent.md": ["name: Organise", "user-invocable: false"],
+    "planner.agent.md": ["name: Planner", "user-invocable: false"],
+    "docs.agent.md": ["name: Docs", "user-invocable: false"],
+    "debugger.agent.md": ["name: Debugger", "user-invocable: false"],
 }
 
 for filename, needles in expected_hidden.items():
@@ -260,6 +266,57 @@ for rel in (".vscode/settings.json", "template/vscode/settings.json"):
     data = json.loads((root / rel).read_text(encoding="utf-8"))
     if data.get("chat.subagents.allowInvocationsFromSubagents") is not True:
         raise SystemExit(rel + " must set chat.subagents.allowInvocationsFromSubagents=true")
+'
+echo ""
+
+echo "7. Routing manifest covers all agents with Stage 4 active scope"
+assert_python "routing manifest includes all agents and only Stage 4 routes are active" '
+manifest_path = root / ".github/agents/routing-manifest.json"
+manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+entries = manifest.get("agents")
+if not isinstance(entries, list) or not entries:
+    raise SystemExit("routing-manifest.json must include a non-empty agents array")
+
+names_from_manifest = {entry.get("name") for entry in entries if isinstance(entry, dict)}
+names_from_files = set()
+for path in sorted((root / ".github/agents").glob("*.agent.md")):
+    text = path.read_text(encoding="utf-8")
+    end = text.find("\n---\n", 4)
+    if end == -1:
+        raise SystemExit("unterminated frontmatter in " + path.name)
+    fm = text[4:end]
+    match = re.search(r"^name:\s*(.+)$", fm, re.M)
+    if not match:
+        raise SystemExit("missing name field in " + path.name)
+    names_from_files.add(match.group(1).strip())
+
+if names_from_manifest != names_from_files:
+    missing = sorted(names_from_files - names_from_manifest)
+    extra = sorted(names_from_manifest - names_from_files)
+    raise SystemExit(f"routing manifest mismatch: missing={missing} extra={extra}")
+
+active = {
+    entry.get("name")
+    for entry in entries
+    if isinstance(entry, dict) and entry.get("route") in {"active", "guarded"}
+}
+expected_active = {
+    "Audit",
+    "Commit",
+    "Code",
+    "Debugger",
+    "Docs",
+    "Explore",
+    "Extensions",
+    "Fast",
+    "Organise",
+    "Planner",
+    "Researcher",
+    "Review",
+    "Setup",
+}
+if active != expected_active:
+    raise SystemExit(f"unexpected Stage 4 active routes: {sorted(active)}")
 '
 echo ""
 

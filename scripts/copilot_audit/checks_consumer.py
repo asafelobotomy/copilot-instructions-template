@@ -36,6 +36,7 @@ def _check_counts(result: CheckResult, rel: str, data: dict[str, object], invent
         return
     expected_lengths = {
         "agents": len(inventory["agents"]),
+        "agentSupportFiles": len(inventory["agent_support_files"]),
         "skillsRepo": len(inventory["skills"]),
         "hookScriptsShell": len(inventory["hook_shell"]),
         "hookScriptsPowerShell": len(inventory["hook_powershell"]),
@@ -58,6 +59,7 @@ def _check_counts(result: CheckResult, rel: str, data: dict[str, object], invent
 def _require_inventory_lists(result: CheckResult, rel: str, data: dict[str, object]) -> None:
     required_lists = (
         ("agents", "agents"),
+        ("agentSupportFiles", "agentSupportFiles"),
         ("skills.repo", "skills.repo"),
         ("prompts", "prompts"),
         ("instructions", "instructions"),
@@ -121,6 +123,13 @@ def check_c1_consumer_companion_inventory(root: pathlib.Path | AuditContext) -> 
         tuple(str(pathlib.Path(".github/agents") / filename) for filename in inventory["agents"]),
         HIGH,
         "agent from workspace-index inventory",
+    )
+    _check_expected_rel_paths(
+        ctx,
+        result,
+        tuple(str(pathlib.Path(".github/agents") / filename) for filename in inventory["agent_support_files"]),
+        HIGH,
+        "agent support file from workspace-index inventory",
     )
     _check_expected_rel_paths(
         ctx,

@@ -243,3 +243,14 @@
 |-----|---------|------|------|
 | <https://code.visualstudio.com/docs/copilot/agents/memory> | VS Code memory tool — three scopes (user/repo/session); first 200 user-scope lines auto-loaded; repo/session must be explicitly read; Copilot Memory (GitHub-hosted, 28-day TTL, citation-verified) is separate; local memory tool vs Copilot Memory comparison table | 2026-04-05 | memory, scopes, built-in, copilot-memory |
 | <https://github.blog/ai-and-ml/github-copilot/building-an-agentic-memory-system-for-github-copilot/> | GitHub Memory design blog — citation-anchored facts (source file:line references); just-in-time verification at read time rather than offline curation; 28-day TTL; cross-agent (code review ↔ coding agent); privacy: repo-scoped, write-access required | 2026-04-05 | memory, citations, verification, github-copilot-memory |
+
+## Agent Catalogs And Patterns (2026-04)
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://docs.anthropic.com/en/docs/claude-code/sub-agents> | Claude Code sub-agents — frontmatter fields, isolation, effort, memory, background execution, per-invocation overrides, and subagent workflow design | 2026-04-05 | agents, subagents, claude-code, routing |
+| <https://docs.anthropic.com/en/docs/claude-code/agent-teams> | Claude Code teams versus subagents — when to use peer collaboration, when to use focused return-result specialists, and how to compose them | 2026-04-05 | agents, teams, subagents, orchestration |
+| <https://www.anthropic.com/engineering/building-effective-agents> | Anthropic engineering guidance — keep workflows simple, add agentic orchestration only when needed, and prefer the right system over the biggest catalog | 2026-04-05 | agents, orchestration, minimalism, design |
+| <https://awesome-copilot.github.com/llms.txt> | awesome-copilot community catalog — broad marketplace of optional agents, useful for identifying common archetypes and which specialists are better kept opt-in | 2026-04-05 | agents, marketplace, catalog, optional |
+| <https://raw.githubusercontent.com/github/awesome-copilot/main/agents/gem-orchestrator.agent.md> | Gem Orchestrator agent — multi-specialist orchestration example with explicit handoff and keyword routing patterns | 2026-04-05 | agents, orchestrator, routing, community |
+| <https://openai.github.io/openai-agents-python/multi_agent/> | OpenAI Agents SDK multi-agent patterns — agents-as-tools, handoffs, and orchestration tradeoffs that support lean core catalogs with specialist depth | 2026-04-05 | agents, multi-agent, handoffs, architecture |

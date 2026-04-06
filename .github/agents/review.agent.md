@@ -10,7 +10,7 @@ model:
 tools: [agent, codebase, githubRepo, runCommands, search]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Audit', 'Organise']
+agents: ['Code', 'Audit', 'Organise', 'Docs', 'Debugger']
 handoffs:
   - label: Implement fixes
     agent: Code
@@ -19,6 +19,14 @@ handoffs:
   - label: Security scan
     agent: Audit
     prompt: Run a security audit alongside this code review. Focus on any vulnerability patterns found during the review.
+    send: false
+  - label: Diagnose root cause
+    agent: Debugger
+    prompt: The review surfaced a failure, regression, or unclear root cause. Diagnose it and return the most likely cause with the minimal fix path.
+    send: false
+  - label: Update docs
+    agent: Docs
+    prompt: The review identified missing or unclear documentation. Update the relevant docs without changing runtime behavior.
     send: false
 ---
 
@@ -32,6 +40,8 @@ Guidelines:
 - Follow §2 Review Mode in `.github/copilot-instructions.md`.
 - Prefer `Organise` over general `Code` when a finding is primarily about
   repository structure, file placement, or broken pathing after moves.
+- Use `Debugger` when a finding cannot be substantiated without isolating the underlying root cause first.
+- Use `Docs` when the review outcome is primarily missing documentation, migration guidance, or user-facing explanation.
 - Tag every finding with a waste category from §6 (Muda).
 - Reference specific file paths and line numbers for every finding.
 - Structure output per finding: [severity] | [file:line] | [waste category] | [description]

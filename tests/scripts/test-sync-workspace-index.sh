@@ -29,6 +29,7 @@ make_fixture() {
   : > "$root/.github/agents/setup.agent.md"
   : > "$root/.github/agents/review.agent.md"
   : > "$root/.github/agents/z-last.agent.md"
+  : > "$root/.github/agents/routing-manifest.json"
 
   printf 'name: skill-creator\ndescription: test\n' > "$root/.github/skills/skill-creator/SKILL.md"
   printf 'name: extension-review\ndescription: test\n' > "$root/.github/skills/extension-review/SKILL.md"
@@ -65,6 +66,7 @@ make_fixture() {
   "purpose": "fixture",
   "counts": {
     "agents": 2,
+    "agentSupportFiles": 1,
     "skillsRepo": 2,
     "skillsTemplate": 2,
     "hookScriptsShell": 3,
@@ -75,6 +77,9 @@ make_fixture() {
   "agents": [
     "setup.agent.md",
     "review.agent.md"
+  ],
+  "agentSupportFiles": [
+    "routing-manifest.json"
   ],
   "skills": {
     "repo": [
@@ -168,6 +173,7 @@ assert_python_in_root "counts match fixture contents" "$TMP_WRITE" "
 for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/workspace-index.json'):
   data = json.load((root / rel).open())
   assert data['counts']['agents'] == 3
+  assert data['counts']['agentSupportFiles'] == 1
   assert data['counts']['skillsRepo'] == 3
   assert data['counts']['skillsTemplate'] == 3
   assert data['counts']['hookScriptsShell'] == 3
@@ -179,6 +185,7 @@ assert_python_in_root "baseline order is preserved and extras sort after it" "$T
 for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/workspace-index.json'):
   data = json.load((root / rel).open())
   assert data['agents'] == ['setup.agent.md', 'review.agent.md', 'z-last.agent.md']
+  assert data['agentSupportFiles'] == ['routing-manifest.json']
   assert data['skills']['repo'] == ['skill-creator', 'extension-review', 'zzz-extra']
   assert data['skills']['template'] == ['skill-creator', 'test-coverage-review', 'aaa-extra']
   assert data['prompts'] == ['commit-msg.prompt.md', 'review-file.prompt.md']
