@@ -399,14 +399,38 @@ jobs:
           RELEASE_PR: ${{ steps.release_pr_native.outputs.pr || steps.release_pr_forced.outputs.pr }}
         run: |
           pr_number=$(python3 -c 'import json, os; print(json.loads(os.environ["RELEASE_PR"])["number"])')
+          merged=false
+          for attempt in 1 2 3 4 5 6; do
+            if merge_output=$(gh pr merge "$pr_number" \
+              --repo ${{ github.repository }} \
+              --squash 2>&1); then
+              echo "$merge_output"
+              merged=true
+              break
+            fi
+
+            echo "$merge_output"
+            merge_state=$(gh pr view "$pr_number" --repo ${{ github.repository }} --json mergeStateStatus --jq .mergeStateStatus || echo UNKNOWN)
+            echo "::notice::Release PR merge attempt $attempt/6 failed with mergeStateStatus=$merge_state."
+
+            case "$merge_state" in
+              DIRTY|BEHIND|BLOCKED|DRAFT)
+                break
+                ;;
+            esac
+
+            sleep 5
+          done
+
+          if [[ "$merged" == "true" ]]; then
+            exit 0
+          fi
+
           gh pr merge "$pr_number" \
             --repo ${{ github.repository }} \
             --squash \
-            || gh pr merge "$pr_number" \
-              --repo ${{ github.repository }} \
-              --squash \
-              --auto \
-            || echo '::warning::Immediate merge failed and auto-merge was unavailable. Merge the release PR manually.'
+            --auto \
+            || echo '::warning::Release PR was not immediately mergeable after retries and auto-merge was unavailable. Merge the release PR manually.'
 
       - name: Refresh merged main for publish pass
         id: refresh_release_main
