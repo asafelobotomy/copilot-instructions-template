@@ -20,6 +20,17 @@ Thumbs.db
 __pycache__/
 *.pyc
 
+# Secrets and credentials — prevent accidental commits
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.yml
+secrets.yaml
+.aws/credentials
+
 # Heartbeat orchestrator sidecar state
 .copilot/workspace/.heartbeat-session
 .copilot/workspace/.heartbeat-events.jsonl

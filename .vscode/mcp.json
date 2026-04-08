@@ -1,4 +1,9 @@
 {
+	"sandbox": {
+		"filesystem": {
+			"allowWrite": ["${userHome}/.npm"]
+		}
+	},
 	"servers": {
 		"filesystem": {
 			"type": "stdio",
@@ -7,7 +12,14 @@
 				"-y",
 				"@modelcontextprotocol/server-filesystem",
 				"${workspaceFolder}"
-			]
+			],
+			"sandboxEnabled": true,
+			"sandbox": {
+				"filesystem": {
+					"allowWrite": ["${workspaceFolder}", "${userHome}/.npm"],
+					"denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
+				}
+			}
 		},
 		"git": {
 			"type": "stdio",

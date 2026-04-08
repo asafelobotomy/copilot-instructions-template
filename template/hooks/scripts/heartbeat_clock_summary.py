@@ -109,6 +109,9 @@ def build_clock_summary(workspace: Path) -> str:
 
 def main(argv: Sequence[str]) -> int:
     workspace = Path(argv[1]) if len(argv) > 1 else Path(".copilot/workspace")
+    workspace = workspace.resolve()
+    if not workspace.is_dir():
+        return 0
     state_path = workspace / "state.json"
     events_path = workspace / ".heartbeat-events.jsonl"
     if not state_path.exists() and not events_path.exists():

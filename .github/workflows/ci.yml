@@ -12,7 +12,7 @@ jobs:
     name: Structural validation
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - name: Harden runner
         uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2
@@ -233,7 +233,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Install yamllint
-        run: pip install yamllint --quiet
+        run: pip install 'yamllint==1.35.1' --quiet
 
       - name: Lint workflow YAML files
         run: |

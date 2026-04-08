@@ -215,12 +215,16 @@ scan_file() {
 
 echo "🔍 Scanning ${#FILES[@]} modified file(s) for secrets..." >&2
 
+_TMPFILES=()
+_cleanup_tmpfiles() { for f in "${_TMPFILES[@]+${_TMPFILES[@]}}"; do rm -f "$f"; done; }
+trap _cleanup_tmpfiles EXIT
+
 for filepath in "${FILES[@]}"; do
   if [[ "$SCOPE" == "staged" ]]; then
     _tmpfile=$(mktemp)
+    _TMPFILES+=("$_tmpfile")
     git show :"$filepath" > "$_tmpfile" 2>/dev/null || true
     scan_file "$filepath" "$_tmpfile"
-    rm -f "$_tmpfile"
   else
     scan_file "$filepath"
   fi
