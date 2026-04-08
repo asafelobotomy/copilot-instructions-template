@@ -7,6 +7,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [5.8.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.7.0...v5.8.0) (2026-04-08)
+
+
+### Features
+
+* **security:** add security policy and CODEOWNERS for repository management ([230d818](https://github.com/asafelobotomy/copilot-instructions-template/commit/230d818c68d22dbb63e0b0371daf687ebac7f642))
+
+
+### Bug Fixes
+
+* **ci:** retry release PR merge before auto fallback ([b5a073c](https://github.com/asafelobotomy/copilot-instructions-template/commit/b5a073c79738e0e381f034b2d1b3792f90b8ece2))
+* **scripts:** enhance workspace validation and boundary checks in hooks ([230d818](https://github.com/asafelobotomy/copilot-instructions-template/commit/230d818c68d22dbb63e0b0371daf687ebac7f642))
+
 ## [5.7.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.6.0...v5.7.0) (2026-04-06)
 
 
