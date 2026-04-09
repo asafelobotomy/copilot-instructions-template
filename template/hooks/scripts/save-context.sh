@@ -61,6 +61,20 @@ entries = []
 current_section = ""
 i = 0
 
+def _row_priority(cells, header_cells):
+    """Return 0 (highest) to 9 (lowest) based on Priority/Impact columns."""
+    for idx, h in enumerate(header_cells):
+        hl = h.lower()
+        if hl in ("priority", "impact") and idx < len(cells):
+            val = cells[idx].lower().strip()
+            if val in ("p1", "critical", "high"):
+                return 0
+            if val in ("p2", "notable", "medium"):
+                return 1
+            if val in ("p3", "informational", "low"):
+                return 2
+    return 5  # no priority column or unrecognised value
+
 while i < len(lines):
   stripped = lines[i].strip()
   if stripped.startswith("## "):
@@ -75,15 +89,19 @@ while i < len(lines):
       i += 1
 
     if len(block) >= 3:
-      rows = []
+      header_cells = [cell.strip() for cell in block[0].strip("|").split("|")]
+      scored_rows = []
       for row in block[2:]:
         cells = [cell.strip() for cell in row.strip("|").split("|")]
         meaningful = [cell for cell in cells if cell and cell != "*(to be discovered)*"]
         if meaningful:
-          rows.append(cells)
+          pri = _row_priority(cells, header_cells)
+          scored_rows.append((pri, cells))
 
-      if rows:
-        preview = " | ".join(cell for cell in rows[-1] if cell)
+      if scored_rows:
+        scored_rows.sort(key=lambda x: x[0])
+        best = scored_rows[0][1]
+        preview = " | ".join(cell for cell in best if cell)
         entries.append(f"{current_section}: {preview}")
 
     continue

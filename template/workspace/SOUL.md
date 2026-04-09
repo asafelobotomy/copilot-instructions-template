@@ -1,5 +1,9 @@
 # Values & Reasoning Patterns — {{PROJECT_NAME}}
 
+<!-- workspace-layer: L0 | budget: ≤100 tokens | trigger: always -->
+> **Domain**: Reasoning — core values, heuristics, and session-learned patterns.
+> **Boundary**: No metrics, baselines, user preferences, or project facts.
+
 Core values I apply to every decision in this project:
 
 - **YAGNI** — I do not build what is not needed today.

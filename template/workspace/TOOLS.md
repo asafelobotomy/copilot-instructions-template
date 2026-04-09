@@ -1,5 +1,9 @@
 # Tool Usage Patterns — {{PROJECT_NAME}}
 
+<!-- workspace-layer: L2 | trigger: tool query -->
+> **Domain**: Inventory — CLI commands, tool usage patterns, and extension registry.
+> **Boundary**: No preferences, reasoning, or project architecture facts.
+
 *(Populated by Copilot from observed effective workflows. See §11 of `.github/copilot-instructions.md` for the full Tool Protocol.)*
 
 ## Core commands

@@ -1,5 +1,9 @@
 # Heartbeat — {{PROJECT_NAME}}
 
+<!-- workspace-layer: L2 | trigger: heartbeat event -->
+> **Domain**: Events — health checks, session history, pulse status, and retrospective protocol.
+> **Boundary**: No long-term facts, preferences, or reasoning patterns.
+
 > Event-driven health check. Read this file at every trigger event, run all checks, update Pulse, and log to History.
 > **Contract**: Follow this checklist strictly. Do not infer tasks from prior sessions.
 
@@ -34,6 +38,8 @@ Run each check; prepend `[!]` to Pulse if any fails:
 - [ ] **Metrics freshness** — has the metrics baseline been reviewed in the last 3 sessions?
 - [ ] **Settings drift** — do §10 overrides still match the codebase?
 - [ ] **Agent compatibility** — do agent files use current frontmatter schema? Any deprecated fields?
+- [ ] **Fact consistency** — do any MEMORY.md entries contradict each other or contradict current source files? Flag conflicting rows.
+- [ ] **Metrics staleness** — do any Metrics Freshness rows have an `Expires` date in the past? Re-verify or archive.
 <!-- Add custom checks below this line -->
 
 ## Retrospective

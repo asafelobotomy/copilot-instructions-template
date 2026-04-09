@@ -1,5 +1,9 @@
 # Tool Usage Patterns — copilot-instructions-template
 
+<!-- workspace-layer: L2 | trigger: tool query -->
+> **Domain**: Inventory — CLI commands, tool usage patterns, and extension registry.
+> **Boundary**: No preferences, reasoning, or project architecture facts.
+
 | Tool / command | Effective usage pattern |
 |----------------|-------------------------|
 | `bash scripts/tests/select-targeted-tests.sh <paths...>` | Use during intermediate phases to choose deterministic suites from changed paths. |

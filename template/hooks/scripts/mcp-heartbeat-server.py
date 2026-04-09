@@ -140,6 +140,51 @@ def _set_sentinel_complete(session_id: str) -> None:
     os.replace(tmp, SENTINEL_PATH)
 
 
+def _load_workspace_cues() -> dict:
+    """Read lightweight cues from SOUL.md and USER.md for personalised prompts."""
+    cues: dict = {"soul_values": [], "user_attributes": []}
+    soul_path = WORKSPACE / "SOUL.md"
+    if soul_path.exists():
+        try:
+            in_values = False
+            for line in soul_path.read_text(encoding="utf-8").splitlines():
+                stripped = line.strip()
+                if stripped.startswith("## "):
+                    if in_values:
+                        break  # left the core values block
+                    continue
+                if stripped.startswith("- **") and "**" in stripped[4:]:
+                    in_values = True
+                    key = stripped[4:stripped.index("**", 4)]
+                    cues["soul_values"].append(key)
+                    if len(cues["soul_values"]) >= 5:
+                        break
+        except Exception:
+            pass
+    user_path = WORKSPACE / "USER.md"
+    if user_path.exists():
+        try:
+            in_table = False
+            for line in user_path.read_text(encoding="utf-8").splitlines():
+                stripped = line.strip()
+                if stripped.startswith("| Attribute"):
+                    in_table = True
+                    continue
+                if in_table and stripped.startswith("|"):
+                    if set(stripped.replace("|", "").strip()) <= {"-", " "}:
+                        continue
+                    cells = [c.strip() for c in stripped.strip("|").split("|")]
+                    if len(cells) >= 2 and cells[1] and "to be discovered" not in cells[1]:
+                        cues["user_attributes"].append(f"{cells[0]}: {cells[1][:80]}")
+                        if len(cues["user_attributes"]) >= 3:
+                            break
+                elif in_table and not stripped.startswith("|"):
+                    in_table = False
+        except Exception:
+            pass
+    return cues
+
+
 # ---------------------------------------------------------------------------
 # Tool
 # ---------------------------------------------------------------------------
@@ -211,6 +256,20 @@ def session_reflect() -> dict:
             "Consider whether test coverage and documentation kept pace"
         )
 
+    # --- Personalised cues from workspace files ----------------------------
+    cues = _load_workspace_cues()
+    if cues["soul_values"]:
+        values_str = ", ".join(cues["soul_values"][:3])
+        prompts.append(
+            f"SOUL values in play: {values_str}"
+            " — did this session honour them?"
+        )
+    if cues["user_attributes"]:
+        prompts.append(
+            f"USER cue: {cues['user_attributes'][0]}"
+            " — did the session align with this preference?"
+        )
+
     # --- Workspace state ---------------------------------------------------
     ws = {
         "soul_exists": (WORKSPACE / "SOUL.md").exists(),
@@ -233,6 +292,15 @@ def session_reflect() -> dict:
             "session_duration_minutes": session_duration_s // 60,
         },
         "reflection_prompts": prompts,
+        "memory_protocol": (
+            "Before persisting insights: "
+            "(1) check MEMORY.md for existing entries on the same topic — avoid duplicates, "
+            "(2) check SOUL.md for reasoning patterns — add only genuinely new heuristics, "
+            "(3) update USER.md only from direct observation, never inference. "
+            "Use the provenance convention: file:line for code, URL for docs, session:{id} for observed. "
+            "For /memories/repo/ entries, use the Copilot Memory schema: "
+            "{subject, fact, citations, reason, category} for structural compatibility."
+        ),
         "workspace_state": ws,
     }
 

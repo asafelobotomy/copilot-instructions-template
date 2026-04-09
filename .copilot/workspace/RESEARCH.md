@@ -1,5 +1,9 @@
 # Research URL Tracker — copilot-instructions-template
 
+<!-- workspace-layer: L2 | trigger: research request -->
+> **Domain**: References — URLs, external documentation, and research notes.
+> **Boundary**: No internal project facts, preferences, or reasoning.
+
 > Living document. Append rows as new useful URLs are discovered. All agents may update this file.
 > Do not delete rows — mark stale entries with `(stale)` in the Summary column.
 
@@ -39,6 +43,24 @@
 | <https://docs.github.com/en/copilot/concepts/fallback-and-lts-models> | GPT-5.3-Codex designated base+LTS model 2026-03-18; GPT-4.1 is premium-exhausted fallback; LTS commitment = 1 year | 2026-04-04 | models, lts, base-model |
 | <https://code.visualstudio.com/updates/v1_111> | v1.111 (2026-03-09) — Autopilot Preview, agent permission levels (Default/Bypass/Autopilot), agent-scoped hooks Preview in `.agent.md` frontmatter | 2026-04-04 | agents, autopilot, hooks |
 | <https://code.visualstudio.com/updates> | Current stable: v1.114.0 (2026-04-01) — `/troubleshoot` for chat, codebase search semantic-only, video in image carousel | 2026-04-04 | stable, release-notes |
+
+## VS Code Copilot — Memory Tool
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://code.visualstudio.com/docs/copilot/agents/memory> | Canonical memory tool docs: scopes (user/repo/session), storage (local, GitHub Copilot Chat extension), settings (`github.copilot.chat.tools.memory.enabled`, `github.copilot.chat.copilotMemory.enabled`), no path redirect setting | 2026-04-09 | memory, agents, storage |
+| <https://code.visualstudio.com/docs/copilot/concepts/agents#_memory> | Memory concepts section: virtual paths `/memories/`, `/memories/repo/`, `/memories/session/`; user memory first 200 lines auto-loaded per session; local vs Copilot Memory distinction | 2026-04-09 | memory, concepts, agents |
+| <https://code.visualstudio.com/docs/copilot/reference/copilot-vscode-features> | Cheat sheet for all VS Code Copilot features; confirms memory is listed under Planning; tool set reference table; `/memories` slash command for Claude agent | 2026-04-09 | reference, tools, features |
+| <https://docs.github.com/copilot/how-tos/use-copilot-agents/copilot-memory> | GitHub-hosted Copilot Memory (separate from local memory tool): cross-surface, repo-scoped, 28-day expiry, off by default | 2026-04-09 | memory, github, copilot-memory |
+| <https://github.blog/ai-and-ml/github-copilot/building-an-agentic-memory-system-for-github-copilot/> | Engineering blog: just-in-time citation verification, store_memory tool call schema (subject/fact/citations/reason), cross-agent memory sharing, 7% PR merge rate uplift, adversarial stress-testing | 2026-04-09 | memory, architecture, copilot-memory |
+
+## Multi-Agent Memory Architecture
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://github.com/milla-jovovich/mempalace> | MemPalace v3.0.14 (29.9k stars): palace architecture, AAAK compression, knowledge graph. **Specialist Agents**: per-agent wings + diary (reviewer, architect, ops). 96.6% LongMemEval R@5 from raw verbatim ChromaDB — NOT from palace metaphor. +34% from wing/room filtering is standard metadata filtering. Palace metaphor organises human maintenance; vector search is what helps the AI. | 2026-04-09 | memory, multi-agent, mempalace, prior-art |
+| <https://docs.letta.com/guides/get-started/intro> | Letta (formerly MemGPT): stateful agents with per-agent core + archival memory. Cross-agent sharing is explicit (tool calls), not ambient. Each agent truly owns its state. Agent isolation with explicit sharing outperforms shared-everything in their benchmarks. | 2026-04-09 | memory, multi-agent, letta, prior-art |
+| <https://github.com/GhostwheeI/AI-Memory-Persistence> | AI Memory Persistence (archived Dec 2025, 0 stars): per-host model (host_template.json + global.json), not per-agent. Importance scoring 1-10. Author acknowledged native AI memory tools superseded it. | 2026-04-09 | memory, prior-art, archived |
 
 ## Release Automation Tooling
 
@@ -254,3 +276,17 @@
 | <https://awesome-copilot.github.com/llms.txt> | awesome-copilot community catalog — broad marketplace of optional agents, useful for identifying common archetypes and which specialists are better kept opt-in | 2026-04-05 | agents, marketplace, catalog, optional |
 | <https://raw.githubusercontent.com/github/awesome-copilot/main/agents/gem-orchestrator.agent.md> | Gem Orchestrator agent — multi-specialist orchestration example with explicit handoff and keyword routing patterns | 2026-04-05 | agents, orchestrator, routing, community |
 | <https://openai.github.io/openai-agents-python/multi_agent/> | OpenAI Agents SDK multi-agent patterns — agents-as-tools, handoffs, and orchestration tradeoffs that support lean core catalogs with specialist depth | 2026-04-05 | agents, multi-agent, handoffs, architecture |
+
+## MemPalace AI Memory System (2026-04)
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://github.com/milla-jovovich/mempalace> | MemPalace v3.0.0 — method-of-loci AI memory system; ChromaDB + SQLite; 19 MCP tools; 4-layer memory stack (L0-L3); 96.6% LongMemEval R@5 in raw mode; MIT licence | 2026-04-09 | memory, mcp, chromadb, ai-memory |
+| <https://github.com/milla-jovovich/mempalace/issues/27> | lhl's claims-vs-code audit: contradiction detection non-existent, AAAK lossy not lossless (12.4pp regression), 96.6% is ChromaDB baseline not palace structure, +34% is metadata filtering | 2026-04-09 | memory, audit, benchmarks, claims |
+| <https://github.com/milla-jovovich/mempalace/issues/39> | gizmax M2 Ultra independent reproduction: raw 96.6% confirmed in 4:37; aaak 84.2%; rooms 89.4%; benchmark runner never touches palace wings/rooms code path; ~810 token real wake-up cost | 2026-04-09 | memory, benchmarks, reproduction |
+| <https://github.com/milla-jovovich/mempalace/issues/74> | macOS ARM64 segfault after ~8,400 drawers — null pointer in chromadb_rust_bindings.abi3.so; workaround: wipe and re-mine smaller batches | 2026-04-09 | memory, bug, arm64, chromadb |
+| <https://github.com/milla-jovovich/mempalace/issues/100> | Unpinned ChromaDB dependency — pip pulls chromadb 1.5.6 which segfaults; fix: chromadb>=0.6,<1; authors committed to pinning | 2026-04-09 | memory, dependency, chromadb, packaging |
+| <https://github.com/milla-jovovich/mempalace/issues/110> | Shell injection in hook scripts — fixed in current code (SESSION_ID sanitised via tr, TRANSCRIPT_PATH passed as argument not interpolated) | 2026-04-09 | memory, security, shell, hooks |
+| <https://penfieldlabs.substack.com/p/milla-jovovich-just-released-an-ai> | Penfield Labs deep analysis: LoCoMo 100% via top-k=50 bypasses retrieval entirely; LongMemEval score is recall_any@5 on labels not QA; hybrid 100% patches 3 test-specific cases; benchmark wars context (Zep vs Mem0) | 2026-04-09 | memory, analysis, benchmarks, critique |
+| <https://github.com/lhl/agentic-memory/blob/main/ANALYSIS-mempalace.md> | lhl agentic-memory survey: NOT PROMOTED (only system with provably non-existent README features); spatial metaphor genuinely novel; wake-up cost best in survey; zero-LLM write path; deterministic chunking | 2026-04-09 | memory, survey, analysis, architecture |
+| <https://news.ycombinator.com/item?id=47672792> | Main HN thread (59 pts, 12 comments) — community mostly critical of benchmarks; consensus: real product under inflated marketing | 2026-04-09 | memory, community, hn |

@@ -109,5 +109,54 @@ assert_matches "clock summary key appears in context" "$output" "Clock:"
 assert_matches "clock summary includes active session id" "$output" "sess-clock"
 assert_matches "clock summary includes last completion UTC timestamp" "$output" "2024-01-01T00:04:45Z"
 assert_matches "clock summary includes median wording" "$output" "median of 2"
+echo ""
+
+echo "9. Priority scoring surfaces highest-priority row from MEMORY.md"
+TMPDIR_PRI=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_PRI")
+mkdir -p "$TMPDIR_PRI/.copilot/workspace"
+printf 'HEARTBEAT: ok\n' > "$TMPDIR_PRI/.copilot/workspace/HEARTBEAT.md"
+cat > "$TMPDIR_PRI/.copilot/workspace/MEMORY.md" <<'EOF'
+# Memory
+
+## Metrics Freshness
+
+| Metric | Last reviewed | Priority | Notes |
+|--------|--------------|----------|-------|
+| Low priority metric | 2026-01-01 | P3 | should not appear |
+| Critical baseline | 2026-03-19 | P1 | this row wins |
+| Medium metric | 2026-02-01 | P2 | also should not appear |
+EOF
+output=$(cd "$TMPDIR_PRI" && echo '{}' | bash "$SCRIPT" 2>/dev/null)
+assert_matches "P1 row appears in context" "$output" "Critical baseline"
+if echo "$output" | grep -q "Low priority metric"; then
+  fail_note "P3 row should be excluded by priority scoring"
+else
+  pass_note "P3 row excluded by priority"
+fi
+assert_valid_json "valid JSON with priority scoring" "$output"
+echo ""
+
+echo "10. Impact column scoring surfaces critical rows"
+TMPDIR_IMP=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_IMP")
+mkdir -p "$TMPDIR_IMP/.copilot/workspace"
+printf 'HEARTBEAT: ok\n' > "$TMPDIR_IMP/.copilot/workspace/HEARTBEAT.md"
+cat > "$TMPDIR_IMP/.copilot/workspace/MEMORY.md" <<'EOF'
+# Memory
+
+## Known Gotchas
+
+| Gotcha | Impact | Notes |
+|--------|--------|-------|
+| Minor quirk | informational | low priority |
+| Critical bug workaround | critical | this row wins |
+EOF
+output=$(cd "$TMPDIR_IMP" && echo '{}' | bash "$SCRIPT" 2>/dev/null)
+assert_matches "critical Impact row appears" "$output" "Critical bug workaround"
+if echo "$output" | grep -q "Minor quirk"; then
+  fail_note "informational row should be excluded by Impact scoring"
+else
+  pass_note "informational row excluded by Impact"
+fi
+assert_valid_json "valid JSON with Impact scoring" "$output"
 
 finish_tests

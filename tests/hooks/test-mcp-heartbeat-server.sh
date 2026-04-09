@@ -174,4 +174,95 @@ assert payload["metrics"]["files_changed"] == 0
 assert_matches "corrupt state sentinel uses unknown session id" "$(cat "$TMP_CORRUPT/.copilot/workspace/.heartbeat-session")" 'unknown\|.*\|complete'
 echo ""
 
+echo "6. memory_protocol key is always present in response"
+REFLECT_OUTPUT="$output" assert_python "memory_protocol is a non-empty string" '
+payload = json.loads(os.environ["REFLECT_OUTPUT"])
+assert "memory_protocol" in payload
+assert isinstance(payload["memory_protocol"], str)
+assert "check MEMORY.md" in payload["memory_protocol"]
+assert "check SOUL.md" in payload["memory_protocol"]
+assert "provenance convention" in payload["memory_protocol"]
+'
+echo ""
+
+echo "7. _load_workspace_cues extracts SOUL.md values and stops at section heading"
+TMP_CUES=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CUES")
+mkdir -p "$TMP_CUES/.copilot/workspace"
+cat > "$TMP_CUES/.copilot/workspace/state.json" <<'JSON'
+{
+  "session_id": "sess-cues",
+  "session_start_epoch": 1704067200,
+  "session_start_git_count": 0,
+  "active_work_seconds": 2400,
+  "task_window_start_epoch": 0,
+  "last_raw_tool_epoch": 0,
+  "copilot_edit_count": 10
+}
+JSON
+cat > "$TMP_CUES/.copilot/workspace/SOUL.md" <<'EOF'
+# Values
+
+- **YAGNI** — do not build unneeded.
+- **Small batches** — prefer smaller PRs.
+
+## Session 2026-04-09
+
+- **Leaky heuristic** — this should NOT appear.
+EOF
+cat > "$TMP_CUES/.copilot/workspace/USER.md" <<'EOF'
+# User Profile
+
+| Attribute | Observed value |
+|-----------|---------------|
+| Style | Analytical and structured |
+| Autonomy | High |
+| Empty | *(to be discovered)* |
+EOF
+cat > "$TMP_CUES/.copilot/workspace/MEMORY.md" <<'EOF'
+memory
+EOF
+output=$(run_reflect "$TMP_CUES")
+status=$?
+assert_success "_load_workspace_cues exits zero" "$status"
+assert_valid_json "_load_workspace_cues output is valid JSON" "$output"
+REFLECT_OUTPUT="$output" assert_python "SOUL values extracted with section boundary and USER attributes parsed" '
+payload = json.loads(os.environ["REFLECT_OUTPUT"])
+prompts = " ".join(payload["reflection_prompts"])
+# SOUL values should include core values only
+assert "YAGNI" in prompts, f"YAGNI missing from prompts: {prompts}"
+assert "Small batches" in prompts, f"Small batches missing from prompts: {prompts}"
+# Session heuristic must NOT leak
+assert "Leaky heuristic" not in prompts, f"Session heuristic leaked: {prompts}"
+# USER attribute should appear
+assert "Style: Analytical" in prompts, f"USER attribute missing: {prompts}"
+# to-be-discovered should be filtered
+assert "to be discovered" not in prompts, f"Placeholder leaked: {prompts}"
+'
+echo ""
+
+echo "8. _load_workspace_cues gracefully handles missing workspace files"
+TMP_NOCUES=$(mktemp -d); CLEANUP_DIRS+=("$TMP_NOCUES")
+mkdir -p "$TMP_NOCUES/.copilot/workspace"
+cat > "$TMP_NOCUES/.copilot/workspace/state.json" <<'JSON'
+{
+  "session_id": "sess-nocues",
+  "session_start_epoch": 1704067200,
+  "session_start_git_count": 0,
+  "active_work_seconds": 2400,
+  "task_window_start_epoch": 0,
+  "last_raw_tool_epoch": 0,
+  "copilot_edit_count": 10
+}
+JSON
+output=$(run_reflect "$TMP_NOCUES")
+status=$?
+assert_success "no cues files exits zero" "$status"
+REFLECT_OUTPUT="$output" assert_python "no personalised prompts when files missing" '
+payload = json.loads(os.environ["REFLECT_OUTPUT"])
+prompts = " ".join(payload["reflection_prompts"])
+assert "SOUL values" not in prompts
+assert "USER cue" not in prompts
+'
+echo ""
+
 finish_tests
