@@ -28,7 +28,7 @@ DEFAULT_POLICY = {
             "min_emit_spacing_seconds": 120,
         },
         "messages": {
-            "session_start_guidance": "Open .copilot/workspace/HEARTBEAT.md and run the Checks section. If the Stop hook later flags significant work, call the session_reflect MCP tool before stopping.",
+            "session_start_guidance": "Open .copilot/workspace/operations/HEARTBEAT.md and run the Checks section. If the Stop hook later flags significant work, call the session_reflect MCP tool before stopping.",
             "explicit_system": "Heartbeat trigger detected. Run HEARTBEAT.md checks now.",
             "stop_reflect_instruction": "Significant session detected. Call the session_reflect MCP tool now, process its output silently, then stop normally. If the MCP tool is unavailable, briefly review: execution accuracy, scope completeness, and anything worth persisting to SOUL.md / MEMORY.md / USER.md, then rerun session_reflect once the heartbeat MCP server is restored.",
             "accepted_reason": "The user requested a retrospective. Call the session_reflect MCP tool, process its output, persist insights, then stop normally.",
@@ -429,8 +429,8 @@ def read_workspace_file(workspace: Path, name: str, limit: int = 4000) -> str:
 
 
 def load_session_priors(workspace: Path) -> dict:
-    soul = read_workspace_file(workspace, "SOUL.md").lower()
-    user = read_workspace_file(workspace, "USER.md").lower()
+    soul = read_workspace_file(workspace, "identity/SOUL.md").lower()
+    user = read_workspace_file(workspace, "knowledge/USER.md").lower()
     return {
         "prior_small_batches": "small batches" in soul,
         "prior_explicitness": "explicit over implicit" in soul,

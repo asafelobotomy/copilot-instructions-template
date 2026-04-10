@@ -10,8 +10,8 @@ set -euo pipefail
 source "$(dirname "$0")/../lib.sh"
 
 usage() {
-  echo "Usage: bash scripts/tests/run-isolated-shell.sh [--cwd <dir>] [--shell <bash|sh|zsh|pwsh>] [--strict] [--command <shell-snippet>]"
-  echo "   or: <shell-snippet> | bash scripts/tests/run-isolated-shell.sh [--cwd <dir>] [--shell <bash|sh|zsh|pwsh>] [--strict]"
+  echo "Usage: bash scripts/harness/run-isolated-shell.sh [--cwd <dir>] [--shell <bash|sh|zsh|pwsh>] [--strict] [--command <shell-snippet>]"
+  echo "   or: <shell-snippet> | bash scripts/harness/run-isolated-shell.sh [--cwd <dir>] [--shell <bash|sh|zsh|pwsh>] [--strict]"
 }
 
 cwd=""

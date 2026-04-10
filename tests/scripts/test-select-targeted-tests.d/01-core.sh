@@ -2,7 +2,7 @@
 
 echo "1. Invalid usage is rejected"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" 2>&1) || true
-assert_contains "usage is printed" "$output" "Usage: bash scripts/tests/select-targeted-tests.sh"
+assert_contains "usage is printed" "$output" "Usage: bash scripts/harness/select-targeted-tests.sh"
 echo ""
 
 echo "2. Selector manifests are valid JSON and root manifest lists valid shards"
@@ -43,7 +43,7 @@ if payload["normalized_paths"] != ["scripts/release/verify-version-references.sh
     raise SystemExit(str(payload["normalized_paths"]))
 if payload["run_full_suite_at_completion"] is not True:
     raise SystemExit("final full-suite gate missing")
-if payload["terminal_safe_final_gate"] != "bash scripts/tests/run-all-captured.sh":
+if payload["terminal_safe_final_gate"] != "bash scripts/harness/run-all-captured.sh":
     raise SystemExit(payload["terminal_safe_final_gate"])
 '
 echo ""

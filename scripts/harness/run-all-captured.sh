@@ -12,7 +12,7 @@ LOG_FILE="${LOG_FILE:-/tmp/copilot-run-all.log}"
 TAIL_LINES="${TAIL_LINES:-120}"
 
 usage() {
-  echo "Usage: bash scripts/tests/run-all-captured.sh [--log-file <path>] [--tail-lines <n>]" >&2
+  echo "Usage: bash scripts/harness/run-all-captured.sh [--log-file <path>] [--tail-lines <n>]" >&2
 }
 
 while [[ $# -gt 0 ]]; do

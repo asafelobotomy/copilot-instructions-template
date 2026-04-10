@@ -18,7 +18,7 @@ WORKSPACE_DIR="${1:-.copilot/workspace}"
 # embedded in template/workspace/<relative-file>.
 # Add a new row here whenever a structural section is updated in a release.
 REGISTRY=(
-    "HEARTBEAT.md|heartbeat-response-contract|v2|Response Contract — three-rule unambiguous form (v5.2.0)"
+    "operations/HEARTBEAT.md|heartbeat-response-contract|v2|Response Contract — three-rule unambiguous form (v5.2.0)"
 )
 
 HEARTBEAT_RESPONSE_LINES=(
@@ -42,7 +42,7 @@ for entry in "${REGISTRY[@]}"; do
     sentinel="<!-- template-section: ${section_id} ${version} -->"
     if grep -qF "$sentinel" "$consumer_path"; then
         echo "OK            $consumer_path  [$section_id $version]"
-        if [[ "$rel_file" == "HEARTBEAT.md" && "$section_id" == "heartbeat-response-contract" ]]; then
+        if [[ "$rel_file" == "operations/HEARTBEAT.md" && "$section_id" == "heartbeat-response-contract" ]]; then
             for required_line in "${HEARTBEAT_RESPONSE_LINES[@]}"; do
                 if ! grep -qF -- "$required_line" "$consumer_path"; then
                     echo "DRIFT_CONTENT  $consumer_path  missing response-contract line: $required_line"

@@ -320,7 +320,9 @@ for f in .github/agents/*.agent.md .github/agents/*.json .github/skills/*/SKILL.
   .github/prompts/*.prompt.md .github/workflows/copilot-setup-steps.yml \
   .vscode/settings.json .vscode/extensions.json .vscode/mcp.json \
   CLAUDE.md \
-  .copilot/workspace/*.md .copilot/workspace/workspace-index.json; do
+  .copilot/workspace/identity/*.md \
+  .copilot/workspace/knowledge/*.md .copilot/workspace/knowledge/diaries/*.md \
+  .copilot/workspace/operations/*.md .copilot/workspace/operations/workspace-index.json; do
   [ -f "$f" ] || continue; echo "${f}=$(sha256sum "$f" | cut -c1-12)"
 done
 ```
@@ -351,7 +353,9 @@ for pattern in [
     '.github/prompts/*.prompt.md', '.github/workflows/copilot-setup-steps.yml',
     '.vscode/settings.json', '.vscode/extensions.json', '.vscode/mcp.json',
     'CLAUDE.md',
-    '.copilot/workspace/*.md', '.copilot/workspace/workspace-index.json',
+    '.copilot/workspace/identity/*.md',
+    '.copilot/workspace/knowledge/*.md', '.copilot/workspace/knowledge/diaries/*.md',
+    '.copilot/workspace/operations/*.md', '.copilot/workspace/operations/workspace-index.json',
 ]:
     for f in sorted(glob.glob(pattern)):
         h = hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()[:12]

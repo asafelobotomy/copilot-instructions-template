@@ -14,8 +14,8 @@
 | Building | Agent workspace | `.github/agents/{name}.agent.md` |
 | Workshop | Template layer | `template/` |
 | Trade Route | Cross-repo memory | `/memories/repo/` |
-| Diary | Per-agent findings log | `.copilot/workspace/diaries/{agent}.md` |
-| Ledger | This file | `.copilot/workspace/ledger.md` |
+| Diary | Per-agent findings log | `.copilot/workspace/knowledge/diaries/{agent}.md` |
+| Ledger | This file | `.copilot/workspace/operations/ledger.md` |
 
 ## Spaces
 
@@ -38,11 +38,11 @@ Each specialist agent has a home — the space it primarily operates in.
 
 | Agent | Home space | Diary path |
 |-------|-----------|------------|
-| Code | Template + Scripts | `.copilot/workspace/diaries/code.md` |
-| Review | Template + Tests | `.copilot/workspace/diaries/review.md` |
-| Audit | Scripts + Hooks | `.copilot/workspace/diaries/audit.md` |
-| Explore | All (read-only) | `.copilot/workspace/diaries/explore.md` |
-| Researcher | External | `.copilot/workspace/diaries/researcher.md` |
+| Code | Template + Scripts | `.copilot/workspace/knowledge/diaries/code.md` |
+| Review | Template + Tests | `.copilot/workspace/knowledge/diaries/review.md` |
+| Audit | Scripts + Hooks | `.copilot/workspace/knowledge/diaries/audit.md` |
+| Explore | All (read-only) | `.copilot/workspace/knowledge/diaries/explore.md` |
+| Researcher | External | `.copilot/workspace/knowledge/diaries/researcher.md` |
 
 ## Cross-References
 

@@ -79,8 +79,8 @@ if (Test-Path 'package.json') {
 }
 
 $pulse = 'unknown'
-if (Test-Path '.copilot/workspace/HEARTBEAT.md') {
-    $pulse = (Select-String -Path '.copilot/workspace/HEARTBEAT.md' -Pattern 'HEARTBEAT' |
+if (Test-Path '.copilot/workspace/operations/HEARTBEAT.md') {
+    $pulse = (Select-String -Path '.copilot/workspace/operations/HEARTBEAT.md' -Pattern 'HEARTBEAT' |
               Select-Object -First 1).Line ?? 'unknown'
 }
 

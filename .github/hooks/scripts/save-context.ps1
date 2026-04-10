@@ -19,8 +19,8 @@ function Get-PythonCommand {
 }
 
 function Get-ClockSummary {
-    $statePath = '.copilot/workspace/state.json'
-    $eventsPath = '.copilot/workspace/.heartbeat-events.jsonl'
+    $statePath = '.copilot/workspace/runtime/state.json'
+    $eventsPath = '.copilot/workspace/runtime/.heartbeat-events.jsonl'
     if (-not (Test-Path $statePath) -and -not (Test-Path $eventsPath)) {
         return ''
     }
@@ -65,11 +65,11 @@ function Get-TriggerLabel {
 }
 
 function Get-MemorySummary {
-    if (-not (Test-Path '.copilot/workspace/MEMORY.md')) {
+    if (-not (Test-Path '.copilot/workspace/knowledge/MEMORY.md')) {
         return ''
     }
 
-    $lines = @(Get-Content '.copilot/workspace/MEMORY.md' -ErrorAction SilentlyContinue)
+    $lines = @(Get-Content '.copilot/workspace/knowledge/MEMORY.md' -ErrorAction SilentlyContinue)
     $entries = @()
     $currentSection = ''
 
@@ -149,11 +149,11 @@ function Get-MemorySummary {
 }
 
 function Get-SoulSummary {
-    if (-not (Test-Path '.copilot/workspace/SOUL.md')) {
+    if (-not (Test-Path '.copilot/workspace/identity/SOUL.md')) {
         return ''
     }
 
-    $lines = @(Get-Content '.copilot/workspace/SOUL.md' -ErrorAction SilentlyContinue)
+    $lines = @(Get-Content '.copilot/workspace/identity/SOUL.md' -ErrorAction SilentlyContinue)
     $entries = @($lines | ForEach-Object { $_.Trim() } | Where-Object { $_.StartsWith('- ') } | ForEach-Object { $_.Substring(2).Trim() })
 
     if (-not $entries) {
@@ -186,8 +186,8 @@ $trigger = Get-TriggerLabel -InputJson $inputJson
 Add-SummaryLine -Label 'Trigger' -Value $trigger
 
 # Heartbeat pulse
-if (Test-Path '.copilot/workspace/HEARTBEAT.md') {
-    $pulse = (Select-String -Path '.copilot/workspace/HEARTBEAT.md' -Pattern 'HEARTBEAT' |
+if (Test-Path '.copilot/workspace/operations/HEARTBEAT.md') {
+    $pulse = (Select-String -Path '.copilot/workspace/operations/HEARTBEAT.md' -Pattern 'HEARTBEAT' |
               Select-Object -First 1).Line
     Add-SummaryLine -Label 'Heartbeat' -Value $pulse
 }

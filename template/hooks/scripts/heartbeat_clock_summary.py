@@ -140,8 +140,8 @@ def iter_completed_events(path: Path) -> List[Dict[str, object]]:
 
 
 def build_clock_summary(workspace: Path) -> str:
-    state = load_json_object(workspace / "state.json")
-    events = iter_completed_events(workspace / ".heartbeat-events.jsonl")
+    state = load_json_object(workspace / "runtime/state.json")
+    events = iter_completed_events(workspace / "runtime/.heartbeat-events.jsonl")
     now = int(time.time())
     parts = []
 
@@ -191,8 +191,8 @@ def main(argv: Sequence[str]) -> int:
     workspace = workspace.resolve()
     if not workspace.is_dir():
         return 0
-    state_path = workspace / "state.json"
-    events_path = workspace / ".heartbeat-events.jsonl"
+    state_path = workspace / "runtime/state.json"
+    events_path = workspace / "runtime/.heartbeat-events.jsonl"
     if not state_path.exists() and not events_path.exists():
         fallback_events = fallback_artifact_path(events_path)
         if not fallback_events.exists():

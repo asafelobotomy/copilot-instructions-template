@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/scripts/test-validate-agent-frontmatter.sh -- tests for scripts/validate/validate-agent-frontmatter.sh
+# tests/scripts/test-validate-agent-frontmatter.sh -- tests for scripts/ci/validate-agent-frontmatter.sh
 # Run: bash tests/scripts/test-validate-agent-frontmatter.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
@@ -7,7 +7,7 @@ set -uo pipefail
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
-SCRIPT="$REPO_ROOT/scripts/validate/validate-agent-frontmatter.sh"
+SCRIPT="$REPO_ROOT/scripts/ci/validate-agent-frontmatter.sh"
 trap cleanup_dirs EXIT
 
 make_agent() {

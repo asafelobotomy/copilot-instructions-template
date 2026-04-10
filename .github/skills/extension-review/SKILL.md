@@ -60,7 +60,7 @@ Review the current project's VS Code extensions and recommend what to keep, add,
    - rating >= 4.0
    - updated within the last 12 months
 
-9. **Persist new mappings** - If an unknown stack produces a qualified extension recommendation, append the new stack-to-extension mapping to `.copilot/workspace/TOOLS.md` under `Extension registry`.
+9. **Persist new mappings** - If an unknown stack produces a qualified extension recommendation, append the new stack-to-extension mapping to `.copilot/workspace/knowledge/TOOLS.md` under `Extension registry`.
 
 10. **Present the report** - Use this structure:
 

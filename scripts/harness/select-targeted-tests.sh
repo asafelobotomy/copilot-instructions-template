@@ -8,11 +8,11 @@
 set -euo pipefail
 
 ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
-MAP_FILE="$ROOT_DIR/scripts/tests/targeted-test-map.json"
-SUITE_MANIFEST_PATH="$ROOT_DIR/scripts/tests/suite-manifest.json"
+MAP_FILE="$ROOT_DIR/scripts/harness/targeted-test-map.json"
+SUITE_MANIFEST_PATH="$ROOT_DIR/scripts/harness/suite-manifest.json"
 
 if [[ $# -lt 1 ]]; then
-  echo "Usage: bash scripts/tests/select-targeted-tests.sh <path> [<path>...]" >&2
+  echo "Usage: bash scripts/harness/select-targeted-tests.sh <path> [<path>...]" >&2
   exit 1
 fi
 
@@ -213,7 +213,7 @@ output = {
     "broadening_reasons": unique(broadening_reasons),
     "unmapped_paths": unmapped_paths,
     "final_gate": "bash tests/run-all.sh",
-    "terminal_safe_final_gate": "bash scripts/tests/run-all-captured.sh",
+    "terminal_safe_final_gate": "bash scripts/harness/run-all-captured.sh",
 }
 
 print(json.dumps(output, indent=2))

@@ -23,9 +23,9 @@ echo ""
 
 echo "1. save-context.ps1 emits JSON, includes the trigger, and summarises workspace files"
 TMP_CTX=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CTX")
-mkdir -p "$TMP_CTX/.copilot/workspace"
-printf 'HEARTBEAT_OK\n' > "$TMP_CTX/.copilot/workspace/HEARTBEAT.md"
-cat > "$TMP_CTX/.copilot/workspace/MEMORY.md" <<'EOF'
+mkdir -p "$TMP_CTX/.copilot/workspace/identity" "$TMP_CTX/.copilot/workspace/knowledge/diaries" "$TMP_CTX/.copilot/workspace/operations" "$TMP_CTX/.copilot/workspace/runtime"
+printf 'HEARTBEAT_OK\n' > "$TMP_CTX/.copilot/workspace/operations/HEARTBEAT.md"
+cat > "$TMP_CTX/.copilot/workspace/knowledge/MEMORY.md" <<'EOF'
 # Memory Strategy
 
 ## Known Gotchas
@@ -34,7 +34,7 @@ cat > "$TMP_CTX/.copilot/workspace/MEMORY.md" <<'EOF'
 |--------|---------------|------------|----------|
 | Large commit batches hide failures | tests/ | Prefer smaller batches and rerun targeted suites | medium |
 EOF
-cat > "$TMP_CTX/.copilot/workspace/SOUL.md" <<'EOF'
+cat > "$TMP_CTX/.copilot/workspace/identity/SOUL.md" <<'EOF'
 # Values & Reasoning Patterns
 
 - Keep changes reversible.
@@ -58,16 +58,16 @@ echo ""
 
 echo "2. save-context.ps1 includes clock summary when timing files exist"
 TMP_CTX_CLOCK=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CTX_CLOCK")
-mkdir -p "$TMP_CTX_CLOCK/.copilot/workspace"
-printf 'HEARTBEAT_OK\n' > "$TMP_CTX_CLOCK/.copilot/workspace/HEARTBEAT.md"
-cat > "$TMP_CTX_CLOCK/.copilot/workspace/state.json" <<'EOF'
+mkdir -p "$TMP_CTX_CLOCK/.copilot/workspace/identity" "$TMP_CTX_CLOCK/.copilot/workspace/knowledge/diaries" "$TMP_CTX_CLOCK/.copilot/workspace/operations" "$TMP_CTX_CLOCK/.copilot/workspace/runtime"
+printf 'HEARTBEAT_OK\n' > "$TMP_CTX_CLOCK/.copilot/workspace/operations/HEARTBEAT.md"
+cat > "$TMP_CTX_CLOCK/.copilot/workspace/runtime/state.json" <<'EOF'
 {
   "session_id": "ps-clock",
   "session_state": "pending",
   "session_start_epoch": 1704067200
 }
 EOF
-cat > "$TMP_CTX_CLOCK/.copilot/workspace/.heartbeat-events.jsonl" <<'EOF'
+cat > "$TMP_CTX_CLOCK/.copilot/workspace/runtime/.heartbeat-events.jsonl" <<'EOF'
 {"detail":"complete","duration_s":125,"trigger":"stop","ts":1704067325,"ts_utc":"2024-01-01T00:02:05Z"}
 {"detail":"complete","duration_s":185,"trigger":"stop","ts":1704067485,"ts_utc":"2024-01-01T00:04:45Z"}
 EOF

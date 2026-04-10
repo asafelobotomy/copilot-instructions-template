@@ -55,9 +55,9 @@ def _find_workspace_root() -> Path:
 
 ROOT = _find_workspace_root()
 WORKSPACE = ROOT / ".copilot" / "workspace"
-STATE_PATH = WORKSPACE / "state.json"
-EVENTS_PATH = WORKSPACE / ".heartbeat-events.jsonl"
-SENTINEL_PATH = WORKSPACE / ".heartbeat-session"
+STATE_PATH = WORKSPACE / "runtime/state.json"
+EVENTS_PATH = WORKSPACE / "runtime/.heartbeat-events.jsonl"
+SENTINEL_PATH = WORKSPACE / "runtime/.heartbeat-session"
 
 
 def _fallback_artifact_roots() -> list[Path]:
@@ -262,7 +262,7 @@ def _set_sentinel_complete(session_id: str) -> None:
 def _load_workspace_cues() -> dict:
     """Read lightweight cues from SOUL.md and USER.md for personalised prompts."""
     cues: dict = {"soul_values": [], "user_attributes": []}
-    soul_path = WORKSPACE / "SOUL.md"
+    soul_path = WORKSPACE / "identity/SOUL.md"
     if soul_path.exists():
         try:
             in_values = False
@@ -280,7 +280,7 @@ def _load_workspace_cues() -> dict:
                         break
         except Exception:
             pass
-    user_path = WORKSPACE / "USER.md"
+    user_path = WORKSPACE / "knowledge/USER.md"
     if user_path.exists():
         try:
             in_table = False
@@ -391,9 +391,9 @@ def session_reflect() -> dict:
 
     # --- Workspace state ---------------------------------------------------
     ws = {
-        "soul_exists": (WORKSPACE / "SOUL.md").exists(),
-        "memory_exists": (WORKSPACE / "MEMORY.md").exists(),
-        "user_exists": (WORKSPACE / "USER.md").exists(),
+        "soul_exists": (WORKSPACE / "identity/SOUL.md").exists(),
+        "memory_exists": (WORKSPACE / "knowledge/MEMORY.md").exists(),
+        "user_exists": (WORKSPACE / "knowledge/USER.md").exists(),
     }
 
     # --- Set sentinel complete ---------------------------------------------
@@ -420,8 +420,8 @@ def session_reflect() -> dict:
 # Tool: spatial_status — compact workspace navigation snapshot
 # ---------------------------------------------------------------------------
 
-DIARIES_DIR = WORKSPACE / "diaries"
-LEDGER_PATH = WORKSPACE / "ledger.md"
+DIARIES_DIR = WORKSPACE / "knowledge/diaries"
+LEDGER_PATH = WORKSPACE / "operations/ledger.md"
 
 
 def _read_diary_summaries(max_entries: int = 3) -> dict[str, list[str]]:

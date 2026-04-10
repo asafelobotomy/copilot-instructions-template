@@ -22,7 +22,7 @@ here.
 
 Canonical source for inventory:
 
-- `.copilot/workspace/workspace-index.json` — canonical machine-readable metadata index
+- `.copilot/workspace/operations/workspace-index.json` — canonical machine-readable metadata index
 
 ## Delegation policy
 
@@ -53,7 +53,7 @@ trigger design is wrong.
 - First-time setup behaviour: [SETUP.md](SETUP.md)
 - Update, backup restore, and factory restore behaviour: [UPDATE.md](UPDATE.md)
 - Supporting upstream source inventory: [template/setup/manifests.md](https://github.com/asafelobotomy/copilot-instructions-template/blob/main/template/setup/manifests.md#protocol-sources)
-- Canonical inventory and counts: `.copilot/workspace/workspace-index.json`
+- Canonical inventory and counts: `.copilot/workspace/operations/workspace-index.json`
 
 ## Consumer-Only Files
 

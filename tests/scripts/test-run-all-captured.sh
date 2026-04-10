@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/scripts/test-run-all-captured.sh -- tests for scripts/tests/run-all-captured.sh
+# tests/scripts/test-run-all-captured.sh -- tests for scripts/harness/run-all-captured.sh
 # Run: bash tests/scripts/test-run-all-captured.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
@@ -7,7 +7,7 @@ set -uo pipefail
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
-SCRIPT="$REPO_ROOT/scripts/tests/run-all-captured.sh"
+SCRIPT="$REPO_ROOT/scripts/harness/run-all-captured.sh"
 trap cleanup_dirs EXIT
 
 make_fixture() {

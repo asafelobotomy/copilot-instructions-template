@@ -3,7 +3,6 @@
 <!-- workspace-layer: L2 | trigger: heartbeat event -->
 > **Domain**: Events — health checks, session history, pulse status, and retrospective protocol.
 > **Boundary**: No long-term facts, preferences, or reasoning patterns.
-
 > Event-driven health check. Read this file at every trigger event, run all checks, update Pulse, and log to History.
 > **Contract**: Follow this checklist strictly. Do not infer tasks from prior sessions.
 

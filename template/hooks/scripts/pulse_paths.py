@@ -111,7 +111,7 @@ def classify_path_family(path_text: str):
         path_text.startswith(".github/workflows/")
         or path_text.startswith("scripts/release/")
         or path_text.startswith("scripts/sync/")
-        or path_text.startswith("scripts/validate/")
+        or path_text.startswith("scripts/ci/")
         or path_text.startswith("scripts/workspace/")
     ):
         return "ci_release"
@@ -155,8 +155,8 @@ def path_requires_parity(path_text: str) -> bool:
         or path_text.startswith(".github/prompts/")
         or path_text.startswith("template/prompts/")
         or path_text in {
-            ".copilot/workspace/workspace-index.json",
-            "template/workspace/workspace-index.json",
+            ".copilot/workspace/operations/workspace-index.json",
+            "template/workspace/operations/workspace-index.json",
         }
     )
 

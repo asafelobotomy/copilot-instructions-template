@@ -40,15 +40,15 @@ import importlib.util
 spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_PATH"])
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-state = module.load_state(root / ".copilot/workspace/state.json")
+state = module.load_state(root / ".copilot/workspace/runtime/state.json")
 assert state == module.default_state()
 '
 echo ""
 
 echo "3. load_state merges known fields and ignores unknown ones"
 TMP_PARTIAL=$(mktemp -d); CLEANUP_DIRS+=("$TMP_PARTIAL")
-mkdir -p "$TMP_PARTIAL/.copilot/workspace"
-cat > "$TMP_PARTIAL/.copilot/workspace/state.json" <<'EOF'
+mkdir -p "$TMP_PARTIAL/.copilot/workspace/identity" "$TMP_PARTIAL/.copilot/workspace/knowledge/diaries" "$TMP_PARTIAL/.copilot/workspace/operations" "$TMP_PARTIAL/.copilot/workspace/runtime"
+cat > "$TMP_PARTIAL/.copilot/workspace/runtime/state.json" <<'EOF'
 {
   "session_id": "sess-partial",
   "tool_call_counter": 7,
@@ -61,7 +61,7 @@ import importlib.util
 spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_PATH"])
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-state = module.load_state(root / ".copilot/workspace/state.json")
+state = module.load_state(root / ".copilot/workspace/runtime/state.json")
 assert state["session_id"] == "sess-partial"
 assert state["tool_call_counter"] == 7
 assert "unknown_key" not in state
@@ -71,8 +71,8 @@ echo ""
 
 echo "4. corrupt state and policy files fall back safely to defaults"
 TMP_CORRUPT=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CORRUPT")
-mkdir -p "$TMP_CORRUPT/.copilot/workspace"
-printf '{broken-json\n' > "$TMP_CORRUPT/.copilot/workspace/state.json"
+mkdir -p "$TMP_CORRUPT/.copilot/workspace/identity" "$TMP_CORRUPT/.copilot/workspace/knowledge/diaries" "$TMP_CORRUPT/.copilot/workspace/operations" "$TMP_CORRUPT/.copilot/workspace/runtime"
+printf '{broken-json\n' > "$TMP_CORRUPT/.copilot/workspace/runtime/state.json"
 printf '{broken-json\n' > "$TMP_CORRUPT/policy.json"
 assert_python_in_root "corrupt files fall back to defaults" "$TMP_CORRUPT" '
 import importlib.util
@@ -80,7 +80,7 @@ import importlib.util
 spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_PATH"])
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-state = module.load_state(root / ".copilot/workspace/state.json")
+state = module.load_state(root / ".copilot/workspace/runtime/state.json")
 policy = module.load_policy(root / "policy.json")
 assert state == module.default_state()
 assert policy == module.DEFAULT_POLICY
@@ -96,7 +96,7 @@ spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 workspace = root / ".copilot/workspace"
-state_path = workspace / "state.json"
+state_path = workspace / "runtime/state.json"
 state = module.default_state()
 state["session_id"] = "sess-save"
 module.save_state(state, workspace, state_path)
@@ -111,7 +111,7 @@ echo ""
 
 echo "6. sentinel and reflection completion helpers recognize completed sessions"
 TMP_EVENTS=$(mktemp -d); CLEANUP_DIRS+=("$TMP_EVENTS")
-mkdir -p "$TMP_EVENTS/.copilot/workspace"
+mkdir -p "$TMP_EVENTS/.copilot/workspace/identity" "$TMP_EVENTS/.copilot/workspace/knowledge/diaries" "$TMP_EVENTS/.copilot/workspace/operations" "$TMP_EVENTS/.copilot/workspace/runtime"
 assert_python_in_root "sentinel and event helpers detect completed sessions" "$TMP_EVENTS" '
 import importlib.util
 
@@ -119,8 +119,8 @@ spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 workspace = root / ".copilot/workspace"
-sentinel_path = workspace / ".heartbeat-session"
-events_path = workspace / ".heartbeat-events.jsonl"
+sentinel_path = workspace / "runtime/.heartbeat-session"
+events_path = workspace / "runtime/.heartbeat-events.jsonl"
 module.set_sentinel(sentinel_path, workspace, 1704067200, "sess-complete", "pending")
 assert module.sentinel_is_complete(sentinel_path) is False
 module.set_sentinel(sentinel_path, workspace, 1704067200, "sess-complete", "complete")
@@ -138,7 +138,7 @@ echo ""
 
 echo "6b. sentinel and event helpers fall back to TMPDIR storage when workspace artifacts are absent"
 TMP_FALLBACK=$(mktemp -d); CLEANUP_DIRS+=("$TMP_FALLBACK")
-mkdir -p "$TMP_FALLBACK/.copilot/workspace"
+mkdir -p "$TMP_FALLBACK/.copilot/workspace/identity" "$TMP_FALLBACK/.copilot/workspace/knowledge/diaries" "$TMP_FALLBACK/.copilot/workspace/operations" "$TMP_FALLBACK/.copilot/workspace/runtime"
 assert_python_in_root "helpers read heartbeat completion from fallback storage" "$TMP_FALLBACK" '
 import importlib.util
 
@@ -148,8 +148,8 @@ spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 workspace = root / ".copilot/workspace"
-sentinel_path = workspace / ".heartbeat-session"
-events_path = workspace / ".heartbeat-events.jsonl"
+sentinel_path = workspace / "runtime/.heartbeat-session"
+events_path = workspace / "runtime/.heartbeat-events.jsonl"
 fallback_sentinel = module.fallback_artifact_path(sentinel_path)
 fallback_events = module.fallback_artifact_path(events_path)
 fallback_sentinel.parent.mkdir(parents=True, exist_ok=True)
@@ -165,7 +165,7 @@ echo ""
 
 echo "6c. writes fall through to home cache when TMPDIR is unavailable"
 TMP_CACHE_FALLBACK=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CACHE_FALLBACK")
-mkdir -p "$TMP_CACHE_FALLBACK/.copilot/workspace"
+mkdir -p "$TMP_CACHE_FALLBACK/.copilot/workspace/identity" "$TMP_CACHE_FALLBACK/.copilot/workspace/knowledge/diaries" "$TMP_CACHE_FALLBACK/.copilot/workspace/operations" "$TMP_CACHE_FALLBACK/.copilot/workspace/runtime"
 mkdir -p "$TMP_CACHE_FALLBACK/blocked-tmp"
 chmod 0555 "$TMP_CACHE_FALLBACK/blocked-tmp"
 assert_python_in_root "helpers write heartbeat artifacts into home cache when TMPDIR is blocked" "$TMP_CACHE_FALLBACK" '
@@ -179,14 +179,16 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 module.tempfile.gettempdir = lambda: str(root / "blocked-tmp")
 workspace = root / ".copilot/workspace"
-sentinel_path = workspace / ".heartbeat-session"
-events_path = workspace / ".heartbeat-events.jsonl"
+sentinel_path = workspace / "runtime/.heartbeat-session"
+events_path = workspace / "runtime/.heartbeat-events.jsonl"
+(workspace / "runtime").chmod(0o555)
 workspace.chmod(0o555)
 try:
   module.set_sentinel(sentinel_path, workspace, 1704067200, "sess-cache", "complete")
   module.append_event(events_path, workspace, 1704068400, "session_reflect", "complete", session_id="sess-cache")
 finally:
   workspace.chmod(0o755)
+  (workspace / "runtime").chmod(0o755)
 home_sentinel = root / ".cache/uv/copilot-heartbeat"
 matches = list(home_sentinel.glob("*/.heartbeat-session"))
 event_matches = list(home_sentinel.glob("*/.heartbeat-events.jsonl"))
@@ -201,7 +203,7 @@ echo ""
 
 echo "6d. CLAUDE_TMPDIR is preferred over blocked TMPDIR"
 TMP_CLAUDE_TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CLAUDE_TMP")
-mkdir -p "$TMP_CLAUDE_TMP/.copilot/workspace"
+mkdir -p "$TMP_CLAUDE_TMP/.copilot/workspace/identity" "$TMP_CLAUDE_TMP/.copilot/workspace/knowledge/diaries" "$TMP_CLAUDE_TMP/.copilot/workspace/operations" "$TMP_CLAUDE_TMP/.copilot/workspace/runtime"
 mkdir -p "$TMP_CLAUDE_TMP/blocked-tmp" "$TMP_CLAUDE_TMP/claude-tmp"
 chmod 0555 "$TMP_CLAUDE_TMP/blocked-tmp"
 assert_python_in_root "helpers write heartbeat artifacts into CLAUDE_TMPDIR when TMPDIR is blocked" "$TMP_CLAUDE_TMP" '
@@ -214,14 +216,16 @@ module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 module.tempfile.gettempdir = lambda: str(root / "blocked-tmp")
 workspace = root / ".copilot/workspace"
-sentinel_path = workspace / ".heartbeat-session"
-events_path = workspace / ".heartbeat-events.jsonl"
+sentinel_path = workspace / "runtime/.heartbeat-session"
+events_path = workspace / "runtime/.heartbeat-events.jsonl"
+(workspace / "runtime").chmod(0o555)
 workspace.chmod(0o555)
 try:
   module.set_sentinel(sentinel_path, workspace, 1704067200, "sess-claude", "complete")
   module.append_event(events_path, workspace, 1704068400, "session_reflect", "complete", session_id="sess-claude")
 finally:
   workspace.chmod(0o755)
+  (workspace / "runtime").chmod(0o755)
 claude_sentinel = root / "claude-tmp/copilot-heartbeat"
 matches = list(claude_sentinel.glob("*/.heartbeat-session"))
 event_matches = list(claude_sentinel.glob("*/.heartbeat-events.jsonl"))
@@ -253,14 +257,14 @@ echo ""
 
 echo "8. atomic_write retries with a fresh temp path after a transient replace failure"
 TMP_ATOMIC=$(mktemp -d); CLEANUP_DIRS+=("$TMP_ATOMIC")
-mkdir -p "$TMP_ATOMIC/.copilot/workspace"
+mkdir -p "$TMP_ATOMIC/.copilot/workspace/identity" "$TMP_ATOMIC/.copilot/workspace/knowledge/diaries" "$TMP_ATOMIC/.copilot/workspace/operations" "$TMP_ATOMIC/.copilot/workspace/runtime"
 assert_python_in_root "atomic_write retries once with a unique temp file" "$TMP_ATOMIC" '
 import importlib.util
 
 spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_PATH"])
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-state_path = root / ".copilot/workspace/state.json"
+state_path = root / ".copilot/workspace/runtime/state.json"
 replace_calls = []
 original_replace = module.os.replace
 
@@ -281,7 +285,7 @@ echo ""
 
 echo "9. file_lock serializes append_event while another process holds the lock"
 TMP_LOCKED=$(mktemp -d); CLEANUP_DIRS+=("$TMP_LOCKED")
-mkdir -p "$TMP_LOCKED/.copilot/workspace"
+mkdir -p "$TMP_LOCKED/.copilot/workspace/identity" "$TMP_LOCKED/.copilot/workspace/knowledge/diaries" "$TMP_LOCKED/.copilot/workspace/operations" "$TMP_LOCKED/.copilot/workspace/runtime"
 assert_python_in_root "append_event waits for the active file lock before writing" "$TMP_LOCKED" '
 import importlib.util
 import multiprocessing
@@ -299,7 +303,7 @@ def worker(module_path, root_path, started, finished):
   module = importlib.util.module_from_spec(spec)
   spec.loader.exec_module(module)
   workspace = Path(root_path) / ".copilot/workspace"
-  events_path = workspace / ".heartbeat-events.jsonl"
+  events_path = workspace / "runtime/.heartbeat-events.jsonl"
   started.set()
   module.append_event(events_path, workspace, 1704068400, "session_reflect", "complete", session_id="sess-lock")
   finished.set()
@@ -309,7 +313,7 @@ spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 workspace = root / ".copilot/workspace"
-events_path = workspace / ".heartbeat-events.jsonl"
+events_path = workspace / "runtime/.heartbeat-events.jsonl"
 ctx = multiprocessing.get_context("fork")
 started = ctx.Event()
 finished = ctx.Event()

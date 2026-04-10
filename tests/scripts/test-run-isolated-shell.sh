@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/scripts/test-run-isolated-shell.sh -- tests for scripts/tests/run-isolated-shell.sh
+# tests/scripts/test-run-isolated-shell.sh -- tests for scripts/harness/run-isolated-shell.sh
 # Run: bash tests/scripts/test-run-isolated-shell.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
@@ -9,15 +9,15 @@ source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
 trap cleanup_dirs EXIT
 
-SCRIPT="$REPO_ROOT/scripts/tests/run-isolated-shell.sh"
-PWSH=$(bash "$REPO_ROOT/scripts/tests/resolve-powershell.sh" || true)
+SCRIPT="$REPO_ROOT/scripts/harness/run-isolated-shell.sh"
+PWSH=$(bash "$REPO_ROOT/scripts/harness/resolve-powershell.sh" || true)
 
 echo "=== run-isolated-shell.sh ==="
 echo ""
 
 echo "1. Invalid usage is rejected"
 output=$(bash "$SCRIPT" 2>&1) || true
-assert_contains "usage is printed" "$output" "Usage: bash scripts/tests/run-isolated-shell.sh"
+assert_contains "usage is printed" "$output" "Usage: bash scripts/harness/run-isolated-shell.sh"
 echo ""
 
 echo "2. Bash command form runs inside isolated child shell"

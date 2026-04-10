@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/scripts/test-run-isolated-shell-stdin.sh -- tests for scripts/tests/run-isolated-shell-stdin.sh
+# tests/scripts/test-run-isolated-shell-stdin.sh -- tests for scripts/harness/run-isolated-shell-stdin.sh
 # Run: bash tests/scripts/test-run-isolated-shell-stdin.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
@@ -9,15 +9,15 @@ source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
 trap cleanup_dirs EXIT
 
-SCRIPT="$REPO_ROOT/scripts/tests/run-isolated-shell-stdin.sh"
-PWSH=$(bash "$REPO_ROOT/scripts/tests/resolve-powershell.sh" || true)
+SCRIPT="$REPO_ROOT/scripts/harness/run-isolated-shell-stdin.sh"
+PWSH=$(bash "$REPO_ROOT/scripts/harness/resolve-powershell.sh" || true)
 
 echo "=== run-isolated-shell-stdin.sh ==="
 echo ""
 
 echo "1. Invalid usage without stdin is rejected"
 output=$(bash "$SCRIPT" 2>&1) || true
-assert_contains "usage is printed" "$output" "Usage: bash scripts/tests/run-isolated-shell-stdin.sh"
+assert_contains "usage is printed" "$output" "Usage: bash scripts/harness/run-isolated-shell-stdin.sh"
 echo ""
 
 echo "2. Strict bash here-doc form runs inside isolated shell"

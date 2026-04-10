@@ -17,7 +17,7 @@ import sys
 import time
 
 
-MANIFEST_RELATIVE_PATH = pathlib.Path("scripts/tests/suite-manifest.json")
+MANIFEST_RELATIVE_PATH = pathlib.Path("scripts/harness/suite-manifest.json")
 PRE_FLIGHT_SCRIPT = "scripts/ci/validate-test-output.sh"
 
 
@@ -265,7 +265,7 @@ def add_root_argument(parser: argparse.ArgumentParser) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="python3 scripts/tests/suite-manifest.py")
+    parser = argparse.ArgumentParser(prog="python3 scripts/harness/suite-manifest.py")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     validate_parser = subparsers.add_parser("validate")

@@ -53,24 +53,24 @@ output=$(cd "$TMP" && printf '%s' '{"agentName":"Review","result":"Found unused 
 status=$?
 assert_success "diary-write exits zero" "$status"
 assert_valid_json "diary-write emits valid JSON" "$output"
-assert_file_exists "diary file created" "$TMP/.copilot/workspace/diaries/review.md"
-assert_file_contains "diary has agent header" "$TMP/.copilot/workspace/diaries/review.md" "# Review Diary"
-assert_file_contains "diary has result entry" "$TMP/.copilot/workspace/diaries/review.md" "Found unused import in auth.py"
+assert_file_exists "diary file created" "$TMP/.copilot/workspace/knowledge/diaries/review.md"
+assert_file_contains "diary has agent header" "$TMP/.copilot/workspace/knowledge/diaries/review.md" "# Review Diary"
+assert_file_contains "diary has result entry" "$TMP/.copilot/workspace/knowledge/diaries/review.md" "Found unused import in auth.py"
 echo ""
 
 echo "6. Duplicate results are not written twice"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-cd "$TMP"
+cd "$TMP" || exit 1
 printf '%s' '{"agentName":"Audit","result":"No secrets found"}' | bash "$SCRIPT" >/dev/null 2>&1
 printf '%s' '{"agentName":"Audit","result":"No secrets found"}' | bash "$SCRIPT" >/dev/null 2>&1
-DIARY="$TMP/.copilot/workspace/diaries/audit.md"
+DIARY="$TMP/.copilot/workspace/knowledge/diaries/audit.md"
 MATCH_COUNT=$(grep -c "No secrets found" "$DIARY")
 if [[ "$MATCH_COUNT" -eq 1 ]]; then
   pass_note "duplicate dedup works (exactly 1 match)"
 else
   fail_note "duplicate dedup failed" "     expected 1, got $MATCH_COUNT"
 fi
-cd "$REPO_ROOT"
+cd "$REPO_ROOT" || exit 1
 echo ""
 
 echo "7. Empty result does not create diary file"
@@ -78,7 +78,7 @@ TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 output=$(cd "$TMP" && printf '%s' '{"agentName":"Fast","result":""}' | bash "$SCRIPT" 2>/dev/null)
 status=$?
 assert_success "empty-result exits zero" "$status"
-if [[ -f "$TMP/.copilot/workspace/diaries/fast.md" ]]; then
+if [[ -f "$TMP/.copilot/workspace/knowledge/diaries/fast.md" ]]; then
   fail_note "empty result should not create diary file"
 else
   pass_note "empty result does not create diary file"
@@ -87,18 +87,18 @@ echo ""
 
 echo "8. Diary respects 30-line cap"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-cd "$TMP"
+cd "$TMP" || exit 1
 for i in $(seq 1 35); do
   printf '%s' "{\"agentName\":\"Code\",\"result\":\"Finding $i: item $i\"}" | bash "$SCRIPT" >/dev/null 2>&1
 done
-DIARY="$TMP/.copilot/workspace/diaries/code.md"
+DIARY="$TMP/.copilot/workspace/knowledge/diaries/code.md"
 LINE_COUNT=$(wc -l < "$DIARY")
 if (( LINE_COUNT <= 30 )); then
   pass_note "diary stays within 30-line cap (got $LINE_COUNT)"
 else
   fail_note "diary exceeds 30-line cap" "     expected ≤30, got $LINE_COUNT"
 fi
-cd "$REPO_ROOT"
+cd "$REPO_ROOT" || exit 1
 echo ""
 
 finish_tests

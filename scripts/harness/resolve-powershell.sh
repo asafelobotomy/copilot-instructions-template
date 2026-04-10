@@ -8,7 +8,7 @@
 set -euo pipefail
 
 usage() {
-  echo "Usage: bash scripts/tests/resolve-powershell.sh [--check]" >&2
+  echo "Usage: bash scripts/harness/resolve-powershell.sh [--check]" >&2
 }
 
 resolve_candidate() {

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/scripts/test-resolve-powershell.sh -- deterministic tests for scripts/tests/resolve-powershell.sh
+# tests/scripts/test-resolve-powershell.sh -- deterministic tests for scripts/harness/resolve-powershell.sh
 # Run: bash tests/scripts/test-resolve-powershell.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
@@ -9,7 +9,7 @@ source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
 trap cleanup_dirs EXIT
 
-SCRIPT="$REPO_ROOT/scripts/tests/resolve-powershell.sh"
+SCRIPT="$REPO_ROOT/scripts/harness/resolve-powershell.sh"
 BASH_BIN=$(command -v bash)
 
 make_fake_powershell() {

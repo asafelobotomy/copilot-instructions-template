@@ -34,13 +34,13 @@ contract change.
 
 | Layer | File(s) | Storage | Populated by | Consumed by |
 |-------|---------|---------|--------------|-------------|
-| **Project facts** | `template/workspace/MEMORY.md` | Git-tracked, team-shared | Agent (manual append) | Heartbeat cross-ref; `save-context.sh` tail-20 |
-| **Reasoning heuristics** | `template/workspace/SOUL.md` | Git-tracked, team-shared | Agent across sessions | `save-context.sh` regex match; HEARTBEAT check |
-| **User profile** | `template/workspace/USER.md` | Git-tracked, team-shared | `session_reflect` MCP tool (significant sessions only) | SessionStart hook additionalContext (not currently injected) |
-| **Health history** | `template/workspace/HEARTBEAT.md` History table | Git-tracked | Agent follows Response Contract | `save-context.sh` `grep -m1 HEARTBEAT` |
+| **Project facts** | `template/workspace/knowledge/MEMORY.md` | Git-tracked, team-shared | Agent (manual append) | Heartbeat cross-ref; `save-context.sh` tail-20 |
+| **Reasoning heuristics** | `template/workspace/identity/SOUL.md` | Git-tracked, team-shared | Agent across sessions | `save-context.sh` regex match; HEARTBEAT check |
+| **User profile** | `template/workspace/knowledge/USER.md` | Git-tracked, team-shared | `session_reflect` MCP tool (significant sessions only) | SessionStart hook additionalContext (not currently injected) |
+| **Health history** | `template/workspace/operations/HEARTBEAT.md` History table | Git-tracked | Agent follows Response Contract | `save-context.sh` `grep -m1 HEARTBEAT` |
 | **Built-in user/repo/session** | `/memories/`, `/memories/repo/`, `/memories/session/` | Local, machine-only | VS Code memory tool (agent or user) | Auto-loaded (user scope first 200 lines); repo/session must be explicitly read |
 | **PreCompact snapshot** | `template/hooks/scripts/save-context.sh` / `.ps1` | Ephemeral `additionalContext` | `PreCompact` hook fires, produces ≤2000 char blob | Next model turns after compaction |
-| **Session state machine** | `.copilot/workspace/state.json`, `.heartbeat-events.jsonl` | Local, not git-tracked | `pulse_state.py` via `pulse.sh` hooks | `session_reflect` MCP tool; `heartbeat_clock_summary.py` |
+| **Session state machine** | `.copilot/workspace/runtime/state.json`, `.heartbeat-events.jsonl` | Local, not git-tracked | `pulse_state.py` via `pulse.sh` hooks | `session_reflect` MCP tool; `heartbeat_clock_summary.py` |
 
 ### How memory survives compaction
 
@@ -312,7 +312,7 @@ current plan in `additionalContext`. This is a low-cost, high-value addition.
 **Implementation shape:**
 In `save-context.sh`:
 1. Parse the `trigger` field from stdin and label the snapshot: `"PreCompact (trigger: auto)"`.
-2. If `/memories/session/plan.md` or `.copilot/workspace/state.json`'s `intent_phase` field
+2. If `/memories/session/plan.md` or `.copilot/workspace/runtime/state.json`'s `intent_phase` field
    indicates active work, include a 150-char snippet.
 No consumer contract change required.
 
@@ -330,7 +330,7 @@ Low. Internal hook change only.
 | QW1 | Parse and label `trigger` field in `save-context.sh` | `template/hooks/scripts/save-context.sh`, `.ps1` | Makes PostCompact context self-labelled |
 | QW2 | Replace `tail -20 | head -c 500` with date-sorted top-N row extraction | `template/hooks/scripts/save-context.sh`, `.ps1` | Prevents mid-row truncation and prioritises recent facts |
 | QW3 | Fix SOUL.md extraction from `grep -A1` (captures headers) to read actual list values | `template/hooks/scripts/save-context.sh`, `.ps1` | Ensures SOUL.md heuristics actually reach the model post-compaction |
-| QW4 | Add MEMORY.md row-count check to `HEARTBEAT.md` template | `template/workspace/HEARTBEAT.md` | Enforces the 100-row maintenance rule |
+| QW4 | Add MEMORY.md row-count check to `HEARTBEAT.md` template | `template/workspace/operations/HEARTBEAT.md` | Enforces the 100-row maintenance rule |
 | QW5 | Read `/memories/session/plan.md` in `save-context.sh` if it exists | `template/hooks/scripts/save-context.sh`, `.ps1` | Restores task-in-progress context post-compaction |
 
 ### Structural Changes (may require consumer-visible contract updates)
@@ -338,9 +338,9 @@ Low. Internal hook change only.
 | # | Change | Primary file(s) | Consumer impact |
 |---|--------|----------------|----------------|
 | SC1 | Inject USER.md content (bounded 300 chars) in `session-start.sh` when fields are populated | `template/hooks/scripts/session-start.sh`, `.ps1` | YES — changes what is injected at session start |
-| SC2 | Add MEMORY.md coexistence protocol: heartbeat check for `/memories/repo/` inbox | `template/workspace/HEARTBEAT.md`, `template/workspace/MEMORY.md` | SOFT — adds a new heartbeat check, additive |
-| SC3 | Add `Source` column to all MEMORY.md table templates; document citation format | `template/workspace/MEMORY.md` | YES — changes MEMORY.md table schema; existing consumer rows need migration note |
-| SC4 | Add `SOUL.md` entry provenance suffix requirement (`— added YYYY-MM-DD`) and heartbeat staleness check | `template/workspace/SOUL.md`, `template/workspace/HEARTBEAT.md` | SOFT — additive schema requirement |
+| SC2 | Add MEMORY.md coexistence protocol: heartbeat check for `/memories/repo/` inbox | `template/workspace/operations/HEARTBEAT.md`, `template/workspace/knowledge/MEMORY.md` | SOFT — adds a new heartbeat check, additive |
+| SC3 | Add `Source` column to all MEMORY.md table templates; document citation format | `template/workspace/knowledge/MEMORY.md` | YES — changes MEMORY.md table schema; existing consumer rows need migration note |
+| SC4 | Add `SOUL.md` entry provenance suffix requirement (`— added YYYY-MM-DD`) and heartbeat staleness check | `template/workspace/identity/SOUL.md`, `template/workspace/operations/HEARTBEAT.md` | SOFT — additive schema requirement |
 | SC5 | Add `checks_memory.py` to `copilot_audit` suite (row count, blank line count, table structure) | `scripts/copilot_audit/checks_memory.py` | NO — audit-only, consumer templates are not executed by audit |
 
 ---
@@ -377,10 +377,10 @@ implemented in this repo:
 
 | Repo path | Role in memory model |
 |-----------|---------------------|
-| `template/workspace/MEMORY.md` | Hot index, team-shared project facts |
-| `template/workspace/SOUL.md` | Reasoning heuristics and values |
-| `template/workspace/USER.md` | Project-scoped user profile |
-| `template/workspace/HEARTBEAT.md` | Health check + session history append-log |
+| `template/workspace/knowledge/MEMORY.md` | Hot index, team-shared project facts |
+| `template/workspace/identity/SOUL.md` | Reasoning heuristics and values |
+| `template/workspace/knowledge/USER.md` | Project-scoped user profile |
+| `template/workspace/operations/HEARTBEAT.md` | Health check + session history append-log |
 | `template/hooks/scripts/save-context.sh` | PreCompact snapshot constructor |
 | `template/hooks/scripts/save-context.ps1` | PreCompact snapshot constructor (Windows) |
 | `template/hooks/scripts/mcp-heartbeat-server.py` | `session_reflect` MCP tool implementation |

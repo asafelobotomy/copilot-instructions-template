@@ -4,8 +4,14 @@ node_modules/
 # Local Python environment
 .venv/
 
-# Hook scan logs (written by scan-secrets.sh at session end)
-logs/
+# Log output directories (gitignored except .gitkeep placeholders)
+logs/**
+!logs/audit/
+!logs/audit/.gitkeep
+!logs/secrets/
+!logs/secrets/.gitkeep
+!logs/tests/
+!logs/tests/.gitkeep
 
 # Vale — downloaded style packages (not committed; fetched by `vale sync`)
 .github/vale/styles/Vale/
@@ -35,10 +41,7 @@ secrets.yaml
 .aws/credentials
 
 # Heartbeat orchestrator sidecar state
-.copilot/workspace/.heartbeat-session
-.copilot/workspace/.heartbeat-events.jsonl
-.copilot/workspace/state.json
-.copilot/workspace/*.lock
+.copilot/workspace/runtime/
 copilot-heartbeat/
 
 # Local test/debug artifacts

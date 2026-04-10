@@ -101,11 +101,11 @@
 | `.github/skills/skill-management/SKILL.md` | `template/skills/skill-management/SKILL.md` | Updated (agent plugins, org agents) |
 | `.github/skills/mcp-management/SKILL.md` | `template/skills/mcp-management/SKILL.md` | Updated (MCP GA, capabilities, discovery) |
 | `.github/hooks/scripts/guard-destructive.sh` | `template/hooks/scripts/guard-destructive.sh` | Updated (auto-approval documentation) |
-| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` | Updated (agent compatibility check) |
-| `.copilot/workspace/TOOLS.md` | `template/workspace/TOOLS.md` | Updated (built-in tools table) |
+| `.copilot/workspace/operations/HEARTBEAT.md` | `template/workspace/operations/HEARTBEAT.md` | Updated (agent compatibility check) |
+| `.copilot/workspace/knowledge/TOOLS.md` | `template/workspace/knowledge/TOOLS.md` | Updated (built-in tools table) |
 | `.vscode/mcp.json` | `template/vscode/mcp.json` | Updated (**`memory` server removed** — replaced by built-in `/memories/` tool) |
-| `.copilot/workspace/MEMORY.md` | `template/workspace/MEMORY.md` | Updated (coexistence section rewritten for built-in memory) |
-| `.copilot/workspace/USER.md` | `template/workspace/USER.md` | Updated (coexistence note added) |
+| `.copilot/workspace/knowledge/MEMORY.md` | `template/workspace/knowledge/MEMORY.md` | Updated (coexistence section rewritten for built-in memory) |
+| `.copilot/workspace/knowledge/USER.md` | `template/workspace/knowledge/USER.md` | Updated (coexistence note added) |
 | `.github/skills/webapp-testing/SKILL.md` | `template/skills/webapp-testing/SKILL.md` | Updated (v2.0 — dual-path: browser tools + Playwright) |
 | `.github/skills/conventional-commit/SKILL.md` | `template/skills/conventional-commit/SKILL.md` | Updated (`git.addAICoAuthor` section added) |
 | `.github/skills/plugin-management/SKILL.md` | `template/skills/plugin-management/SKILL.md` | **New** (agent plugin discovery, evaluation, management) |
@@ -195,8 +195,8 @@ See **v3.0.4** — this release is bundled into v3.0.4 via its `Includes` field.
 | `.github/agents/coding.agent.md` | `.github/agents/coding.agent.md` | Updated |
 | `.github/agents/review.agent.md` | `.github/agents/review.agent.md` | Updated |
 | `.github/agents/fast.agent.md` | `.github/agents/fast.agent.md` | Updated |
-| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` | Updated (retrospective redesign) |
-| `.copilot/workspace/MEMORY.md` | `template/workspace/MEMORY.md` | Updated (MCP memory coexistence) |
+| `.copilot/workspace/operations/HEARTBEAT.md` | `template/workspace/operations/HEARTBEAT.md` | Updated (retrospective redesign) |
+| `.copilot/workspace/knowledge/MEMORY.md` | `template/workspace/knowledge/MEMORY.md` | Updated (MCP memory coexistence) |
 
 **Manual actions**:
 
@@ -240,7 +240,7 @@ See **v3.0.4** — this release is bundled into v3.0.4 via its `Includes` field.
 | `.github/hooks/scripts/post-edit-lint.sh` | `template/hooks/scripts/post-edit-lint.sh` | New |
 | `.github/hooks/scripts/enforce-retrospective.sh` | `template/hooks/scripts/enforce-retrospective.sh` | New |
 | `.github/hooks/scripts/save-context.sh` | `template/hooks/scripts/save-context.sh` | New |
-| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` | New |
+| `.copilot/workspace/operations/HEARTBEAT.md` | `template/workspace/operations/HEARTBEAT.md` | New |
 
 **Manual actions**: None — hooks are opt-in and work immediately after file creation.
 

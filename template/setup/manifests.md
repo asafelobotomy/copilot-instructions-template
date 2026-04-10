@@ -15,7 +15,7 @@ inventory of supporting upstream sources so `AGENTS.md` and
 
 | Protocol | Canonical behaviour file | Supporting upstream sources |
 |----------|--------------------------|-----------------------------|
-| Setup | `SETUP.md` | `template/copilot-instructions.md`, `template/setup/interview.md`, `template/setup/manifests.md`, `template/workspace/workspace-index.json`, `template/copilot-setup-steps.yml`, `template/vscode/settings.json`, `template/vscode/extensions.json`, `starter-kits/REGISTRY.json` |
+| Setup | `SETUP.md` | `template/copilot-instructions.md`, `template/setup/interview.md`, `template/setup/manifests.md`, `template/workspace/operations/workspace-index.json`, `template/copilot-setup-steps.yml`, `template/vscode/settings.json`, `template/vscode/extensions.json`, `starter-kits/REGISTRY.json` |
 | Update, backup restore, and factory restore | `UPDATE.md` | `VERSION.md`, `MIGRATION.md`, `MIGRATION.archive.md`, `CHANGELOG.md`, `template/copilot-instructions.md`, `template/setup/manifests.md`, `SETUP.md` |
 
 ---
@@ -28,7 +28,7 @@ Use **dynamic discovery** via GitHub API tree to enumerate all agent assets:
 GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/git/trees/main?recursive=1
 ```
 
-Filter for `type == "blob"` and `path` matching `.github/agents/*.agent.md` or `.github/agents/*.json`. Fetch each verbatim. This currently includes the routing sidecar `.github/agents/routing-manifest.json`. If `"truncated": true`, fall back to the `agents` and `agentSupportFiles` arrays in the workspace-index payload prefetched by SETUP.md §2. Write that same payload to `.copilot/workspace/workspace-index.json` later in §3.
+Filter for `type == "blob"` and `path` matching `.github/agents/*.agent.md` or `.github/agents/*.json`. Fetch each verbatim. This currently includes the routing sidecar `.github/agents/routing-manifest.json`. If `"truncated": true`, fall back to the `agents` and `agentSupportFiles` arrays in the workspace-index payload prefetched by SETUP.md §2. Write that same payload to `.copilot/workspace/operations/workspace-index.json` later in §3.
 
 ---
 
@@ -100,19 +100,19 @@ After writing `.sh` files: `chmod +x .github/hooks/scripts/*.sh`
 
 | Target path | Source |
 |-------------|--------|
-| `.copilot/workspace/IDENTITY.md` | `template/workspace/IDENTITY.md` |
-| `.copilot/workspace/SOUL.md` | `template/workspace/SOUL.md` |
-| `.copilot/workspace/USER.md` | `template/workspace/USER.md` |
-| `.copilot/workspace/TOOLS.md` | `template/workspace/TOOLS.md` |
-| `.copilot/workspace/MEMORY.md` | `template/workspace/MEMORY.md` |
-| `.copilot/workspace/commit-style.md` | `template/workspace/commit-style.md` |
-| `.copilot/workspace/workspace-index.json` | `template/workspace/workspace-index.json` |
-| `.copilot/workspace/BOOTSTRAP.md` | `template/workspace/BOOTSTRAP.md` |
-| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` |
-| `.copilot/workspace/RESEARCH.md` | `template/workspace/RESEARCH.md` |
-| `.copilot/workspace/MEMORY-GUIDE.md` | `template/workspace/MEMORY-GUIDE.md` |
-| `.copilot/workspace/ledger.md` | `template/workspace/ledger.md` |
-| `.copilot/workspace/diaries/README.md` | `template/workspace/diaries/README.md` |
+| `.copilot/workspace/identity/IDENTITY.md` | `template/workspace/identity/IDENTITY.md` |
+| `.copilot/workspace/identity/SOUL.md` | `template/workspace/identity/SOUL.md` |
+| `.copilot/workspace/knowledge/USER.md` | `template/workspace/knowledge/USER.md` |
+| `.copilot/workspace/knowledge/TOOLS.md` | `template/workspace/knowledge/TOOLS.md` |
+| `.copilot/workspace/knowledge/MEMORY.md` | `template/workspace/knowledge/MEMORY.md` |
+| `.copilot/workspace/operations/commit-style.md` | `template/workspace/operations/commit-style.md` |
+| `.copilot/workspace/operations/workspace-index.json` | `template/workspace/operations/workspace-index.json` |
+| `.copilot/workspace/identity/BOOTSTRAP.md` | `template/workspace/identity/BOOTSTRAP.md` |
+| `.copilot/workspace/operations/HEARTBEAT.md` | `template/workspace/operations/HEARTBEAT.md` |
+| `.copilot/workspace/knowledge/RESEARCH.md` | `template/workspace/knowledge/RESEARCH.md` |
+| `.copilot/workspace/knowledge/MEMORY-GUIDE.md` | `template/workspace/knowledge/MEMORY-GUIDE.md` |
+| `.copilot/workspace/operations/ledger.md` | `template/workspace/operations/ledger.md` |
+| `.copilot/workspace/knowledge/diaries/README.md` | `template/workspace/knowledge/diaries/README.md` |
 
 Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today's date, `{{SPATIAL_THEME}}` → chosen one-word metaphor, `{{SPATIAL_VOCAB}}` → the resolved Markdown row set from SETUP.md §2.
 
@@ -318,7 +318,7 @@ for f in .github/agents/*.agent.md .github/agents/*.json .github/skills/*/SKILL.
   .github/prompts/*.prompt.md .github/workflows/copilot-setup-steps.yml \
   .vscode/settings.json .vscode/extensions.json .vscode/mcp.json \
   CLAUDE.md \
-  .copilot/workspace/*.md .copilot/workspace/workspace-index.json; do
+  .copilot/workspace/identity/*.md .copilot/workspace/knowledge/*.md .copilot/workspace/operations/*.md .copilot/workspace/operations/workspace-index.json .copilot/workspace/knowledge/diaries/README.md; do
   [ -f "$f" ] || continue; echo "${f}=$(sha256sum "$f" | cut -c1-12)"
 done
 ```
@@ -350,7 +350,9 @@ patterns = [
     '.github/prompts/*.prompt.md', '.github/workflows/copilot-setup-steps.yml',
     '.vscode/settings.json', '.vscode/extensions.json', '.vscode/mcp.json',
     'CLAUDE.md',
-    '.copilot/workspace/*.md', '.copilot/workspace/workspace-index.json',
+    '.copilot/workspace/identity/*.md', '.copilot/workspace/knowledge/*.md',
+    '.copilot/workspace/operations/*.md', '.copilot/workspace/operations/workspace-index.json',
+    '.copilot/workspace/knowledge/diaries/README.md',
 ]
 for pattern in patterns:
     for f in sorted(glob.glob(pattern)):

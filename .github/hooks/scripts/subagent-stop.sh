@@ -20,7 +20,7 @@ RESULT=$(printf '%s' "$INPUT" | python3 -c "import sys,json; d=json.load(sys.std
 
 # Write diary entry if there is a result worth recording
 AGENT_LOWER=$(printf '%s' "$AGENT_NAME" | tr '[:upper:]' '[:lower:]')
-DIARY_DIR=".copilot/workspace/diaries"
+DIARY_DIR=".copilot/workspace/knowledge/diaries"
 DIARY_FILE="${DIARY_DIR}/${AGENT_LOWER}.md"
 
 if [[ -n "$RESULT" ]]; then

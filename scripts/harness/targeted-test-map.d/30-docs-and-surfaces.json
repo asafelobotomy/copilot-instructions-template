@@ -31,7 +31,7 @@
     {
       "id": "repo-workspace-index",
       "matchType": "exact",
-      "pattern": ".copilot/workspace/workspace-index.json",
+      "pattern": ".copilot/workspace/operations/workspace-index.json",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/scripts/test-copilot-audit.sh",
@@ -42,7 +42,7 @@
     {
       "id": "template-workspace-index",
       "matchType": "exact",
-      "pattern": "template/workspace/workspace-index.json",
+      "pattern": "template/workspace/operations/workspace-index.json",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/scripts/test-copilot-audit.sh",

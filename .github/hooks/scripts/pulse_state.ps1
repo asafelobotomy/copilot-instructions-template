@@ -16,7 +16,7 @@ function Get-DefaultPolicy {
                 min_emit_spacing_seconds = 120
             }
             messages = [ordered]@{
-                session_start_guidance = 'Open .copilot/workspace/HEARTBEAT.md and run the Checks section. If the Stop hook later flags significant work, call the session_reflect MCP tool before stopping.'
+                session_start_guidance = 'Open .copilot/workspace/operations/HEARTBEAT.md and run the Checks section. If the Stop hook later flags significant work, call the session_reflect MCP tool before stopping.'
                 explicit_system = 'Heartbeat trigger detected. Run HEARTBEAT.md checks now.'
                 stop_reflect_instruction = 'Significant session detected. Call the session_reflect MCP tool now, process its output silently, then stop normally. If the MCP tool is unavailable, briefly review: execution accuracy, scope completeness, and anything worth persisting to SOUL.md / MEMORY.md / USER.md, then rerun session_reflect once the heartbeat MCP server is restored.'
                 accepted_reason = 'The user requested a retrospective. Call the session_reflect MCP tool, process its output, persist insights, then stop normally.'
@@ -258,8 +258,8 @@ function Read-WorkspaceFile([string]$Name, [int]$Limit = 4000) {
 }
 
 function Get-SessionPriors {
-    $soul = ([string](Read-WorkspaceFile 'SOUL.md')).ToLowerInvariant()
-    $user = ([string](Read-WorkspaceFile 'USER.md')).ToLowerInvariant()
+    $soul = ([string](Read-WorkspaceFile 'identity/SOUL.md')).ToLowerInvariant()
+    $user = ([string](Read-WorkspaceFile 'knowledge/USER.md')).ToLowerInvariant()
     return [ordered]@{
         prior_small_batches = $soul.Contains('small batches')
         prior_explicitness = $soul.Contains('explicit over implicit')

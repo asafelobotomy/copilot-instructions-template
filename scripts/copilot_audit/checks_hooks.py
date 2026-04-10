@@ -132,7 +132,7 @@ def check_ps1_basic_sanity(root: pathlib.Path | AuditContext) -> CheckResult:
     ctx = ensure_context(root)
     result = CheckResult("PS1", "PowerShell hook scripts: basic sanity")
     found = False
-    resolver = ctx.root / "scripts/tests/resolve-powershell.sh"
+    resolver = ctx.root / "scripts/harness/resolve-powershell.sh"
     pwsh_path = None
     if resolver.is_file() and has_command("bash"):
         try:

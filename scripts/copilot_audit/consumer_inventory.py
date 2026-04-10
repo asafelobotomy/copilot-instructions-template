@@ -4,7 +4,7 @@ from __future__ import annotations
 from .context import AuditContext
 
 
-WORKSPACE_INDEX_REL = ".copilot/workspace/workspace-index.json"
+WORKSPACE_INDEX_REL = ".copilot/workspace/operations/workspace-index.json"
 HOOK_CONFIG_REL = ".github/hooks/copilot-hooks.json"
 OPTIONAL_VSCODE_FILES = (
     ".vscode/settings.json",

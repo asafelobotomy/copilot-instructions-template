@@ -286,7 +286,7 @@ possible. Findings are based on documentation review and codebase inspection.
 
 | Path | What it validates |
 |---|---|
-| `scripts/validate/validate-agent-frontmatter.sh` | `.github/agents/*.agent.md` frontmatter fields; exits 0/1 |
+| `scripts/ci/validate-agent-frontmatter.sh` | `.github/agents/*.agent.md` frontmatter fields; exits 0/1 |
 | `scripts/sync/sync-template-parity.sh` | `.github/` mirrors vs `template/` sources |
 | `.github/agents/doctor.agent.md` | Conversational Doctor, 13 checks (D1–D13); **not** scriptable from CI |
 | `tests/scripts/test-validate-agent-frontmatter.sh` | Test coverage for the above |
@@ -349,7 +349,7 @@ existing `tests/test-hook-*.sh` files in this repo.
 - `python-frontmatter` handles YAML frontmatter parsing reliably
 - `jsonschema` handles schema validation with clear error messages
 - `tiktoken` handles token estimation
-- Inline Python already used in `scripts/validate/validate-agent-frontmatter.sh`
+- Inline Python already used in `scripts/ci/validate-agent-frontmatter.sh`
 - Cross-platform (Linux/macOS/Windows without bash)
 - Machine-readable output via `json.dumps()`
 

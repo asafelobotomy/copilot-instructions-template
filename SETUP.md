@@ -175,8 +175,8 @@ Default `{{SPATIAL_VOCAB}}` rows:
 | Building | Agent workspace | `.github/agents/{name}.agent.md` |
 | Workshop | Template layer | `template/` |
 | Trade Route | Cross-repo memory | `/memories/repo/` |
-| Diary | Per-agent findings log | `.copilot/workspace/diaries/{agent}.md` |
-| Ledger | Full glossary | `.copilot/workspace/ledger.md` |
+| Diary | Per-agent findings log | `.copilot/workspace/knowledge/diaries/{agent}.md` |
+| Ledger | Full glossary | `.copilot/workspace/operations/ledger.md` |
 ```
 
 Fetch the companion manifests file for §2.5–§3:
@@ -187,10 +187,10 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 
 Also prefetch the workspace index fallback used by §2.5, §2.6, and §2.12 when
 the GitHub tree API response is truncated. Keep it in memory until §3 writes the
-same payload to `.copilot/workspace/workspace-index.json`:
+same payload to `.copilot/workspace/operations/workspace-index.json`:
 
 ```text
-https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/workspace/workspace-index.json
+https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/workspace/operations/workspace-index.json
 ```
 
 > **Parallelization**: §2.5–§2.14 (including §2.11a) are independent. Fetch all URLs
@@ -365,7 +365,7 @@ If "Yes": `code --install-extension asafelobotomy.copilot-profile-tools`. If Mar
 
 ## § 3 — Scaffold workspace identity files
 
-Create `.copilot/workspace/`. Follow manifests.md § Workspace identity files for the file table. Replace `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` with today's date, `{{SPATIAL_THEME}}` with a one-word spatial metaphor (default: `village`), and `{{SPATIAL_VOCAB}}` in `ledger.md` with the resolved Markdown row set from §2. If any fetch fails, stop immediately.
+Create `.copilot/workspace/` with subdirectories `identity/`, `knowledge/`, `operations/`, and `runtime/`. Follow manifests.md § Workspace identity files for the file table. Replace `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` with today's date, `{{SPATIAL_THEME}}` with a one-word spatial metaphor (default: `village`), and `{{SPATIAL_VOCAB}}` in `ledger.md` with the resolved Markdown row set from §2. If any fetch fails, stop immediately.
 
 ---
 

@@ -27,7 +27,7 @@ catch {
 }
 
 $agentLower = $agentName.ToLowerInvariant()
-$diaryDir = '.copilot/workspace/diaries'
+$diaryDir = '.copilot/workspace/knowledge/diaries'
 $diaryFile = Join-Path $diaryDir "${agentLower}.md"
 
 if ([string]::IsNullOrWhiteSpace($result) -eq $false) {

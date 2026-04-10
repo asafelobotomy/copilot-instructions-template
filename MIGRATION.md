@@ -30,6 +30,80 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<t
 
 **Available tags**: v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1, v4.2.0, v5.0.0, v5.0.1, v5.1.0, v5.2.0, v5.3.0, v5.4.0, v5.5.0, v5.6.0, v5.7.0, v5.8.0, v5.9.0
 
+## Unreleased — workspace and scripts reorganization
+
+| Breaking | Sections changed | Sections added | Includes |
+|----------|-----------------|----------------|----------|
+| Yes (layout) | §8, §9 | — | — |
+
+**What changed**: Reorganizes `.copilot/workspace/` into layered subdirectories (`identity/`, `knowledge/`, `operations/`, `runtime/`), renames `scripts/tests/` to `scripts/harness/`, moves `scripts/validate/validate-agent-frontmatter.sh` to `scripts/ci/`, and flattens `logs/copilot/secrets/` to `logs/secrets/`.
+
+**Breaking**: Workspace file paths changed. Hook scripts now expect files in subdirectory paths. Consumers with existing `.copilot/workspace/` files need to run the manual actions below.
+
+**New placeholders**: none
+
+**Companion files added**: none
+
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.copilot/workspace/identity/IDENTITY.md` | `template/workspace/identity/IDENTITY.md` | Moved from `.copilot/workspace/IDENTITY.md` |
+| `.copilot/workspace/identity/SOUL.md` | `template/workspace/identity/SOUL.md` | Moved from `.copilot/workspace/SOUL.md` |
+| `.copilot/workspace/identity/BOOTSTRAP.md` | `template/workspace/identity/BOOTSTRAP.md` | Moved from `.copilot/workspace/BOOTSTRAP.md` |
+| `.copilot/workspace/knowledge/MEMORY.md` | `template/workspace/knowledge/MEMORY.md` | Moved from `.copilot/workspace/MEMORY.md` |
+| `.copilot/workspace/knowledge/MEMORY-GUIDE.md` | `template/workspace/knowledge/MEMORY-GUIDE.md` | Moved from `.copilot/workspace/MEMORY-GUIDE.md` |
+| `.copilot/workspace/knowledge/RESEARCH.md` | `template/workspace/knowledge/RESEARCH.md` | Moved from `.copilot/workspace/RESEARCH.md` |
+| `.copilot/workspace/knowledge/TOOLS.md` | `template/workspace/knowledge/TOOLS.md` | Moved from `.copilot/workspace/TOOLS.md` |
+| `.copilot/workspace/knowledge/USER.md` | `template/workspace/knowledge/USER.md` | Moved from `.copilot/workspace/USER.md` |
+| `.copilot/workspace/knowledge/diaries/README.md` | `template/workspace/knowledge/diaries/README.md` | Moved from `.copilot/workspace/diaries/README.md` |
+| `.copilot/workspace/operations/HEARTBEAT.md` | `template/workspace/operations/HEARTBEAT.md` | Moved from `.copilot/workspace/HEARTBEAT.md` |
+| `.copilot/workspace/operations/commit-style.md` | `template/workspace/operations/commit-style.md` | Moved from `.copilot/workspace/commit-style.md` |
+| `.copilot/workspace/operations/ledger.md` | `template/workspace/operations/ledger.md` | Moved from `.copilot/workspace/ledger.md` |
+| `.copilot/workspace/operations/workspace-index.json` | `template/workspace/operations/workspace-index.json` | Moved from `.copilot/workspace/workspace-index.json` |
+| All hook scripts | `template/hooks/scripts/*` | Updated (workspace subdirectory paths) |
+
+**Manual actions**:
+
+1. Create subdirectories and move workspace files:
+
+```bash
+cd .copilot/workspace
+mkdir -p identity knowledge/diaries operations runtime
+# Identity (L0)
+git mv IDENTITY.md SOUL.md BOOTSTRAP.md identity/
+# Knowledge (L1)
+git mv MEMORY.md MEMORY-GUIDE.md RESEARCH.md TOOLS.md USER.md knowledge/
+if [ -d diaries ]; then
+    for path in diaries/*; do
+        [ -e "$path" ] || continue
+        git mv "$path" knowledge/diaries/ 2>/dev/null || mv "$path" knowledge/diaries/
+    done
+    rmdir diaries 2>/dev/null || true
+fi
+# Operations (L2)
+git mv HEARTBEAT.md commit-style.md ledger.md workspace-index.json operations/
+# Runtime files (if present, not tracked)
+mv state.json .heartbeat-events.jsonl .heartbeat-session runtime/ 2>/dev/null
+mv *.lock runtime/ 2>/dev/null
+```
+
+1. Update `.gitignore` — replace individual runtime file entries with:
+
+```gitignore
+.copilot/workspace/runtime/
+```
+
+1. Update `logs/` layout if you use `scan-secrets.sh`:
+
+```bash
+mkdir -p logs/secrets logs/audit logs/tests
+mv logs/copilot/secrets/* logs/secrets/ 2>/dev/null
+rm -rf logs/copilot
+```
+
+---
+
 ## v5.9.0
 
 | Breaking | Sections changed | Sections added | Includes |
@@ -89,8 +163,8 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<t
 | `.github/hooks/scripts/pulse_paths.py` | `template/hooks/scripts/pulse_paths.py` | Updated (consumer path classification) |
 | `.github/hooks/scripts/pulse_runtime.py` | `template/hooks/scripts/pulse_runtime.py` | Updated (policy loading and runtime thresholds) |
 | `.github/hooks/scripts/pulse_state.py` | `template/hooks/scripts/pulse_state.py` | Updated (active-work tracking and retrospective thresholds) |
-| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` | Updated (active-work heartbeat guidance) |
-| `.copilot/workspace/workspace-index.json` | `template/workspace/workspace-index.json` | Updated (expanded hook companion inventory) |
+| `.copilot/workspace/operations/HEARTBEAT.md` | `template/workspace/operations/HEARTBEAT.md` | Updated (active-work heartbeat guidance) |
+| `.copilot/workspace/operations/workspace-index.json` | `template/workspace/operations/workspace-index.json` | Updated (expanded hook companion inventory) |
 
 **Manual actions**: None
 
@@ -182,10 +256,10 @@ and skill files.
 | `UPDATE.md` | `UPDATE.md` | Updated (full update protocol and restore paths) |
 | `AGENTS.md` | `AGENTS.md` | Updated (trigger phrases and routing entry points) |
 | `MODELS.md` | `MODELS.md` | Updated (model registry and sync workflow) |
-| `.copilot/workspace/BOOTSTRAP.md` | `template/workspace/BOOTSTRAP.md` | Updated (toolbox/bootstrap guidance) |
-| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` | Updated (heartbeat and retrospective workflow) |
-| `.copilot/workspace/MEMORY.md` | `template/workspace/MEMORY.md` | Updated (memory guidance) |
-| `.copilot/workspace/RESEARCH.md` | `template/workspace/RESEARCH.md` | Updated (research URL tracker) |
+| `.copilot/workspace/identity/BOOTSTRAP.md` | `template/workspace/identity/BOOTSTRAP.md` | Updated (toolbox/bootstrap guidance) |
+| `.copilot/workspace/operations/HEARTBEAT.md` | `template/workspace/operations/HEARTBEAT.md` | Updated (heartbeat and retrospective workflow) |
+| `.copilot/workspace/knowledge/MEMORY.md` | `template/workspace/knowledge/MEMORY.md` | Updated (memory guidance) |
+| `.copilot/workspace/knowledge/RESEARCH.md` | `template/workspace/knowledge/RESEARCH.md` | Updated (research URL tracker) |
 
 **Manual actions**: None
 
@@ -238,7 +312,7 @@ and skill files.
 
 **Action 1 — Update `HEARTBEAT.md` Response Contract** (required — fixes empty History)
 
-In `.copilot/workspace/HEARTBEAT.md`, replace the `## Response Contract` section with:
+In `.copilot/workspace/operations/HEARTBEAT.md`, replace the `## Response Contract` section with:
 
 ```markdown
 ## Response Contract
@@ -253,7 +327,7 @@ In `.copilot/workspace/HEARTBEAT.md`, replace the `## Response Contract` section
 If `.copilot/workspace/DOC_INDEX.json` exists, rename it:
 
 ```bash
-mv .copilot/workspace/DOC_INDEX.json .copilot/workspace/workspace-index.json 2>/dev/null || true
+mv .copilot/workspace/DOC_INDEX.json .copilot/workspace/operations/workspace-index.json 2>/dev/null || true
 ```
 
 Then update any agent count or skill count references inside the file to match the current `.github/agents/` and `.github/skills/` directories.
@@ -287,9 +361,9 @@ Then update any agent count or skill count references inside the file to match t
 | `.github/hooks/scripts/pulse_state.ps1` | `template/hooks/scripts/pulse_state.ps1` | Updated (PowerShell state parity) |
 | `.github/hooks/scripts/pulse_state.py` | `template/hooks/scripts/pulse_state.py` | Updated (state tracking refinements) |
 | `.github/hooks/scripts/scan-secrets.ps1` | `template/hooks/scripts/scan-secrets.ps1` | Updated (PowerShell secret-scan parity) |
-| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` | Updated (heartbeat checks and reporting) |
-| `.copilot/workspace/TOOLS.md` | `template/workspace/TOOLS.md` | Updated (tooling inventory guidance) |
-| `.copilot/workspace/workspace-index.json` | `template/workspace/workspace-index.json` | Updated (expanded companion inventory) |
+| `.copilot/workspace/operations/HEARTBEAT.md` | `template/workspace/operations/HEARTBEAT.md` | Updated (heartbeat checks and reporting) |
+| `.copilot/workspace/knowledge/TOOLS.md` | `template/workspace/knowledge/TOOLS.md` | Updated (tooling inventory guidance) |
+| `.copilot/workspace/operations/workspace-index.json` | `template/workspace/operations/workspace-index.json` | Updated (expanded companion inventory) |
 | `CLAUDE.md` | `template/CLAUDE.md` | Updated (Claude compatibility parity) |
 
 **Manual actions**: None
@@ -355,8 +429,8 @@ Then update any agent count or skill count references inside the file to match t
 | `.github/hooks/scripts/subagent-stop.ps1` | `template/hooks/scripts/subagent-stop.ps1` | Updated (PowerShell subagent-stop parity) |
 | `.github/hooks/scripts/subagent-stop.sh` | `template/hooks/scripts/subagent-stop.sh` | Updated (subagent-stop workflow) |
 | `.github/instructions/config.instructions.md` | `template/instructions/config.instructions.md` | Updated (config conventions) |
-| `.copilot/workspace/MEMORY.md` | `template/workspace/MEMORY.md` | Updated (memory guidance) |
-| `.copilot/workspace/workspace-index.json` | `template/workspace/workspace-index.json` | Updated (expanded hook inventory) |
+| `.copilot/workspace/knowledge/MEMORY.md` | `template/workspace/knowledge/MEMORY.md` | Updated (memory guidance) |
+| `.copilot/workspace/operations/workspace-index.json` | `template/workspace/operations/workspace-index.json` | Updated (expanded hook inventory) |
 
 **Manual actions**: None
 
@@ -399,9 +473,9 @@ Then update any agent count or skill count references inside the file to match t
 | `.github/hooks/scripts/save-context.sh` | `template/hooks/scripts/save-context.sh` | Updated (context compaction support) |
 | `.github/hooks/scripts/session-start.ps1` | `template/hooks/scripts/session-start.ps1` | Updated (PowerShell session-start parity) |
 | `.github/hooks/scripts/session-start.sh` | `template/hooks/scripts/session-start.sh` | Updated (session-start routing injection) |
-| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` | Updated (heartbeat routing guidance) |
-| `.copilot/workspace/MEMORY.md` | `template/workspace/MEMORY.md` | Updated (memory routing guidance) |
-| `.copilot/workspace/workspace-index.json` | `template/workspace/workspace-index.json` | Updated (routing inventory) |
+| `.copilot/workspace/operations/HEARTBEAT.md` | `template/workspace/operations/HEARTBEAT.md` | Updated (heartbeat routing guidance) |
+| `.copilot/workspace/knowledge/MEMORY.md` | `template/workspace/knowledge/MEMORY.md` | Updated (memory routing guidance) |
+| `.copilot/workspace/operations/workspace-index.json` | `template/workspace/operations/workspace-index.json` | Updated (routing inventory) |
 
 **Manual actions**: None
 
@@ -445,7 +519,7 @@ Then update any agent count or skill count references inside the file to match t
 |-------------|----------------|--------|
 | `.github/hooks/scripts/mcp-npx.sh` | `template/hooks/scripts/mcp-npx.sh` | **New** (npm-based MCP launcher) |
 | `.github/hooks/scripts/mcp-uvx.sh` | `template/hooks/scripts/mcp-uvx.sh` | **New** (uvx-based MCP launcher) |
-| `.copilot/workspace/workspace-index.json` | `template/workspace/workspace-index.json` | **New** (canonical machine-readable companion inventory) |
+| `.copilot/workspace/operations/workspace-index.json` | `template/workspace/operations/workspace-index.json` | **New** (canonical machine-readable companion inventory) |
 
 **Companion files updated**:
 
@@ -460,7 +534,7 @@ Then update any agent count or skill count references inside the file to match t
 | `.github/hooks/scripts/session-start.ps1` | `template/hooks/scripts/session-start.ps1` | Updated (PowerShell session-start parity) |
 | `.github/hooks/scripts/session-start.sh` | `template/hooks/scripts/session-start.sh` | Updated (session-start scaffold guidance) |
 | `.github/instructions/docs.instructions.md` | `template/instructions/docs.instructions.md` | Updated (docs guidance) |
-| `.copilot/workspace/BOOTSTRAP.md` | `template/workspace/BOOTSTRAP.md` | Updated (bootstrap/tooling guidance) |
+| `.copilot/workspace/identity/BOOTSTRAP.md` | `template/workspace/identity/BOOTSTRAP.md` | Updated (bootstrap/tooling guidance) |
 
 **Manual actions**: None
 
@@ -544,7 +618,7 @@ capabilities.
 | `.github/agents/researcher.agent.md` | `.github/agents/researcher.agent.md` | **New** (research-oriented agent) |
 | `.github/agents/explore.agent.md` | `.github/agents/explore.agent.md` | **New** (exploration agent) |
 | `starter-kits/*` | `starter-kits/*` | **New** (stack-specific starter kits for common languages/frameworks) |
-| `.copilot/workspace/RESEARCH.md` | `template/workspace/RESEARCH.md` | **New** (URL tracker for research tasks) |
+| `.copilot/workspace/knowledge/RESEARCH.md` | `template/workspace/knowledge/RESEARCH.md` | **New** (URL tracker for research tasks) |
 | `.github/hooks/scripts/lib-hooks.sh` | `template/hooks/scripts/lib-hooks.sh` | **New** (shared hook helper library) |
 
 **Companion files updated**:
@@ -553,7 +627,7 @@ capabilities.
 |-------------|----------------|--------|
 | `.github/hooks/scripts/*.sh` | `template/hooks/scripts/*.sh` | Updated (shared JSON escaping utilities and common helpers) |
 | `AGENTS.md` | `AGENTS.md` | Updated (Researcher/Explore agents inventory) |
-| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` | Updated (metrics freshness and task logging) |
-| `.copilot/workspace/MEMORY.md` | `template/workspace/MEMORY.md` | Updated (documentation refinements) |
+| `.copilot/workspace/operations/HEARTBEAT.md` | `template/workspace/operations/HEARTBEAT.md` | Updated (metrics freshness and task logging) |
+| `.copilot/workspace/knowledge/MEMORY.md` | `template/workspace/knowledge/MEMORY.md` | Updated (documentation refinements) |
 
 **Manual actions**: None

@@ -38,7 +38,7 @@ The outcome is a four-batch plan:
 | [template/instructions/config.instructions.md](template/instructions/config.instructions.md) | 13 |
 | [.github/instructions/config.instructions.md](../.github/instructions/config.instructions.md) | 13 |
 | [SETUP.md](../SETUP.md) | 393 |
-| [template/workspace/MEMORY.md](template/workspace/MEMORY.md) | 76 |
+| [template/workspace/knowledge/MEMORY.md](template/workspace/knowledge/MEMORY.md) | 76 |
 
 ## Change Matrix
 
@@ -58,7 +58,7 @@ The outcome is a four-batch plan:
 | C12 | Global `DISABLE_*_HOOKS` pattern | `red` | Avoid | all hook scripts plus docs | high blast radius | broad hook test fallout |
 | C13 | BATS hook harness | `red` | Avoid for now | tests runner, manifests, CI, new `tests/hooks/` layout | large, repo-wide | conflicts with zero-dependency test posture |
 | C14 | Setup doctor or verify step | `done` | No-op | [SETUP.md](../SETUP.md) | `0` or `+2` wording only | setup/update contracts |
-| C15 | MEMORY hot-index plus shards guidance | `done` | Completed | [template/workspace/MEMORY.md](template/workspace/MEMORY.md) | `+4 to +8` | full suite only; no deterministic mapping |
+| C15 | MEMORY hot-index plus shards guidance | `done` | Completed | [template/workspace/knowledge/MEMORY.md](template/workspace/knowledge/MEMORY.md) | `+4 to +8` | full suite only; no deterministic mapping |
 | C16 | Config resolution order | `done` | Completed | [template/instructions/config.instructions.md](template/instructions/config.instructions.md), [.github/instructions/config.instructions.md](../.github/instructions/config.instructions.md) | `+16 to +24` each | customization contracts, template parity |
 | C17 | Hook escalation comment headers | `done` | Completed | selected scripts under [template/hooks/scripts/](template/hooks/scripts) and mirrored `.github/hooks/scripts/` copies | `+1` per file | direct hook suites, parity, permission resilience |
 
@@ -86,7 +86,7 @@ The outcome is a four-batch plan:
 - Attention budget is not the blocker; CI and policy symmetry are.
 
 **Targeted checks**:
-- `bash scripts/tests/select-targeted-tests.sh template/copilot-instructions.md .github/copilot-instructions.md`
+- `bash scripts/harness/select-targeted-tests.sh template/copilot-instructions.md .github/copilot-instructions.md`
 - Expected suites:
   - `tests/contracts/test-customization-contracts.sh`
   - `tests/contracts/test-setup-update-contracts.sh`
@@ -244,7 +244,7 @@ The outcome is a four-batch plan:
 **Goal**: formalize the existing pattern that the main memory file is an index, not a dump.
 
 **Exact edits**:
-- Add a short note near the top of [template/workspace/MEMORY.md](template/workspace/MEMORY.md) stating that `MEMORY.md` is the hot pointer file and detailed session or research notes belong in named shard files or adjacent focused files.
+- Add a short note near the top of [template/workspace/knowledge/MEMORY.md](template/workspace/knowledge/MEMORY.md) stating that `MEMORY.md` is the hot pointer file and detailed session or research notes belong in named shard files or adjacent focused files.
 
 **Estimated delta**:
 - `+4 to +8` lines.
@@ -322,7 +322,7 @@ The outcome is a four-batch plan:
 
 **Reason**:
 - [.github/agents/explore.agent.md](../.github/agents/explore.agent.md) already has a strong read-only contract.
-- [.copilot/workspace/MEMORY.md](../.copilot/workspace/MEMORY.md) already records that the Explore guarantee is critical.
+- [.copilot/workspace/knowledge/MEMORY.md](../.copilot/workspace/knowledge/MEMORY.md) already records that the Explore guarantee is critical.
 
 **Edit plan**:
 - No change required unless a one-line reinforcement is desired.
@@ -441,7 +441,7 @@ Apply only as comment-only hardening:
 ### Phase 1 Targeted Checks
 
 ```bash
-bash scripts/tests/select-targeted-tests.sh \
+bash scripts/harness/select-targeted-tests.sh \
   template/copilot-instructions.md \
   .github/copilot-instructions.md \
   AGENTS.md \
@@ -458,11 +458,11 @@ Expected suites:
 ### Phase 2 Targeted Checks
 
 ```bash
-bash scripts/tests/select-targeted-tests.sh \
+bash scripts/harness/select-targeted-tests.sh \
   template/copilot-instructions.md \
   .github/copilot-instructions.md \
   .github/agents/commit.agent.md \
-  template/workspace/MEMORY.md
+  template/workspace/knowledge/MEMORY.md
 ```
 
 Expected suites:
@@ -470,12 +470,12 @@ Expected suites:
 - `tests/scripts/test-copilot-audit.sh`
 - `tests/scripts/test-sync-models.sh`
 - `tests/scripts/test-validate-agent-frontmatter.sh`
-- Full suite fallback because `template/workspace/MEMORY.md` is currently unmapped
+- Full suite fallback because `template/workspace/knowledge/MEMORY.md` is currently unmapped
 
 ### Phase 3 Targeted Checks
 
 ```bash
-bash scripts/tests/select-targeted-tests.sh \
+bash scripts/harness/select-targeted-tests.sh \
   template/hooks/copilot-hooks.json \
   template/hooks/scripts/session-start.sh \
   template/hooks/scripts/pulse.sh \
@@ -509,7 +509,7 @@ bash tests/run-all.sh
 If running from the terminal during implementation, prefer the captured wrapper:
 
 ```bash
-bash scripts/tests/run-all-captured.sh
+bash scripts/harness/run-all-captured.sh
 ```
 
 ## Recommended Scope Cut

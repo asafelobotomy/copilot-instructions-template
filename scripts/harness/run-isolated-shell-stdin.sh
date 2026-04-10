@@ -10,10 +10,10 @@ set -euo pipefail
 script_dir=$(cd "$(dirname "$0")" && pwd)
 
 usage() {
-  echo "Usage: bash scripts/tests/run-isolated-shell-stdin.sh [--cwd <dir>] [--shell <bash|sh|zsh|pwsh>] [--strict] <<'EOF'"
+  echo "Usage: bash scripts/harness/run-isolated-shell-stdin.sh [--cwd <dir>] [--shell <bash|sh|zsh|pwsh>] [--strict] <<'EOF'"
   echo "         <shell-snippet>"
   echo "EOF"
-  echo "   or: <shell-snippet> | bash scripts/tests/run-isolated-shell-stdin.sh [--cwd <dir>] [--shell <bash|sh|zsh|pwsh>] [--strict]"
+  echo "   or: <shell-snippet> | bash scripts/harness/run-isolated-shell-stdin.sh [--cwd <dir>] [--shell <bash|sh|zsh|pwsh>] [--strict]"
 }
 
 cwd=""

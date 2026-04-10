@@ -34,10 +34,10 @@ NOW = int(time.time())
 SCRIPT_DIR = Path(__file__).resolve().parent
 
 WORKSPACE = Path(".copilot/workspace")
-STATE_PATH = WORKSPACE / "state.json"
-SENTINEL_PATH = WORKSPACE / ".heartbeat-session"
-EVENTS_PATH = WORKSPACE / ".heartbeat-events.jsonl"
-HEARTBEAT_PATH = WORKSPACE / "HEARTBEAT.md"
+STATE_PATH = WORKSPACE / "runtime/state.json"
+SENTINEL_PATH = WORKSPACE / "runtime/.heartbeat-session"
+EVENTS_PATH = WORKSPACE / "runtime/.heartbeat-events.jsonl"
+HEARTBEAT_PATH = WORKSPACE / "operations/HEARTBEAT.md"
 POLICY_PATH = SCRIPT_DIR / "heartbeat-policy.json"
 ROUTING_MANIFEST_PATH = Path(".github/agents/routing-manifest.json")
 

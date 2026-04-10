@@ -21,7 +21,7 @@ CONTEXT="Subagent governance: max depth 3. Inherited protocols: PDCA cycle, Tool
 
 # Inject diary summary if a diary file exists for this agent
 AGENT_LOWER=$(printf '%s' "$AGENT_NAME" | tr '[:upper:]' '[:lower:]')
-DIARY_FILE=".copilot/workspace/diaries/${AGENT_LOWER}.md"
+DIARY_FILE=".copilot/workspace/knowledge/diaries/${AGENT_LOWER}.md"
 if [[ -f "$DIARY_FILE" ]]; then
   # Read the last 5 non-empty lines as a summary
   DIARY_TAIL=$(grep -v '^\s*$' "$DIARY_FILE" | tail -5 2>/dev/null || true)

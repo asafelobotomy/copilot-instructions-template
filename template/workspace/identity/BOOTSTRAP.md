@@ -16,15 +16,15 @@ This workspace was scaffolded on **{{SETUP_DATE}}** using the [copilot-instructi
 | File | Action |
 |------|--------|
 | `.github/copilot-instructions.md` | Created from template + placeholders filled |
-| `.github/agents/*.agent.md` | Created — model-pinned agent roster; exact inventory is tracked in `.copilot/workspace/workspace-index.json` |
-| `.github/skills/*/SKILL.md` | Created — reusable skill library (exact inventory tracked in `.copilot/workspace/workspace-index.json`) |
-| `.copilot/workspace/IDENTITY.md` | Created |
-| `.copilot/workspace/SOUL.md` | Created |
-| `.copilot/workspace/USER.md` | Created |
-| `.copilot/workspace/TOOLS.md` | Created |
-| `.copilot/workspace/MEMORY.md` | Created |
-| `.copilot/workspace/BOOTSTRAP.md` | This file — created |
-| `.copilot/workspace/HEARTBEAT.md` | Created — event-driven health check checklist |
+| `.github/agents/*.agent.md` | Created — model-pinned agent roster; exact inventory is tracked in `.copilot/workspace/operations/workspace-index.json` |
+| `.github/skills/*/SKILL.md` | Created — reusable skill library (exact inventory tracked in `.copilot/workspace/operations/workspace-index.json`) |
+| `.copilot/workspace/identity/IDENTITY.md` | Created |
+| `.copilot/workspace/identity/SOUL.md` | Created |
+| `.copilot/workspace/knowledge/USER.md` | Created |
+| `.copilot/workspace/knowledge/TOOLS.md` | Created |
+| `.copilot/workspace/knowledge/MEMORY.md` | Created |
+| `.copilot/workspace/identity/BOOTSTRAP.md` | This file — created |
+| `.copilot/workspace/operations/HEARTBEAT.md` | Created — event-driven health check checklist |
 | `CHANGELOG.md` | Created / already existed |
 
 ## Toolbox

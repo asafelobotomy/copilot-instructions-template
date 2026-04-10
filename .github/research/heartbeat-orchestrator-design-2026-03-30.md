@@ -215,7 +215,7 @@ The VS Code Copilot documentation explicitly states compatibility with Claude Co
 ```bash
 python3 - << 'PY'
 import json, os, pathlib, time
-p = pathlib.Path('.copilot/workspace/state.json')
+p = pathlib.Path('.copilot/workspace/runtime/state.json')
 tmp = p.with_suffix('.tmp')
 data = json.loads(p.read_text()) if p.exists() else {}
 data['last_soft_write'] = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
@@ -253,7 +253,7 @@ PY
 
 **Mitigation**:
 
-- Add `.copilot/workspace/state.json` and `.copilot/workspace/.heartbeat-session` to `.gitignore`.
+- Add `.copilot/workspace/runtime/state.json` and `.copilot/workspace/runtime/.heartbeat-session` to `.gitignore`.
 - `HEARTBEAT.md` History rows are written only on hard triggers (low frequency by design).
 
 ### 5.6  Missing or corrupt state.json
@@ -383,8 +383,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-STATE_FILE=".copilot/workspace/state.json"
-HB_FILE=".copilot/workspace/HEARTBEAT.md"
+STATE_FILE=".copilot/workspace/runtime/state.json"
+HB_FILE=".copilot/workspace/operations/HEARTBEAT.md"
 MIN_INTERVAL_SOFT=300  # seconds
 
 # --- load_state: read state.json; return default on missing/corrupt ---
@@ -562,7 +562,7 @@ Add to `tests/run-all.sh` after Phase 2.
 
 1. `session-start.sh` writes `state.json` (schema v1) in addition to `.heartbeat-session`.
 2. `enforce-retrospective.sh` reads `state.json["session_state"]` as a secondary check (`.heartbeat-session` remains primary).
-3. Add `.copilot/workspace/state.json` to `.gitignore`.
+3. Add `.copilot/workspace/runtime/state.json` to `.gitignore`.
 4. Write `tests/hooks/test-hook-pulse.sh` with `test_session_start_writes_sentinel` and `test_corrupt_state_json_fallback`.
 
 **Rollback**: Remove `state.json` writes from both scripts.  No behaviour change externally.

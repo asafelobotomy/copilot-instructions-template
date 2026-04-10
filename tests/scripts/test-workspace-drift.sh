@@ -15,7 +15,8 @@ echo ""
 
 echo "1. Workspace with current sentinels exits 0 and reports OK"
 TMPDIR_OK=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_OK")
-cat > "$TMPDIR_OK/HEARTBEAT.md" <<'EOF'
+mkdir -p "$TMPDIR_OK/operations"
+cat > "$TMPDIR_OK/operations/HEARTBEAT.md" <<'EOF'
 ## Response Contract
 <!-- template-section: heartbeat-response-contract v2 -->
 - Always append a History row when the trigger is Session start or Explicit — regardless of check results.
@@ -30,7 +31,8 @@ echo ""
 
 echo "2. Workspace with the sentinel but stale response lines exits 1 and reports DRIFT_CONTENT"
 TMPDIR_CONTENT=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_CONTENT")
-cat > "$TMPDIR_CONTENT/HEARTBEAT.md" <<'EOF'
+mkdir -p "$TMPDIR_CONTENT/operations"
+cat > "$TMPDIR_CONTENT/operations/HEARTBEAT.md" <<'EOF'
 ## Response Contract
 <!-- template-section: heartbeat-response-contract v2 -->
 - Always append a History row when the trigger is Session start or Explicit.
@@ -44,7 +46,8 @@ echo ""
 
 echo "3. Workspace missing sentinel exits 1 and reports DRIFT"
 TMPDIR_DRIFT=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_DRIFT")
-cat > "$TMPDIR_DRIFT/HEARTBEAT.md" <<'EOF'
+mkdir -p "$TMPDIR_DRIFT/operations"
+cat > "$TMPDIR_DRIFT/operations/HEARTBEAT.md" <<'EOF'
 ## Response Contract
 - Always append a History row if all checks pass.
 - Omit row if session start passes without alerts.

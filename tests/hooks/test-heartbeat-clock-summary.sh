@@ -32,14 +32,15 @@ echo ""
 
 echo "2. Active sessions and completed events produce a stable summary"
 TMP_CLOCK=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CLOCK")
-cat > "$TMP_CLOCK/state.json" <<'EOF'
+mkdir -p "$TMP_CLOCK/runtime"
+cat > "$TMP_CLOCK/runtime/state.json" <<'EOF'
 {
   "session_id": "sess-clock",
   "session_state": "pending",
   "session_start_epoch": 1704067200
 }
 EOF
-cat > "$TMP_CLOCK/.heartbeat-events.jsonl" <<'EOF'
+cat > "$TMP_CLOCK/runtime/.heartbeat-events.jsonl" <<'EOF'
 {"detail":"complete","duration_s":125,"trigger":"stop","ts":1704067325,"ts_utc":"2024-01-01T00:02:05Z"}
 {"detail":"complete","duration_s":185,"trigger":"stop","ts":1704067485,"ts_utc":"2024-01-01T00:04:45Z"}
 EOF
@@ -54,8 +55,9 @@ echo ""
 
 echo "3. Corrupt state and malformed event lines are ignored safely"
 TMP_CORRUPT=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CORRUPT")
-printf '{broken-json\n' > "$TMP_CORRUPT/state.json"
-cat > "$TMP_CORRUPT/.heartbeat-events.jsonl" <<'EOF'
+mkdir -p "$TMP_CORRUPT/runtime"
+printf '{broken-json\n' > "$TMP_CORRUPT/runtime/state.json"
+cat > "$TMP_CORRUPT/runtime/.heartbeat-events.jsonl" <<'EOF'
 not-json
 {"detail":"complete","duration_s":45,"trigger":"stop","ts":1704067400,"ts_utc":"2024-01-01T00:03:20Z"}
 EOF
@@ -67,11 +69,12 @@ echo ""
 
 echo "4. Long summaries are capped to the configured maximum length"
 TMP_LONG=$(mktemp -d); CLEANUP_DIRS+=("$TMP_LONG")
+mkdir -p "$TMP_LONG/runtime"
 LONG_ID=$(python3 - <<'PY'
 print('session-' + 'x' * 600)
 PY
 )
-cat > "$TMP_LONG/state.json" <<EOF
+cat > "$TMP_LONG/runtime/state.json" <<EOF
 {
   "session_id": "$LONG_ID",
   "session_state": "pending",

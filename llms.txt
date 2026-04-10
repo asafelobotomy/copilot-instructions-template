@@ -40,7 +40,7 @@
 ## Skills
 
 Skill inventory changes over time.
-Use `.copilot/workspace/workspace-index.json` as the canonical source for exact skill names and counts.
+Use `.copilot/workspace/operations/workspace-index.json` as the canonical source for exact skill names and counts.
 
 High-signal examples:
 
@@ -55,7 +55,7 @@ High-signal examples:
 
 Hook orchestration is configured in `.github/hooks/copilot-hooks.json` and mirrored in
 `template/hooks/copilot-hooks.json`. Canonical script inventory and counts live in
-`.copilot/workspace/workspace-index.json`.
+`.copilot/workspace/operations/workspace-index.json`.
 
 Current lifecycle events:
 

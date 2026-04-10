@@ -3,7 +3,7 @@
 set -euo pipefail
 
 REPO_ROOT=$(cd "$(dirname "$0")/../.." && pwd)
-PWSH_BIN=$(bash "$REPO_ROOT/scripts/tests/resolve-powershell.sh" || true)
+PWSH_BIN=$(bash "$REPO_ROOT/scripts/harness/resolve-powershell.sh" || true)
 TRACE_PATH="${PWSH_COVERAGE_TRACE:-}"
 WRAPPER="$REPO_ROOT/tests/coverage/invoke-powershell-with-coverage.ps1"
 
@@ -53,8 +53,8 @@ TMP_RETRO=$(mktemp -d)
 rm -rf "$TMP_RETRO"
 
 TMP_HB=$(mktemp -d)
-mkdir -p "$TMP_HB/.copilot/workspace"
-touch "$TMP_HB/.copilot/workspace/HEARTBEAT.md"
+mkdir -p "$TMP_HB/.copilot/workspace/identity" "$TMP_HB/.copilot/workspace/knowledge/diaries" "$TMP_HB/.copilot/workspace/operations" "$TMP_HB/.copilot/workspace/runtime"
+touch "$TMP_HB/.copilot/workspace/operations/HEARTBEAT.md"
 (
   cd "$TMP_HB"
   run_hook "$TEMPLATE_HOOKS/enforce-retrospective.ps1" '{"stop_hook_active": false}'
@@ -62,10 +62,10 @@ touch "$TMP_HB/.copilot/workspace/HEARTBEAT.md"
 rm -rf "$TMP_HB"
 
 TMP_CTX=$(mktemp -d)
-mkdir -p "$TMP_CTX/.copilot/workspace"
-printf 'HEARTBEAT_OK\n' > "$TMP_CTX/.copilot/workspace/HEARTBEAT.md"
-printf 'recent memory entry\n' > "$TMP_CTX/.copilot/workspace/MEMORY.md"
-printf 'heuristic: verify before commit\n' > "$TMP_CTX/.copilot/workspace/SOUL.md"
+mkdir -p "$TMP_CTX/.copilot/workspace/identity" "$TMP_CTX/.copilot/workspace/knowledge/diaries" "$TMP_CTX/.copilot/workspace/operations" "$TMP_CTX/.copilot/workspace/runtime"
+printf 'HEARTBEAT_OK\n' > "$TMP_CTX/.copilot/workspace/operations/HEARTBEAT.md"
+printf 'recent memory entry\n' > "$TMP_CTX/.copilot/workspace/knowledge/MEMORY.md"
+printf 'heuristic: verify before commit\n' > "$TMP_CTX/.copilot/workspace/identity/SOUL.md"
 (
   cd "$TMP_CTX"
   run_hook "$TEMPLATE_HOOKS/save-context.ps1" '{}'

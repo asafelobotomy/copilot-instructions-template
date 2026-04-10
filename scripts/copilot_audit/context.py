@@ -145,7 +145,7 @@ class AuditContext:
         )
         has_consumer_markers = (
             (self.root / ".github" / "copilot-version.md").is_file()
-            or (self.root / ".copilot" / "workspace" / "workspace-index.json").is_file()
+            or (self.root / ".copilot" / "workspace" / "operations" / "workspace-index.json").is_file()
         )
         if has_template_repo_markers:
             return "developer"
@@ -162,7 +162,7 @@ class AuditContext:
 
     @cached_property
     def workspace_index_file(self) -> pathlib.Path:
-        return self.root / ".copilot" / "workspace" / "workspace-index.json"
+        return self.root / ".copilot" / "workspace" / "operations" / "workspace-index.json"
 
 
 def ensure_context(root_or_ctx: pathlib.Path | AuditContext) -> AuditContext:

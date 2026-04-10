@@ -4,7 +4,7 @@
     {
       "id": "selector-script",
       "matchType": "exact",
-      "pattern": "scripts/tests/select-targeted-tests.sh",
+      "pattern": "scripts/harness/select-targeted-tests.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/scripts/test-select-targeted-tests.sh"
@@ -14,7 +14,7 @@
     {
       "id": "run-all-captured-script",
       "matchType": "exact",
-      "pattern": "scripts/tests/run-all-captured.sh",
+      "pattern": "scripts/harness/run-all-captured.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/scripts/test-run-all-captured.sh"
@@ -24,7 +24,7 @@
     {
       "id": "suite-manifest-script",
       "matchType": "exact",
-      "pattern": "scripts/tests/suite-manifest.py",
+      "pattern": "scripts/harness/suite-manifest.py",
       "phaseStrategy": "broaden-aggressively",
       "tests": [
         "tests/scripts/test-suite-manifest.sh",
@@ -36,7 +36,7 @@
     {
       "id": "suite-manifest-data",
       "matchType": "exact",
-      "pattern": "scripts/tests/suite-manifest.json",
+      "pattern": "scripts/harness/suite-manifest.json",
       "phaseStrategy": "broaden-aggressively",
       "tests": [
         "tests/scripts/test-suite-manifest.sh",
@@ -48,7 +48,7 @@
     {
       "id": "run-isolated-shell-script",
       "matchType": "exact",
-      "pattern": "scripts/tests/run-isolated-shell.sh",
+      "pattern": "scripts/harness/run-isolated-shell.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/scripts/test-run-isolated-shell.sh"
@@ -58,7 +58,7 @@
     {
       "id": "run-isolated-shell-stdin-script",
       "matchType": "exact",
-      "pattern": "scripts/tests/run-isolated-shell-stdin.sh",
+      "pattern": "scripts/harness/run-isolated-shell-stdin.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/scripts/test-run-isolated-shell-stdin.sh"
@@ -68,7 +68,7 @@
     {
       "id": "selector-map",
       "matchType": "exact",
-      "pattern": "scripts/tests/targeted-test-map.json",
+      "pattern": "scripts/harness/targeted-test-map.json",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/scripts/test-select-targeted-tests.sh"
@@ -78,7 +78,7 @@
     {
       "id": "selector-map-shards",
       "matchType": "prefix",
-      "pattern": "scripts/tests/targeted-test-map.d/",
+      "pattern": "scripts/harness/targeted-test-map.d/",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/scripts/test-select-targeted-tests.sh"
@@ -116,7 +116,7 @@
     {
       "id": "powershell-resolver",
       "matchType": "exact",
-      "pattern": "scripts/tests/resolve-powershell.sh",
+      "pattern": "scripts/harness/resolve-powershell.sh",
       "phaseStrategy": "broaden-aggressively",
       "tests": [
         "tests/scripts/test-resolve-powershell.sh",

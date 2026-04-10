@@ -142,7 +142,10 @@ Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for c
 MD
 
   mkdir -p "$SANDBOX/.github/workflows"
-  mkdir -p "$SANDBOX/.copilot/workspace"
+  mkdir -p "$SANDBOX/.copilot/workspace/identity"
+  mkdir -p "$SANDBOX/.copilot/workspace/knowledge/diaries"
+  mkdir -p "$SANDBOX/.copilot/workspace/operations"
+  mkdir -p "$SANDBOX/.copilot/workspace/runtime"
   write_sandbox_file ".github/agents/routing-manifest.json" <<'JSON'
 {
   "version": "1.0",
@@ -157,12 +160,14 @@ YAML
   "recommendations": []
 }
 JSON
-  for file in BOOTSTRAP.md HEARTBEAT.md IDENTITY.md MEMORY.md RESEARCH.md SOUL.md TOOLS.md USER.md commit-style.md; do
+  for file in identity/BOOTSTRAP.md identity/IDENTITY.md identity/SOUL.md \
+             knowledge/MEMORY.md knowledge/RESEARCH.md knowledge/TOOLS.md knowledge/USER.md \
+             operations/HEARTBEAT.md operations/commit-style.md; do
     write_sandbox_file ".copilot/workspace/$file" <<'MD'
 placeholder
 MD
   done
-  cat > "$SANDBOX/.copilot/workspace/workspace-index.json" <<'JSON'
+  cat > "$SANDBOX/.copilot/workspace/operations/workspace-index.json" <<'JSON'
 {
   "schemaVersion": "1.0",
   "counts": {
@@ -183,16 +188,16 @@ MD
   "prompts": ["commit.prompt.md"],
   "instructions": ["api.instructions.md"],
   "workspaceFiles": [
-    "BOOTSTRAP.md",
-    "HEARTBEAT.md",
-    "IDENTITY.md",
-    "MEMORY.md",
-    "RESEARCH.md",
-    "SOUL.md",
-    "TOOLS.md",
-    "USER.md",
-    "commit-style.md",
-    "workspace-index.json"
+    "identity/BOOTSTRAP.md",
+    "operations/HEARTBEAT.md",
+    "identity/IDENTITY.md",
+    "knowledge/MEMORY.md",
+    "knowledge/RESEARCH.md",
+    "identity/SOUL.md",
+    "knowledge/TOOLS.md",
+    "knowledge/USER.md",
+    "operations/commit-style.md",
+    "operations/workspace-index.json"
   ],
   "workflowFiles": ["copilot-setup-steps.yml"],
   "hookScripts": {
@@ -249,16 +254,16 @@ Updated: 2026-04-04
 .github/workflows/copilot-setup-steps.yml=bbbbbbbbbbbb
 .vscode/settings.json=bbbbbbbbbbbb
 .vscode/extensions.json=bbbbbbbbbbbb
-.copilot/workspace/BOOTSTRAP.md=bbbbbbbbbbbb
-.copilot/workspace/HEARTBEAT.md=bbbbbbbbbbbb
-.copilot/workspace/IDENTITY.md=bbbbbbbbbbbb
-.copilot/workspace/MEMORY.md=bbbbbbbbbbbb
-.copilot/workspace/RESEARCH.md=bbbbbbbbbbbb
-.copilot/workspace/SOUL.md=bbbbbbbbbbbb
-.copilot/workspace/TOOLS.md=bbbbbbbbbbbb
-.copilot/workspace/USER.md=bbbbbbbbbbbb
-.copilot/workspace/commit-style.md=bbbbbbbbbbbb
-.copilot/workspace/workspace-index.json=bbbbbbbbbbbb
+.copilot/workspace/identity/BOOTSTRAP.md=bbbbbbbbbbbb
+.copilot/workspace/operations/HEARTBEAT.md=bbbbbbbbbbbb
+.copilot/workspace/identity/IDENTITY.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/MEMORY.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/RESEARCH.md=bbbbbbbbbbbb
+.copilot/workspace/identity/SOUL.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/TOOLS.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/USER.md=bbbbbbbbbbbb
+.copilot/workspace/operations/commit-style.md=bbbbbbbbbbbb
+.copilot/workspace/operations/workspace-index.json=bbbbbbbbbbbb
 .github/starter-kits/python/plugin.json=bbbbbbbbbbbb
 .github/starter-kits/python/prompts/python-debug.prompt.md=bbbbbbbbbbbb
 -->
@@ -297,16 +302,16 @@ Updated: 2026-04-04
 .github/prompts/commit.prompt.md=bbbbbbbbbbbb
 .github/skills/my-skill/SKILL.md=bbbbbbbbbbbb
 .github/workflows/copilot-setup-steps.yml=bbbbbbbbbbbb
-.copilot/workspace/BOOTSTRAP.md=bbbbbbbbbbbb
-.copilot/workspace/HEARTBEAT.md=bbbbbbbbbbbb
-.copilot/workspace/IDENTITY.md=bbbbbbbbbbbb
-.copilot/workspace/MEMORY.md=bbbbbbbbbbbb
-.copilot/workspace/RESEARCH.md=bbbbbbbbbbbb
-.copilot/workspace/SOUL.md=bbbbbbbbbbbb
-.copilot/workspace/TOOLS.md=bbbbbbbbbbbb
-.copilot/workspace/USER.md=bbbbbbbbbbbb
-.copilot/workspace/commit-style.md=bbbbbbbbbbbb
-.copilot/workspace/workspace-index.json=bbbbbbbbbbbb
+.copilot/workspace/identity/BOOTSTRAP.md=bbbbbbbbbbbb
+.copilot/workspace/operations/HEARTBEAT.md=bbbbbbbbbbbb
+.copilot/workspace/identity/IDENTITY.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/MEMORY.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/RESEARCH.md=bbbbbbbbbbbb
+.copilot/workspace/identity/SOUL.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/TOOLS.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/USER.md=bbbbbbbbbbbb
+.copilot/workspace/operations/commit-style.md=bbbbbbbbbbbb
+.copilot/workspace/operations/workspace-index.json=bbbbbbbbbbbb
 .github/starter-kits/python/plugin.json=bbbbbbbbbbbb
 .github/starter-kits/python/prompts/python-debug.prompt.md=bbbbbbbbbbbb
 -->
@@ -326,7 +331,7 @@ MD
 
 mutate_consumer_legacy_workspace_index_without_optional_files() {
   mutate_consumer_layout_without_vscode_surfaces
-  write_sandbox_file ".copilot/workspace/workspace-index.json" <<'JSON'
+  write_sandbox_file ".copilot/workspace/operations/workspace-index.json" <<'JSON'
 {
   "schemaVersion": "0.9",
   "counts": {
@@ -345,16 +350,16 @@ mutate_consumer_legacy_workspace_index_without_optional_files() {
     "repo": ["my-skill"]
   },
   "workspaceFiles": [
-    "BOOTSTRAP.md",
-    "HEARTBEAT.md",
-    "IDENTITY.md",
-    "MEMORY.md",
-    "RESEARCH.md",
-    "SOUL.md",
-    "TOOLS.md",
-    "USER.md",
-    "commit-style.md",
-    "workspace-index.json"
+    "identity/BOOTSTRAP.md",
+    "operations/HEARTBEAT.md",
+    "identity/IDENTITY.md",
+    "knowledge/MEMORY.md",
+    "knowledge/RESEARCH.md",
+    "identity/SOUL.md",
+    "knowledge/TOOLS.md",
+    "knowledge/USER.md",
+    "operations/commit-style.md",
+    "operations/workspace-index.json"
   ],
   "workflowFiles": ["copilot-setup-steps.yml"],
   "hookScripts": {
@@ -447,16 +452,16 @@ Updated: 2026-04-04
 .github/workflows/copilot-setup-steps.yml=bbbbbbbbbbbb
 .vscode/settings.json=bbbbbbbbbbbb
 .vscode/extensions.json=bbbbbbbbbbbb
-.copilot/workspace/BOOTSTRAP.md=bbbbbbbbbbbb
-.copilot/workspace/HEARTBEAT.md=bbbbbbbbbbbb
-.copilot/workspace/IDENTITY.md=bbbbbbbbbbbb
-.copilot/workspace/MEMORY.md=bbbbbbbbbbbb
-.copilot/workspace/RESEARCH.md=bbbbbbbbbbbb
-.copilot/workspace/SOUL.md=bbbbbbbbbbbb
-.copilot/workspace/TOOLS.md=bbbbbbbbbbbb
-.copilot/workspace/USER.md=bbbbbbbbbbbb
-.copilot/workspace/commit-style.md=bbbbbbbbbbbb
-.copilot/workspace/workspace-index.json=bbbbbbbbbbbb
+.copilot/workspace/identity/BOOTSTRAP.md=bbbbbbbbbbbb
+.copilot/workspace/operations/HEARTBEAT.md=bbbbbbbbbbbb
+.copilot/workspace/identity/IDENTITY.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/MEMORY.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/RESEARCH.md=bbbbbbbbbbbb
+.copilot/workspace/identity/SOUL.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/TOOLS.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/USER.md=bbbbbbbbbbbb
+.copilot/workspace/operations/commit-style.md=bbbbbbbbbbbb
+.copilot/workspace/operations/workspace-index.json=bbbbbbbbbbbb
 .github/starter-kits/python/plugin.json=bbbbbbbbbbbb
 .github/starter-kits/python/prompts/python-debug.prompt.md=bbbbbbbbbbbb
 -->
@@ -529,7 +534,7 @@ JSON
 }
 
 mutate_ps1_resolver_without_bash() {
-  write_sandbox_file "scripts/tests/resolve-powershell.sh" <<'SH'
+  write_sandbox_file "scripts/harness/resolve-powershell.sh" <<'SH'
 #!/usr/bin/env bash
 exit 1
 SH

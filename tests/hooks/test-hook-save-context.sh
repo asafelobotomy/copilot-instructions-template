@@ -26,8 +26,8 @@ echo ""
 
 echo "3. HEARTBEAT.md content appears in additionalContext when present"
 TMPDIR_CTX=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_CTX")
-mkdir -p "$TMPDIR_CTX/.copilot/workspace"
-printf 'HEARTBEAT_OK - all checks pass\n' > "$TMPDIR_CTX/.copilot/workspace/HEARTBEAT.md"
+mkdir -p "$TMPDIR_CTX/.copilot/workspace/identity" "$TMPDIR_CTX/.copilot/workspace/knowledge/diaries" "$TMPDIR_CTX/.copilot/workspace/operations" "$TMPDIR_CTX/.copilot/workspace/runtime"
+printf 'HEARTBEAT_OK - all checks pass\n' > "$TMPDIR_CTX/.copilot/workspace/operations/HEARTBEAT.md"
 output=$(cd "$TMPDIR_CTX" && echo '{}' | bash "$SCRIPT" 2>/dev/null)
 assert_matches "heartbeat pulse in context" "$output" "HEARTBEAT"
 echo ""
@@ -43,9 +43,9 @@ echo ""
 
 echo "5. MEMORY.md table entries appear in additionalContext"
 TMPDIR_MEM=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_MEM")
-mkdir -p "$TMPDIR_MEM/.copilot/workspace"
-printf 'HEARTBEAT: ok\n' > "$TMPDIR_MEM/.copilot/workspace/HEARTBEAT.md"
-cat > "$TMPDIR_MEM/.copilot/workspace/MEMORY.md" <<'EOF'
+mkdir -p "$TMPDIR_MEM/.copilot/workspace/identity" "$TMPDIR_MEM/.copilot/workspace/knowledge/diaries" "$TMPDIR_MEM/.copilot/workspace/operations" "$TMPDIR_MEM/.copilot/workspace/runtime"
+printf 'HEARTBEAT: ok\n' > "$TMPDIR_MEM/.copilot/workspace/operations/HEARTBEAT.md"
+cat > "$TMPDIR_MEM/.copilot/workspace/knowledge/MEMORY.md" <<'EOF'
 # Memory Strategy
 
 ## Known Gotchas
@@ -62,9 +62,9 @@ echo ""
 
 echo "6. SOUL.md heuristics appear in additionalContext"
 TMPDIR_SOUL=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_SOUL")
-mkdir -p "$TMPDIR_SOUL/.copilot/workspace"
-printf 'HEARTBEAT: ok\n' > "$TMPDIR_SOUL/.copilot/workspace/HEARTBEAT.md"
-cat > "$TMPDIR_SOUL/.copilot/workspace/SOUL.md" <<'EOF'
+mkdir -p "$TMPDIR_SOUL/.copilot/workspace/identity" "$TMPDIR_SOUL/.copilot/workspace/knowledge/diaries" "$TMPDIR_SOUL/.copilot/workspace/operations" "$TMPDIR_SOUL/.copilot/workspace/runtime"
+printf 'HEARTBEAT: ok\n' > "$TMPDIR_SOUL/.copilot/workspace/operations/HEARTBEAT.md"
+cat > "$TMPDIR_SOUL/.copilot/workspace/identity/SOUL.md" <<'EOF'
 # Values & Reasoning Patterns
 
 - Keep changes reversible.
@@ -81,8 +81,8 @@ echo ""
 
 echo "7. Workspace summaries include additionalContext key"
 TMPDIR_KEYS=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_KEYS")
-mkdir -p "$TMPDIR_KEYS/.copilot/workspace"
-printf 'HEARTBEAT: running\n' > "$TMPDIR_KEYS/.copilot/workspace/HEARTBEAT.md"
+mkdir -p "$TMPDIR_KEYS/.copilot/workspace/identity" "$TMPDIR_KEYS/.copilot/workspace/knowledge/diaries" "$TMPDIR_KEYS/.copilot/workspace/operations" "$TMPDIR_KEYS/.copilot/workspace/runtime"
+printf 'HEARTBEAT: running\n' > "$TMPDIR_KEYS/.copilot/workspace/operations/HEARTBEAT.md"
 output=$(cd "$TMPDIR_KEYS" && echo '{}' | bash "$SCRIPT" 2>/dev/null)
 assert_matches "additionalContext key present" "$output" "additionalContext"
 assert_matches "PreCompact hookEventName present" "$output" "PreCompact"
@@ -91,16 +91,16 @@ echo ""
 
 echo "8. Clock summary appears when heartbeat timing files exist"
 TMPDIR_CLOCK=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_CLOCK")
-mkdir -p "$TMPDIR_CLOCK/.copilot/workspace"
-printf 'HEARTBEAT: running\n' > "$TMPDIR_CLOCK/.copilot/workspace/HEARTBEAT.md"
-cat > "$TMPDIR_CLOCK/.copilot/workspace/state.json" <<'EOF'
+mkdir -p "$TMPDIR_CLOCK/.copilot/workspace/identity" "$TMPDIR_CLOCK/.copilot/workspace/knowledge/diaries" "$TMPDIR_CLOCK/.copilot/workspace/operations" "$TMPDIR_CLOCK/.copilot/workspace/runtime"
+printf 'HEARTBEAT: running\n' > "$TMPDIR_CLOCK/.copilot/workspace/operations/HEARTBEAT.md"
+cat > "$TMPDIR_CLOCK/.copilot/workspace/runtime/state.json" <<'EOF'
 {
   "session_id": "sess-clock",
   "session_state": "pending",
   "session_start_epoch": 1704067200
 }
 EOF
-cat > "$TMPDIR_CLOCK/.copilot/workspace/.heartbeat-events.jsonl" <<'EOF'
+cat > "$TMPDIR_CLOCK/.copilot/workspace/runtime/.heartbeat-events.jsonl" <<'EOF'
 {"detail":"complete","duration_s":125,"trigger":"stop","ts":1704067325,"ts_utc":"2024-01-01T00:02:05Z"}
 {"detail":"complete","duration_s":185,"trigger":"stop","ts":1704067485,"ts_utc":"2024-01-01T00:04:45Z"}
 EOF
@@ -113,9 +113,9 @@ echo ""
 
 echo "9. Priority scoring surfaces highest-priority row from MEMORY.md"
 TMPDIR_PRI=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_PRI")
-mkdir -p "$TMPDIR_PRI/.copilot/workspace"
-printf 'HEARTBEAT: ok\n' > "$TMPDIR_PRI/.copilot/workspace/HEARTBEAT.md"
-cat > "$TMPDIR_PRI/.copilot/workspace/MEMORY.md" <<'EOF'
+mkdir -p "$TMPDIR_PRI/.copilot/workspace/identity" "$TMPDIR_PRI/.copilot/workspace/knowledge/diaries" "$TMPDIR_PRI/.copilot/workspace/operations" "$TMPDIR_PRI/.copilot/workspace/runtime"
+printf 'HEARTBEAT: ok\n' > "$TMPDIR_PRI/.copilot/workspace/operations/HEARTBEAT.md"
+cat > "$TMPDIR_PRI/.copilot/workspace/knowledge/MEMORY.md" <<'EOF'
 # Memory
 
 ## Metrics Freshness
@@ -138,9 +138,9 @@ echo ""
 
 echo "10. Impact column scoring surfaces critical rows"
 TMPDIR_IMP=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_IMP")
-mkdir -p "$TMPDIR_IMP/.copilot/workspace"
-printf 'HEARTBEAT: ok\n' > "$TMPDIR_IMP/.copilot/workspace/HEARTBEAT.md"
-cat > "$TMPDIR_IMP/.copilot/workspace/MEMORY.md" <<'EOF'
+mkdir -p "$TMPDIR_IMP/.copilot/workspace/identity" "$TMPDIR_IMP/.copilot/workspace/knowledge/diaries" "$TMPDIR_IMP/.copilot/workspace/operations" "$TMPDIR_IMP/.copilot/workspace/runtime"
+printf 'HEARTBEAT: ok\n' > "$TMPDIR_IMP/.copilot/workspace/operations/HEARTBEAT.md"
+cat > "$TMPDIR_IMP/.copilot/workspace/knowledge/MEMORY.md" <<'EOF'
 # Memory
 
 ## Known Gotchas

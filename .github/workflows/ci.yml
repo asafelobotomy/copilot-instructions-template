@@ -157,9 +157,9 @@ jobs:
             template/vscode/mcp.json \
             template/vscode/extensions.json \
             template/vscode/settings.json \
-            template/workspace/workspace-index.json \
+            template/workspace/operations/workspace-index.json \
             .github/hooks/copilot-hooks.json \
-            .copilot/workspace/workspace-index.json \
+            .copilot/workspace/operations/workspace-index.json \
             .markdownlint.json \
             starter-kits/REGISTRY.json \
             release-please-config.json \
@@ -277,7 +277,7 @@ jobs:
       - name: Build script test matrix
         id: matrix
         run: |
-          matrix_json=$(python3 scripts/tests/suite-manifest.py ci-matrix)
+          matrix_json=$(python3 scripts/harness/suite-manifest.py ci-matrix)
           {
             echo 'matrix<<EOF'
             echo "$matrix_json"
@@ -305,7 +305,7 @@ jobs:
         shell: bash
         env:
           SUITE_PATH: ${{ matrix.path }}
-        run: python3 scripts/tests/suite-manifest.py run-suite "$SUITE_PATH"
+        run: python3 scripts/harness/suite-manifest.py run-suite "$SUITE_PATH"
 
   release:
     name: Release automation

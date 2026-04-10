@@ -7,8 +7,8 @@
 set -euo pipefail
 
 ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
-WORKSPACE_INDEX_PATH="$ROOT_DIR/.copilot/workspace/workspace-index.json"
-TEMPLATE_WORKSPACE_INDEX_PATH="$ROOT_DIR/template/workspace/workspace-index.json"
+WORKSPACE_INDEX_PATH="$ROOT_DIR/.copilot/workspace/operations/workspace-index.json"
+TEMPLATE_WORKSPACE_INDEX_PATH="$ROOT_DIR/template/workspace/operations/workspace-index.json"
 MODE="${1:---check}"
 
 # shellcheck source=../lib.sh

@@ -89,7 +89,7 @@ The existing tests (`test-hook-enforce-retrospective.sh`) reinforce this bug by 
 
 ### B2. HIGH — mtime-only check produces false positives for the gating condition
 
-**Evidence**: `find .copilot/workspace/HEARTBEAT.md -mmin -5` is satisfied by any process that touches the file — editor autosave, git operations, IDE index, workspace backup, or the `save-context.sh` PreCompact hook itself (which reads but does not write HEARTBEAT.md, but any tool that cat's the file and pipes it could still touch mtime on some filesystems via `atime`).
+**Evidence**: `find .copilot/workspace/operations/HEARTBEAT.md -mmin -5` is satisfied by any process that touches the file — editor autosave, git operations, IDE index, workspace backup, or the `save-context.sh` PreCompact hook itself (which reads but does not write HEARTBEAT.md, but any tool that cat's the file and pipes it could still touch mtime on some filesystems via `atime`).
 
 More critically: if a legitimate heartbeat happened 6 minutes ago (any session longer than 5 minutes will hit this), the check fails even though the retrospective ran correctly.
 
@@ -213,7 +213,7 @@ This is the most robust approach but requires HEARTBEAT.md schema migration for 
 
 Instead of touching HEARTBEAT.md (which has downstream risk), write to a dedicated sidecar:
 ```
-.copilot/workspace/.heartbeat-session
+.copilot/workspace/runtime/.heartbeat-session
 ```
 Format: `<sessionId>|<timestamp>|pending`. The Stop hook reads this file; the agent writes `<sessionId>|<timestamp>|complete` after retrospective. Shell-only parsing, no YAML required.
 
@@ -281,7 +281,7 @@ fi
 Replace the mtime check with sentinel-file check:
 ```bash
 # Check sentinel file for open retrospective
-SENTINEL=".copilot/workspace/.heartbeat-session"
+SENTINEL=".copilot/workspace/runtime/.heartbeat-session"
 if [[ -f "$SENTINEL" ]]; then
   SENTINEL_STATE=$(cut -d'|' -f3 "$SENTINEL" 2>/dev/null | tr -d '[:space:]' || echo "unknown")
   if [[ "$SENTINEL_STATE" == "complete" ]]; then
@@ -290,8 +290,8 @@ if [[ -f "$SENTINEL" ]]; then
   # If sentinel exists but is not complete, RETRO_RAN stays "false"
 else
   # No sentinel = no tracked session; fall back to mtime check
-  if [[ -f .copilot/workspace/HEARTBEAT.md ]]; then
-    if find .copilot/workspace/HEARTBEAT.md -mmin -120 2>/dev/null | grep -q .; then
+  if [[ -f .copilot/workspace/operations/HEARTBEAT.md ]]; then
+    if find .copilot/workspace/operations/HEARTBEAT.md -mmin -120 2>/dev/null | grep -q .; then
       RETRO_RAN="true"
     fi
   fi
@@ -304,7 +304,7 @@ In HEARTBEAT.md's Retrospective section, add instruction before the final questi
 ```markdown
 > After answering all questions above, write `complete` to the session state:
 > ```bash
-> sed -i 's/|pending$/|complete/' .copilot/workspace/.heartbeat-session 2>/dev/null || true
+> sed -i 's/|pending$/|complete/' .copilot/workspace/runtime/.heartbeat-session 2>/dev/null || true
 > ```
 > This clears the Stop gate.
 ```
@@ -336,7 +336,7 @@ Add after `## Retrospective` section:
   - Any retrospective question produced a concrete output
 - After completing the Retrospective, mark the session sentinel complete:
   ```bash
-  sed -i 's/|pending$/|complete/' .copilot/workspace/.heartbeat-session 2>/dev/null || true
+  sed -i 's/|pending$/|complete/' .copilot/workspace/runtime/.heartbeat-session 2>/dev/null || true
   ```
 ```
 

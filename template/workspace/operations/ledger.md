@@ -26,7 +26,7 @@ Each specialist agent has a home — the space it primarily operates in.
 
 | Agent | Home space | Diary path |
 |-------|-----------|------------|
-| *(populated on first SubagentStart)* | | `.copilot/workspace/diaries/{agent}.md` |
+| *(populated on first SubagentStart)* | | `.copilot/workspace/knowledge/diaries/{agent}.md` |
 
 ## Cross-References
 

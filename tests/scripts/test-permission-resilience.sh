@@ -147,13 +147,13 @@ echo "7. Repo utility scripts are executable"
 UTIL_SCRIPTS=(
   scripts/workspace/check-workspace-drift.sh
   scripts/release/plan-release.sh
-  scripts/tests/run-all-captured.sh
-  scripts/tests/select-targeted-tests.sh
+  scripts/harness/run-all-captured.sh
+  scripts/harness/select-targeted-tests.sh
   scripts/release/verify-version-references.sh
   scripts/workspace/sync-workspace-index.sh
   scripts/sync/sync-models.sh
   scripts/sync/sync-template-parity.sh
-  scripts/validate/validate-agent-frontmatter.sh
+  scripts/ci/validate-agent-frontmatter.sh
   scripts/release/stub-migration.sh
   scripts/lib.sh
 )

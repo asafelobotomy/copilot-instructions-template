@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/scripts/test-suite-manifest.sh -- tests for scripts/tests/suite-manifest.py
+# tests/scripts/test-suite-manifest.sh -- tests for scripts/harness/suite-manifest.py
 # Run: bash tests/scripts/test-suite-manifest.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
@@ -7,12 +7,12 @@ set -uo pipefail
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
-SCRIPT="$REPO_ROOT/scripts/tests/suite-manifest.py"
+SCRIPT="$REPO_ROOT/scripts/harness/suite-manifest.py"
 trap cleanup_dirs EXIT
 
 make_success_fixture() {
   local root="$1"
-  mkdir -p "$root/scripts/ci" "$root/scripts/tests" "$root/tests/scripts" "$root/tests/hooks"
+  mkdir -p "$root/scripts/ci" "$root/scripts/harness" "$root/tests/scripts" "$root/tests/hooks"
 
   cat > "$root/scripts/ci/validate-test-output.sh" <<'EOF'
 #!/usr/bin/env bash
@@ -35,7 +35,7 @@ echo "should-not-run"
 EOF
   chmod +x "$root/tests/hooks/skipped-suite.sh"
 
-  cat > "$root/scripts/tests/suite-manifest.json" <<'EOF'
+  cat > "$root/scripts/harness/suite-manifest.json" <<'EOF'
 {
   "schemaVersion": "1.0",
   "description": "fixture",
@@ -74,7 +74,7 @@ EOF
 
 make_failure_fixture() {
   local root="$1"
-  mkdir -p "$root/scripts/ci" "$root/scripts/tests" "$root/tests/scripts"
+  mkdir -p "$root/scripts/ci" "$root/scripts/harness" "$root/tests/scripts"
 
   cat > "$root/scripts/ci/validate-test-output.sh" <<'EOF'
 #!/usr/bin/env bash
@@ -91,7 +91,7 @@ exit 9
 EOF
   chmod +x "$root/tests/scripts/failing-suite.sh"
 
-  cat > "$root/scripts/tests/suite-manifest.json" <<'EOF'
+  cat > "$root/scripts/harness/suite-manifest.json" <<'EOF'
 {
   "schemaVersion": "1.0",
   "description": "fixture",

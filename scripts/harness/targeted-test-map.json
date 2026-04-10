@@ -6,9 +6,9 @@
     "runFullSuiteAtCompletion": true
   },
   "ruleFiles": [
-    "scripts/tests/targeted-test-map.d/00-selector-core.json",
-    "scripts/tests/targeted-test-map.d/10-repo-scripts.json",
-    "scripts/tests/targeted-test-map.d/20-hooks.json",
-    "scripts/tests/targeted-test-map.d/30-docs-and-surfaces.json"
+    "scripts/harness/targeted-test-map.d/00-selector-core.json",
+    "scripts/harness/targeted-test-map.d/10-repo-scripts.json",
+    "scripts/harness/targeted-test-map.d/20-hooks.json",
+    "scripts/harness/targeted-test-map.d/30-docs-and-surfaces.json"
   ]
 }

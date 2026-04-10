@@ -13,7 +13,10 @@ trap cleanup_dirs EXIT
 make_fixture() {
   local root="$1"
   mkdir -p \
-    "$root/.copilot/workspace" \
+    "$root/.copilot/workspace/identity" \
+    "$root/.copilot/workspace/knowledge/diaries" \
+    "$root/.copilot/workspace/operations" \
+    "$root/.copilot/workspace/runtime" \
     "$root/.github/agents" \
     "$root/.github/skills/skill-creator" \
     "$root/.github/skills/extension-review" \
@@ -23,8 +26,9 @@ make_fixture() {
     "$root/template/skills/skill-creator" \
     "$root/template/skills/test-coverage-review" \
     "$root/template/skills/aaa-extra" \
-    "$root/template/workspace" \
-    "$root/template/workspace/diaries" \
+    "$root/template/workspace/identity" \
+    "$root/template/workspace/knowledge/diaries" \
+    "$root/template/workspace/operations" \
     "$root/template/hooks/scripts"
 
   : > "$root/.github/agents/setup.agent.md"
@@ -44,9 +48,9 @@ make_fixture() {
   : > "$root/template/instructions/tests.instructions.md"
   : > "$root/template/prompts/commit-msg.prompt.md"
   : > "$root/template/prompts/review-file.prompt.md"
-  : > "$root/template/workspace/BOOTSTRAP.md"
-  : > "$root/template/workspace/TOOLS.md"
-  : > "$root/template/workspace/diaries/README.md"
+  : > "$root/template/workspace/identity/BOOTSTRAP.md"
+  : > "$root/template/workspace/knowledge/TOOLS.md"
+  : > "$root/template/workspace/knowledge/diaries/README.md"
   : > "$root/template/copilot-setup-steps.yml"
 
   : > "$root/template/hooks/scripts/session-start.sh"
@@ -60,7 +64,7 @@ make_fixture() {
   : > "$root/template/hooks/scripts/mcp-heartbeat-server.py"
   : > "$root/template/hooks/scripts/pulse_runtime.py"
 
-  cat > "$root/template/workspace/workspace-index.json" <<'EOF'
+  cat > "$root/template/workspace/operations/workspace-index.json" <<'EOF'
 {
   "$schema": "https://example.test/workspace-index.schema.json",
   "schemaVersion": "1.0",
@@ -102,9 +106,9 @@ make_fixture() {
     "tests.instructions.md"
   ],
   "workspaceFiles": [
-    "BOOTSTRAP.md",
-    "TOOLS.md",
-    "workspace-index.json"
+    "identity/BOOTSTRAP.md",
+    "knowledge/TOOLS.md",
+    "operations/workspace-index.json"
   ],
   "workflowFiles": [
     "copilot-setup-steps.yml"
@@ -161,18 +165,18 @@ make_fixture "$TMP_WRITE"
 output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --write 2>&1)
 status=$?
 assert_success "write mode exits zero" "$status"
-assert_contains "write mode reports repo target" "$output" ".copilot/workspace/workspace-index.json"
-assert_contains "write mode reports template target" "$output" "template/workspace/workspace-index.json"
+assert_contains "write mode reports repo target" "$output" ".copilot/workspace/operations/workspace-index.json"
+assert_contains "write mode reports template target" "$output" "template/workspace/operations/workspace-index.json"
 assert_python_in_root "workspace-index.json is valid JSON" "$TMP_WRITE" "
-path = root / '.copilot/workspace/workspace-index.json'
+path = root / '.copilot/workspace/operations/workspace-index.json'
 json.load(path.open())
 "
 assert_python_in_root "template workspace-index.json is valid JSON" "$TMP_WRITE" "
-path = root / 'template/workspace/workspace-index.json'
+path = root / 'template/workspace/operations/workspace-index.json'
 json.load(path.open())
 "
 assert_python_in_root "counts match fixture contents" "$TMP_WRITE" "
-for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/workspace-index.json'):
+for rel in ('.copilot/workspace/operations/workspace-index.json', 'template/workspace/operations/workspace-index.json'):
   data = json.load((root / rel).open())
   assert data['counts']['agents'] == 3
   assert data['counts']['agentSupportFiles'] == 1
@@ -184,7 +188,7 @@ for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/works
   assert data['counts']['hookScriptsJson'] == 1
 "
 assert_python_in_root "baseline order is preserved and extras sort after it" "$TMP_WRITE" "
-for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/workspace-index.json'):
+for rel in ('.copilot/workspace/operations/workspace-index.json', 'template/workspace/operations/workspace-index.json'):
   data = json.load((root / rel).open())
   assert data['agents'] == ['setup.agent.md', 'review.agent.md', 'z-last.agent.md']
   assert data['agentSupportFiles'] == ['routing-manifest.json']
@@ -192,7 +196,7 @@ for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/works
   assert data['skills']['template'] == ['skill-creator', 'test-coverage-review', 'aaa-extra']
   assert data['prompts'] == ['commit-msg.prompt.md', 'review-file.prompt.md']
   assert data['instructions'] == ['api-routes.instructions.md', 'tests.instructions.md']
-  assert data['workspaceFiles'] == ['BOOTSTRAP.md', 'TOOLS.md', 'workspace-index.json', 'diaries/README.md']
+  assert data['workspaceFiles'] == ['identity/BOOTSTRAP.md', 'knowledge/TOOLS.md', 'operations/workspace-index.json', 'knowledge/diaries/README.md']
   assert data['workflowFiles'] == ['copilot-setup-steps.yml']
   assert data['hookScripts']['shell'] == ['session-start.sh', 'guard-destructive.sh', 'save-context.sh']
   assert data['hookScripts']['powershell'] == ['session-start.ps1', 'guard-destructive.ps1', 'save-context.ps1']
@@ -200,8 +204,8 @@ for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/works
   assert data['hookScripts']['json'] == ['heartbeat-policy.json']
 "
 assert_python_in_root "repo and template indices match exactly" "$TMP_WRITE" "
-repo_data = json.load((root / '.copilot/workspace/workspace-index.json').open())
-template_data = json.load((root / 'template/workspace/workspace-index.json').open())
+repo_data = json.load((root / '.copilot/workspace/operations/workspace-index.json').open())
+template_data = json.load((root / 'template/workspace/operations/workspace-index.json').open())
 assert repo_data == template_data
 "
 echo ""
@@ -214,7 +218,7 @@ assert_contains "check mode success message" "$output" "OK: workspace-index.json
 echo ""
 
 echo "5. Drift is detected after manual modification"
-python3 - "$TMP_WRITE/.copilot/workspace/workspace-index.json" <<'PY'
+python3 - "$TMP_WRITE/.copilot/workspace/operations/workspace-index.json" <<'PY'
 import json
 import sys
 path = sys.argv[1]
@@ -228,7 +232,7 @@ PY
 output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --check 2>&1)
 status=$?
 assert_failure "check mode fails on drift" "$status"
-assert_contains "drift message is printed" "$output" ".copilot/workspace/workspace-index.json is out of sync"
+assert_contains "drift message is printed" "$output" ".copilot/workspace/operations/workspace-index.json is out of sync"
 assert_contains "drift includes repair hint" "$output" "Run: bash scripts/workspace/sync-workspace-index.sh --write"
 echo ""
 

@@ -305,7 +305,7 @@ assert_file_contains "manifests.md includes onboard commit style prompt" \
     "$MANIFESTS" "onboard-commit-style.prompt.md"
 
 assert_file_contains "manifests.md includes commit-style workspace stub" \
-    "$MANIFESTS" "template/workspace/commit-style.md"
+    "$MANIFESTS" "template/workspace/operations/commit-style.md"
 
 assert_file_contains "manifests.md fetches python hook support files" \
     "$MANIFESTS" "hookScripts.python"
@@ -341,6 +341,21 @@ assert_file_contains "UPDATE.md file manifest tracks hook Python helpers" \
 
 assert_file_contains "UPDATE.md file manifest tracks agent JSON support files" \
     "$UPDATE" "\\.github/agents/\\*\\.json"
+
+assert_file_contains "UPDATE.md file manifest tracks workspace identity files" \
+    "$UPDATE" "\\.copilot/workspace/identity/\\*\\.md"
+
+assert_file_contains "UPDATE.md file manifest tracks workspace knowledge files" \
+    "$UPDATE" "\\.copilot/workspace/knowledge/\\*\\.md"
+
+assert_file_contains "UPDATE.md file manifest tracks workspace diaries" \
+    "$UPDATE" "\\.copilot/workspace/knowledge/diaries/\\*\\.md"
+
+assert_file_contains "UPDATE.md file manifest tracks workspace operations markdown" \
+    "$UPDATE" "\\.copilot/workspace/operations/\\*\\.md"
+
+assert_file_not_contains "UPDATE.md no longer uses the flat workspace markdown glob" \
+    "$UPDATE" "\\.copilot/workspace/\\*\\.md"
 echo ""
 
 # ──────────────────────────────────────────────────────────────
@@ -457,7 +472,7 @@ echo "21. Workspace-index fallback is available before agent and skill discovery
 
 assert_python "SETUP.md prefetches workspace-index before §2.5" '
 text = (root / "SETUP.md").read_text(encoding="utf-8")
-workspace_index_url = "https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/workspace/workspace-index.json"
+workspace_index_url = "https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/workspace/operations/workspace-index.json"
 prefetch_pos = text.find(workspace_index_url)
 agents_pos = text.find("## § 2.5 — Write model-pinned agent files")
 skills_pos = text.find("## § 2.6 — Scaffold skill library")
@@ -598,7 +613,7 @@ assert_file_contains "manifests.md documents SPATIAL_VOCAB workspace replacement
     "$MANIFESTS" 'SPATIAL_VOCAB'
 
 assert_file_contains "ledger template expands SPATIAL_VOCAB as full markdown rows" \
-    "$REPO_ROOT/template/workspace/ledger.md" '^\{\{SPATIAL_VOCAB\}\}$'
+    "$REPO_ROOT/template/workspace/operations/ledger.md" '^\{\{SPATIAL_VOCAB\}\}$'
 echo ""
 
 finish_tests

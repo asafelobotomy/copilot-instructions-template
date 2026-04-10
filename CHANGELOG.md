@@ -209,7 +209,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 * add .github/agents/ entries to AGENTS.md file map and bootstrap outputs ([4109bff](https://github.com/asafelobotomy/copilot-instructions-template/commit/4109bff84fc4e29abbdd5774f80a8f10eb069057))
 * add agents dir, AGENTS.md, UPDATE.md, VERSION to README file list and tree ([735c1d9](https://github.com/asafelobotomy/copilot-instructions-template/commit/735c1d939dda636ddf764397bff3e3568af30d93))
 * add language specifier to fenced code blocks (MD040) ([1853577](https://github.com/asafelobotomy/copilot-instructions-template/commit/18535770188fcf16da2830d6773c3bc90afa2ac2))
-* add model-pinned agent files to template/workspace/BOOTSTRAP.md ([e323b24](https://github.com/asafelobotomy/copilot-instructions-template/commit/e323b2477ea4d3d73265f715023b331169d08bc1))
+* add model-pinned agent files to template/workspace/identity/BOOTSTRAP.md ([e323b24](https://github.com/asafelobotomy/copilot-instructions-template/commit/e323b2477ea4d3d73265f715023b331169d08bc1))
 * add model-pinned agents section to template/BIBLIOGRAPHY.md stub ([6fb0d56](https://github.com/asafelobotomy/copilot-instructions-template/commit/6fb0d56466d7d0cb337b0d3173dacb94be2a9ed8))
 * add release-please config and manifest to fix CI failure ([74b78e3](https://github.com/asafelobotomy/copilot-instructions-template/commit/74b78e3d62d31a24f02c27560d6525dfceda0341))
 * **agents:** correct four LLM-clarity bugs in agent instructions ([7385170](https://github.com/asafelobotomy/copilot-instructions-template/commit/738517019694fa0f586e197e9f23d8a2b9593c9b))
@@ -372,7 +372,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 * add .github/agents/ entries to AGENTS.md file map and bootstrap outputs ([4109bff](https://github.com/asafelobotomy/copilot-instructions-template/commit/4109bff84fc4e29abbdd5774f80a8f10eb069057))
 * add agents dir, AGENTS.md, UPDATE.md, VERSION to README file list and tree ([735c1d9](https://github.com/asafelobotomy/copilot-instructions-template/commit/735c1d939dda636ddf764397bff3e3568af30d93))
 * add language specifier to fenced code blocks (MD040) ([1853577](https://github.com/asafelobotomy/copilot-instructions-template/commit/18535770188fcf16da2830d6773c3bc90afa2ac2))
-* add model-pinned agent files to template/workspace/BOOTSTRAP.md ([e323b24](https://github.com/asafelobotomy/copilot-instructions-template/commit/e323b2477ea4d3d73265f715023b331169d08bc1))
+* add model-pinned agent files to template/workspace/identity/BOOTSTRAP.md ([e323b24](https://github.com/asafelobotomy/copilot-instructions-template/commit/e323b2477ea4d3d73265f715023b331169d08bc1))
 * add model-pinned agents section to template/BIBLIOGRAPHY.md stub ([6fb0d56](https://github.com/asafelobotomy/copilot-instructions-template/commit/6fb0d56466d7d0cb337b0d3173dacb94be2a9ed8))
 * add release-please config and manifest to fix CI failure ([74b78e3](https://github.com/asafelobotomy/copilot-instructions-template/commit/74b78e3d62d31a24f02c27560d6525dfceda0341))
 * **agents:** correct four LLM-clarity bugs in agent instructions ([7385170](https://github.com/asafelobotomy/copilot-instructions-template/commit/738517019694fa0f586e197e9f23d8a2b9593c9b))
@@ -497,10 +497,10 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - MCP `memory` server (`@modelcontextprotocol/server-memory`) removed from `.vscode/mcp.json` defaults — replaced by VS Code's built-in memory tool (`/memories/`) with three scopes (user, session, repository).
 - §13 updated: `memory` removed from always-on server list; migration note added.
 - `mcp-management` skill updated with removal note and built-in memory alternative.
-- `template/workspace/MEMORY.md` coexistence section rewritten — MCP memory server row removed, updated to 2-layer hierarchy (built-in memory + MEMORY.md).
-- `template/workspace/USER.md` gains coexistence note distinguishing project-scoped profile from built-in user memory.
+- `template/workspace/knowledge/MEMORY.md` coexistence section rewritten — MCP memory server row removed, updated to 2-layer hierarchy (built-in memory + MEMORY.md).
+- `template/workspace/knowledge/USER.md` gains coexistence note distinguishing project-scoped profile from built-in user memory.
 - `webapp-testing` skill (v2.0) rewritten with dual-path architecture: Path A (built-in browser tools, 10 agentic tools, interactive) and Path B (Playwright, CI-ready).
-- `template/workspace/TOOLS.md` gains agentic browser tools table (10 tools, Preview, `workbench.browser.enableChatTools`).
+- `template/workspace/knowledge/TOOLS.md` gains agentic browser tools table (10 tools, Preview, `workbench.browser.enableChatTools`).
 - `docs/HOOKS-GUIDE.md` gains context management section: `/compact`, `/fork`, session memory for plans.
 - `docs/AGENTS-GUIDE.md` gains Chat Customizations editor and session management sections.
 - `docs/SKILLS-GUIDE.md` gains built-in accessibility skill note.
@@ -513,8 +513,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `BIBLIOGRAPHY.md` refreshed: all LOC counts updated to current values; new plugin-management skill entries added.
 - `conventional-commit` skill gains `git.addAICoAuthor` co-author attribution section.
 - `docs/MCP-GUIDE.md` updated: memory server removed from tiers, `npx` note corrected.
-- Built-in VS Code tools table (usages, rename, Explore subagent) added to `template/workspace/TOOLS.md`.
-- Agent compatibility check added to heartbeat checklist (`template/workspace/HEARTBEAT.md`).
+- Built-in VS Code tools table (usages, rename, Explore subagent) added to `template/workspace/knowledge/TOOLS.md`.
+- Agent compatibility check added to heartbeat checklist (`template/workspace/operations/HEARTBEAT.md`).
 - Agent plugins and org-level agents added to skill scope hierarchy (`skill-management` skill).
 - Agent plugin strategic roadmap — "Template as an agent plugin" subsection added to `docs/AGENTS-GUIDE.md`; documents why packaging is deferred to v4.0, what a plugin version could look like, and how to preview locally via `chat.plugins.paths`.
 - Claude agent format compatibility section added to `docs/AGENTS-GUIDE.md` — documents format differences (`.agent.md` vs `.claude/agents/*.md`), current decision to defer dual-format stubs, and workaround for cross-tool teams.
@@ -531,7 +531,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `llms.txt` refreshed to current GPT-5.4 review guidance, current skill inventory, and links to generated compact and expanded context packs.
 - The canonical local test command is now `bash tests/run-all.sh`, and the main repo instructions, contributor guide, workspace tool notes, and LLM context surfaces now point to that single entrypoint.
 - `llms.txt`, `llms-ctx.txt`, and `llms-ctx-full.txt` now advertise the runtime coverage report command alongside the canonical local test suite.
-- Setup and documentation surfaces updated from 11 to 13 starter skills, including `SETUP.md`, `README.md`, `docs/*`, `template/workspace/BOOTSTRAP.md`, and `template/workspace/DOC_INDEX.json`.
+- Setup and documentation surfaces updated from 11 to 13 starter skills, including `SETUP.md`, `README.md`, `docs/*`, `template/workspace/identity/BOOTSTRAP.md`, and `template/workspace/DOC_INDEX.json`.
 - `tests/test-doc-consistency.sh` extended to guard `llms.txt`, `llms-ctx.txt`, `llms-ctx-full.txt`, and the new review skills against drift.
 - `tests/run-all.sh` and `.github/workflows/ci.yml` now run `tests/test-inventory-files.sh`, extending executable coverage from scripts into Markdown inventory artifacts.
 - `tests/run-all.sh` and `.github/workflows/ci.yml` now run `tests/test-markdown-contracts.sh`, extending executable coverage from inventory files into structural Markdown contracts.
@@ -567,7 +567,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `docs/SETUP-GUIDE.md` — "Four agent files" prose in Step 2.5 corrected to "Six agent files".
 - `AGENTS.md` — file map expanded with 15 missing entries: `VERSION.md`, `scripts/release/verify-version-references.sh` (then `sync-version.sh`), `.github/instructions/*.instructions.md` (4 files), `.github/prompts/*.prompt.md` (5 files), `template/skills/issue-triage/SKILL.md`, `template/hooks/scripts/*.ps1` (5 Windows counterparts), `template/copilot-setup-steps.yml`, and all 15 `docs/*.md` human-readable guides.
 - `README.md`, `docs/SETUP-GUIDE.md`, and `docs/SECURITY-GUIDE.md` — stale setup-interview references corrected after the E19 removal: Full tier is 23 direct questions, and Global autonomy is now derived from S5 instead of being asked as a separate question.
-- `AGENTS.md`, `template/BIBLIOGRAPHY.md`, `template/workspace/BOOTSTRAP.md`, and `BIBLIOGRAPHY.md` — inventory records corrected to match the current review model and the actual scaffolded file set.
+- `AGENTS.md`, `template/BIBLIOGRAPHY.md`, `template/workspace/identity/BOOTSTRAP.md`, and `BIBLIOGRAPHY.md` — inventory records corrected to match the current review model and the actual scaffolded file set.
 - `MIGRATION.md` — available-tags list refreshed to include `v3.2.0`, keeping the release registry aligned with the current template version.
 - `tests/test-doc-consistency.sh` — expanded to catch the terminology and contract drift found in review: skill-count mismatch, stale interview counts, stale E19 references, metrics-schema mismatch, and stale MCP `memory` sampling configuration.
 - Agent handoff metadata updated to match the currently validated agent names (`Code`, `Review`, `Doctor`, `Update`) instead of lower-case filename stems.
@@ -688,7 +688,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 * add .github/agents/ entries to AGENTS.md file map and bootstrap outputs ([4109bff](https://github.com/asafelobotomy/copilot-instructions-template/commit/4109bff84fc4e29abbdd5774f80a8f10eb069057))
 * add agents dir, AGENTS.md, UPDATE.md, VERSION to README file list and tree ([735c1d9](https://github.com/asafelobotomy/copilot-instructions-template/commit/735c1d939dda636ddf764397bff3e3568af30d93))
 * add language specifier to fenced code blocks (MD040) ([1853577](https://github.com/asafelobotomy/copilot-instructions-template/commit/18535770188fcf16da2830d6773c3bc90afa2ac2))
-* add model-pinned agent files to template/workspace/BOOTSTRAP.md ([e323b24](https://github.com/asafelobotomy/copilot-instructions-template/commit/e323b2477ea4d3d73265f715023b331169d08bc1))
+* add model-pinned agent files to template/workspace/identity/BOOTSTRAP.md ([e323b24](https://github.com/asafelobotomy/copilot-instructions-template/commit/e323b2477ea4d3d73265f715023b331169d08bc1))
 * add model-pinned agents section to template/BIBLIOGRAPHY.md stub ([6fb0d56](https://github.com/asafelobotomy/copilot-instructions-template/commit/6fb0d56466d7d0cb337b0d3173dacb94be2a9ed8))
 * add release-please config and manifest to fix CI failure ([74b78e3](https://github.com/asafelobotomy/copilot-instructions-template/commit/74b78e3d62d31a24f02c27560d6525dfceda0341))
 * **agents:** correct handoff agent: identifiers to use filename stems ([095bf86](https://github.com/asafelobotomy/copilot-instructions-template/commit/095bf862c827186bfe132ddd8d275b5f732170ac))
@@ -797,16 +797,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `.github/copilot-instructions.md` — new `### 1.5 BUILT-IN` step in §11 Tool Protocol decision tree: documents VS Code's native tools (`list_code_usages`, `get_errors`, `fetch_webpage`, `semantic_search`, `grep_search`) as a discovery step between local toolbox lookup and online search.
 - `.github/copilot-instructions.md` — W15 (Tool friction) examples expanded with concrete built-in tool names (`list_code_usages`, `semantic_search`, `get_errors`, `fetch_webpage`) replacing generic descriptions.
 - `.github/copilot-instructions.md` — §7 Metrics: `get_errors` built-in added as alternative to `{{TYPE_CHECK_COMMAND}}` for type error tracking.
-- `template/workspace/MEMORY.md` — new "Copilot Memory coexistence" section documenting how project-scoped MEMORY.md complements VS Code's native Copilot Memory feature; includes priority rule (MEMORY.md wins for project facts), scope comparison table, and duplication avoidance guidance.
+- `template/workspace/knowledge/MEMORY.md` — new "Copilot Memory coexistence" section documenting how project-scoped MEMORY.md complements VS Code's native Copilot Memory feature; includes priority rule (MEMORY.md wins for project facts), scope comparison table, and duplication avoidance guidance.
 - `docs/INSTRUCTIONS-GUIDE.md` — new "Instruction priority chain" section documenting the four-tier instruction resolution order (file-scoped → repository → organisation → personal) with scope table, practical placement guidance, template interaction notes, and prompt files reference.
 - `docs/SECURITY-GUIDE.md` — new `### Custom tier format` subsection under Graduated Trust Model: concrete Markdown table example showing `{{TRUST_OVERRIDES}}` format, glob pattern rules, and tier precedence logic.
 - `docs/UPDATE-GUIDE.md` — new `## Notable version migrations` section with manual-action tables for `v1.x → v2.0.0` and `v1.0.x → v1.4.0` upgrades covering companion files (MCP config, skills, release automation) that the update protocol does not touch automatically.
-- `template/workspace/HEARTBEAT.md` — event-driven health check checklist template. Agent-writable file with Pulse status, 6 event triggers (session start, large change, refactor/migration, dependency update, CI resolution, explicit), 6 health checks (dependency audit, test coverage delta, waste scan, memory consolidation, metrics freshness, settings drift), Agent Notes, and append-only History table. Adapted from [OpenClaw's heartbeat mechanism](https://docs.openclaw.ai/gateway/heartbeat) with event-triggered execution replacing timed intervals.
+- `template/workspace/operations/HEARTBEAT.md` — event-driven health check checklist template. Agent-writable file with Pulse status, 6 event triggers (session start, large change, refactor/migration, dependency update, CI resolution, explicit), 6 health checks (dependency audit, test coverage delta, waste scan, memory consolidation, metrics freshness, settings drift), Agent Notes, and append-only History table. Adapted from [OpenClaw's heartbeat mechanism](https://docs.openclaw.ai/gateway/heartbeat) with event-triggered execution replacing timed intervals.
 - `docs/HEARTBEAT-GUIDE.md` — human-readable guide: event triggers vs OpenClaw's timed approach, cross-file wiring specification, adding custom triggers and checks, silent-when-healthy contract, interaction with §6/§8/§10/MEMORY.md/METRICS.md/TOOLS.md/SOUL.md.
 - `.github/copilot-instructions.md` — new `### Heartbeat Protocol` subsection in §8: event trigger list, 6-step procedure (read → check → update Pulse → log History → write Agent Notes → report alerts only), cross-file references.
-- `AGENTS.md` — "Heartbeat operations" trigger phrase section (6 phrases); heartbeat entries added to canonical triggers table; `template/workspace/HEARTBEAT.md` and `.copilot/workspace/HEARTBEAT.md` added to file map and bootstrap outputs.
-- `template/workspace/HEARTBEAT.md` — Retrospective introspection section: 7 self-reflection questions with cross-file persistence wiring (SOUL.md for reasoning heuristics, USER.md for user profile observations, MEMORY.md for gap analysis and lessons learned, Agent Notes for self-assessment). Q4 (issue report) and Q5 (agent questions) surface directly to the user.
-- `template/workspace/HEARTBEAT.md` — "Task completion" event trigger: fires the heartbeat (including retrospective) after completing any user-requested task.
+- `AGENTS.md` — "Heartbeat operations" trigger phrase section (6 phrases); heartbeat entries added to canonical triggers table; `template/workspace/operations/HEARTBEAT.md` and `.copilot/workspace/operations/HEARTBEAT.md` added to file map and bootstrap outputs.
+- `template/workspace/operations/HEARTBEAT.md` — Retrospective introspection section: 7 self-reflection questions with cross-file persistence wiring (SOUL.md for reasoning heuristics, USER.md for user profile observations, MEMORY.md for gap analysis and lessons learned, Agent Notes for self-assessment). Q4 (issue report) and Q5 (agent questions) surface directly to the user.
+- `template/workspace/operations/HEARTBEAT.md` — "Task completion" event trigger: fires the heartbeat (including retrospective) after completing any user-requested task.
 - `AGENTS.md` — "Run retrospective" trigger phrase added to heartbeat operations section and canonical triggers table.
 
 ### Changed
@@ -819,16 +819,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `SETUP.md` — added release automation callout after Step 2.11 pointing to `docs/RELEASE-AUTOMATION-GUIDE.md` and noting the `release-please-config.json` / `.release-please-manifest.json` requirement for the release-please strategy; Step 0b updated from 6 to 7 identity files (HEARTBEAT.md added); Step 3 expanded with HEARTBEAT.md scaffold section; BOOTSTRAP.md stub updated from "all six" to "all seven" identity files.
 - `AGENTS.md` — "Six workspace identity files" → "Seven workspace identity files" in project description.
 - `README.md` — added "Event-driven heartbeat" feature section; workspace identity table expanded from 6 to 7 rows (HEARTBEAT.md added); `docs/HEARTBEAT-GUIDE.md` added to human-readable guides table; file tree updated with `HEARTBEAT.md`.
-- `template/workspace/BOOTSTRAP.md` — HEARTBEAT.md row added to "Files created during setup" table.
+- `template/workspace/identity/BOOTSTRAP.md` — HEARTBEAT.md row added to "Files created during setup" table.
 - `template/BIBLIOGRAPHY.md` — HEARTBEAT.md row added to "Workspace identity" section.
-- `.github/workflows/ci.yml` — `docs/HEARTBEAT-GUIDE.md` and `template/workspace/HEARTBEAT.md` added to required files check.
+- `.github/workflows/ci.yml` — `docs/HEARTBEAT-GUIDE.md` and `template/workspace/operations/HEARTBEAT.md` added to required files check.
 - `docs/INSTRUCTIONS-GUIDE.md` — §8 section expanded with "Heartbeat Protocol" subsection explaining event triggers, cross-file wiring, and silent-when-healthy contract.
 - `docs/INSTRUCTIONS-GUIDE.md` — §8 Heartbeat Protocol explanation expanded with retrospective self-reflection description and cross-file persistence (SOUL.md, USER.md, MEMORY.md).
 - `docs/HEARTBEAT-GUIDE.md` — retrospective section added: 7-question table with cross-file wiring, reporting contract exception for Q4/Q5, customisation example for custom retrospective questions; "How it works" flow updated from 7 to 8 steps; "Sections of HEARTBEAT.md" expanded with Retrospective; interaction table expanded for SOUL.md/USER.md/MEMORY.md retrospective writes; "Run retrospective" trigger phrase added.
 - `.github/copilot-instructions.md` — §8 Heartbeat Protocol procedure expanded from 6 to 7 steps: new step 3 runs the Retrospective on task-completion and explicit triggers; "When to fire" list expanded with task completion; step 7 updated with retrospective Q4/Q5 exception to silent-when-healthy rule.
 - `docs/SETUP-GUIDE.md` — "Six files" → "Seven files" in Step 3; HEARTBEAT.md row added to identity files table.
 - `docs/AGENTS-GUIDE.md` — heartbeat trigger phrases added to canonical triggers table.
-- `template/workspace/HEARTBEAT.md` — retrospective questions rewritten for observable anchoring: Q1 now references concrete errors/corrections/backtracking; Q2 replaced ("Ambition check" → "Scope audit") targeting factual scope drift with write target changed from Agent Notes to MEMORY.md (Known Gotchas); Q3 sharpened to compare original request against delivered result; Q4 expanded with example issue categories; Q6 redesigned to remove emotion inference (observable signals only); Q7 now enforces structured "When [situation], do [action]" format. New Q8 "Correction log" added — captures user corrections as highest-value feedback signal. Research grounding: Reflexion (Shinn et al., NeurIPS 2023), ExpeL (Zhao et al., 2024), Limits of Self-Correction (Huang et al., 2024).
+- `template/workspace/operations/HEARTBEAT.md` — retrospective questions rewritten for observable anchoring: Q1 now references concrete errors/corrections/backtracking; Q2 replaced ("Ambition check" → "Scope audit") targeting factual scope drift with write target changed from Agent Notes to MEMORY.md (Known Gotchas); Q3 sharpened to compare original request against delivered result; Q4 expanded with example issue categories; Q6 redesigned to remove emotion inference (observable signals only); Q7 now enforces structured "When [situation], do [action]" format. New Q8 "Correction log" added — captures user corrections as highest-value feedback signal. Research grounding: Reflexion (Shinn et al., NeurIPS 2023), ExpeL (Zhao et al., 2024), Limits of Self-Correction (Huang et al., 2024).
 - `docs/INSTRUCTIONS-GUIDE.md` — retrospective description updated from 7 to 8 questions; "reasoning" → "reasoning heuristics"; "observable events" qualifier added.
 - `docs/HEARTBEAT-GUIDE.md` — retrospective section updated from 7 to 8 questions; question table rewritten with observable-anchored wording; new "Design rationale" subsection with research citations; reporting contract updated (Q1–3, Q6–8 silent); interaction table updated for scope audit (Q2), correction log (Q8); customisation example renumbered.
 
@@ -943,7 +943,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `template/METRICS.md` — 6 new columns: Deploy Freq, Lead Time, CFR, MTTR, AI Accept Rate, Context Resets. New `## DORA definitions` section with Green/Warn/High thresholds. 4 new placeholder tokens (`{{DEPLOY_FREQ_TARGET}}`, `{{LEAD_TIME_TARGET}}`, `{{CFR_TARGET}}`, `{{MTTR_TARGET}}`).
 - `.github/workflows/ci.yml` — new `actionlint:` job using `raven-actions/actionlint@v2`; catches expression type errors, script injection, and unknown inputs in workflow files.
 - `.github/dependabot.yml` — GitHub Actions dependency management with weekly schedule, grouped minor/patch updates, conventional commit prefix (`ci`), and 5-PR limit.
-- `template/workspace/MEMORY.md` — 4 new structured agent-writable sections: Architectural Decisions, Recurring Error Patterns, Team Conventions Discovered, Known Gotchas (all as append-only tables). New `## Maintenance Protocol` section with quarterly review cadence.
+- `template/workspace/knowledge/MEMORY.md` — 4 new structured agent-writable sections: Architectural Decisions, Recurring Error Patterns, Team Conventions Discovered, Known Gotchas (all as append-only tables). New `## Maintenance Protocol` section with quarterly review cadence.
 - `.github/ISSUE_TEMPLATE/bug_report.yml` — added area options: Skills Protocol (§12), Waste Catalogue (§6).
 - `.github/ISSUE_TEMPLATE/feature_request.yml` — added area options: Skills Protocol (§12), Waste Catalogue (§6), Path-Specific Instructions, Prompt Files, MCP Integration.
 
@@ -981,7 +981,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `.github/workflows/ci.yml` — §1–§11 section check updated to §1–§12; `docs/SKILLS-GUIDE.md` added to required files.
 - `docs/INSTRUCTIONS-GUIDE.md` — "eleven numbered sections" → "twelve numbered sections (§1–§12)"; added full §12 writeup with Scan/Search/Create stages and customisation guidance.
 - `docs/SETUP-GUIDE.md` — question counts updated (14 → 15, 19 → 20); A15 row added to question table; Expert rows renumbered E16–E20; "19-row" → "20-row" User Preferences; Step 2.8 skills scaffolding section added.
-- `template/workspace/BOOTSTRAP.md` — skills row added to files table; new "Skills" section explaining `.github/skills/`.
+- `template/workspace/identity/BOOTSTRAP.md` — skills row added to files table; new "Skills" section explaining `.github/skills/`.
 
 ---
 
@@ -1053,20 +1053,20 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `§11 — Tool Protocol` in `.github/copilot-instructions.md` — structured decision tree for tool use, adaptation, online search (MCP registry → GitHub → Awesome lists → stack registries → official docs), building from scratch, evaluating reusability, and saving to the toolbox.
 - `.copilot/tools/` toolbox convention — lazy-created directory with `INDEX.md` catalogue where agents save reusable tools.
 - `AGENTS.md` — "Tool operations" trigger phrase section; `.copilot/tools/INDEX.md` added to setup outputs table and file map; toolbox canonical triggers added.
-- `template/workspace/TOOLS.md` — toolbox section explaining how to use `.copilot/tools/` and when to save.
+- `template/workspace/knowledge/TOOLS.md` — toolbox section explaining how to use `.copilot/tools/` and when to save.
 - `template/BIBLIOGRAPHY.md` — Toolbox section stub.
-- `template/workspace/BOOTSTRAP.md` — toolbox lazy-creation note.
+- `template/workspace/identity/BOOTSTRAP.md` — toolbox lazy-creation note.
 - `§2 — Review Mode` Extension Review subsection — agents audit VS Code extensions, detect project stack, and recommend additions/removals. Full protocol:
   - Step 0: asks user to run `code --list-extensions | sort` (Copilot chat cannot enumerate installed extensions directly)
   - Built-in stack detection table with 14 stack mappings: Bash, JS/ESLint, JS/Oxc, JS/Biome, Python, Rust, Go, C#, Java, Docker, Vue, Svelte, Markdown, CSS, YAML, TOML
   - `oxc.oxc-vscode` confirmed to cover both oxlint **and** oxfmt — single extension for both tools
   - Unknown-stack research step: searches VS Code Marketplace, filters by quality (>100k installs, ≥4.0 rating, updated <2yr ago), adds qualifying finds to the report
-  - Persists new stack → extension mappings to `.copilot/workspace/TOOLS.md` "Extension registry" for future audits in this project
+  - Persists new stack → extension mappings to `.copilot/workspace/knowledge/TOOLS.md` "Extension registry" for future audits in this project
   - Three-category report: Missing · Redundant · Unknown (resolved via Marketplace research)
   - Does not auto-install; waits for explicit user action
 - `AGENTS.md` — "Extension review" trigger phrase section; *"Review extensions"* added to canonical triggers table.
 - `docs/EXTENSION-REVIEW-GUIDE.md` — plain-English guide to the Extension Review feature (consistent with existing `docs/` guides).
-- `template/workspace/TOOLS.md` — "Extension registry" stub table for persisting unknown-stack discoveries across sessions.
+- `template/workspace/knowledge/TOOLS.md` — "Extension registry" stub table for persisting unknown-stack discoveries across sessions.
 
 ### Changed
 
@@ -1100,7 +1100,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 - `AGENTS.md` — added four `.github/agents/*.agent.md` entries to file map and bootstrap outputs table.
 - `UPDATE.md` — corrected all `## 10. Project-Specific Overrides` references to `## §10 — Project-Specific Overrides`; replaced ASCII-art pre-flight report block with clean markdown table (~1 400 chars saved); updated stale section names in diff example.
 - `template/BIBLIOGRAPHY.md` — added "Model-pinned agents" section with all four agent file entries.
-- `template/workspace/BOOTSTRAP.md` — added four agent file rows to setup outputs table.
+- `template/workspace/identity/BOOTSTRAP.md` — added four agent file rows to setup outputs table.
 - `SETUP.md` — Step 2.5 now offers fetching agent files directly from the template repo as the preferred option, with inline stubs as fallback.
 
 ### Fixed
@@ -1176,12 +1176,12 @@ Initial public release. All features below ship in this version.
 
 #### Workspace identity files
 
-- `template/workspace/IDENTITY.md` — agent self-description stub.
-- `template/workspace/SOUL.md` — values & reasoning patterns stub.
-- `template/workspace/USER.md` — user profile stub.
-- `template/workspace/TOOLS.md` — tool usage patterns stub.
-- `template/workspace/MEMORY.md` — memory strategy stub.
-- `template/workspace/BOOTSTRAP.md` — permanent setup origin record stub.
+- `template/workspace/identity/IDENTITY.md` — agent self-description stub.
+- `template/workspace/identity/SOUL.md` — values & reasoning patterns stub.
+- `template/workspace/knowledge/USER.md` — user profile stub.
+- `template/workspace/knowledge/TOOLS.md` — tool usage patterns stub.
+- `template/workspace/knowledge/MEMORY.md` — memory strategy stub.
+- `template/workspace/identity/BOOTSTRAP.md` — permanent setup origin record stub.
 
 #### Documentation stubs
 

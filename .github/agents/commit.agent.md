@@ -1,6 +1,6 @@
 ---
 name: Commit
-description: Stage, preflight, commit, push, tag, and manage releases — applying the consumer's commit-style preferences from .copilot/workspace/commit-style.md
+description: Stage, preflight, commit, push, tag, and manage releases — applying the consumer's commit-style preferences from .copilot/workspace/operations/commit-style.md
 argument-hint: "Say 'commit my changes', 'stage and commit', 'push changes', 'tag this version', or 'create a release'"
 model:
   - GPT-5.1
@@ -32,7 +32,7 @@ to widen the fix scope beyond the proposed commit.
 
 ## On every invocation
 
-1. **Read `.copilot/workspace/commit-style.md`** before doing anything. Apply every preference defined there.
+1. **Read `.copilot/workspace/operations/commit-style.md`** before doing anything. Apply every preference defined there.
    - If the file is missing, fall back to the `conventional-commit` skill defaults (Conventional Commits 1.0).
    - If the file exists but has no entry for a preference, use the conventional-commit default for that field.
 

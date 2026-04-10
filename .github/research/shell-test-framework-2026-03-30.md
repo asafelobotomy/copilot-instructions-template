@@ -20,13 +20,13 @@ session.
 One-line strict Bash snippet:
 
 ```bash
-bash scripts/tests/run-isolated-shell.sh --shell bash --strict --command 'printf "framework-note\n"'
+bash scripts/harness/run-isolated-shell.sh --shell bash --strict --command 'printf "framework-note\n"'
 ```
 
 Multi-line strict Bash snippet:
 
 ```bash
-bash scripts/tests/run-isolated-shell-stdin.sh --shell bash --strict <<'EOF'
+bash scripts/harness/run-isolated-shell-stdin.sh --shell bash --strict <<'EOF'
 printf 'framework-note\n'
 EOF
 ```

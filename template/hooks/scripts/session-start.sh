@@ -80,8 +80,8 @@ fi
 
 # Check heartbeat pulse
 PULSE="unknown"
-if [[ -f .copilot/workspace/HEARTBEAT.md ]]; then
-  PULSE=$(grep -m1 'HEARTBEAT' .copilot/workspace/HEARTBEAT.md 2>/dev/null | head -1 || echo "unknown")
+if [[ -f .copilot/workspace/operations/HEARTBEAT.md ]]; then
+  PULSE=$(grep -m1 'HEARTBEAT' .copilot/workspace/operations/HEARTBEAT.md 2>/dev/null | head -1 || echo "unknown")
 fi
 
 # Build compact specialist roster from routing manifest (fallback to defaults).

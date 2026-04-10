@@ -15,7 +15,7 @@ INPUT_JSON=$(cat 2>/dev/null || echo "")
 clock_summary() {
   local script_dir
   command -v python3 >/dev/null 2>&1 || return 0
-  [[ -f .copilot/workspace/state.json || -f .copilot/workspace/.heartbeat-events.jsonl ]] || return 0
+  [[ -f .copilot/workspace/runtime/state.json || -f .copilot/workspace/runtime/.heartbeat-events.jsonl ]] || return 0
 
   script_dir="$(cd "$(dirname "$0")" && pwd)"
   python3 "$script_dir/heartbeat_clock_summary.py" 2>/dev/null || true
@@ -46,7 +46,7 @@ except Exception:
 }
 
 extract_memory_summary() {
-  local memory_file=".copilot/workspace/MEMORY.md"
+  local memory_file=".copilot/workspace/knowledge/MEMORY.md"
 
   [[ -f "$memory_file" ]] || return 0
 
@@ -135,7 +135,7 @@ PY
 }
 
 extract_soul_summary() {
-  local soul_file=".copilot/workspace/SOUL.md"
+  local soul_file=".copilot/workspace/identity/SOUL.md"
 
   [[ -f "$soul_file" ]] || return 0
 
@@ -179,8 +179,8 @@ TRIGGER=$(extract_trigger "$INPUT_JSON")
 append_summary_line "Trigger" "$TRIGGER"
 
 # Heartbeat pulse
-if [[ -f .copilot/workspace/HEARTBEAT.md ]]; then
-  PULSE=$(grep -m1 'HEARTBEAT' .copilot/workspace/HEARTBEAT.md 2>/dev/null || echo "unknown")
+if [[ -f .copilot/workspace/operations/HEARTBEAT.md ]]; then
+  PULSE=$(grep -m1 'HEARTBEAT' .copilot/workspace/operations/HEARTBEAT.md 2>/dev/null || echo "unknown")
   append_summary_line "Heartbeat" "$PULSE"
 fi
 

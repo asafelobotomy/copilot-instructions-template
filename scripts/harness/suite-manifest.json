@@ -13,7 +13,7 @@
         "command": "bash",
         "label": "PowerShell",
         "probeArgs": [
-          "scripts/tests/resolve-powershell.sh",
+          "scripts/harness/resolve-powershell.sh",
           "--check"
         ]
       }

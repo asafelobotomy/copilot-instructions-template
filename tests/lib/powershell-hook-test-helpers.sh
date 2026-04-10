@@ -5,7 +5,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/test-helpers.sh"
 
 resolve_powershell_bin() {
-  bash "$REPO_ROOT/scripts/tests/resolve-powershell.sh"
+  bash "$REPO_ROOT/scripts/harness/resolve-powershell.sh"
 }
 
 init_powershell_hook_test_context() {

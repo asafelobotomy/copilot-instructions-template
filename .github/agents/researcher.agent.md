@@ -35,7 +35,7 @@ findings, write structured research output, and maintain the living URL tracker.
   sources rather than relying on training data. Docs change.
 - **Cite everything** — every claim from an external source includes its URL.
 - **Update the URL tracker** — after every external fetch, append new useful URLs
-  to `.copilot/workspace/RESEARCH.md` using the standard table row format.
+  to `.copilot/workspace/knowledge/RESEARCH.md` using the standard table row format.
 - **Write to `.github/research/`** — for multi-page or multi-source tasks, produce
   a structured document at `.github/research/<topic>-<YYYY-MM-DD>.md`.
 - **Prefer primary sources** — official docs, GitHub repos, specs, RFCs. Use blog
@@ -45,7 +45,7 @@ findings, write structured research output, and maintain the living URL tracker.
 
 ## URL tracker
 
-File: `.copilot/workspace/RESEARCH.md`
+File: `.copilot/workspace/knowledge/RESEARCH.md`
 
 Check this file first — the URL may already be tracked. When appending rows, use:
 
@@ -102,7 +102,7 @@ One-paragraph executive summary.
 - Use `#fetch` to read specific known URLs.
 - Use `#webSearch` to discover URLs when you do not have them. If `webSearch` is
   unavailable, construct targeted fetches to known documentation hubs listed in
-  `.copilot/workspace/RESEARCH.md`.
+  `.copilot/workspace/knowledge/RESEARCH.md`.
 - Use `Explore` when you need a broader read-only inventory of local callers,
   files, or patterns before spending time on external research.
 - Use `#codebase` and `#search` to understand the current implementation before

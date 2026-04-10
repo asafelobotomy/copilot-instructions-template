@@ -49,8 +49,8 @@ echo ""
 
 echo "5. Diary injection when diary file exists"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-mkdir -p "$TMP/.copilot/workspace/diaries"
-printf '# Explore Diary\n\n- 2026-01-01T00:00:00Z Found auth bug in handler\n- 2026-01-02T00:00:00Z Refactored cache layer\n' > "$TMP/.copilot/workspace/diaries/explore.md"
+mkdir -p "$TMP/.copilot/workspace/knowledge/diaries"
+printf '# Explore Diary\n\n- 2026-01-01T00:00:00Z Found auth bug in handler\n- 2026-01-02T00:00:00Z Refactored cache layer\n' > "$TMP/.copilot/workspace/knowledge/diaries/explore.md"
 output=$(cd "$TMP" && printf '%s' '{"agentName":"Explore"}' | bash "$SCRIPT" 2>/dev/null)
 status=$?
 assert_success "diary injection exits zero" "$status"

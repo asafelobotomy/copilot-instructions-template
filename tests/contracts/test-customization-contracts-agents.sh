@@ -62,7 +62,7 @@ if "### D13" not in text:
     raise SystemExit("audit.agent.md missing D13 check definition")
 if "workspace-index.json" not in text:
     raise SystemExit("D13 must reference workspace-index.json as canonical inventory")
-if "raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/workspace/workspace-index.json" not in text:
+if "raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/workspace/operations/workspace-index.json" not in text:
     raise SystemExit("D13 must contain the upstream workspace-index.json fetch URL")
 for needle in [
     "prompts",

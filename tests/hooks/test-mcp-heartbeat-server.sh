@@ -81,8 +81,8 @@ echo ""
 echo "2. Significant session metrics produce reflection prompts and complete sentinel"
 TMP_SESSION=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_SESSION")
 printf '.copilot/\n' >> "$TMP_SESSION/.git/info/exclude"
-mkdir -p "$TMP_SESSION/.copilot/workspace"
-cat > "$TMP_SESSION/.copilot/workspace/state.json" <<'JSON'
+mkdir -p "$TMP_SESSION/.copilot/workspace/identity" "$TMP_SESSION/.copilot/workspace/knowledge/diaries" "$TMP_SESSION/.copilot/workspace/operations" "$TMP_SESSION/.copilot/workspace/runtime"
+cat > "$TMP_SESSION/.copilot/workspace/runtime/state.json" <<'JSON'
 {
   "session_id": "sess-heartbeat",
   "session_start_epoch": 1704067200,
@@ -93,12 +93,12 @@ cat > "$TMP_SESSION/.copilot/workspace/state.json" <<'JSON'
   "copilot_edit_count": 6
 }
 JSON
-cat > "$TMP_SESSION/.copilot/workspace/.heartbeat-events.jsonl" <<'EOF'
+cat > "$TMP_SESSION/.copilot/workspace/runtime/.heartbeat-events.jsonl" <<'EOF'
 {"trigger":"compaction","ts":1704068100,"ts_utc":"2024-01-01T00:15:00Z"}
 EOF
-printf 'heuristics\n' > "$TMP_SESSION/.copilot/workspace/SOUL.md"
-printf 'memory\n' > "$TMP_SESSION/.copilot/workspace/MEMORY.md"
-printf 'user\n' > "$TMP_SESSION/.copilot/workspace/USER.md"
+printf 'heuristics\n' > "$TMP_SESSION/.copilot/workspace/identity/SOUL.md"
+printf 'memory\n' > "$TMP_SESSION/.copilot/workspace/knowledge/MEMORY.md"
+printf 'user\n' > "$TMP_SESSION/.copilot/workspace/knowledge/USER.md"
 output=$(run_reflect "$TMP_SESSION")
 status=$?
 assert_success "significant session exits zero" "$status"
@@ -119,9 +119,9 @@ assert "6 files edited (committed)" in joined
 assert "Context compaction occurred" in joined
 assert "test coverage and documentation kept pace" in joined
 '
-assert_matches "sentinel is marked complete" "$(cat "$TMP_SESSION/.copilot/workspace/.heartbeat-session")" 'sess-heartbeat\|.*\|complete'
+assert_matches "sentinel is marked complete" "$(cat "$TMP_SESSION/.copilot/workspace/runtime/.heartbeat-session")" 'sess-heartbeat\|.*\|complete'
 assert_python_in_root "session_reflect appends a completion event" "$TMP_SESSION" '
-events = [json.loads(line) for line in (root / ".copilot/workspace/.heartbeat-events.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
+events = [json.loads(line) for line in (root / ".copilot/workspace/runtime/.heartbeat-events.jsonl").read_text(encoding="utf-8").splitlines() if line.strip()]
 event = events[-1]
 assert event["trigger"] == "session_reflect"
 assert event["detail"] == "complete"
@@ -132,8 +132,8 @@ echo ""
 echo "3. Reflection metrics ignore compactions from other sessions"
 TMP_SCOPE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_SCOPE")
 printf '.copilot/\n' >> "$TMP_SCOPE/.git/info/exclude"
-mkdir -p "$TMP_SCOPE/.copilot/workspace"
-cat > "$TMP_SCOPE/.copilot/workspace/state.json" <<'JSON'
+mkdir -p "$TMP_SCOPE/.copilot/workspace/identity" "$TMP_SCOPE/.copilot/workspace/knowledge/diaries" "$TMP_SCOPE/.copilot/workspace/operations" "$TMP_SCOPE/.copilot/workspace/runtime"
+cat > "$TMP_SCOPE/.copilot/workspace/runtime/state.json" <<'JSON'
 {
     "session_id": "sess-current",
     "session_start_epoch": 1704067200,
@@ -144,7 +144,7 @@ cat > "$TMP_SCOPE/.copilot/workspace/state.json" <<'JSON'
     "copilot_edit_count": 6
 }
 JSON
-cat > "$TMP_SCOPE/.copilot/workspace/.heartbeat-events.jsonl" <<'EOF'
+cat > "$TMP_SCOPE/.copilot/workspace/runtime/.heartbeat-events.jsonl" <<'EOF'
 {"detail":"complete","session_id":"sess-old","trigger":"session_reflect","ts":1704067000,"ts_utc":"2023-12-31T23:56:40Z"}
 {"session_id":"sess-old","trigger":"compaction","ts":1704067100,"ts_utc":"2023-12-31T23:58:20Z"}
 {"session_id":"sess-current","trigger":"compaction","ts":1704068100,"ts_utc":"2024-01-01T00:15:00Z"}
@@ -165,8 +165,8 @@ echo ""
 
 echo "5. Corrupt state falls back safely and still completes the sentinel"
 TMP_CORRUPT=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CORRUPT")
-mkdir -p "$TMP_CORRUPT/.copilot/workspace"
-printf 'not json\n' > "$TMP_CORRUPT/.copilot/workspace/state.json"
+mkdir -p "$TMP_CORRUPT/.copilot/workspace/identity" "$TMP_CORRUPT/.copilot/workspace/knowledge/diaries" "$TMP_CORRUPT/.copilot/workspace/operations" "$TMP_CORRUPT/.copilot/workspace/runtime"
+printf 'not json\n' > "$TMP_CORRUPT/.copilot/workspace/runtime/state.json"
 output=$(run_reflect "$TMP_CORRUPT")
 status=$?
 assert_success "corrupt state exits zero" "$status"
@@ -176,7 +176,7 @@ payload = json.loads(os.environ["REFLECT_OUTPUT"])
 assert payload["magnitude"] == "small"
 assert payload["metrics"]["files_changed"] == 0
 '
-assert_matches "corrupt state sentinel uses unknown session id" "$(cat "$TMP_CORRUPT/.copilot/workspace/.heartbeat-session")" 'unknown\|.*\|complete'
+assert_matches "corrupt state sentinel uses unknown session id" "$(cat "$TMP_CORRUPT/.copilot/workspace/runtime/.heartbeat-session")" 'unknown\|.*\|complete'
 echo ""
 
 echo "6. memory_protocol key is always present in response"
@@ -191,8 +191,8 @@ echo ""
 
 echo "7. _load_workspace_cues extracts SOUL.md values and stops at section heading"
 TMP_CUES=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CUES")
-mkdir -p "$TMP_CUES/.copilot/workspace"
-cat > "$TMP_CUES/.copilot/workspace/state.json" <<'JSON'
+mkdir -p "$TMP_CUES/.copilot/workspace/identity" "$TMP_CUES/.copilot/workspace/knowledge/diaries" "$TMP_CUES/.copilot/workspace/operations" "$TMP_CUES/.copilot/workspace/runtime"
+cat > "$TMP_CUES/.copilot/workspace/runtime/state.json" <<'JSON'
 {
   "session_id": "sess-cues",
   "session_start_epoch": 1704067200,
@@ -203,7 +203,7 @@ cat > "$TMP_CUES/.copilot/workspace/state.json" <<'JSON'
   "copilot_edit_count": 10
 }
 JSON
-cat > "$TMP_CUES/.copilot/workspace/SOUL.md" <<'EOF'
+cat > "$TMP_CUES/.copilot/workspace/identity/SOUL.md" <<'EOF'
 # Values
 
 - **YAGNI** — do not build unneeded.
@@ -213,7 +213,7 @@ cat > "$TMP_CUES/.copilot/workspace/SOUL.md" <<'EOF'
 
 - **Leaky heuristic** — this should NOT appear.
 EOF
-cat > "$TMP_CUES/.copilot/workspace/USER.md" <<'EOF'
+cat > "$TMP_CUES/.copilot/workspace/knowledge/USER.md" <<'EOF'
 # User Profile
 
 | Attribute | Observed value |
@@ -222,7 +222,7 @@ cat > "$TMP_CUES/.copilot/workspace/USER.md" <<'EOF'
 | Autonomy | High |
 | Empty | *(to be discovered)* |
 EOF
-cat > "$TMP_CUES/.copilot/workspace/MEMORY.md" <<'EOF'
+cat > "$TMP_CUES/.copilot/workspace/knowledge/MEMORY.md" <<'EOF'
 memory
 EOF
 output=$(run_reflect "$TMP_CUES")
@@ -246,8 +246,8 @@ echo ""
 
 echo "8. _load_workspace_cues gracefully handles missing workspace files"
 TMP_NOCUES=$(mktemp -d); CLEANUP_DIRS+=("$TMP_NOCUES")
-mkdir -p "$TMP_NOCUES/.copilot/workspace"
-cat > "$TMP_NOCUES/.copilot/workspace/state.json" <<'JSON'
+mkdir -p "$TMP_NOCUES/.copilot/workspace/identity" "$TMP_NOCUES/.copilot/workspace/knowledge/diaries" "$TMP_NOCUES/.copilot/workspace/operations" "$TMP_NOCUES/.copilot/workspace/runtime"
+cat > "$TMP_NOCUES/.copilot/workspace/runtime/state.json" <<'JSON'
 {
   "session_id": "sess-nocues",
   "session_start_epoch": 1704067200,
@@ -272,9 +272,9 @@ echo ""
 echo "9. Read-only workspace artifacts fall back to TMPDIR storage"
 TMP_READONLY=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_READONLY")
 printf '.copilot/\n' >> "$TMP_READONLY/.git/info/exclude"
-mkdir -p "$TMP_READONLY/.copilot/workspace"
+mkdir -p "$TMP_READONLY/.copilot/workspace/identity" "$TMP_READONLY/.copilot/workspace/knowledge/diaries" "$TMP_READONLY/.copilot/workspace/operations" "$TMP_READONLY/.copilot/workspace/runtime"
 mkdir -p "$TMP_READONLY/runtime-tmp"
-cat > "$TMP_READONLY/.copilot/workspace/state.json" <<'JSON'
+cat > "$TMP_READONLY/.copilot/workspace/runtime/state.json" <<'JSON'
 {
   "session_id": "sess-readonly",
   "session_start_epoch": 1704067200,
@@ -285,10 +285,12 @@ cat > "$TMP_READONLY/.copilot/workspace/state.json" <<'JSON'
   "copilot_edit_count": 6
 }
 JSON
+chmod 0555 "$TMP_READONLY/.copilot/workspace/runtime"
 chmod 0555 "$TMP_READONLY/.copilot/workspace"
-output=$(CLAUDE_TMPDIR= TMPDIR="$TMP_READONLY/runtime-tmp" run_reflect "$TMP_READONLY")
+output=$(CLAUDE_TMPDIR='' TMPDIR="$TMP_READONLY/runtime-tmp" run_reflect "$TMP_READONLY")
 status=$?
 chmod 0755 "$TMP_READONLY/.copilot/workspace"
+chmod 0755 "$TMP_READONLY/.copilot/workspace/runtime"
 assert_success "read-only workspace exits zero" "$status"
 assert_valid_json "read-only workspace output is valid JSON" "$output"
 REFLECT_OUTPUT="$output" assert_python "read-only workspace still reports the session" '
@@ -318,9 +320,9 @@ echo ""
 echo "10. Read-only TMPDIR falls through to home cache storage"
 TMP_HOMECACHE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_HOMECACHE")
 printf '.copilot/\n' >> "$TMP_HOMECACHE/.git/info/exclude"
-mkdir -p "$TMP_HOMECACHE/.copilot/workspace"
+mkdir -p "$TMP_HOMECACHE/.copilot/workspace/identity" "$TMP_HOMECACHE/.copilot/workspace/knowledge/diaries" "$TMP_HOMECACHE/.copilot/workspace/operations" "$TMP_HOMECACHE/.copilot/workspace/runtime"
 mkdir -p "$TMP_HOMECACHE/blocked-tmp"
-cat > "$TMP_HOMECACHE/.copilot/workspace/state.json" <<'JSON'
+cat > "$TMP_HOMECACHE/.copilot/workspace/runtime/state.json" <<'JSON'
 {
   "session_id": "sess-homecache",
   "session_start_epoch": 1704067200,
@@ -331,11 +333,13 @@ cat > "$TMP_HOMECACHE/.copilot/workspace/state.json" <<'JSON'
   "copilot_edit_count": 6
 }
 JSON
+chmod 0555 "$TMP_HOMECACHE/.copilot/workspace/runtime"
 chmod 0555 "$TMP_HOMECACHE/.copilot/workspace"
 chmod 0555 "$TMP_HOMECACHE/blocked-tmp"
-output=$(CLAUDE_TMPDIR= XDG_CACHE_HOME="$TMP_HOMECACHE/.cache" HOME="$TMP_HOMECACHE" TMPDIR="$TMP_HOMECACHE/blocked-tmp" TEST_FORCE_GETTEMPDIR="$TMP_HOMECACHE/blocked-tmp" run_reflect "$TMP_HOMECACHE")
+output=$(CLAUDE_TMPDIR='' XDG_CACHE_HOME="$TMP_HOMECACHE/.cache" HOME="$TMP_HOMECACHE" TMPDIR="$TMP_HOMECACHE/blocked-tmp" TEST_FORCE_GETTEMPDIR="$TMP_HOMECACHE/blocked-tmp" run_reflect "$TMP_HOMECACHE")
 status=$?
 chmod 0755 "$TMP_HOMECACHE/.copilot/workspace"
+chmod 0755 "$TMP_HOMECACHE/.copilot/workspace/runtime"
 chmod 0755 "$TMP_HOMECACHE/blocked-tmp"
 assert_success "blocked TMPDIR exits zero" "$status"
 assert_valid_json "blocked TMPDIR output is valid JSON" "$output"
@@ -359,8 +363,8 @@ echo ""
 echo "11. CLAUDE_TMPDIR is preferred when TMPDIR is blocked"
 TMP_CLAUDE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_CLAUDE")
 printf '.copilot/\n' >> "$TMP_CLAUDE/.git/info/exclude"
-mkdir -p "$TMP_CLAUDE/.copilot/workspace" "$TMP_CLAUDE/blocked-tmp" "$TMP_CLAUDE/claude-tmp"
-cat > "$TMP_CLAUDE/.copilot/workspace/state.json" <<'JSON'
+mkdir -p "$TMP_CLAUDE/.copilot/workspace/identity" "$TMP_CLAUDE/.copilot/workspace/knowledge/diaries" "$TMP_CLAUDE/.copilot/workspace/operations" "$TMP_CLAUDE/.copilot/workspace/runtime" "$TMP_CLAUDE/blocked-tmp" "$TMP_CLAUDE/claude-tmp"
+cat > "$TMP_CLAUDE/.copilot/workspace/runtime/state.json" <<'JSON'
 {
   "session_id": "sess-claude",
   "session_start_epoch": 1704067200,
@@ -371,11 +375,13 @@ cat > "$TMP_CLAUDE/.copilot/workspace/state.json" <<'JSON'
   "copilot_edit_count": 6
 }
 JSON
+chmod 0555 "$TMP_CLAUDE/.copilot/workspace/runtime"
 chmod 0555 "$TMP_CLAUDE/.copilot/workspace"
 chmod 0555 "$TMP_CLAUDE/blocked-tmp"
 output=$(CLAUDE_TMPDIR="$TMP_CLAUDE/claude-tmp" TMPDIR="$TMP_CLAUDE/blocked-tmp" TEST_FORCE_GETTEMPDIR="$TMP_CLAUDE/blocked-tmp" run_reflect "$TMP_CLAUDE")
 status=$?
 chmod 0755 "$TMP_CLAUDE/.copilot/workspace"
+chmod 0755 "$TMP_CLAUDE/.copilot/workspace/runtime"
 chmod 0755 "$TMP_CLAUDE/blocked-tmp"
 assert_success "blocked TMPDIR with CLAUDE_TMPDIR exits zero" "$status"
 assert_valid_json "blocked TMPDIR with CLAUDE_TMPDIR output is valid JSON" "$output"
@@ -399,8 +405,8 @@ echo ""
 echo "12. Stale sentinel temp files do not block fallback storage"
 TMP_STALE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_STALE")
 printf '.copilot/\n' >> "$TMP_STALE/.git/info/exclude"
-mkdir -p "$TMP_STALE/.copilot/workspace" "$TMP_STALE/runtime-tmp"
-cat > "$TMP_STALE/.copilot/workspace/state.json" <<'JSON'
+mkdir -p "$TMP_STALE/.copilot/workspace/identity" "$TMP_STALE/.copilot/workspace/knowledge/diaries" "$TMP_STALE/.copilot/workspace/operations" "$TMP_STALE/.copilot/workspace/runtime" "$TMP_STALE/runtime-tmp"
+cat > "$TMP_STALE/.copilot/workspace/runtime/state.json" <<'JSON'
 {
   "session_id": "sess-stale",
   "session_start_epoch": 1704067200,
@@ -411,11 +417,13 @@ cat > "$TMP_STALE/.copilot/workspace/state.json" <<'JSON'
   "copilot_edit_count": 6
 }
 JSON
-printf 'stale\n' > "$TMP_STALE/.copilot/workspace/.heartbeat-session.tmp"
+printf 'stale\n' > "$TMP_STALE/.copilot/workspace/runtime/.heartbeat-session.tmp"
+chmod 0555 "$TMP_STALE/.copilot/workspace/runtime"
 chmod 0555 "$TMP_STALE/.copilot/workspace"
-output=$(CLAUDE_TMPDIR= TMPDIR="$TMP_STALE/runtime-tmp" run_reflect "$TMP_STALE")
+output=$(CLAUDE_TMPDIR='' TMPDIR="$TMP_STALE/runtime-tmp" run_reflect "$TMP_STALE")
 status=$?
 chmod 0755 "$TMP_STALE/.copilot/workspace"
+chmod 0755 "$TMP_STALE/.copilot/workspace/runtime"
 assert_success "stale sentinel temp exits zero" "$status"
 assert_valid_json "stale sentinel temp output is valid JSON" "$output"
 assert_python_in_root "stale sentinel temp still falls back to runtime storage" "$TMP_STALE" '

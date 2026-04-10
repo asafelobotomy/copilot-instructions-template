@@ -90,7 +90,7 @@ def check_c1_consumer_companion_inventory(root: pathlib.Path | AuditContext) -> 
     """C1 — consumer companion inventory from workspace-index is complete on disk."""
     ctx = ensure_context(root)
     result = CheckResult("C1", "Consumer companion inventory completeness")
-    rel = ".copilot/workspace/workspace-index.json"
+    rel = ".copilot/workspace/operations/workspace-index.json"
 
     if ctx.repo_shape != "consumer":
         result.findings.append(Finding("C1", rel, INFO,

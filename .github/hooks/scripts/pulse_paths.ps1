@@ -111,7 +111,7 @@ function Get-PathFamily([string]$PathText) {
         $pathText -like '.github/workflows/*' -or
         $pathText -like 'scripts/release/*' -or
         $pathText -like 'scripts/sync/*' -or
-        $pathText -like 'scripts/validate/*' -or
+            $pathText -like 'scripts/ci/*' -or
         $pathText -like 'scripts/workspace/*'
     ) {
         return 'ci_release'
@@ -151,7 +151,7 @@ function Test-PathRequiresParity([string]$PathText) {
         $pathText -like 'template/instructions/*' -or
         $pathText -like '.github/prompts/*' -or
         $pathText -like 'template/prompts/*' -or
-        @('.copilot/workspace/workspace-index.json', 'template/workspace/workspace-index.json') -contains $pathText
+        @('.copilot/workspace/operations/workspace-index.json', 'template/workspace/operations/workspace-index.json') -contains $pathText
     )
 }
 

@@ -208,7 +208,7 @@ if payload["unmapped_paths"]:
 echo ""
 
 echo "35. repo workspace-index maps to sync and audit suites"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" ".copilot/workspace/workspace-index.json")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" ".copilot/workspace/operations/workspace-index.json")
 status=$?
 assert_success "selector exits zero on repo workspace-index" "$status"
 SELECTOR_OUTPUT="$output" assert_python "repo workspace-index maps to sync and audit suites" '
@@ -224,7 +224,7 @@ if payload["intermediate_phase_strategy"] != "targeted":
 echo ""
 
 echo "36. template workspace-index maps to sync and audit suites"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/workspace/workspace-index.json")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/workspace/operations/workspace-index.json")
 status=$?
 assert_success "selector exits zero on template workspace-index" "$status"
 SELECTOR_OUTPUT="$output" assert_python "template workspace-index maps to sync and audit suites" '

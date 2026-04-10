@@ -66,8 +66,8 @@ echo ""
 
 echo "9. HEARTBEAT.md pulse is included in session context"
 TMPDIR_HB=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_HB")
-mkdir -p "$TMPDIR_HB/.copilot/workspace"
-printf 'HEARTBEAT: green\n' > "$TMPDIR_HB/.copilot/workspace/HEARTBEAT.md"
+mkdir -p "$TMPDIR_HB/.copilot/workspace/identity" "$TMPDIR_HB/.copilot/workspace/knowledge/diaries" "$TMPDIR_HB/.copilot/workspace/operations" "$TMPDIR_HB/.copilot/workspace/runtime"
+printf 'HEARTBEAT: green\n' > "$TMPDIR_HB/.copilot/workspace/operations/HEARTBEAT.md"
 output=$(cd "$TMPDIR_HB" && echo '{}' | bash "$SCRIPT" 2>/dev/null)
 assert_matches "HEARTBEAT pulse in session context" "$output" "green"
 echo ""

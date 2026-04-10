@@ -72,7 +72,7 @@ Before running D1-D14, detect which layout you are auditing:
 - **Developer template repo**: `template/copilot-instructions.md`, `VERSION.md`,
   and `SETUP.md` are present.
 - **Consumer repo**: `.github/copilot-version.md` or
-  `.copilot/workspace/workspace-index.json` is present and
+  `.copilot/workspace/operations/workspace-index.json` is present and
   `template/copilot-instructions.md` is absent.
 - **Fallback**: if the layout is ambiguous, default to the consumer-safe subset.
   Do not assume template-repo-only files exist.
@@ -84,11 +84,11 @@ Use `codebase` for file contents, `fetch` for upstream version checks, and `gith
 - `.github/copilot-instructions.md` — installed instructions in any repo (must have zero `{{` tokens)
 - `template/copilot-instructions.md` — developer template repo only (must retain `{{PLACEHOLDER}}` tokens)
 - `.github/agents/*.agent.md` — all files in this directory
-- `.copilot/workspace/IDENTITY.md`
-- `.copilot/workspace/HEARTBEAT.md`
-- `.copilot/workspace/TOOLS.md`
-- `.copilot/workspace/USER.md`
-- `.copilot/workspace/BOOTSTRAP.md`
+- `.copilot/workspace/identity/IDENTITY.md`
+- `.copilot/workspace/operations/HEARTBEAT.md`
+- `.copilot/workspace/knowledge/TOOLS.md`
+- `.copilot/workspace/knowledge/USER.md`
+- `.copilot/workspace/identity/BOOTSTRAP.md`
 - `.github/copilot-version.md`
 - `AGENTS.md`
 - `.vscode/mcp.json`
@@ -210,7 +210,7 @@ Flag: `[INFO]` per drifted section. `[WARN]` if ≥ 5 of 9 sections drifted. `[W
 
 ### D13 — Companion file completeness (consumer repos only)
 
-Skip in developer repo. Fetch `raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/workspace/workspace-index.json`. Verify local project has all expected agents, skills, prompts, instructions, hook scripts, hook config, the setup workflow, and core `.copilot/workspace/` files. Inspect installed starter-kit payloads under `.github/starter-kits/*/` when present, and verify `.vscode/settings.json`, `.vscode/extensions.json`, and `.vscode/mcp.json` when the corresponding consumer surfaces exist.
+Skip in developer repo. Fetch `raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/workspace/operations/workspace-index.json`. Verify local project has all expected agents, skills, prompts, instructions, hook scripts, hook config, the setup workflow, and core `.copilot/workspace/` files. Inspect installed starter-kit payloads under `.github/starter-kits/*/` when present, and verify `.vscode/settings.json`, `.vscode/extensions.json`, and `.vscode/mcp.json` when the corresponding consumer surfaces exist.
 
 Flag: `[HIGH]` missing agent, shell hook, workflow, core workspace file, or installed starter-kit payload. `[WARN]` missing skill, prompt, instruction, or PS1 hook. `[INFO]` for user-added extras. `[WARN]` if fetch fails.
 

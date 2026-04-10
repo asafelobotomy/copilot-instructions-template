@@ -22,7 +22,7 @@ catch {
 $context = "Subagent governance: max depth 3. Inherited protocols: PDCA cycle, Tool Protocol, Skill Protocol. Agent: ${agentName}."
 
 $agentLower = $agentName.ToLowerInvariant()
-$diaryFile = Join-Path '.copilot/workspace/diaries' "${agentLower}.md"
+$diaryFile = Join-Path '.copilot/workspace/knowledge/diaries' "${agentLower}.md"
 if (Test-Path $diaryFile) {
   $diaryTail = Get-Content $diaryFile | Where-Object { $_.Trim() -ne '' } | Select-Object -Last 5
   if ($null -ne $diaryTail -and $diaryTail.Count -gt 0) {

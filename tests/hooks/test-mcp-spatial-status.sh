@@ -73,8 +73,8 @@ echo ""
 
 echo "2. Diary entries are returned"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-mkdir -p "$TMP/.copilot/workspace/diaries"
-cat > "$TMP/.copilot/workspace/diaries/review.md" <<'MD'
+mkdir -p "$TMP/.copilot/workspace/knowledge/diaries"
+cat > "$TMP/.copilot/workspace/knowledge/diaries/review.md" <<'MD'
 # Review Diary
 
 - 2026-01-01T00:00:00Z Found unused import
@@ -95,8 +95,8 @@ echo ""
 
 echo "3. Vocabulary table is extracted from ledger"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-mkdir -p "$TMP/.copilot/workspace"
-cat > "$TMP/.copilot/workspace/ledger.md" <<'MD'
+mkdir -p "$TMP/.copilot/workspace/identity" "$TMP/.copilot/workspace/knowledge/diaries" "$TMP/.copilot/workspace/operations" "$TMP/.copilot/workspace/runtime"
+cat > "$TMP/.copilot/workspace/operations/ledger.md" <<'MD'
 # Spatial Ledger
 
 | Term | Meaning |
@@ -118,8 +118,8 @@ echo ""
 
 echo "4. README.md in diaries is ignored"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-mkdir -p "$TMP/.copilot/workspace/diaries"
-cat > "$TMP/.copilot/workspace/diaries/README.md" <<'MD'
+mkdir -p "$TMP/.copilot/workspace/knowledge/diaries"
+cat > "$TMP/.copilot/workspace/knowledge/diaries/README.md" <<'MD'
 # Diaries
 
 - This is documentation, not a diary
@@ -135,9 +135,9 @@ echo ""
 
 echo "5. Multiple agent diaries are returned"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-mkdir -p "$TMP/.copilot/workspace/diaries"
-printf '# Code Diary\n\n- entry1\n- entry2\n' > "$TMP/.copilot/workspace/diaries/code.md"
-printf '# Audit Diary\n\n- finding1\n' > "$TMP/.copilot/workspace/diaries/audit.md"
+mkdir -p "$TMP/.copilot/workspace/knowledge/diaries"
+printf '# Code Diary\n\n- entry1\n- entry2\n' > "$TMP/.copilot/workspace/knowledge/diaries/code.md"
+printf '# Audit Diary\n\n- finding1\n' > "$TMP/.copilot/workspace/knowledge/diaries/audit.md"
 output=$(run_spatial "$TMP")
 status=$?
 assert_success "multi-diary exits zero" "$status"

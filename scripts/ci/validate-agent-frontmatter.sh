@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# scripts/validate/validate-agent-frontmatter.sh — validate all agent files have required frontmatter.
+# scripts/ci/validate-agent-frontmatter.sh — validate all agent files have required frontmatter.
 #
-# Usage: bash scripts/validate/validate-agent-frontmatter.sh
+# Usage: bash scripts/ci/validate-agent-frontmatter.sh
 # Exit 0: all agents valid. Exit 1: one or more errors.
 set -euo pipefail
 

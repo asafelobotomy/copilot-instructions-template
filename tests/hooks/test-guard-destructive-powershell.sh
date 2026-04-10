@@ -8,7 +8,7 @@ set -uo pipefail
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
 SCRIPT="$REPO_ROOT/template/hooks/scripts/guard-destructive.ps1"
-PWSH=$(bash "$REPO_ROOT/scripts/tests/resolve-powershell.sh" || true)
+PWSH=$(bash "$REPO_ROOT/scripts/harness/resolve-powershell.sh" || true)
 
 if [[ -z "$PWSH" ]]; then
   echo "PowerShell is required for tests/hooks/test-guard-destructive-powershell.sh"

@@ -39,8 +39,8 @@ This repo has two distinct layers that must never be mixed:
 | Task | Command |
 |------|---------|
 | Run all tests | `bash tests/run-all.sh` |
-| Run all tests (captured) | `bash scripts/tests/run-all-captured.sh` |
-| Select targeted tests | `bash scripts/tests/select-targeted-tests.sh <paths...>` |
+| Run all tests (captured) | `bash scripts/harness/run-all-captured.sh` |
+| Select targeted tests | `bash scripts/harness/select-targeted-tests.sh <paths...>` |
 | Type check | `echo "no type check configured"` |
 | Verify release-managed versions | `bash scripts/release/verify-version-references.sh` |
 | Sync workspace-index | `bash scripts/workspace/sync-workspace-index.sh --check` |
@@ -82,7 +82,7 @@ Every non-trivial change:
 
 - **Task complete** means the full user-visible task is finished end-to-end and the required verification has passed, not that one phase of a larger plan is done and not that one item in a multi-part TODO list is done.
 - During intermediate phases, prefer deterministic path-based targeted suites tied to the files or directories actually touched.
-- Use `bash scripts/tests/select-targeted-tests.sh <paths...>` to choose deterministic phase checks from changed paths when the mapping exists.
+- Use `bash scripts/harness/select-targeted-tests.sh <paths...>` to choose deterministic phase checks from changed paths when the mapping exists.
 - If multiple sub-parts are still in progress, do not treat a passing targeted subset as permission to declare the whole task complete.
 - Broaden early when changes touch shared helpers, broad policy surfaces, parity mirrors, or any area without a reliable targeted test mapping.
 - Final gate: before marking the full task complete, run the full suite with `bash tests/run-all.sh`.
@@ -146,7 +146,7 @@ Before acting on any medium-to-complex task:
 | `tests/` | Test suite — `bash tests/run-all.sh` |
 | `scripts/` | Utility scripts (sync-version, sync-workspace-index, sync-models, sync-template-parity, validate-agent-frontmatter, copilot\_audit) |
 | `starter-kits/` | VS Code agent plugin starter kits per language/stack |
-| `.copilot/workspace/` | Developer workspace identity files (incl. `RESEARCH.md` URL tracker) |
+| `.copilot/workspace/` | Developer workspace files — `identity/`, `knowledge/`, `operations/`, `runtime/` (gitignored) |
 
 ## Operating Modes
 
@@ -176,7 +176,7 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
   work, and
   `Organise` for file moves, path repair, or repository reshaping.
 - Tool Protocol: activate `.github/skills/tool-protocol/SKILL.md` before building any script.
-- Heartbeat: `.copilot/workspace/HEARTBEAT.md` — run at session start. Health digest emits on meaningful phase transitions and overlay changes, not a fixed tool-call cadence. On significant sessions (8+ files or 30+ active minutes), the Stop hook instructs the model to call the `session_reflect` MCP tool autonomously. Silent when healthy.
+- Heartbeat: `.copilot/workspace/operations/HEARTBEAT.md` — run at session start. Health digest emits on meaningful phase transitions and overlay changes, not a fixed tool-call cadence. On significant sessions (8+ files or 30+ active minutes), the Stop hook instructs the model to call the `session_reflect` MCP tool autonomously. Silent when healthy.
 
 ## User Preferences
 

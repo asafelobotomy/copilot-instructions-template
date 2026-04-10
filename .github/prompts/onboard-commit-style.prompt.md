@@ -1,11 +1,11 @@
 ---
 name: Onboard Commit Style
-description: Interview the user to establish their commit style preferences and write .copilot/workspace/commit-style.md
+description: Interview the user to establish their commit style preferences and write .copilot/workspace/operations/commit-style.md
 agent: agent
 tools: [editFiles, codebase]
 ---
 
-You are setting up the consumer's commit style preferences. Your goal is to populate `.copilot/workspace/commit-style.md` by asking a small number of targeted questions.
+You are setting up the consumer's commit style preferences. Your goal is to populate `.copilot/workspace/operations/commit-style.md` by asking a small number of targeted questions.
 
 **Do not write the file until you have all answers. Ask all questions together in a single message.**
 
@@ -27,6 +27,6 @@ You are setting up the consumer's commit style preferences. Your goal is to popu
 
 ## After collecting answers
 
-1. Write `.copilot/workspace/commit-style.md` with the populated preferences.
-2. Confirm to the user: "Commit style saved to `.copilot/workspace/commit-style.md`. The Commit agent will apply these preferences on every invocation."
+1. Write `.copilot/workspace/operations/commit-style.md` with the populated preferences.
+2. Confirm to the user: "Commit style saved to `.copilot/workspace/operations/commit-style.md`. The Commit agent will apply these preferences on every invocation."
 3. Offer to demonstrate by running the Commit agent on the current staged changes (if any).

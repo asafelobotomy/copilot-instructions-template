@@ -214,7 +214,7 @@ This file is loaded into the LLM context on every interaction. To prevent instru
 
 ### Heartbeat Protocol
 
-Event-triggered health checks that keep the agent aligned with real project state. The heartbeat checklist lives in `.copilot/workspace/HEARTBEAT.md`.
+Event-triggered health checks that keep the agent aligned with real project state. The heartbeat checklist lives in `.copilot/workspace/operations/HEARTBEAT.md`.
 
 **When to fire**: session start; after a medium/large task (one strong signal: 8+ modified files or 30+ minutes; or two supporting: 5+ files, 15+ minutes, context compaction); after refactor, migration, or restructure; after dependency manifest changes; after CI failure resolution; on "Check your heartbeat"; or on any custom trigger in `HEARTBEAT.md`.
 
@@ -407,7 +407,7 @@ A shared mental model gives human and agent a common vocabulary for talking abou
 |------|---------|---------|
 {{SPATIAL_VOCAB}}
 
-> **Full glossary**: `.copilot/workspace/ledger.md`. **Live status**: `{{SPATIAL_STATUS_TOOL}}` MCP tool.
+> **Full glossary**: `.copilot/workspace/operations/ledger.md`. **Live status**: `{{SPATIAL_STATUS_TOOL}}` MCP tool.
 
 ### Alignment Protocol
 
@@ -417,9 +417,9 @@ A shared mental model gives human and agent a common vocabulary for talking abou
 
 ### Per-Agent Diaries
 
-Each specialist agent may record significant findings in a diary file under `.copilot/workspace/diaries/`. Diaries are L2 (loaded on demand via SubagentStart hook, not always-loaded). Cap each diary at 30 lines; archive older entries.
+Each specialist agent may record significant findings in a diary file under `.copilot/workspace/knowledge/diaries/`. Diaries are L2 (loaded on demand via SubagentStart hook, not always-loaded). Cap each diary at 30 lines; archive older entries.
 
-- Diary files: `.copilot/workspace/diaries/{agent-name}.md`
+- Diary files: `.copilot/workspace/knowledge/diaries/{agent-name}.md`
 - Write trigger: agent discovers a durable insight worth sharing across sessions.
 - Dedup: grep the diary for the finding text before writing — skip if already present.
 

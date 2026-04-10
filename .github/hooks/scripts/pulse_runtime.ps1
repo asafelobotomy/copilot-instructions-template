@@ -28,10 +28,10 @@ try {
 }
 
 $workspace = '.copilot/workspace'
-$statePath = Join-Path $workspace 'state.json'
-$sentinelPath = Join-Path $workspace '.heartbeat-session'
-$eventsPath = Join-Path $workspace '.heartbeat-events.jsonl'
-$heartbeatPath = Join-Path $workspace 'HEARTBEAT.md'
+$statePath = Join-Path $workspace 'runtime' 'state.json'
+$sentinelPath = Join-Path $workspace 'runtime' '.heartbeat-session'
+$eventsPath = Join-Path $workspace 'runtime' '.heartbeat-events.jsonl'
+$heartbeatPath = Join-Path $workspace 'operations' 'HEARTBEAT.md'
 $policyPath = Join-Path $PSScriptRoot 'heartbeat-policy.json'
 $routingManifestPath = '.github/agents/routing-manifest.json'
 $now = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()

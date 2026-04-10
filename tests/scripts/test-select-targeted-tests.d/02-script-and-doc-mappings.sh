@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "12. Selector root manifest and shard files map back to the selector suite"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/tests/targeted-test-map.json" "scripts/tests/targeted-test-map.d/00-selector-core.json")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/harness/targeted-test-map.json" "scripts/harness/targeted-test-map.d/00-selector-core.json")
 status=$?
 assert_success "selector exits zero on selector assets" "$status"
 SELECTOR_OUTPUT="$output" assert_python "selector assets map to the selector suite" '
@@ -9,8 +9,8 @@ payload = json.loads(os.environ["SELECTOR_OUTPUT"])
 if payload["selected_tests"] != ["tests/scripts/test-select-targeted-tests.sh"]:
     raise SystemExit(str(payload["selected_tests"]))
 if sorted(payload["normalized_paths"]) != sorted([
-    "scripts/tests/targeted-test-map.json",
-    "scripts/tests/targeted-test-map.d/00-selector-core.json",
+    "scripts/harness/targeted-test-map.json",
+    "scripts/harness/targeted-test-map.d/00-selector-core.json",
 ]):
     raise SystemExit(str(payload["normalized_paths"]))
 '
@@ -28,7 +28,7 @@ if payload["selected_tests"] != ["tests/scripts/test-select-targeted-tests.sh"]:
 echo ""
 
 echo "14. Suite manifest assets map to the suite-manifest suite"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/tests/suite-manifest.py" "scripts/tests/suite-manifest.json")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/harness/suite-manifest.py" "scripts/harness/suite-manifest.json")
 status=$?
 assert_success "selector exits zero on suite-manifest assets" "$status"
 SELECTOR_OUTPUT="$output" assert_python "suite manifest assets map to the suite-manifest suite" '
@@ -59,7 +59,7 @@ if payload["intermediate_phase_strategy"] != "targeted":
 echo ""
 
 echo "16. run-all-captured maps to its dedicated suite"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/tests/run-all-captured.sh")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/harness/run-all-captured.sh")
 status=$?
 assert_success "selector exits zero on run-all-captured" "$status"
 SELECTOR_OUTPUT="$output" assert_python "run-all-captured maps to its dedicated suite" '
@@ -72,7 +72,7 @@ if payload["intermediate_phase_strategy"] != "targeted":
 echo ""
 
 echo "17. run-isolated-shell maps to its dedicated suite"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/tests/run-isolated-shell.sh")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/harness/run-isolated-shell.sh")
 status=$?
 assert_success "selector exits zero on run-isolated-shell" "$status"
 SELECTOR_OUTPUT="$output" assert_python "run-isolated-shell maps to its dedicated suite" '
@@ -85,7 +85,7 @@ if payload["intermediate_phase_strategy"] != "targeted":
 echo ""
 
 echo "18. run-isolated-shell-stdin maps to its dedicated suite"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/tests/run-isolated-shell-stdin.sh")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/harness/run-isolated-shell-stdin.sh")
 status=$?
 assert_success "selector exits zero on run-isolated-shell-stdin" "$status"
 SELECTOR_OUTPUT="$output" assert_python "run-isolated-shell-stdin maps to its dedicated suite" '
