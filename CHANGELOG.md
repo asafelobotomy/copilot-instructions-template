@@ -7,6 +7,14 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [5.10.1](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.10.0...v5.10.1) (2026-04-10)
+
+
+### Bug Fixes
+
+* **hooks:** harden heartbeat tempdir bootstrap ([05d3392](https://github.com/asafelobotomy/copilot-instructions-template/commit/05d33923593b44d8c5993efe57d2dd68ac1c9eb1))
+* **hooks:** preserve heartbeat artifact fallback ([0603044](https://github.com/asafelobotomy/copilot-instructions-template/commit/06030448e5b5c85ed5452282e91d02840c11ad80))
+
 ## [5.10.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.9.0...v5.10.0) (2026-04-10)
 
 
