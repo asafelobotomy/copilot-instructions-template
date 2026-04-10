@@ -188,6 +188,32 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
       "url": "https://mcp.context7.com/mcp",
       "disabled": true
     },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--headless",
+        "--browser=chromium"
+      ],
+      "disabled": true,
+      "sandboxEnabled": true,
+      "sandbox": {
+        "filesystem": {
+          "allowWrite": [
+            "${workspaceFolder}",
+            "${userHome}/.npm",
+            "${userHome}/.cache/ms-playwright"
+          ],
+          "denyRead": [
+            "${userHome}/.ssh",
+            "${userHome}/.gnupg",
+            "${userHome}/.aws"
+          ]
+        }
+      }
+    },
     "heartbeat": {
       "type": "stdio",
       "command": "uvx",
@@ -239,6 +265,17 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
       "url": "https://mcp.context7.com/mcp",
       "disabled": true
     },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--headless",
+        "--browser=chromium"
+      ],
+      "disabled": true
+    },
     "heartbeat": {
       "type": "stdio",
       "command": "uvx",
@@ -261,6 +298,7 @@ Enable from base config when selected in E22a:
 | `github` | User selected GitHub integration |
 | `fetch` | User selected web/docs retrieval |
 | `context7` | User selected third-party library docs |
+| `playwright` | User selected browser automation for agent-driven website navigation |
 
 Add for detected dependencies:
 

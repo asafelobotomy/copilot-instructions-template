@@ -27,6 +27,14 @@ Set up browser testing for a web application. This skill offers three paths:
 
 **Recommendation**: Use Path A for interactive verification during development, Path B for CI, Path C when you want Playwright browser control available as MCP tools to agents. They complement each other.
 
+### Maintainer note
+
+Use Path A when the agent only needs to inspect or click through a page during a live session in VS Code. It is the cheapest option and keeps browser access local to the current conversation.
+
+Use Path C when website navigation should become part of the repo's repeatable agent tooling. Prefer it for agents that need reliable page navigation, form automation, or structured browser actions across Copilot, MCP-aware subagents, and CLI sessions.
+
+Do not use Path C as a replacement for committed regression tests. When the behavior needs CI coverage or long-term safety, add Path B as well.
+
 ## When to activate
 
 - User says "Set up e2e tests", "Add browser tests", "Add Playwright", "Test my web app", or "Check my web app"
@@ -292,11 +300,21 @@ Add to `.vscode/mcp.json`:
   "servers": {
     "playwright": {
       "command": "npx",
-      "args": ["@playwright/mcp@latest"]
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--headless",
+        "--browser=chromium"
+      ],
+      "disabled": true
     }
   }
 }
 ```
+
+Remove `"disabled": true` when you want the server to start. If the repo uses
+agent-level `mcp-servers` allowlists, add `playwright` only to the agents that
+should be allowed to drive websites.
 
 ### C2. Available MCP tools
 

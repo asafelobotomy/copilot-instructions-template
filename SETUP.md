@@ -258,7 +258,7 @@ If E22 = B:
 2. Create `.vscode/mcp.json` using the config from `manifests.md` § MCP server configs.
 3. Treat `filesystem`, `git`, and `heartbeat` as the core server set.
 4. Ask E22a only when E22 = B. If the user selects optional servers in E22a, enable those server entries from the base config by removing `"disabled": true` for the selected entries.
-5. If E22a is unanswered, unavailable, or the user selects `None`, leave `github`, `fetch`, and `context7` disabled.
+5. If E22a is unanswered, unavailable, or the user selects `None`, leave `github`, `fetch`, `context7`, and `playwright` disabled.
 6. Add stack-specific servers when appropriate using `manifests.md` § Optional and stack-specific servers.
 
 ---

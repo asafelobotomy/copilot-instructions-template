@@ -101,7 +101,7 @@
   Options: A — No (skip MCP entirely) | B — Yes (configure core MCP servers and optional selections)
 
 - **E22a — Optional MCP servers**: Which optional MCP servers should I enable?
-  Options: GitHub | Fetch | Context7 | None
+  Options: GitHub | Fetch | Context7 | Playwright | None
   Ask only when E22 = B. Multi-select allowed. Default: None (keep core only: filesystem, git, heartbeat)
 
 - **E23 — Claude compatibility**: Should I generate a `CLAUDE.md` file for Claude Code compatibility?
