@@ -78,8 +78,8 @@ echo ""
 
 echo "3. Repo and consumer workspace indices stay aligned"
 assert_python "workspace-index repo and template copies match" '
-repo_path = root / ".copilot/workspace/workspace-index.json"
-template_path = root / "template/workspace/workspace-index.json"
+repo_path = root / ".copilot/workspace/operations/workspace-index.json"
+template_path = root / "template/workspace/operations/workspace-index.json"
 repo_data = json.load(repo_path.open(encoding="utf-8"))
 template_data = json.load(template_path.open(encoding="utf-8"))
 repo_data["updated"] = "IGNORED"
@@ -234,8 +234,8 @@ assert_python "developer instructions mention the targeted test selector" '
 text = " ".join((root / ".github/copilot-instructions.md").read_text(encoding="utf-8").split())
 required = [
     "Select targeted tests",
-    "bash scripts/tests/select-targeted-tests.sh <paths...>",
-    "Use `bash scripts/tests/select-targeted-tests.sh <paths...>` to choose deterministic phase checks from changed paths",
+    "bash scripts/harness/select-targeted-tests.sh <paths...>",
+    "Use `bash scripts/harness/select-targeted-tests.sh <paths...>` to choose deterministic phase checks from changed paths",
 ]
 for needle in required:
     if " ".join(needle.split()) not in text:
@@ -263,6 +263,14 @@ required_dev = [
     "prefer a repo wrapper if one exists",
     "prefer a dedicated stdin or here-doc wrapper when the repo provides one",
     "run the snippet through a child Bash process with strict mode enabled",
+    "Use `get_terminal_output`, `send_to_terminal`, and `kill_terminal` only with the exact opaque terminal ID returned by `run_in_terminal` async mode",
+    "Treat `get_terminal_output`, `send_to_terminal`, and `kill_terminal` as valid only when `run_in_terminal` returned a live terminal ID",
+    "Do not pass shell names, terminal labels, editor terminals, or `execution_subagent` results",
+    "Use `terminal_last_command` and `terminal_selection` only for the currently active editor terminal",
+    "prefer a synchronous terminal run or `execution_subagent` over polling a background terminal",
+    "call `kill_terminal` when that session is no longer needed",
+    "Do not add `sleep` loops or blind polling around background terminals",
+    "prefer repo scripts or `create_and_run_task`",
     "avoid reserved variable names such as `status`",
     "Do not rely on profile files, aliases, or exported shell options",
     "stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation",
@@ -277,6 +285,14 @@ required_tpl = [
     "prefer a repo wrapper if one exists",
     "prefer a dedicated stdin or here-doc wrapper when the repo provides one",
     "run the snippet through a child Bash process with strict mode enabled",
+    "Use `get_terminal_output`, `send_to_terminal`, and `kill_terminal` only with the exact opaque terminal ID returned by `run_in_terminal` async mode",
+    "Treat `get_terminal_output`, `send_to_terminal`, and `kill_terminal` as valid only when `run_in_terminal` returned a live terminal ID",
+    "Do not pass shell names, terminal labels, editor terminals, or `execution_subagent` results",
+    "Use `terminal_last_command` and `terminal_selection` only for the currently active editor terminal",
+    "prefer a synchronous terminal run or `execution_subagent` over polling a background terminal",
+    "call `kill_terminal` when that session is no longer needed",
+    "Do not add `sleep` loops or blind polling around background terminals",
+    "prefer repo scripts or `create_and_run_task`",
     "avoid reserved variable names such as `status`",
     "Do not rely on profile files, aliases, or exported shell options",
     "stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation",
@@ -295,13 +311,26 @@ for path_rel, needles in [
 dev_text = (root / ".github/copilot-instructions.md").read_text(encoding="utf-8")
 if "Run all tests (captured)" not in dev_text:
     raise SystemExit(".github/copilot-instructions.md still needs Run all tests (captured) in Key Commands")
-if "bash scripts/tests/run-all-captured.sh" not in dev_text:
+if "bash scripts/harness/run-all-captured.sh" not in dev_text:
     raise SystemExit(".github/copilot-instructions.md still needs run-all-captured.sh in Key Commands")
+
+readme_text = " ".join((root / "README.md").read_text(encoding="utf-8").split())
+for needle in [
+    "For the async terminal tool family, use the exact terminal ID returned by `run_in_terminal` async mode with `get_terminal_output`, `send_to_terminal`, and `kill_terminal`.",
+    "Treat those tools as valid only when `run_in_terminal` returned a live terminal ID, usually from async mode or from a sync command that outlived its timeout.",
+    "Use `terminal_last_command` and `terminal_selection` only for the currently active editor terminal.",
+    "prefer `execution_subagent` or a synchronous terminal run over creating a background terminal just to poll it.",
+    "call `kill_terminal` when the session is no longer needed.",
+    "Do not add `sleep` loops or blind polling around background terminals.",
+    "prefer repo scripts or `create_and_run_task` instead of a persistent interactive shell.",
+]:
+    if " ".join(needle.split()) not in readme_text:
+        raise SystemExit("README.md missing async terminal guidance: " + needle)
 
 # Deleted strict wrapper paths must not appear
 for rel in (".github/copilot-instructions.md", "template/copilot-instructions.md"):
     txt = (root / rel).read_text(encoding="utf-8")
-    for deleted in ("scripts/tests/run-strict-bash.sh", "scripts/tests/run-strict-bash-stdin.sh"):
+    for deleted in ("scripts/harness/run-strict-bash.sh", "scripts/harness/run-strict-bash-stdin.sh"):
         if deleted in txt:
             raise SystemExit(rel + " must not reference deleted strict wrapper: " + deleted)
 

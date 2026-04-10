@@ -63,30 +63,38 @@ Use this decision order whenever an agent needs the terminal:
 2. If the task is a single existing command with no shell control flow, tempfile plumbing, redirection, retries, or shell-specific syntax, direct execution is fine.
 3. For any ad hoc snippet beyond that, use an isolated child shell wrapper instead of relying on the persistent terminal's current shell or option state.
 
+For the async terminal tool family, use the exact terminal ID returned by `run_in_terminal` async mode with `get_terminal_output`, `send_to_terminal`, and `kill_terminal`.
+
+Treat those tools as valid only when `run_in_terminal` returned a live terminal ID, usually from async mode or from a sync command that outlived its timeout.
+
+Do not pass terminal labels, shell names, normal editor terminals, or `execution_subagent` results to those tools. Use `terminal_last_command` and `terminal_selection` only for the currently active editor terminal. If you only need command output, prefer `execution_subagent` or a synchronous terminal run over creating a background terminal just to poll it.
+
+Reuse async terminals only for genuinely interactive or persistent sessions, and call `kill_terminal` when the session is no longer needed. Do not add `sleep` loops or blind polling around background terminals. For standard build or run workflows, prefer repo scripts or `create_and_run_task` instead of a persistent interactive shell.
+
 In zsh workspaces, do not issue top-level `set -euo pipefail` or `setopt errexit nounset pipefail` directly into a persistent terminal session. Use the repo wrappers so strict mode stays isolated to a child shell.
 
 For one-line or multi-step snippets:
 
 ```bash
-bash scripts/tests/run-isolated-shell.sh --shell bash --strict --command 'tmpdir=$(mktemp -d) && printf "ok\n" > "$tmpdir/out" && cat "$tmpdir/out" && rm -rf "$tmpdir"'
+bash scripts/harness/run-isolated-shell.sh --shell bash --strict --command 'tmpdir=$(mktemp -d) && printf "ok\n" > "$tmpdir/out" && cat "$tmpdir/out" && rm -rf "$tmpdir"'
 ```
 
 For zsh-specific syntax:
 
 ```bash
-bash scripts/tests/run-isolated-shell.sh --shell zsh --command 'print -r -- "$ZSH_VERSION"'
+bash scripts/harness/run-isolated-shell.sh --shell zsh --command 'print -r -- "$ZSH_VERSION"'
 ```
 
 For PowerShell syntax:
 
 ```bash
-bash scripts/tests/run-isolated-shell.sh --shell pwsh --strict --command '$value = "pwsh-ok"; Write-Output $value'
+bash scripts/harness/run-isolated-shell.sh --shell pwsh --strict --command '$value = "pwsh-ok"; Write-Output $value'
 ```
 
 For multi-line snippets:
 
 ```bash
-bash scripts/tests/run-isolated-shell-stdin.sh --shell bash --strict <<'EOF'
+bash scripts/harness/run-isolated-shell-stdin.sh --shell bash --strict <<'EOF'
 tmpdir=$(mktemp -d)
 printf 'hello\n' > "$tmpdir/out.txt"
 cat "$tmpdir/out.txt"
