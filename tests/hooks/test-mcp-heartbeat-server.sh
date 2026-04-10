@@ -55,6 +55,64 @@ print(json.dumps(module.session_reflect()))
 PY
 }
 
+probe_temp_bootstrap() {
+  local root_dir="$1"
+  local invalid_base="$root_dir/blocked-temp-parent"
+  printf 'blocked\n' > "$invalid_base"
+  TEST_SCRIPT="$SCRIPT" TEST_ROOT="$root_dir" TEST_INVALID_TMP="$invalid_base/tmp" python3 - <<'PY'
+import importlib.util
+import json
+import os
+import sys
+import tempfile
+import types
+from pathlib import Path
+
+
+class FakeMCP:
+    def __init__(self, name):
+        self.name = name
+
+    def tool(self):
+        def decorator(fn):
+            return fn
+        return decorator
+
+    def run(self):
+        return None
+
+
+mcp_mod = types.ModuleType("mcp")
+server_mod = types.ModuleType("mcp.server")
+fastmcp_mod = types.ModuleType("mcp.server.fastmcp")
+fastmcp_mod.FastMCP = FakeMCP
+sys.modules["mcp"] = mcp_mod
+sys.modules["mcp.server"] = server_mod
+sys.modules["mcp.server.fastmcp"] = fastmcp_mod
+
+invalid = os.environ["TEST_INVALID_TMP"]
+os.environ["TMPDIR"] = invalid
+os.environ["TEMP"] = invalid
+os.environ["TMP"] = invalid
+
+os.chdir(os.environ["TEST_ROOT"])
+spec = importlib.util.spec_from_file_location("heartbeat_mcp", os.environ["TEST_SCRIPT"])
+module = importlib.util.module_from_spec(spec)
+assert spec.loader is not None
+spec.loader.exec_module(module)
+
+workspace_tmp = Path(os.environ["TEST_ROOT"]) / ".copilot" / "workspace" / ".tmp"
+print(json.dumps({
+    "tempdir": tempfile.gettempdir(),
+    "tmpdir_env": os.environ.get("TMPDIR"),
+    "temp_env": os.environ.get("TEMP"),
+    "tmp_env": os.environ.get("TMP"),
+    "workspace_tmp": str(workspace_tmp),
+    "workspace_tmp_exists": workspace_tmp.is_dir(),
+}))
+PY
+}
+
 echo "=== mcp-heartbeat-server.py ==="
 echo ""
 
@@ -441,6 +499,23 @@ assert "|complete" in sentinel.read_text(encoding="utf-8")
 lines = [json.loads(line) for line in events.read_text(encoding="utf-8").splitlines() if line.strip()]
 assert lines[-1]["trigger"] == "session_reflect"
 assert lines[-1]["session_id"] == "sess-stale"
+'
+echo ""
+
+echo "6. Invalid temp env falls back to a repo-local workspace temp directory"
+TMP_TEMP_BOOTSTRAP=$(mktemp -d); CLEANUP_DIRS+=("$TMP_TEMP_BOOTSTRAP")
+output=$(probe_temp_bootstrap "$TMP_TEMP_BOOTSTRAP")
+status=$?
+assert_success "temp bootstrap probe exits zero" "$status"
+assert_valid_json "temp bootstrap output is valid JSON" "$output"
+REFLECT_OUTPUT="$output" assert_python "temp bootstrap rewrites all temp env vars to the workspace fallback" '
+payload = json.loads(os.environ["REFLECT_OUTPUT"])
+expected = payload["workspace_tmp"]
+assert payload["workspace_tmp_exists"] is True
+assert payload["tempdir"] == expected
+assert payload["tmpdir_env"] == expected
+assert payload["temp_env"] == expected
+assert payload["tmp_env"] == expected
 '
 echo ""
 

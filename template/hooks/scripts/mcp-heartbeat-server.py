@@ -27,11 +27,6 @@ try:
 except ImportError:  # pragma: no cover - Windows does not provide fcntl.
     fcntl = None
 
-from mcp.server.fastmcp import FastMCP
-
-mcp = FastMCP("Heartbeat")
-
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -136,6 +131,45 @@ def _file_lock(path: Path):
                 fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
     except OSError:
         yield
+
+
+def _ensure_writable_tempdir() -> None:
+    """Force a writable temp root before importing FastMCP dependencies."""
+    candidates: list[Path] = []
+    for env_name in ("TMPDIR", "TEMP", "TMP"):
+        value = os.environ.get(env_name)
+        if value:
+            candidates.append(Path(value).expanduser())
+    candidates.extend(
+        [
+            WORKSPACE / ".tmp",
+            ROOT / ".copilot" / ".tmp",
+            ROOT / ".git" / "copilot-tmp",
+            ROOT / ".tmp",
+            Path.cwd() / ".tmp",
+        ]
+    )
+
+    for candidate in candidates:
+        try:
+            candidate.mkdir(parents=True, exist_ok=True)
+        except OSError:
+            continue
+        if not os.access(candidate, os.W_OK | os.X_OK):
+            continue
+        resolved = str(candidate)
+        os.environ["TMPDIR"] = resolved
+        os.environ["TEMP"] = resolved
+        os.environ["TMP"] = resolved
+        tempfile.tempdir = resolved
+        return
+
+
+_ensure_writable_tempdir()
+
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("Heartbeat")
 
 
 def _load_state() -> dict:
