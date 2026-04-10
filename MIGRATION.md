@@ -106,17 +106,24 @@ rm -rf logs/copilot
 
 | Breaking | Sections changed | Sections added | Includes |
 |----------|-----------------|----------------|----------|
-| TBD | — | — | — |
+| No | None | None | — |
 
-**What changed**: *(stub — fill in before the next release or immediately after)*
+**What changed**: Adds an optional Playwright MCP server for browser automation, updates the webapp-testing guidance to cover the MCP path, and extends setup/config surfaces so consumers can opt into browser-driven testing and research workflows. The server remains disabled by default until the consumer enables it.
 
 **New placeholders**: none
 
 **Companion files added**: none
 
-**Companion files updated**: none
+**Companion files updated**:
 
-**Manual actions**: None
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/agents/coding.agent.md` | `.github/agents/coding.agent.md` | Updated (Playwright MCP allowlist for browser automation tasks) |
+| `.github/agents/researcher.agent.md` | `.github/agents/researcher.agent.md` | Updated (Playwright MCP allowlist for browser research tasks) |
+| `.github/skills/webapp-testing/SKILL.md` | `template/skills/webapp-testing/SKILL.md` | Updated (documents the optional Playwright MCP workflow) |
+| `.vscode/mcp.json` | `template/vscode/mcp.json` | Updated (adds the optional Playwright MCP server definition) |
+
+**Manual actions**: None — existing consumers can leave Playwright disabled, or opt in by updating `.vscode/mcp.json` through the normal setup/update flow.
 
 ---
 
