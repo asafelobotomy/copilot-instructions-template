@@ -7,6 +7,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [5.10.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.9.0...v5.10.0) (2026-04-10)
+
+
+### Features
+
+* **mcp:** add optional playwright browser automation ([ecb0b09](https://github.com/asafelobotomy/copilot-instructions-template/commit/ecb0b095ae3be3c8c052500f8c2542630fc7e697))
+
 ## [5.9.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.8.0...v5.9.0) (2026-04-10)
 
 
