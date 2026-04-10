@@ -157,11 +157,7 @@ def _ensure_writable_tempdir() -> None:
             continue
         if not os.access(candidate, os.W_OK | os.X_OK):
             continue
-        resolved = str(candidate)
-        os.environ["TMPDIR"] = resolved
-        os.environ["TEMP"] = resolved
-        os.environ["TMP"] = resolved
-        tempfile.tempdir = resolved
+        tempfile.tempdir = str(candidate)
         return
 
 

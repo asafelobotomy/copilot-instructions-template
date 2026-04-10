@@ -508,14 +508,14 @@ output=$(probe_temp_bootstrap "$TMP_TEMP_BOOTSTRAP")
 status=$?
 assert_success "temp bootstrap probe exits zero" "$status"
 assert_valid_json "temp bootstrap output is valid JSON" "$output"
-REFLECT_OUTPUT="$output" assert_python "temp bootstrap rewrites all temp env vars to the workspace fallback" '
+REFLECT_OUTPUT="$output" assert_python "temp bootstrap rewrites tempfile only and preserves env vars" '
 payload = json.loads(os.environ["REFLECT_OUTPUT"])
 expected = payload["workspace_tmp"]
 assert payload["workspace_tmp_exists"] is True
 assert payload["tempdir"] == expected
-assert payload["tmpdir_env"] == expected
-assert payload["temp_env"] == expected
-assert payload["tmp_env"] == expected
+assert payload["tmpdir_env"] != expected
+assert payload["temp_env"] != expected
+assert payload["tmp_env"] != expected
 '
 echo ""
 
