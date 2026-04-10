@@ -3,7 +3,8 @@
 		"network": {
 			"allowedDomains": [
 				"pypi.org",
-				"files.pythonhosted.org"
+				"files.pythonhosted.org",
+				"modelcontextprotocol.io"
 			]
 		},
 		"filesystem": {

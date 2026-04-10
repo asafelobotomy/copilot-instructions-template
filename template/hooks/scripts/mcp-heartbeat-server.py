@@ -19,7 +19,13 @@ import subprocess
 import tempfile
 import time
 import hashlib
+from contextlib import contextmanager
 from pathlib import Path
+
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - Windows does not provide fcntl.
+    fcntl = None
 
 from mcp.server.fastmcp import FastMCP
 
@@ -110,14 +116,37 @@ def _artifact_candidates(path: Path) -> list[Path]:
     return candidates
 
 
-def _load_state() -> dict:
-    if not STATE_PATH.exists():
-        return {}
+def _lock_path(path: Path) -> Path:
+    return path.parent / f"{path.name}.lock"
+
+
+@contextmanager
+def _file_lock(path: Path):
+    if fcntl is None:
+        yield
+        return
+    target = _lock_path(path)
     try:
-        data = json.loads(STATE_PATH.read_text(encoding="utf-8"))
-        return data if isinstance(data, dict) else {}
-    except Exception:
-        return {}
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open("a+", encoding="utf-8") as handle:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    except OSError:
+        yield
+
+
+def _load_state() -> dict:
+    with _file_lock(STATE_PATH):
+        if not STATE_PATH.exists():
+            return {}
+        try:
+            data = json.loads(STATE_PATH.read_text(encoding="utf-8"))
+            return data if isinstance(data, dict) else {}
+        except Exception:
+            return {}
 
 
 def _git_modified_count() -> int:
@@ -139,18 +168,19 @@ def _git_modified_count() -> int:
 def _recent_events(limit: int = 20) -> list[dict]:
     events: list[dict] = []
     for candidate in _artifact_candidates(EVENTS_PATH):
-        if not candidate.exists():
-            continue
-        try:
-            for line in candidate.read_text(encoding="utf-8").splitlines():
-                if not line.strip():
-                    continue
-                try:
-                    events.append(json.loads(line))
-                except Exception:
-                    continue
-        except Exception:
-            continue
+        with _file_lock(candidate):
+            if not candidate.exists():
+                continue
+            try:
+                for line in candidate.read_text(encoding="utf-8").splitlines():
+                    if not line.strip():
+                        continue
+                    try:
+                        events.append(json.loads(line))
+                    except Exception:
+                        continue
+            except Exception:
+                continue
     return events[-limit:]
 
 
@@ -173,8 +203,9 @@ def _append_event(trigger: str, detail: str = "", session_id: str = "", duration
     for candidate in _artifact_candidates(EVENTS_PATH):
         try:
             candidate.parent.mkdir(parents=True, exist_ok=True)
-            with candidate.open("a", encoding="utf-8") as handle:
-                handle.write(payload)
+            with _file_lock(candidate):
+                with candidate.open("a", encoding="utf-8") as handle:
+                    handle.write(payload)
             return
         except OSError as exc:
             last_error = exc
@@ -213,8 +244,9 @@ def _set_sentinel_complete(session_id: str) -> None:
         tmp = candidate.with_suffix(".tmp")
         try:
             candidate.parent.mkdir(parents=True, exist_ok=True)
-            tmp.write_text(payload, encoding="utf-8")
-            os.replace(tmp, candidate)
+            with _file_lock(candidate):
+                tmp.write_text(payload, encoding="utf-8")
+                os.replace(tmp, candidate)
             return
         except OSError as exc:
             last_error = exc

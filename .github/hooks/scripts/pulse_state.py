@@ -8,7 +8,13 @@ import pwd
 import subprocess
 import tempfile
 import time
+from contextlib import contextmanager
 from pathlib import Path
+
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - Windows does not provide fcntl.
+    fcntl = None
 
 
 DEFAULT_POLICY = {
@@ -105,15 +111,38 @@ def default_state() -> dict:
 
 def load_state(state_path: Path) -> dict:
     state = default_state()
-    if not state_path.exists():
-        return state
-    try:
-        loaded = json.loads(state_path.read_text(encoding="utf-8"))
-        if isinstance(loaded, dict):
-            state.update({key: loaded[key] for key in state.keys() if key in loaded})
-    except Exception:
-        pass
+    with file_lock(state_path):
+        if not state_path.exists():
+            return state
+        try:
+            loaded = json.loads(state_path.read_text(encoding="utf-8"))
+            if isinstance(loaded, dict):
+                state.update({key: loaded[key] for key in state.keys() if key in loaded})
+        except Exception:
+            pass
     return state
+
+
+def lock_path(path: Path) -> Path:
+    return path.parent / f"{path.name}.lock"
+
+
+@contextmanager
+def file_lock(path: Path):
+    if fcntl is None:
+        yield
+        return
+    target = lock_path(path)
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with target.open("a+", encoding="utf-8") as handle:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+            try:
+                yield
+            finally:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    except OSError:
+        yield
 
 
 def fallback_artifact_roots() -> list[Path]:
@@ -193,36 +222,38 @@ def heartbeat_artifact_paths(path: Path) -> list[Path]:
 def read_event_lines(events_path: Path) -> list[str]:
     lines: list[str] = []
     for candidate in heartbeat_artifact_paths(events_path):
-        if not candidate.exists():
-            continue
-        try:
-            lines.extend(candidate.read_text(encoding="utf-8").splitlines())
-        except Exception:
-            continue
+        with file_lock(candidate):
+            if not candidate.exists():
+                continue
+            try:
+                lines.extend(candidate.read_text(encoding="utf-8").splitlines())
+            except Exception:
+                continue
     return lines
 
 
 def atomic_write(path: Path, text: str) -> None:
     last_error = None
-    for _attempt in range(2):
-        path.parent.mkdir(parents=True, exist_ok=True)
-        file_descriptor, tmp_name = tempfile.mkstemp(
-            prefix=f".{path.name}.",
-            suffix=".tmp",
-            dir=path.parent,
-        )
-        tmp_path = Path(tmp_name)
-        try:
-            with os.fdopen(file_descriptor, "w", encoding="utf-8") as handle:
-                handle.write(text)
-            os.replace(tmp_path, path)
-            return
-        except FileNotFoundError as exc:
-            last_error = exc
-            tmp_path.unlink(missing_ok=True)
-        except Exception:
-            tmp_path.unlink(missing_ok=True)
-            raise
+    with file_lock(path):
+        for _attempt in range(2):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            file_descriptor, tmp_name = tempfile.mkstemp(
+                prefix=f".{path.name}.",
+                suffix=".tmp",
+                dir=path.parent,
+            )
+            tmp_path = Path(tmp_name)
+            try:
+                with os.fdopen(file_descriptor, "w", encoding="utf-8") as handle:
+                    handle.write(text)
+                os.replace(tmp_path, path)
+                return
+            except FileNotFoundError as exc:
+                last_error = exc
+                tmp_path.unlink(missing_ok=True)
+            except Exception:
+                tmp_path.unlink(missing_ok=True)
+                raise
     if last_error is not None:
         raise last_error
 
@@ -260,8 +291,9 @@ def append_event(
     for candidate in heartbeat_artifact_paths(events_path):
         try:
             candidate.parent.mkdir(parents=True, exist_ok=True)
-            with candidate.open("a", encoding="utf-8") as handle:
-                handle.write(payload)
+            with file_lock(candidate):
+                with candidate.open("a", encoding="utf-8") as handle:
+                    handle.write(payload)
             return
         except OSError as exc:
             last_error = exc
@@ -326,14 +358,15 @@ def set_sentinel(sentinel_path: Path, workspace: Path, now: int, session_id: str
 
 def sentinel_is_complete(sentinel_path: Path) -> bool:
     for candidate in heartbeat_artifact_paths(sentinel_path):
-        if not candidate.exists():
-            continue
-        try:
-            parts = candidate.read_text(encoding="utf-8").strip().split("|")
-            if len(parts) >= 3 and parts[2].strip() == "complete":
-                return True
-        except Exception:
-            continue
+        with file_lock(candidate):
+            if not candidate.exists():
+                continue
+            try:
+                parts = candidate.read_text(encoding="utf-8").strip().split("|")
+                if len(parts) >= 3 and parts[2].strip() == "complete":
+                    return True
+            except Exception:
+                continue
     return False
 
 

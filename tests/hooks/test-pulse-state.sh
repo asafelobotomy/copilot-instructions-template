@@ -279,4 +279,54 @@ assert not list((root / ".copilot/workspace").glob("*.tmp"))
 '
 echo ""
 
+echo "9. file_lock serializes append_event while another process holds the lock"
+TMP_LOCKED=$(mktemp -d); CLEANUP_DIRS+=("$TMP_LOCKED")
+mkdir -p "$TMP_LOCKED/.copilot/workspace"
+assert_python_in_root "append_event waits for the active file lock before writing" "$TMP_LOCKED" '
+import importlib.util
+import multiprocessing
+import time
+from pathlib import Path
+
+
+def worker(module_path, root_path, started, finished):
+  import importlib.util
+  import os
+  from pathlib import Path
+
+  os.chdir(root_path)
+  spec = importlib.util.spec_from_file_location("pulse_state_child", module_path)
+  module = importlib.util.module_from_spec(spec)
+  spec.loader.exec_module(module)
+  workspace = Path(root_path) / ".copilot/workspace"
+  events_path = workspace / ".heartbeat-events.jsonl"
+  started.set()
+  module.append_event(events_path, workspace, 1704068400, "session_reflect", "complete", session_id="sess-lock")
+  finished.set()
+
+
+spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_PATH"])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+workspace = root / ".copilot/workspace"
+events_path = workspace / ".heartbeat-events.jsonl"
+ctx = multiprocessing.get_context("fork")
+started = ctx.Event()
+finished = ctx.Event()
+proc = ctx.Process(target=worker, args=(os.environ["MODULE_PATH"], str(root), started, finished))
+with module.file_lock(events_path):
+  proc.start()
+  assert started.wait(5), "child process never reached append_event"
+  time.sleep(0.2)
+  assert not finished.is_set(), "child write completed before the lock was released"
+proc.join(5)
+assert proc.exitcode == 0, proc.exitcode
+lines = events_path.read_text(encoding="utf-8").splitlines()
+assert len(lines) == 1, lines
+event = json.loads(lines[0])
+assert event["trigger"] == "session_reflect"
+assert event["session_id"] == "sess-lock"
+'
+echo ""
+
 finish_tests

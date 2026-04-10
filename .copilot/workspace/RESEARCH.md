@@ -250,6 +250,15 @@
 | <https://code.visualstudio.com/docs/reference/tasks-appendix> | `tasks.json` schema: top-level `linux`, `osx`, `windows` fields in `TaskConfiguration` interface | 2026-03-30 | tasks, platform-settings, schema |
 | <https://code.visualstudio.com/docs/debugtest/debugging-configuration> | `launch.json` platform-specific literals: `windows`, `linux`, `osx` within individual configurations | 2026-03-30 | launch, platform-settings, debugging |
 
+## MCP Multi-Window Concurrency — Research 2026-04-10
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://modelcontextprotocol.io/specification/2025-06-18/basic/transports> | MCP transport spec: stdio = 1:1 client-subprocess (client launches server); Streamable HTTP explicitly supports multiple client connections via per-session Mcp-Session-Id headers | 2026-04-10 | mcp, transport, concurrency |
+| <https://modelcontextprotocol.io/specification/2025-06-18/basic/lifecycle> | MCP lifecycle: Initialization (version + capability negotiation) → Operation → Shutdown (close stdin + SIGTERM + SIGKILL sequence for stdio); no multi-client multiplexing defined | 2026-04-10 | mcp, lifecycle, specification |
+| <https://code.visualstudio.com/docs/copilot/guides/mcp-developer-guide> | MCP developer guide: per-window extension host spawns stdio subprocesses; workspace roots provided per-window; dynamic tool discovery; no multi-window sharing documented | 2026-04-10 | mcp, developer, lifecycle, vscode |
+| <https://code.visualstudio.com/api/advanced-topics/extension-host> | Extension Host: each VS Code desktop window has its own extension host process; no shared host across windows for workspace-kind extensions; Copilot Chat = workspace extension → separate host per window | 2026-04-10 | extension-host, vscode, multi-window |
+
 ## VS Code Copilot — Agent Architecture and Agent Types (2026-04)
 
 | URL | Summary | Date | Tags |

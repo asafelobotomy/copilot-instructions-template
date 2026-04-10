@@ -1,6 +1,9 @@
 # JavaScript
 node_modules/
 
+# Local Python environment
+.venv/
+
 # Hook scan logs (written by scan-secrets.sh at session end)
 logs/
 
@@ -35,3 +38,8 @@ secrets.yaml
 .copilot/workspace/.heartbeat-session
 .copilot/workspace/.heartbeat-events.jsonl
 .copilot/workspace/state.json
+.copilot/workspace/*.lock
+copilot-heartbeat/
+
+# Local test/debug artifacts
+test_*_output.txt
