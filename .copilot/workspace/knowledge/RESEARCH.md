@@ -75,6 +75,13 @@
 | <https://pypi.org/project/check-jsonschema/> | check-jsonschema: CLI + pre-commit hook wrapping jsonschema; validates JSON Schema Draft 2020-12 and GitHub Actions YAML | 2026-04-09 | deps, jsonschema, validation |
 | <https://github.com/codespell-project/codespell/releases> | codespell v2.4.2 (Mar 2026): GPL v2; no gitignore support; no CamelCase; inferior to typos-cli for this repo | 2026-04-09 | deps, spellcheck |
 
+## Claude Code — Sub-agents and Project Agents
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://docs.anthropic.com/en/docs/claude-code/sub-agents> | Claude Code sub-agents: stored in `.claude/agents/` (project) or `~/.claude/agents/` (user); frontmatter fields `name`, `description`, `tools`; invoked via `Task` tool; isolated context per agent | 2026-04-10 | claude-code, agents, sub-agents |
+| <https://docs.anthropic.com/en/docs/claude-code/memory> | Claude Code memory: `CLAUDE.md` project instructions; `.claude/` as the project config directory | 2026-04-10 | claude-code, memory, instructions |
+
 ## VS Code Release Notes — v1.100–v1.115
 
 | URL | Summary | Date | Tags |
