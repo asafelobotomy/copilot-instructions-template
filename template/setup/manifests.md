@@ -48,6 +48,7 @@ For each stub, evaluate the `condition` before installing. A condition `exists:G
 | `api-routes.instructions.md` | `exists:**/api/**` OR `exists:**/routes/**` OR `exists:**/controllers/**` OR `exists:**/handlers/**` |
 | `config.instructions.md` | `exists:**/*.config.*` OR `exists:**/.eslintrc*` OR `exists:**/.prettierrc*` OR `exists:**/.stylelintrc*` OR language detected as JavaScript/TypeScript/Python |
 | `docs.instructions.md` | `exists:**/*.md` (true for almost every project) |
+| `terminal.instructions.md` | `exists:**/*` (install for every non-empty project; terminal discipline applies regardless of source language) |
 
 Fetch pattern: `{BASE_URL}/template/instructions/{name}`
 
@@ -109,8 +110,11 @@ After writing `.sh` files: `chmod +x .github/hooks/scripts/*.sh`
 | `.copilot/workspace/BOOTSTRAP.md` | `template/workspace/BOOTSTRAP.md` |
 | `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` |
 | `.copilot/workspace/RESEARCH.md` | `template/workspace/RESEARCH.md` |
+| `.copilot/workspace/MEMORY-GUIDE.md` | `template/workspace/MEMORY-GUIDE.md` |
+| `.copilot/workspace/ledger.md` | `template/workspace/ledger.md` |
+| `.copilot/workspace/diaries/README.md` | `template/workspace/diaries/README.md` |
 
-Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today's date.
+Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today's date, `{{SPATIAL_THEME}}` → chosen one-word metaphor, `{{SPATIAL_VOCAB}}` → the resolved Markdown row set from SETUP.md §2.
 
 ---
 
@@ -131,7 +135,10 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
 {
   "sandbox": {
     "filesystem": {
-      "allowWrite": ["${userHome}/.npm"]
+      "allowWrite": ["${userHome}/.npm", "${userHome}/.cache/uv", "${userHome}/.local/share/uv"]
+    },
+    "network": {
+      "allowedDomains": ["pypi.org", "files.pythonhosted.org"]
     }
   },
   "servers": {
@@ -150,7 +157,14 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
     "git": {
       "type": "stdio",
       "command": "uvx",
-      "args": ["mcp-server-git", "--repository", "${workspaceFolder}"]
+      "args": ["mcp-server-git", "--repository", "${workspaceFolder}"],
+      "sandboxEnabled": true,
+      "sandbox": {
+        "filesystem": {
+          "allowWrite": ["${workspaceFolder}"],
+          "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
+        }
+      }
     },
     "github": {
       "type": "http",
@@ -160,8 +174,14 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
     "fetch": {
       "type": "stdio",
       "command": "uvx",
-      "args": ["mcp-server-fetch"],
-      "disabled": true
+      "args": ["--with", "httpx[socks]>=0.28", "mcp-server-fetch"],
+      "disabled": true,
+      "sandboxEnabled": true,
+      "sandbox": {
+        "filesystem": {
+          "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
+        }
+      }
     },
     "context7": {
       "type": "http",
@@ -175,7 +195,14 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
         "--from", "mcp[cli]",
         "mcp", "run",
         "${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py"
-      ]
+      ],
+      "sandboxEnabled": true,
+      "sandbox": {
+        "filesystem": {
+          "allowWrite": ["${workspaceFolder}"],
+          "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
+        }
+      }
     }
   }
 }
@@ -204,7 +231,7 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
     "fetch": {
       "type": "stdio",
       "command": "uvx",
-      "args": ["mcp-server-fetch"],
+      "args": ["--with", "httpx[socks]>=0.28", "mcp-server-fetch"],
       "disabled": true
     },
     "context7": {
@@ -225,15 +252,15 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
 }
 ```
 
-### Stack-specific servers (E22 = C)
+### Optional and stack-specific servers (E22 = B)
 
-Enable from base config when appropriate:
+Enable from base config when selected in E22a:
 
 | Server | When to enable |
 |--------|----------------|
-| `github` | Project uses GitHub |
-| `fetch` | Agent reads web docs/APIs |
-| `context7` | Project uses third-party libs |
+| `github` | User selected GitHub integration |
+| `fetch` | User selected web/docs retrieval |
+| `context7` | User selected third-party library docs |
 
 Add for detected dependencies:
 

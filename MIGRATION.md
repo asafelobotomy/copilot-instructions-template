@@ -28,7 +28,35 @@ the next tagged version (listed in **Includes**).
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<tag>/<template-source-path>
 ```
 
-**Available tags**: v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1, v4.2.0, v5.0.0, v5.0.1, v5.1.0, v5.2.0, v5.3.0, v5.4.0, v5.5.0, v5.6.0, v5.7.0, v5.8.0
+**Available tags**: v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1, v4.2.0, v5.0.0, v5.0.1, v5.1.0, v5.2.0, v5.3.0, v5.4.0, v5.5.0, v5.6.0, v5.7.0, v5.8.0, v5.9.0
+
+## v5.9.0
+
+| Breaking | Sections changed | Sections added | Includes |
+|----------|-----------------|----------------|----------|
+| No | None | None | — |
+
+**What changed**: Tightens the MCP sandbox defaults for `git` and `heartbeat`, updates the consumer MCP setup flow so optional servers are selected explicitly during setup, preserves per-server MCP enablement during updates, and adds first-wave MCP allowlists to the main specialist agents.
+
+**New placeholders**: none
+
+**Companion files added**: none
+
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/agents/audit.agent.md` | `.github/agents/audit.agent.md` | Updated (explicit MCP allowlist) |
+| `.github/agents/coding.agent.md` | `.github/agents/coding.agent.md` | Updated (explicit MCP allowlist) |
+| `.github/agents/commit.agent.md` | `.github/agents/commit.agent.md` | Updated (explicit MCP allowlist) |
+| `.github/agents/debugger.agent.md` | `.github/agents/debugger.agent.md` | Updated (explicit MCP allowlist) |
+| `.github/agents/docs.agent.md` | `.github/agents/docs.agent.md` | Updated (explicit MCP allowlist) |
+| `.github/agents/researcher.agent.md` | `.github/agents/researcher.agent.md` | Updated (explicit MCP allowlist) |
+| `.github/agents/review.agent.md` | `.github/agents/review.agent.md` | Updated (explicit MCP allowlist) |
+| `.github/skills/mcp-management/SKILL.md` | `template/skills/mcp-management/SKILL.md` | Updated (consumer MCP selection guidance and `mcp-servers` caveat) |
+| `.vscode/mcp.json` | `template/vscode/mcp.json` | Updated (consumer MCP setup selection flow and tighter sandbox defaults) |
+
+**Manual actions**: None — existing consumer `.vscode/mcp.json` server enablement is preserved during updates. Review the file only if you want to opt into newly available optional MCP servers.
 
 ## v5.3.0
 
@@ -127,15 +155,37 @@ and skill files.
 
 | Breaking | Sections changed | Sections added | Includes |
 |----------|-----------------|----------------|----------|
-| TBD | — | — | — |
+| Yes | §2, §10, §11, §12, §13 | §11, §12, §13 | MCP, hooks, skills, starter kits |
 
-**What changed**: *(stub — fill in before the next release or immediately after)*
+**What changed**: Major platform expansion. Adds Tool Protocol (§11), Agent Skills (§12), and MCP Protocol (§13), expands the setup interview and override surface, introduces lifecycle hooks plus remote update/bootstrap flows, and starts shipping model-pinned agents and starter kits. Setup now writes `.vscode/mcp.json`, so the section count increases from 12 to 13 and consumers need to account for the new MCP surface.
 
 **New placeholders**: none
 
-**Companion files added**: none
+**Companion files added**:
 
-**Companion files updated**: none
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/agents/*.agent.md` | `.github/agents/*.agent.md` | **New** (model-pinned specialist agents and routing surfaces) |
+| `.github/skills/**` | `template/skills/**` | **New** (Agent Skills system and starter skills) |
+| `.github/hooks/copilot-hooks.json` | `template/hooks/copilot-hooks.json` | **New** (agent lifecycle hook wiring) |
+| `.github/hooks/scripts/*` | `template/hooks/scripts/*` | **New** (session-start, save-context, post-edit lint, guard-destructive, enforce-retrospective, shared hook helpers) |
+| `.github/workflows/copilot-setup-steps.yml` | `template/copilot-setup-steps.yml` | **New** (bootstrap workflow) |
+| `.vscode/mcp.json` | `template/vscode/mcp.json` | **New** (MCP server configuration; conditional during setup) |
+| `.github/starter-kits/<kit>/` | `starter-kits/<kit>/` | **New** (starter-kit plugin bundles) |
+
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/copilot-instructions.md` | `template/copilot-instructions.md` | Updated (section layout, hooks, tools, skills, and MCP workflow) |
+| `SETUP.md` | `SETUP.md` | Updated (remote bootstrap, interview expansion, MCP setup) |
+| `UPDATE.md` | `UPDATE.md` | Updated (full update protocol and restore paths) |
+| `AGENTS.md` | `AGENTS.md` | Updated (trigger phrases and routing entry points) |
+| `MODELS.md` | `MODELS.md` | Updated (model registry and sync workflow) |
+| `.copilot/workspace/BOOTSTRAP.md` | `template/workspace/BOOTSTRAP.md` | Updated (toolbox/bootstrap guidance) |
+| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` | Updated (heartbeat and retrospective workflow) |
+| `.copilot/workspace/MEMORY.md` | `template/workspace/MEMORY.md` | Updated (memory guidance) |
+| `.copilot/workspace/RESEARCH.md` | `template/workspace/RESEARCH.md` | Updated (research URL tracker) |
 
 **Manual actions**: None
 
@@ -143,15 +193,23 @@ and skill files.
 
 | Breaking | Sections changed | Sections added | Includes |
 |----------|-----------------|----------------|----------|
-| TBD | — | — | — |
+| No | None | None | — |
 
-**What changed**: *(stub — fill in before the next release or immediately after)*
+**What changed**: Normalises blocking hook payloads to use `continue` instead of `decision`, updates retrospective and PowerShell tests to match, and keeps release/version sync touching both the repo-live and template instruction files.
 
 **New placeholders**: none
 
 **Companion files added**: none
 
-**Companion files updated**: none
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/copilot-instructions.md` | `template/copilot-instructions.md` | Updated (version-sync and release-managed markers) |
+| `.github/hooks/scripts/enforce-retrospective.ps1` | `template/hooks/scripts/enforce-retrospective.ps1` | Updated (PowerShell `continue` payload contract) |
+| `.github/hooks/scripts/enforce-retrospective.sh` | `template/hooks/scripts/enforce-retrospective.sh` | Updated (shell `continue` payload contract) |
+| `.github/hooks/scripts/guard-destructive.ps1` | `template/hooks/scripts/guard-destructive.ps1` | Updated (PowerShell blocking payload contract) |
+| `.github/hooks/scripts/guard-destructive.sh` | `template/hooks/scripts/guard-destructive.sh` | Updated (shell blocking payload contract) |
 
 **Manual actions**: None
 
@@ -204,15 +262,35 @@ Then update any agent count or skill count references inside the file to match t
 
 | Breaking | Sections changed | Sections added | Includes |
 |----------|-----------------|----------------|----------|
-| TBD | — | — | — |
+| No | §4, §5 | — | — |
 
-**What changed**: *(stub — fill in before the next release or immediately after)*
+**What changed**: Adds detailed terminal-discipline guidance to Coding Conventions, adds targeted-test selector guidance to PDCA phase checks, and refreshes heartbeat/runtime companion scripts plus workspace drift inventory support.
 
 **New placeholders**: none
 
 **Companion files added**: none
 
-**Companion files updated**: none
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/agents/audit.agent.md` | `.github/agents/audit.agent.md` | Updated (audit workflow and coverage guidance) |
+| `.github/agents/coding.agent.md` | `.github/agents/coding.agent.md` | Updated (task brief and verification workflow) |
+| `.github/agents/explore.agent.md` | `.github/agents/explore.agent.md` | Updated (repo scan guidance) |
+| `.github/agents/extensions.agent.md` | `.github/agents/extensions.agent.md` | Updated (extension-management workflow) |
+| `.github/agents/researcher.agent.md` | `.github/agents/researcher.agent.md` | Updated (research handoff guidance) |
+| `.github/agents/setup.agent.md` | `.github/agents/setup.agent.md` | Updated (setup protocol alignment) |
+| `.github/hooks/scripts/heartbeat-policy.json` | `template/hooks/scripts/heartbeat-policy.json` | Updated (policy thresholds and messages) |
+| `.github/hooks/scripts/mcp-heartbeat-server.py` | `template/hooks/scripts/mcp-heartbeat-server.py` | Updated (reflection payload and runtime helpers) |
+| `.github/hooks/scripts/pulse_runtime.ps1` | `template/hooks/scripts/pulse_runtime.ps1` | Updated (PowerShell runtime parity) |
+| `.github/hooks/scripts/pulse_runtime.py` | `template/hooks/scripts/pulse_runtime.py` | Updated (runtime threshold handling) |
+| `.github/hooks/scripts/pulse_state.ps1` | `template/hooks/scripts/pulse_state.ps1` | Updated (PowerShell state parity) |
+| `.github/hooks/scripts/pulse_state.py` | `template/hooks/scripts/pulse_state.py` | Updated (state tracking refinements) |
+| `.github/hooks/scripts/scan-secrets.ps1` | `template/hooks/scripts/scan-secrets.ps1` | Updated (PowerShell secret-scan parity) |
+| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` | Updated (heartbeat checks and reporting) |
+| `.copilot/workspace/TOOLS.md` | `template/workspace/TOOLS.md` | Updated (tooling inventory guidance) |
+| `.copilot/workspace/workspace-index.json` | `template/workspace/workspace-index.json` | Updated (expanded companion inventory) |
+| `CLAUDE.md` | `template/CLAUDE.md` | Updated (Claude compatibility parity) |
 
 **Manual actions**: None
 
@@ -220,15 +298,21 @@ Then update any agent count or skill count references inside the file to match t
 
 | Breaking | Sections changed | Sections added | Includes |
 |----------|-----------------|----------------|----------|
-| TBD | — | — | — |
+| No | §9 | — | — |
 
-**What changed**: *(stub — fill in before the next release or immediately after)*
+**What changed**: Expands the Setup specialist scope to cover backup restore and factory restore flows so the delegation map matches the recovery protocol.
 
 **New placeholders**: none
 
 **Companion files added**: none
 
-**Companion files updated**: none
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/agents/coding.agent.md` | `.github/agents/coding.agent.md` | Updated (specialist escalation guidance) |
+| `.github/agents/fast.agent.md` | `.github/agents/fast.agent.md` | Updated (specialist escalation guidance) |
+| `.github/agents/setup.agent.md` | `.github/agents/setup.agent.md` | Updated (factory-restore and backup-restore workflow) |
 
 **Manual actions**: None
 
@@ -236,15 +320,43 @@ Then update any agent count or skill count references inside the file to match t
 
 | Breaking | Sections changed | Sections added | Includes |
 |----------|-----------------|----------------|----------|
-| TBD | — | — | — |
+| No | §5 | — | — |
 
-**What changed**: *(stub — fill in before the next release or immediately after)*
+**What changed**: Strengthens PDCA with explicit requirements summaries, introduces the four-tier Test Scope Policy, adds an Intent-Gate step to Structured Thinking, and refreshes hook/workspace companions to support the tighter workflow.
 
 **New placeholders**: none
 
 **Companion files added**: none
 
-**Companion files updated**: none
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/agents/audit.agent.md` | `.github/agents/audit.agent.md` | Updated (audit flow alignment) |
+| `.github/agents/coding.agent.md` | `.github/agents/coding.agent.md` | Updated (PDCA/testing guidance alignment) |
+| `.github/agents/commit.agent.md` | `.github/agents/commit.agent.md` | Updated (commit workflow alignment) |
+| `.github/agents/extensions.agent.md` | `.github/agents/extensions.agent.md` | Updated (extensions workflow alignment) |
+| `.github/agents/fast.agent.md` | `.github/agents/fast.agent.md` | Updated (quick-task workflow alignment) |
+| `.github/agents/review.agent.md` | `.github/agents/review.agent.md` | Updated (review workflow alignment) |
+| `.github/agents/setup.agent.md` | `.github/agents/setup.agent.md` | Updated (setup workflow alignment) |
+| `.github/hooks/scripts/guard-destructive.ps1` | `template/hooks/scripts/guard-destructive.ps1` | Updated (PowerShell guard parity) |
+| `.github/hooks/scripts/guard-destructive.sh` | `template/hooks/scripts/guard-destructive.sh` | Updated (destructive-command guard hardening) |
+| `.github/hooks/scripts/pulse.ps1` | `template/hooks/scripts/pulse.ps1` | Updated (PowerShell pulse parity) |
+| `.github/hooks/scripts/pulse.sh` | `template/hooks/scripts/pulse.sh` | Updated (pulse workflow tightening) |
+| `.github/hooks/scripts/pulse_state.py` | `template/hooks/scripts/pulse_state.py` | Updated (state tracking refinements) |
+| `.github/hooks/scripts/save-context.ps1` | `template/hooks/scripts/save-context.ps1` | Updated (PowerShell save-context parity) |
+| `.github/hooks/scripts/save-context.sh` | `template/hooks/scripts/save-context.sh` | Updated (context-preservation flow) |
+| `.github/hooks/scripts/scan-secrets.ps1` | `template/hooks/scripts/scan-secrets.ps1` | Updated (PowerShell secret scan parity) |
+| `.github/hooks/scripts/scan-secrets.sh` | `template/hooks/scripts/scan-secrets.sh` | Updated (secret-scan workflow) |
+| `.github/hooks/scripts/session-start.ps1` | `template/hooks/scripts/session-start.ps1` | Updated (PowerShell session-start parity) |
+| `.github/hooks/scripts/session-start.sh` | `template/hooks/scripts/session-start.sh` | Updated (session-start context injection) |
+| `.github/hooks/scripts/subagent-start.ps1` | `template/hooks/scripts/subagent-start.ps1` | Updated (PowerShell subagent-start parity) |
+| `.github/hooks/scripts/subagent-start.sh` | `template/hooks/scripts/subagent-start.sh` | Updated (subagent-start workflow) |
+| `.github/hooks/scripts/subagent-stop.ps1` | `template/hooks/scripts/subagent-stop.ps1` | Updated (PowerShell subagent-stop parity) |
+| `.github/hooks/scripts/subagent-stop.sh` | `template/hooks/scripts/subagent-stop.sh` | Updated (subagent-stop workflow) |
+| `.github/instructions/config.instructions.md` | `template/instructions/config.instructions.md` | Updated (config conventions) |
+| `.copilot/workspace/MEMORY.md` | `template/workspace/MEMORY.md` | Updated (memory guidance) |
+| `.copilot/workspace/workspace-index.json` | `template/workspace/workspace-index.json` | Updated (expanded hook inventory) |
 
 **Manual actions**: None
 
@@ -252,15 +364,44 @@ Then update any agent count or skill count references inside the file to match t
 
 | Breaking | Sections changed | Sections added | Includes |
 |----------|-----------------|----------------|----------|
-| TBD | — | — | — |
+| No | §4 | — | — |
 
-**What changed**: *(stub — fill in before the next release or immediately after)*
+**What changed**: Expands terminal discipline with isolated-shell guidance, adds a routing manifest and new Debugger/Docs/Planner specialists, and refreshes hook orchestration plus workspace heartbeat/memory inventory for the routing rollout.
 
 **New placeholders**: none
 
-**Companion files added**: none
+**Companion files added**:
 
-**Companion files updated**: none
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/agents/debugger.agent.md` | `.github/agents/debugger.agent.md` | **New** (root-cause debugging specialist) |
+| `.github/agents/docs.agent.md` | `.github/agents/docs.agent.md` | **New** (documentation specialist) |
+| `.github/agents/planner.agent.md` | `.github/agents/planner.agent.md` | **New** (execution-planning specialist) |
+| `.github/agents/routing-manifest.json` | `.github/agents/routing-manifest.json` | **New** (agent routing sidecar) |
+
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/agents/coding.agent.md` | `.github/agents/coding.agent.md` | Updated (routing-aware implementation guidance) |
+| `.github/agents/fast.agent.md` | `.github/agents/fast.agent.md` | Updated (routing-aware quick-task guidance) |
+| `.github/agents/review.agent.md` | `.github/agents/review.agent.md` | Updated (routing-aware review guidance) |
+| `.github/hooks/copilot-hooks.json` | `template/hooks/copilot-hooks.json` | Updated (hook routing coverage) |
+| `.github/hooks/scripts/guard-destructive.ps1` | `template/hooks/scripts/guard-destructive.ps1` | Updated (PowerShell parity) |
+| `.github/hooks/scripts/guard-destructive.sh` | `template/hooks/scripts/guard-destructive.sh` | Updated (guard refinements) |
+| `.github/hooks/scripts/pulse.ps1` | `template/hooks/scripts/pulse.ps1` | Updated (PowerShell pulse parity) |
+| `.github/hooks/scripts/pulse.sh` | `template/hooks/scripts/pulse.sh` | Updated (routing-aware pulse orchestration) |
+| `.github/hooks/scripts/pulse_runtime.ps1` | `template/hooks/scripts/pulse_runtime.ps1` | Updated (PowerShell runtime parity) |
+| `.github/hooks/scripts/pulse_runtime.py` | `template/hooks/scripts/pulse_runtime.py` | Updated (runtime routing support) |
+| `.github/hooks/scripts/pulse_state.ps1` | `template/hooks/scripts/pulse_state.ps1` | Updated (PowerShell state parity) |
+| `.github/hooks/scripts/pulse_state.py` | `template/hooks/scripts/pulse_state.py` | Updated (state routing support) |
+| `.github/hooks/scripts/save-context.ps1` | `template/hooks/scripts/save-context.ps1` | Updated (PowerShell save-context parity) |
+| `.github/hooks/scripts/save-context.sh` | `template/hooks/scripts/save-context.sh` | Updated (context compaction support) |
+| `.github/hooks/scripts/session-start.ps1` | `template/hooks/scripts/session-start.ps1` | Updated (PowerShell session-start parity) |
+| `.github/hooks/scripts/session-start.sh` | `template/hooks/scripts/session-start.sh` | Updated (session-start routing injection) |
+| `.copilot/workspace/HEARTBEAT.md` | `template/workspace/HEARTBEAT.md` | Updated (heartbeat routing guidance) |
+| `.copilot/workspace/MEMORY.md` | `template/workspace/MEMORY.md` | Updated (memory routing guidance) |
+| `.copilot/workspace/workspace-index.json` | `template/workspace/workspace-index.json` | Updated (routing inventory) |
 
 **Manual actions**: None
 
@@ -268,15 +409,21 @@ Then update any agent count or skill count references inside the file to match t
 
 | Breaking | Sections changed | Sections added | Includes |
 |----------|-----------------|----------------|----------|
-| TBD | — | — | — |
+| No | None | None | — |
 
-**What changed**: *(stub — fill in before the next release or immediately after)*
+**What changed**: Adds repository-management hardening and refreshes hook utilities for clock summaries, post-edit linting, and secret scanning. No consumer instruction sections changed.
 
 **New placeholders**: none
 
 **Companion files added**: none
 
-**Companion files updated**: none
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/hooks/scripts/heartbeat_clock_summary.py` | `template/hooks/scripts/heartbeat_clock_summary.py` | Updated (clock-summary helper) |
+| `.github/hooks/scripts/post-edit-lint.sh` | `template/hooks/scripts/post-edit-lint.sh` | Updated (post-edit formatting flow) |
+| `.github/hooks/scripts/scan-secrets.sh` | `template/hooks/scripts/scan-secrets.sh` | Updated (secret-scan hardening) |
 
 **Manual actions**: None
 
@@ -286,15 +433,34 @@ Then update any agent count or skill count references inside the file to match t
 
 | Breaking | Sections changed | Sections added | Includes |
 |----------|-----------------|----------------|----------|
-| TBD | — | — | — |
+| No | §10 | — | — |
 
-**What changed**: *(stub — fill in before the next release or immediately after)*
+**What changed**: Adds setup interview questions and companion manifests, introduces canonical workspace inventory/bootstrap support for setup and update flows, and tightens guard-destructive handling for setup-time hooks.
 
 **New placeholders**: none
 
-**Companion files added**: none
+**Companion files added**:
 
-**Companion files updated**: none
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/hooks/scripts/mcp-npx.sh` | `template/hooks/scripts/mcp-npx.sh` | **New** (npm-based MCP launcher) |
+| `.github/hooks/scripts/mcp-uvx.sh` | `template/hooks/scripts/mcp-uvx.sh` | **New** (uvx-based MCP launcher) |
+| `.copilot/workspace/workspace-index.json` | `template/workspace/workspace-index.json` | **New** (canonical machine-readable companion inventory) |
+
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/agents/doctor.agent.md` | `.github/agents/doctor.agent.md` | Updated (audit workflow alignment) |
+| `.github/agents/security.agent.md` | `.github/agents/security.agent.md` | Updated (security workflow alignment) |
+| `.github/agents/setup.agent.md` | `.github/agents/setup.agent.md` | Updated (setup interview guidance) |
+| `.github/hooks/scripts/guard-destructive.ps1` | `template/hooks/scripts/guard-destructive.ps1` | Updated (PowerShell parity) |
+| `.github/hooks/scripts/guard-destructive.sh` | `template/hooks/scripts/guard-destructive.sh` | Updated (guard pattern tightening) |
+| `.github/hooks/scripts/lib-hooks.sh` | `template/hooks/scripts/lib-hooks.sh` | Updated (shared helper refinements) |
+| `.github/hooks/scripts/session-start.ps1` | `template/hooks/scripts/session-start.ps1` | Updated (PowerShell session-start parity) |
+| `.github/hooks/scripts/session-start.sh` | `template/hooks/scripts/session-start.sh` | Updated (session-start scaffold guidance) |
+| `.github/instructions/docs.instructions.md` | `template/instructions/docs.instructions.md` | Updated (docs guidance) |
+| `.copilot/workspace/BOOTSTRAP.md` | `template/workspace/BOOTSTRAP.md` | Updated (bootstrap/tooling guidance) |
 
 **Manual actions**: None
 

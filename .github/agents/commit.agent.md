@@ -7,6 +7,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5 mini
 tools: [agent, editFiles, runCommands, codebase, githubRepo, askQuestions]
+mcp-servers: [filesystem, git, github]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Review', 'Audit']

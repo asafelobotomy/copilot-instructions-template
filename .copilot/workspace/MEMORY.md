@@ -3,28 +3,7 @@
 <!-- workspace-layer: L1 | budget: ≤300 tokens | trigger: always -->
 > **Domain**: Facts — verified project facts, error patterns, team conventions, baselines, and gotchas.
 > **Boundary**: No opinions, preferences, reasoning heuristics, or session-specific state.
-
-- Use project-scoped memory for conventions discovered in this codebase.
-- Use session transcripts for recent context; do not rely on long-term memory for facts that are in source files.
-- Always prefer reading the source file over recalling a cached summary of it.
-- When a memory conflicts with a source file, the source file wins.
-
-## Coexistence with built-in memory
-
-VS Code's built-in memory tool (`/memories/`) has three scopes: user (persistent, cross-workspace), session (conversation-scoped), and repo (repository-scoped). This file complements built-in memory — it is **git-tracked and team-shared**, so knowledge here benefits all contributors. Use built-in memory for personal preferences; use this file for project-specific architectural decisions, conventions, and gotchas.
-
-Use `/memories/repo/` as a repo-local inbox while work is in flight. Promote only validated, team-relevant facts here once they are worth versioning and sharing.
-
-### Known constraints
-
-- **User memory auto-load cap**: the first 200 lines of `/memories/` are injected into every session automatically. Lines beyond 200 are invisible unless the agent reads the file explicitly. Keep user memory concise.
-- **Repo memory is machine-local**: `/memories/repo/` files live on disk under `workspaceStorage/{id}/GitHub.copilot-chat/memory-tool/` — they are not git-tracked and do not transfer to other machines or contributors.
-- **Copilot Memory (GitHub-hosted)**: a separate, opt-in system (`github.copilot.chat.copilotMemory.enabled`) that stores repo-scoped memories on GitHub servers with 28-day auto-expiry and just-in-time citation verification. It shares knowledge across all Copilot surfaces (coding agent, code review, CLI). Enable it to complement this file for cross-surface agent learning.
-- **No duplication**: do not record personal preferences here if built-in user memory already tracks them. This file is for project-specific knowledge that should survive machine changes.
-
-When creating `/memories/repo/` entries, prefer the Copilot Memory JSON schema (`subject`, `fact`, `citations`, `reason`, `category`) for structural compatibility.
-
-*(Updated as the memory system is used.)*
+> **Guide**: See `MEMORY-GUIDE.md` for principles, coexistence rules, and maintenance protocol.
 
 ## Metrics Freshness
 
@@ -59,12 +38,3 @@ When creating `/memories/repo/` entries, prefer the Copilot Memory JSON schema (
 
 | Entry | Archived | Reason |
 |-------|----------|--------|
-
-## Maintenance
-
-- Keep this file short enough to scan during compaction or heartbeat checks.
-- Promote durable repo-memory notes here when they should survive machine changes and contributor turnover.
-- Prune entries that are now captured in instructions, tests, or source files.
-- When a Metrics Freshness row passes its `Expires` date, either re-verify and update the date, or move the row to Archived.
-
-> **Provenance convention**: `file:line` for code, URL for docs, `session:{id}` for observed behaviour.

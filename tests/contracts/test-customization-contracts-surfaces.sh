@@ -49,6 +49,7 @@ expected = {
     "api-routes.instructions.md",
     "config.instructions.md",
     "docs.instructions.md",
+    "terminal.instructions.md",
     "tests.instructions.md",
 }
 found = {path.name for path in (root / ".github/instructions").glob("*.instructions.md")}
@@ -136,6 +137,24 @@ for rel, forbidden in checks.items():
     for needle in forbidden:
         if needle in text:
             raise SystemExit(rel + " contains stale tool guidance: " + needle)
+'
+echo ""
+
+echo "8. Lean PR review skill points to current section numbers"
+assert_python "lean-pr-review skill tracks current review/baseline sections" '
+required = [
+    (".github/skills/lean-pr-review/SKILL.md", "§5 Review Mode", "§2 baselines"),
+    ("template/skills/lean-pr-review/SKILL.md", "§5 Review Mode", "§2 baselines"),
+]
+for rel, review_ref, baseline_ref in required:
+    text = (root / rel).read_text(encoding="utf-8")
+    if review_ref not in text:
+        raise SystemExit(rel + " missing current review section reference")
+    if baseline_ref not in text:
+        raise SystemExit(rel + " missing current baselines section reference")
+    for stale in ("§2 Review Mode", "§3 baselines"):
+        if stale in text:
+            raise SystemExit(rel + " still contains stale section reference: " + stale)
 '
 echo ""
 

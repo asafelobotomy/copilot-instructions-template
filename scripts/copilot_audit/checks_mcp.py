@@ -1,11 +1,11 @@
-"""MCP checks (M1–M3) for the Copilot Audit tool."""
+"""MCP checks (M1–M4) for the Copilot Audit tool."""
 from __future__ import annotations
 
 import pathlib
 import re
 
 from .context import AuditContext, ensure_context
-from .models import Finding, CheckResult, HIGH, INFO, CRITICAL
+from .models import Finding, CheckResult, HIGH, INFO, CRITICAL, WARN
 
 
 def check_m1_mcp_valid_json(root: pathlib.Path | AuditContext) -> CheckResult:
@@ -93,4 +93,33 @@ def check_m3_mcp_no_secrets(root: pathlib.Path | AuditContext) -> CheckResult:
                                                    f"Server '{srv_name}': env key '{key}' "
                                                    "appears to contain a literal secret "
                                                    "(use ${{input:id}} syntax instead)"))
+    return result
+
+
+def check_m4_mcp_stdio_sandbox(root: pathlib.Path | AuditContext) -> CheckResult:
+    """M4 — mcp.json: stdio servers should have sandboxEnabled on supported platforms."""
+    ctx = ensure_context(root)
+    result = CheckResult("M4", "MCP config: stdio servers have sandbox")
+    mcp_file = ctx.root / ".vscode" / "mcp.json"
+    if not mcp_file.exists():
+        return result
+    rel = ctx.rel(mcp_file)
+    data, error = ctx.load_jsonc(mcp_file)
+    if error is not None:
+        return result  # M1 already flagged this
+    servers = data.get("servers", {})
+    if not isinstance(servers, dict):
+        return result
+    for srv_name, srv_cfg in servers.items():
+        if not isinstance(srv_cfg, dict):
+            continue
+        if srv_cfg.get("type") != "stdio":
+            continue
+        if srv_cfg.get("disabled", False):
+            continue
+        if not srv_cfg.get("sandboxEnabled", False):
+            result.findings.append(Finding("M4", rel, WARN,
+                                           f"Server '{srv_name}': stdio server without "
+                                           "'sandboxEnabled: true' — consider sandboxing "
+                                           "to restrict filesystem/network access"))
     return result

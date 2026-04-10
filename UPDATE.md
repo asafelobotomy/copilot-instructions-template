@@ -113,7 +113,7 @@ Match = not modified. Mismatch = modified. If unavailable, stop and direct the u
 | `template/hooks/**` | `.github/hooks/**` |
 | `template/instructions/*` | `.github/instructions/*` |
 | `template/prompts/*` | `.github/prompts/*` |
-| `template/workspace/*` | `.copilot/workspace/*` |
+| `template/workspace/**` | `.copilot/workspace/**` |
 | `template/copilot-setup-steps.yml` | `.github/workflows/copilot-setup-steps.yml` |
 | `template/vscode/settings.json` | `.vscode/settings.json` (only if the consumer already has this file from setup) |
 | `template/vscode/extensions.json` | `.vscode/extensions.json` (only if the consumer already has this file from setup) |
@@ -214,6 +214,8 @@ Back up `.github/copilot-instructions.md` + companion files with status `UPDATAB
 
 **Companion files**: `NEW` → fetch, write, resolve placeholders. `UPDATABLE` → fetch latest, replace. `USER_CUSTOMISED` → skip, report.
 
+Special case for `.vscode/mcp.json`: after writing the latest template structure, restore the consumer's previous per-server `disabled` state for every server present in both the old and new configs. If a server was previously enabled (no `disabled` field), remove `disabled` from the updated config as well. Newly introduced servers keep the template default. Sandbox and other structural fields always come from the template.
+
 **New placeholders**: use `ask_questions` with `allowFreeformInput: true` (batch ≤4). Add to §10.
 
 > **Fallback**: If `ask_questions` unavailable, present as numbered list in chat.
@@ -289,6 +291,7 @@ Apply before writing any section, regardless of decision path:
 | **User-added content** | Section has `<!-- user-added -->` blocks | Preserve verbatim; write around them |
 | **User preference conflict** | New section changes behaviour in User Preferences | Flag. Use `ask_questions`: "Keep my preference" / "Use template version". Fallback: ask in chat. |
 | **Metric threshold conflict** | New section changes resolved thresholds in §10 | Show current vs defaults. Use `ask_questions`: "Keep current values" / "Use template defaults". Fallback: ask in chat. |
+| **MCP enablement state** | Updating `.vscode/mcp.json` and consumer has existing per-server `disabled` choices | Apply the latest template structure first, then restore the consumer's prior per-server `disabled` state for servers present in both old and new configs. Keep template defaults for newly introduced servers. Always take sandbox and structural fields from the template. |
 
 **Items never modified by updates**: §10 (all subsections), `<!-- migrated -->` blocks, `<!-- user-added -->` blocks, resolved placeholder values. **Items flagged for user decision**: `USER_MODIFIED` sections, sections with `<!-- update-note: -->`, differing thresholds, preference conflicts.
 

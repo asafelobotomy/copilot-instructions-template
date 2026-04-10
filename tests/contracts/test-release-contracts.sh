@@ -156,4 +156,35 @@ for forbidden in [
 '
 echo ""
 
+echo "8. All v5 migration entries are not left as release stubs"
+assert_python "v5 migration entries are populated" '
+import re
+
+text = (root / "MIGRATION.md").read_text(encoding="utf-8")
+tags_match = re.search(r"\*\*Available tags\*\*: (.+)", text)
+if tags_match is None:
+    raise SystemExit("MIGRATION.md missing Available tags line")
+
+def parse_version(tag: str):
+    return tuple(int(part) for part in tag.lstrip("v").split("."))
+
+tags = [tag.strip() for tag in tags_match.group(1).split(",") if tag.strip()]
+current_major = parse_version(tags[-1])[0]
+recent = sorted(
+    [tag for tag in tags if parse_version(tag)[0] == current_major],
+    key=parse_version,
+)
+
+for tag in recent:
+    start = text.find(f"## {tag}\n")
+    if start == -1:
+        raise SystemExit("missing migration heading for current-major tag " + tag)
+    next_match = re.search(r"^## v", text[start + 1:], re.M)
+    end = len(text) if next_match is None else start + 1 + next_match.start()
+    block = text[start:end]
+    if "| TBD |" in block or "*(stub" in block:
+        raise SystemExit("current-major migration entry still stubbed: " + tag)
+'
+echo ""
+
 finish_tests

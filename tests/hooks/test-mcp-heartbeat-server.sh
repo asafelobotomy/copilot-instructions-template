@@ -17,6 +17,7 @@ import importlib.util
 import json
 import os
 import sys
+import tempfile
 import types
 
 
@@ -40,6 +41,10 @@ fastmcp_mod.FastMCP = FakeMCP
 sys.modules["mcp"] = mcp_mod
 sys.modules["mcp.server"] = server_mod
 sys.modules["mcp.server.fastmcp"] = fastmcp_mod
+
+forced_tmp = os.environ.get("TEST_FORCE_GETTEMPDIR")
+if forced_tmp:
+  tempfile.gettempdir = lambda: forced_tmp
 
 os.chdir(os.environ["TEST_ROOT"])
 spec = importlib.util.spec_from_file_location("heartbeat_mcp", os.environ["TEST_SCRIPT"])
@@ -179,9 +184,8 @@ REFLECT_OUTPUT="$output" assert_python "memory_protocol is a non-empty string" '
 payload = json.loads(os.environ["REFLECT_OUTPUT"])
 assert "memory_protocol" in payload
 assert isinstance(payload["memory_protocol"], str)
-assert "check MEMORY.md" in payload["memory_protocol"]
-assert "check SOUL.md" in payload["memory_protocol"]
-assert "provenance convention" in payload["memory_protocol"]
+assert len(payload["memory_protocol"]) > 0
+assert "§14" in payload["memory_protocol"]
 '
 echo ""
 
@@ -262,6 +266,173 @@ payload = json.loads(os.environ["REFLECT_OUTPUT"])
 prompts = " ".join(payload["reflection_prompts"])
 assert "SOUL values" not in prompts
 assert "USER cue" not in prompts
+'
+echo ""
+
+echo "9. Read-only workspace artifacts fall back to TMPDIR storage"
+TMP_READONLY=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_READONLY")
+printf '.copilot/\n' >> "$TMP_READONLY/.git/info/exclude"
+mkdir -p "$TMP_READONLY/.copilot/workspace"
+mkdir -p "$TMP_READONLY/runtime-tmp"
+cat > "$TMP_READONLY/.copilot/workspace/state.json" <<'JSON'
+{
+  "session_id": "sess-readonly",
+  "session_start_epoch": 1704067200,
+  "session_start_git_count": 0,
+  "active_work_seconds": 1800,
+  "task_window_start_epoch": 0,
+  "last_raw_tool_epoch": 0,
+  "copilot_edit_count": 6
+}
+JSON
+chmod 0555 "$TMP_READONLY/.copilot/workspace"
+output=$(CLAUDE_TMPDIR= TMPDIR="$TMP_READONLY/runtime-tmp" run_reflect "$TMP_READONLY")
+status=$?
+chmod 0755 "$TMP_READONLY/.copilot/workspace"
+assert_success "read-only workspace exits zero" "$status"
+assert_valid_json "read-only workspace output is valid JSON" "$output"
+REFLECT_OUTPUT="$output" assert_python "read-only workspace still reports the session" '
+payload = json.loads(os.environ["REFLECT_OUTPUT"])
+assert payload["magnitude"] == "large"
+assert payload["metrics"]["files_changed"] == 6
+'
+assert_python_in_root "read-only workspace writes sentinel and events into fallback storage" "$TMP_READONLY" '
+import hashlib
+import tempfile
+from pathlib import Path
+
+tmp_root = Path(root / "runtime-tmp")
+repo_key = hashlib.sha256(str(root).encode("utf-8")).hexdigest()[:12]
+runtime_dir = tmp_root / "copilot-heartbeat" / repo_key
+sentinel = runtime_dir / ".heartbeat-session"
+events = runtime_dir / ".heartbeat-events.jsonl"
+assert sentinel.exists(), sentinel
+assert events.exists(), events
+assert "|complete" in sentinel.read_text(encoding="utf-8")
+lines = [json.loads(line) for line in events.read_text(encoding="utf-8").splitlines() if line.strip()]
+assert lines[-1]["trigger"] == "session_reflect"
+assert lines[-1]["session_id"] == "sess-readonly"
+'
+echo ""
+
+echo "10. Read-only TMPDIR falls through to home cache storage"
+TMP_HOMECACHE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_HOMECACHE")
+printf '.copilot/\n' >> "$TMP_HOMECACHE/.git/info/exclude"
+mkdir -p "$TMP_HOMECACHE/.copilot/workspace"
+mkdir -p "$TMP_HOMECACHE/blocked-tmp"
+cat > "$TMP_HOMECACHE/.copilot/workspace/state.json" <<'JSON'
+{
+  "session_id": "sess-homecache",
+  "session_start_epoch": 1704067200,
+  "session_start_git_count": 0,
+  "active_work_seconds": 1800,
+  "task_window_start_epoch": 0,
+  "last_raw_tool_epoch": 0,
+  "copilot_edit_count": 6
+}
+JSON
+chmod 0555 "$TMP_HOMECACHE/.copilot/workspace"
+chmod 0555 "$TMP_HOMECACHE/blocked-tmp"
+output=$(CLAUDE_TMPDIR= XDG_CACHE_HOME="$TMP_HOMECACHE/.cache" HOME="$TMP_HOMECACHE" TMPDIR="$TMP_HOMECACHE/blocked-tmp" TEST_FORCE_GETTEMPDIR="$TMP_HOMECACHE/blocked-tmp" run_reflect "$TMP_HOMECACHE")
+status=$?
+chmod 0755 "$TMP_HOMECACHE/.copilot/workspace"
+chmod 0755 "$TMP_HOMECACHE/blocked-tmp"
+assert_success "blocked TMPDIR exits zero" "$status"
+assert_valid_json "blocked TMPDIR output is valid JSON" "$output"
+assert_python_in_root "blocked TMPDIR writes heartbeat artifacts into home cache" "$TMP_HOMECACHE" '
+import hashlib
+from pathlib import Path
+
+repo_key = hashlib.sha256(str(root).encode("utf-8")).hexdigest()[:12]
+runtime_dir = root / ".cache/uv/copilot-heartbeat" / repo_key
+sentinel = runtime_dir / ".heartbeat-session"
+events = runtime_dir / ".heartbeat-events.jsonl"
+assert sentinel.exists(), sentinel
+assert events.exists(), events
+assert "|complete" in sentinel.read_text(encoding="utf-8")
+lines = [json.loads(line) for line in events.read_text(encoding="utf-8").splitlines() if line.strip()]
+assert lines[-1]["trigger"] == "session_reflect"
+assert lines[-1]["session_id"] == "sess-homecache"
+'
+echo ""
+
+echo "11. CLAUDE_TMPDIR is preferred when TMPDIR is blocked"
+TMP_CLAUDE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_CLAUDE")
+printf '.copilot/\n' >> "$TMP_CLAUDE/.git/info/exclude"
+mkdir -p "$TMP_CLAUDE/.copilot/workspace" "$TMP_CLAUDE/blocked-tmp" "$TMP_CLAUDE/claude-tmp"
+cat > "$TMP_CLAUDE/.copilot/workspace/state.json" <<'JSON'
+{
+  "session_id": "sess-claude",
+  "session_start_epoch": 1704067200,
+  "session_start_git_count": 0,
+  "active_work_seconds": 1800,
+  "task_window_start_epoch": 0,
+  "last_raw_tool_epoch": 0,
+  "copilot_edit_count": 6
+}
+JSON
+chmod 0555 "$TMP_CLAUDE/.copilot/workspace"
+chmod 0555 "$TMP_CLAUDE/blocked-tmp"
+output=$(CLAUDE_TMPDIR="$TMP_CLAUDE/claude-tmp" TMPDIR="$TMP_CLAUDE/blocked-tmp" TEST_FORCE_GETTEMPDIR="$TMP_CLAUDE/blocked-tmp" run_reflect "$TMP_CLAUDE")
+status=$?
+chmod 0755 "$TMP_CLAUDE/.copilot/workspace"
+chmod 0755 "$TMP_CLAUDE/blocked-tmp"
+assert_success "blocked TMPDIR with CLAUDE_TMPDIR exits zero" "$status"
+assert_valid_json "blocked TMPDIR with CLAUDE_TMPDIR output is valid JSON" "$output"
+assert_python_in_root "CLAUDE_TMPDIR receives heartbeat artifacts" "$TMP_CLAUDE" '
+import hashlib
+from pathlib import Path
+
+repo_key = hashlib.sha256(str(root).encode("utf-8")).hexdigest()[:12]
+runtime_dir = root / "claude-tmp/copilot-heartbeat" / repo_key
+sentinel = runtime_dir / ".heartbeat-session"
+events = runtime_dir / ".heartbeat-events.jsonl"
+assert sentinel.exists(), sentinel
+assert events.exists(), events
+assert "|complete" in sentinel.read_text(encoding="utf-8")
+lines = [json.loads(line) for line in events.read_text(encoding="utf-8").splitlines() if line.strip()]
+assert lines[-1]["trigger"] == "session_reflect"
+assert lines[-1]["session_id"] == "sess-claude"
+'
+echo ""
+
+echo "12. Stale sentinel temp files do not block fallback storage"
+TMP_STALE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_STALE")
+printf '.copilot/\n' >> "$TMP_STALE/.git/info/exclude"
+mkdir -p "$TMP_STALE/.copilot/workspace" "$TMP_STALE/runtime-tmp"
+cat > "$TMP_STALE/.copilot/workspace/state.json" <<'JSON'
+{
+  "session_id": "sess-stale",
+  "session_start_epoch": 1704067200,
+  "session_start_git_count": 0,
+  "active_work_seconds": 1800,
+  "task_window_start_epoch": 0,
+  "last_raw_tool_epoch": 0,
+  "copilot_edit_count": 6
+}
+JSON
+printf 'stale\n' > "$TMP_STALE/.copilot/workspace/.heartbeat-session.tmp"
+chmod 0555 "$TMP_STALE/.copilot/workspace"
+output=$(CLAUDE_TMPDIR= TMPDIR="$TMP_STALE/runtime-tmp" run_reflect "$TMP_STALE")
+status=$?
+chmod 0755 "$TMP_STALE/.copilot/workspace"
+assert_success "stale sentinel temp exits zero" "$status"
+assert_valid_json "stale sentinel temp output is valid JSON" "$output"
+assert_python_in_root "stale sentinel temp still falls back to runtime storage" "$TMP_STALE" '
+import hashlib
+from pathlib import Path
+
+tmp_root = Path(root / "runtime-tmp")
+repo_key = hashlib.sha256(str(root).encode("utf-8")).hexdigest()[:12]
+runtime_dir = tmp_root / "copilot-heartbeat" / repo_key
+sentinel = runtime_dir / ".heartbeat-session"
+events = runtime_dir / ".heartbeat-events.jsonl"
+assert sentinel.exists(), sentinel
+assert events.exists(), events
+assert "|complete" in sentinel.read_text(encoding="utf-8")
+lines = [json.loads(line) for line in events.read_text(encoding="utf-8").splitlines() if line.strip()]
+assert lines[-1]["trigger"] == "session_reflect"
+assert lines[-1]["session_id"] == "sess-stale"
 '
 echo ""
 

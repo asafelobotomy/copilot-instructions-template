@@ -7,6 +7,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5.1
 tools: [agent, codebase, search, runCommands]
+mcp-servers: [filesystem, git]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Researcher', 'Audit']

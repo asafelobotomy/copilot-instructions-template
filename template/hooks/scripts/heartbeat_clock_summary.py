@@ -4,7 +4,11 @@
 from __future__ import annotations
 
 import json
+import hashlib
+import os
+import pwd
 import sys
+import tempfile
 import time
 from pathlib import Path
 from typing import Dict, List, Sequence
@@ -38,25 +42,100 @@ def load_json_object(path: Path) -> Dict[str, object]:
     return loaded if isinstance(loaded, dict) else {}
 
 
-def iter_completed_events(path: Path) -> List[Dict[str, object]]:
-    if not path.exists():
-        return []
-    events = []
+def fallback_artifact_roots() -> List[Path]:
+    roots: List[Path] = []
+    seen: set[str] = set()
+
+    def add(candidate: Path | None) -> None:
+        if candidate is None:
+            return
+        key = str(candidate)
+        if key in seen:
+            return
+        seen.add(key)
+        roots.append(candidate)
+
+    claude_tmp = os.environ.get("CLAUDE_TMPDIR")
+    if claude_tmp:
+        add(Path(claude_tmp))
+    env_tmp = os.environ.get("TMPDIR")
+    if env_tmp:
+        add(Path(env_tmp))
+    add(Path(tempfile.gettempdir()))
+    xdg_cache_home = os.environ.get("XDG_CACHE_HOME")
+    if xdg_cache_home:
+        add(Path(xdg_cache_home) / "uv")
     try:
-        lines = path.read_text(encoding="utf-8").splitlines()
+        passwd_home = Path(pwd.getpwuid(os.getuid()).pw_dir)
     except Exception:
-        return events
-    for line in lines:
-        if not line.strip():
+        passwd_home = None
+    if passwd_home is not None:
+        add(passwd_home / ".cache" / "uv")
+        add(passwd_home / ".local" / "share" / "uv")
+    home = Path.home()
+    add(home / ".cache" / "uv")
+    add(home / ".local" / "share" / "uv")
+    return roots
+
+
+def fallback_artifact_path(path: Path) -> Path:
+    workspace = path.parent
+    try:
+        workspace_resolved = workspace.resolve()
+    except Exception:
+        workspace_resolved = workspace
+    if workspace_resolved.name == "workspace" and workspace_resolved.parent.name == ".copilot":
+        root = workspace_resolved.parent.parent
+    else:
+        root = workspace_resolved.parent
+    roots = fallback_artifact_roots()
+    tmp_root = roots[0] if roots else Path(tempfile.gettempdir())
+    repo_key = hashlib.sha256(str(root).encode("utf-8")).hexdigest()[:12]
+    return tmp_root / "copilot-heartbeat" / repo_key / path.name
+
+
+def fallback_artifact_paths(path: Path) -> List[Path]:
+    workspace = path.parent
+    try:
+        workspace_resolved = workspace.resolve()
+    except Exception:
+        workspace_resolved = workspace
+    if workspace_resolved.name == "workspace" and workspace_resolved.parent.name == ".copilot":
+        root = workspace_resolved.parent.parent
+    else:
+        root = workspace_resolved.parent
+    repo_key = hashlib.sha256(str(root).encode("utf-8")).hexdigest()[:12]
+    return [root_path / "copilot-heartbeat" / repo_key / path.name for root_path in fallback_artifact_roots()]
+
+
+def heartbeat_artifact_paths(path: Path) -> List[Path]:
+    candidates = [path]
+    for fallback in fallback_artifact_paths(path):
+        if fallback != path and fallback not in candidates:
+            candidates.append(fallback)
+    return candidates
+
+
+def iter_completed_events(path: Path) -> List[Dict[str, object]]:
+    events = []
+    for candidate in heartbeat_artifact_paths(path):
+        if not candidate.exists():
             continue
         try:
-            event = json.loads(line)
+            lines = candidate.read_text(encoding="utf-8").splitlines()
         except Exception:
             continue
-        if not isinstance(event, dict):
-            continue
-        if event.get("trigger") == "stop" and event.get("detail") == "complete":
-            events.append(event)
+        for line in lines:
+            if not line.strip():
+                continue
+            try:
+                event = json.loads(line)
+            except Exception:
+                continue
+            if not isinstance(event, dict):
+                continue
+            if event.get("trigger") == "stop" and event.get("detail") == "complete":
+                events.append(event)
     return events
 
 
@@ -115,7 +194,9 @@ def main(argv: Sequence[str]) -> int:
     state_path = workspace / "state.json"
     events_path = workspace / ".heartbeat-events.jsonl"
     if not state_path.exists() and not events_path.exists():
-        return 0
+        fallback_events = fallback_artifact_path(events_path)
+        if not fallback_events.exists():
+            return 0
     summary = build_clock_summary(workspace)
     if summary:
         sys.stdout.write(summary)

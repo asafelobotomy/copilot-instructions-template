@@ -8,6 +8,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5.1
 tools: [agent, codebase, githubRepo, runCommands, search]
+mcp-servers: [filesystem, git, github]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Audit', 'Organise', 'Docs', 'Debugger']
@@ -37,7 +38,7 @@ This is a read-only role — do not modify files unless explicitly instructed.
 
 Guidelines:
 
-- Follow §2 Review Mode in `.github/copilot-instructions.md`.
+- Follow §5 Review Mode in `.github/copilot-instructions.md`.
 - Prefer `Organise` over general `Code` when a finding is primarily about
   repository structure, file placement, or broken pathing after moves.
 - Use `Debugger` when a finding cannot be substantiated without isolating the underlying root cause first.

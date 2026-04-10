@@ -24,7 +24,7 @@ if [[ $TOTAL -gt $MAX_TOTAL ]]; then
   failed=1
 fi
 
-# Per-section check (§2 ≤ 210, §1/§3–§9 ≤ 120, §11–§13 ≤ 150, §10 exempt)
+# Per-section check (§5 ≤ 210, §1–§4/§6–§9 ≤ 120, §11–§14 ≤ 150, §10 exempt)
 prev_line=0
 prev_section=""
 while IFS=: read -r line_num text; do
@@ -33,8 +33,8 @@ while IFS=: read -r line_num text; do
     len=$((line_num - prev_line))
     if [[ $prev_section -eq 10 ]]; then
       limit=999999  # §10 exempt
-    elif [[ $prev_section -eq 2 ]]; then
-      limit=210     # §2 Operating Modes gets extra room
+    elif [[ $prev_section -eq 5 ]]; then
+      limit=210     # §5 Operating Modes gets extra room
     elif [[ $prev_section -ge 11 ]]; then
       limit=$MAX_PROTOCOL
     else
@@ -54,7 +54,7 @@ if [[ -n "$prev_section" && $prev_line -gt 0 ]]; then
   len=$((TOTAL - prev_line + 1))
   if [[ $prev_section -eq 10 ]]; then
     limit=999999
-  elif [[ $prev_section -eq 2 ]]; then
+  elif [[ $prev_section -eq 5 ]]; then
     limit=210
   elif [[ $prev_section -ge 11 ]]; then
     limit=$MAX_PROTOCOL

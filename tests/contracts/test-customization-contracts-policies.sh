@@ -245,63 +245,83 @@ echo ""
 
 echo "8. Instruction files encode terminal discipline for truncation and zsh shells"
 assert_python "instruction files include terminal discipline guidance" '
-required_by_file = {
-    ".github/copilot-instructions.md": [
-        "Run all tests (captured)",
-        "bash scripts/tests/run-all-captured.sh",
-        "For high-volume commands, capture the full output to a log file and print only a bounded tail",
-        "Prefer repo bash scripts over ad hoc zsh control flow",
-        "single existing command with no shell control flow",
-        "scripts/tests/run-isolated-shell.sh",
-        "scripts/tests/run-isolated-shell-stdin.sh",
-        "--shell <bash|sh|zsh|pwsh>",
-        "Never run `set -euo pipefail` or `setopt errexit nounset pipefail` as a standalone terminal command",
-        "--command",
-        "EOF",
-        "avoid reserved variable names such as `status`",
-        "Do not rely on profile files, aliases, or exported shell options",
-        "stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation",
-    ],
-    "template/copilot-instructions.md": [
-        "For high-volume commands, capture the full output to a log file and print only a bounded tail instead of streaming everything",
-        "If the repo documents a terminal-safe wrapper for a noisy command, prefer it",
-        "Prefer repo scripts or bash wrappers over ad hoc shell control flow",
-        "single existing command with no shell control flow",
-        "generic isolated-shell wrapper",
-        "stdin or here-doc isolated-shell wrapper",
-        "Never run `set -euo pipefail` or `setopt errexit nounset pipefail` as a standalone terminal command",
-        "prefer a repo wrapper if one exists",
-        "prefer a dedicated stdin or here-doc wrapper when the repo provides one",
-        "run the snippet through a child Bash process with strict mode enabled",
-        "avoid reserved variable names such as `status`",
-        "Do not rely on profile files, aliases, or exported shell options",
-        "stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation",
-    ],
-}
-for rel, needles in required_by_file.items():
-    text = " ".join((root / rel).read_text(encoding="utf-8").split())
+# Terminal discipline is extracted to instruction files (terminal.instructions.md).
+# Main files must reference the instruction file; instruction files carry the detail.
+for main_file in (".github/copilot-instructions.md", "template/copilot-instructions.md"):
+    text = (root / main_file).read_text(encoding="utf-8")
+    if "terminal.instructions.md" not in text:
+        raise SystemExit(main_file + " must reference terminal.instructions.md")
+
+# The instruction files carry the detailed terminal guidance
+required_dev = [
+    "For high-volume commands, capture the full output to a log file and print only a bounded tail",
+    "Prefer repo scripts or bash wrappers over ad hoc shell control flow",
+    "single existing command with no shell control flow",
+    "generic isolated-shell wrapper",
+    "stdin or here-doc isolated-shell wrapper",
+    "Never run `set -euo pipefail` or `setopt errexit nounset pipefail` as a standalone terminal command",
+    "prefer a repo wrapper if one exists",
+    "prefer a dedicated stdin or here-doc wrapper when the repo provides one",
+    "run the snippet through a child Bash process with strict mode enabled",
+    "avoid reserved variable names such as `status`",
+    "Do not rely on profile files, aliases, or exported shell options",
+    "stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation",
+]
+required_tpl = [
+    "For high-volume commands, capture the full output to a log file and print only a bounded tail instead of streaming everything",
+    "Prefer repo scripts or bash wrappers over ad hoc shell control flow",
+    "single existing command with no shell control flow",
+    "generic isolated-shell wrapper",
+    "stdin or here-doc isolated-shell wrapper",
+    "Never run `set -euo pipefail` or `setopt errexit nounset pipefail` as a standalone terminal command",
+    "prefer a repo wrapper if one exists",
+    "prefer a dedicated stdin or here-doc wrapper when the repo provides one",
+    "run the snippet through a child Bash process with strict mode enabled",
+    "avoid reserved variable names such as `status`",
+    "Do not rely on profile files, aliases, or exported shell options",
+    "stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation",
+]
+
+for path_rel, needles in [
+    (".github/instructions/terminal.instructions.md", required_dev),
+    ("template/instructions/terminal.instructions.md", required_tpl),
+]:
+    text = " ".join((root / path_rel).read_text(encoding="utf-8").split())
     for needle in needles:
         if " ".join(needle.split()) not in text:
-            raise SystemExit(rel + " missing terminal discipline guidance: " + needle)
+            raise SystemExit(path_rel + " missing terminal discipline guidance: " + needle)
+
+# Dev instructions still references run-all-captured
 dev_text = (root / ".github/copilot-instructions.md").read_text(encoding="utf-8")
-if "scripts/tests/run-strict-bash.sh" in dev_text:
-    raise SystemExit(".github/copilot-instructions.md must not reference deleted strict wrapper paths")
-if "scripts/tests/run-strict-bash-stdin.sh" in dev_text:
-    raise SystemExit(".github/copilot-instructions.md must not reference deleted strict wrapper stdin paths")
-template_text = (root / "template/copilot-instructions.md").read_text(encoding="utf-8")
-if "scripts/tests/run-strict-bash.sh" in template_text:
-    raise SystemExit("template/copilot-instructions.md must not reference repo-only strict wrapper paths")
-if "scripts/tests/run-strict-bash-stdin.sh" in template_text:
-    raise SystemExit("template/copilot-instructions.md must not reference repo-only stdin wrapper paths")
+if "Run all tests (captured)" not in dev_text:
+    raise SystemExit(".github/copilot-instructions.md still needs Run all tests (captured) in Key Commands")
+if "bash scripts/tests/run-all-captured.sh" not in dev_text:
+    raise SystemExit(".github/copilot-instructions.md still needs run-all-captured.sh in Key Commands")
+
+# Deleted strict wrapper paths must not appear
+for rel in (".github/copilot-instructions.md", "template/copilot-instructions.md"):
+    txt = (root / rel).read_text(encoding="utf-8")
+    for deleted in ("scripts/tests/run-strict-bash.sh", "scripts/tests/run-strict-bash-stdin.sh"):
+        if deleted in txt:
+            raise SystemExit(rel + " must not reference deleted strict wrapper: " + deleted)
+
+# Agent/prompt/instruction files must not suggest zsh strict-mode mutation
+# (terminal instruction files are excluded — they warn AGAINST it)
 search_roots = [
     root / ".github/agents",
     root / ".github/prompts",
-    root / ".github/instructions",
     root / "template/prompts",
-    root / "template/instructions",
 ]
 for search_root in search_roots:
     for path in search_root.rglob("*.md"):
+        text = path.read_text(encoding="utf-8")
+        if "setopt errexit nounset pipefail" in text:
+            raise SystemExit(str(path.relative_to(root)) + " must not suggest top-level zsh strict-mode mutation")
+# Non-terminal instruction files also checked
+for instr_root in (root / ".github/instructions", root / "template/instructions"):
+    for path in instr_root.rglob("*.md"):
+        if path.name == "terminal.instructions.md":
+            continue  # this file warns AGAINST it
         text = path.read_text(encoding="utf-8")
         if "setopt errexit nounset pipefail" in text:
             raise SystemExit(str(path.relative_to(root)) + " must not suggest top-level zsh strict-mode mutation")
@@ -313,19 +333,47 @@ assert_python "prompt and agent surfaces avoid raw zsh strict-mode mutation" '
 search_roots = [
     root / ".github/agents",
     root / ".github/prompts",
-    root / ".github/instructions",
     root / "template/prompts",
-    root / "template/instructions",
 ]
 for search_root in search_roots:
     for path in search_root.rglob("*.md"):
         text = path.read_text(encoding="utf-8")
         if "setopt errexit nounset pipefail" in text:
             raise SystemExit(str(path.relative_to(root)) + " must not suggest top-level zsh strict-mode mutation")
+# Instruction files checked separately — terminal.instructions.md warns AGAINST it
+for instr_root in (root / ".github/instructions", root / "template/instructions"):
+    for path in instr_root.rglob("*.md"):
+        if path.name == "terminal.instructions.md":
+            continue
+        text = path.read_text(encoding="utf-8")
+        if "setopt errexit nounset pipefail" in text:
+            raise SystemExit(str(path.relative_to(root)) + " must not suggest top-level zsh strict-mode mutation")
 '
 echo ""
 
-echo "10. Agent allow-lists stay minimal and workflow-aligned"
+echo "10. Consumer template has no duplicated hook or MCP guidance"
+assert_python "template instructions avoid duplicated or malformed protocol text" '
+text = (root / "template/copilot-instructions.md").read_text(encoding="utf-8")
+if "rejected.ation" in text:
+    raise SystemExit("template/copilot-instructions.md contains malformed MCP troubleshooting text")
+
+counts = {
+    "Agent-scoped hooks: individual agents can define a `hooks:` section in their `.agent.md` YAML frontmatter.": 1,
+    "- **Sandbox stdio servers**: set `\"sandboxEnabled\": true` in `mcp.json` for locally-running stdio servers to restrict filesystem and network access (macOS/Linux). Sandboxed servers auto-approve tool calls.": 1,
+    "- The MCP `memory` server has been removed — VS Code\x27s built-in memory tool (`/memories/`) provides superior persistent storage with three scopes (user, session, repository)": 1,
+    "- Never hardcode secrets — use `${input:}` or `${env:}` variable syntax": 1,
+    "- **Monorepo discovery**: enable `chat.useCustomizationsInParentRepositories` to auto-discover instructions, prompts, agents, skills, and hooks from a parent Git repository root when opening a subfolder. Requires the parent folder to be trusted.": 1,
+    "- **Troubleshooting**: if customizations fail to load, select the ellipsis (…) menu in the Chat view → *Show Agent Debug Logs* to diagnose which files were discovered and which were rejected.": 1,
+}
+
+for snippet, expected in counts.items():
+    actual = text.count(snippet)
+    if actual != expected:
+        raise SystemExit(f"template/copilot-instructions.md expected {expected} occurrence(s) of {snippet!r}, found {actual}")
+'
+echo ""
+
+echo "11. Agent allow-lists stay minimal and workflow-aligned"
 assert_python "agent allow-lists match documented delegation policy" '
 def parse_tools_or_agents(frontmatter, field):
     match = re.search(rf"^{field}:\s*\[(.*)\]\s*$", frontmatter, re.M)

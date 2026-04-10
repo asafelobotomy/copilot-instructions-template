@@ -60,21 +60,7 @@ Run deterministic targeted suites during intermediate phases when the repo has a
 - No commented-out code — git history is the undo stack.
 - Read before claiming — never describe or modify a file not opened this session.
 
-**Terminal discipline**:
-
-- For high-volume commands, capture the full output to a log file and print only a bounded tail.
-- In this repo, prefer `bash scripts/tests/run-all-captured.sh` when the full-suite gate is executed through terminal tools.
-- Prefer repo bash scripts over ad hoc zsh control flow when a command needs exit-status plumbing, redirection, or retries.
-- A single existing command with no shell control flow, tempfile plumbing, redirection, or shell-specific syntax may run directly in the terminal.
-- For ad hoc one-liners or multi-step snippets, prefer `bash scripts/tests/run-isolated-shell.sh --shell <bash|sh|zsh|pwsh> [--strict] --command '...'` instead of relying on the persistent terminal's current shell state.
-- For multi-line snippets or here-docs, prefer `bash scripts/tests/run-isolated-shell-stdin.sh --shell <bash|sh|zsh|pwsh> [--strict] <<'EOF'`.
-- Never run `set -euo pipefail` or `setopt errexit nounset pipefail` as a standalone terminal command in the persistent zsh session. VS Code shell integration prompt hooks inherit that global state and can terminate the session on the next prompt cycle.
-- For ad hoc strict-mode one-liners, prefer `bash scripts/tests/run-isolated-shell.sh --shell bash --strict --command '...'` instead of mutating the parent zsh session.
-- For multi-line strict-mode snippets, prefer `bash scripts/tests/run-isolated-shell-stdin.sh --shell bash --strict <<'EOF'` or pipe the snippet on stdin to that wrapper instead of mutating the parent zsh session.
-- Use `--shell bash --strict` with the isolated-shell wrappers when the snippet must run in strict Bash specifically. Use the same wrappers with `zsh`, `sh`, or PowerShell when the snippet needs a different shell.
-- In zsh workspaces, avoid reserved variable names such as `status`; use `rc`, `exit_code`, or `command_rc` instead.
-- Do not rely on profile files, aliases, or exported shell options for ad hoc snippets. The isolated-shell wrappers intentionally start child shells without user profile state.
-- If a failure is caused by shell semantics rather than the underlying command, stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation.
+**Terminal discipline**: See `.github/instructions/terminal.instructions.md` (loaded automatically for shell files).
 
 ## PDCA Cycle
 
@@ -131,7 +117,7 @@ Before acting on any medium-to-complex task:
 
 ## Critical Rules
 
-- `template/copilot-instructions.md` must contain §1–§13 and ≤ 800 lines (CI enforced).
+- `template/copilot-instructions.md` must contain §1–§14 and ≤ 800 lines (CI enforced).
 - `template/copilot-instructions.md` must contain ≥ 3 `{{PLACEHOLDER}}` tokens (CI enforced).
 - `.github/copilot-instructions.md` *(this file)* must contain **zero** `{{}}` tokens (CI enforced).
 - Parity: `.github/skills/` must mirror `template/skills/`. `.github/hooks/` must mirror `template/hooks/` exactly. CI enforces.

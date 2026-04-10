@@ -136,6 +136,104 @@ assert module.reflection_event_complete(events_path, "fallback-session", 1704067
 '
 echo ""
 
+echo "6b. sentinel and event helpers fall back to TMPDIR storage when workspace artifacts are absent"
+TMP_FALLBACK=$(mktemp -d); CLEANUP_DIRS+=("$TMP_FALLBACK")
+mkdir -p "$TMP_FALLBACK/.copilot/workspace"
+assert_python_in_root "helpers read heartbeat completion from fallback storage" "$TMP_FALLBACK" '
+import importlib.util
+
+os.environ.pop("CLAUDE_TMPDIR", None)
+os.environ["TMPDIR"] = str(root / "runtime-tmp")
+spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_PATH"])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+workspace = root / ".copilot/workspace"
+sentinel_path = workspace / ".heartbeat-session"
+events_path = workspace / ".heartbeat-events.jsonl"
+fallback_sentinel = module.fallback_artifact_path(sentinel_path)
+fallback_events = module.fallback_artifact_path(events_path)
+fallback_sentinel.parent.mkdir(parents=True, exist_ok=True)
+fallback_sentinel.write_text("sess-fallback|2024-01-01T00:00:00Z|complete\n", encoding="utf-8")
+fallback_events.write_text(
+  json.dumps({"trigger": "session_reflect", "detail": "complete", "session_id": "sess-fallback", "ts": 1704068400}) + "\n",
+  encoding="utf-8",
+)
+assert module.sentinel_is_complete(sentinel_path) is True
+assert module.reflection_event_complete(events_path, "sess-fallback", 1704067200) is True
+'
+echo ""
+
+echo "6c. writes fall through to home cache when TMPDIR is unavailable"
+TMP_CACHE_FALLBACK=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CACHE_FALLBACK")
+mkdir -p "$TMP_CACHE_FALLBACK/.copilot/workspace"
+mkdir -p "$TMP_CACHE_FALLBACK/blocked-tmp"
+chmod 0555 "$TMP_CACHE_FALLBACK/blocked-tmp"
+assert_python_in_root "helpers write heartbeat artifacts into home cache when TMPDIR is blocked" "$TMP_CACHE_FALLBACK" '
+import importlib.util
+
+os.environ.pop("CLAUDE_TMPDIR", None)
+os.environ["TMPDIR"] = str(root / "blocked-tmp")
+os.environ["XDG_CACHE_HOME"] = str(root / ".cache")
+spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_PATH"])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+module.tempfile.gettempdir = lambda: str(root / "blocked-tmp")
+workspace = root / ".copilot/workspace"
+sentinel_path = workspace / ".heartbeat-session"
+events_path = workspace / ".heartbeat-events.jsonl"
+workspace.chmod(0o555)
+try:
+  module.set_sentinel(sentinel_path, workspace, 1704067200, "sess-cache", "complete")
+  module.append_event(events_path, workspace, 1704068400, "session_reflect", "complete", session_id="sess-cache")
+finally:
+  workspace.chmod(0o755)
+home_sentinel = root / ".cache/uv/copilot-heartbeat"
+matches = list(home_sentinel.glob("*/.heartbeat-session"))
+event_matches = list(home_sentinel.glob("*/.heartbeat-events.jsonl"))
+assert len(matches) == 1, matches
+assert len(event_matches) == 1, event_matches
+assert "|complete" in matches[0].read_text(encoding="utf-8")
+assert module.sentinel_is_complete(sentinel_path) is True
+assert module.reflection_event_complete(events_path, "sess-cache", 1704067200) is True
+'
+chmod 0755 "$TMP_CACHE_FALLBACK/blocked-tmp"
+echo ""
+
+echo "6d. CLAUDE_TMPDIR is preferred over blocked TMPDIR"
+TMP_CLAUDE_TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP_CLAUDE_TMP")
+mkdir -p "$TMP_CLAUDE_TMP/.copilot/workspace"
+mkdir -p "$TMP_CLAUDE_TMP/blocked-tmp" "$TMP_CLAUDE_TMP/claude-tmp"
+chmod 0555 "$TMP_CLAUDE_TMP/blocked-tmp"
+assert_python_in_root "helpers write heartbeat artifacts into CLAUDE_TMPDIR when TMPDIR is blocked" "$TMP_CLAUDE_TMP" '
+import importlib.util
+
+os.environ["TMPDIR"] = str(root / "blocked-tmp")
+os.environ["CLAUDE_TMPDIR"] = str(root / "claude-tmp")
+spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_PATH"])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+module.tempfile.gettempdir = lambda: str(root / "blocked-tmp")
+workspace = root / ".copilot/workspace"
+sentinel_path = workspace / ".heartbeat-session"
+events_path = workspace / ".heartbeat-events.jsonl"
+workspace.chmod(0o555)
+try:
+  module.set_sentinel(sentinel_path, workspace, 1704067200, "sess-claude", "complete")
+  module.append_event(events_path, workspace, 1704068400, "session_reflect", "complete", session_id="sess-claude")
+finally:
+  workspace.chmod(0o755)
+claude_sentinel = root / "claude-tmp/copilot-heartbeat"
+matches = list(claude_sentinel.glob("*/.heartbeat-session"))
+event_matches = list(claude_sentinel.glob("*/.heartbeat-events.jsonl"))
+assert len(matches) == 1, matches
+assert len(event_matches) == 1, event_matches
+assert "|complete" in matches[0].read_text(encoding="utf-8")
+assert module.sentinel_is_complete(sentinel_path) is True
+assert module.reflection_event_complete(events_path, "sess-claude", 1704067200) is True
+'
+chmod 0755 "$TMP_CLAUDE_TMP/blocked-tmp"
+echo ""
+
 echo "7. close_work_window accumulates tracked active time and resets the window"
 assert_python "close_work_window rolls elapsed time into active_work_seconds" '
 import importlib.util

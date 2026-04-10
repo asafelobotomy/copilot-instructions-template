@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import hashlib
 import json
 import os
+import pwd
 import subprocess
 import tempfile
 import time
@@ -114,6 +116,92 @@ def load_state(state_path: Path) -> dict:
     return state
 
 
+def fallback_artifact_roots() -> list[Path]:
+    roots: list[Path] = []
+    seen: set[str] = set()
+
+    def add(candidate: Path | None) -> None:
+        if candidate is None:
+            return
+        key = str(candidate)
+        if key in seen:
+            return
+        seen.add(key)
+        roots.append(candidate)
+
+    claude_tmp = os.environ.get("CLAUDE_TMPDIR")
+    if claude_tmp:
+        add(Path(claude_tmp))
+    env_tmp = os.environ.get("TMPDIR")
+    if env_tmp:
+        add(Path(env_tmp))
+    add(Path(tempfile.gettempdir()))
+    xdg_cache_home = os.environ.get("XDG_CACHE_HOME")
+    if xdg_cache_home:
+        add(Path(xdg_cache_home) / "uv")
+    try:
+        passwd_home = Path(pwd.getpwuid(os.getuid()).pw_dir)
+    except Exception:
+        passwd_home = None
+    if passwd_home is not None:
+        add(passwd_home / ".cache" / "uv")
+        add(passwd_home / ".local" / "share" / "uv")
+    home = Path.home()
+    add(home / ".cache" / "uv")
+    add(home / ".local" / "share" / "uv")
+    return roots
+
+
+def fallback_artifact_path(path: Path) -> Path:
+    workspace = path.parent
+    try:
+        workspace_resolved = workspace.resolve()
+    except Exception:
+        workspace_resolved = workspace
+    if workspace_resolved.name == "workspace" and workspace_resolved.parent.name == ".copilot":
+        root = workspace_resolved.parent.parent
+    else:
+        root = workspace_resolved.parent
+    roots = fallback_artifact_roots()
+    tmp_root = roots[0] if roots else Path(tempfile.gettempdir())
+    repo_key = hashlib.sha256(str(root).encode("utf-8")).hexdigest()[:12]
+    return tmp_root / "copilot-heartbeat" / repo_key / path.name
+
+
+def fallback_artifact_paths(path: Path) -> list[Path]:
+    workspace = path.parent
+    try:
+        workspace_resolved = workspace.resolve()
+    except Exception:
+        workspace_resolved = workspace
+    if workspace_resolved.name == "workspace" and workspace_resolved.parent.name == ".copilot":
+        root = workspace_resolved.parent.parent
+    else:
+        root = workspace_resolved.parent
+    repo_key = hashlib.sha256(str(root).encode("utf-8")).hexdigest()[:12]
+    return [root_path / "copilot-heartbeat" / repo_key / path.name for root_path in fallback_artifact_roots()]
+
+
+def heartbeat_artifact_paths(path: Path) -> list[Path]:
+    candidates = [path]
+    for fallback in fallback_artifact_paths(path):
+        if fallback != path and fallback not in candidates:
+            candidates.append(fallback)
+    return candidates
+
+
+def read_event_lines(events_path: Path) -> list[str]:
+    lines: list[str] = []
+    for candidate in heartbeat_artifact_paths(events_path):
+        if not candidate.exists():
+            continue
+        try:
+            lines.extend(candidate.read_text(encoding="utf-8").splitlines())
+        except Exception:
+            continue
+    return lines
+
+
 def atomic_write(path: Path, text: str) -> None:
     last_error = None
     for _attempt in range(2):
@@ -167,16 +255,25 @@ def append_event(
         event["duration_s"] = duration_s
     if session_id:
         event["session_id"] = session_id
-    with events_path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(event, sort_keys=True) + "\n")
+    payload = json.dumps(event, sort_keys=True) + "\n"
+    last_error = None
+    for candidate in heartbeat_artifact_paths(events_path):
+        try:
+            candidate.parent.mkdir(parents=True, exist_ok=True)
+            with candidate.open("a", encoding="utf-8") as handle:
+                handle.write(payload)
+            return
+        except OSError as exc:
+            last_error = exc
+            continue
+    if last_error is not None:
+        raise last_error
 
 
 def compute_session_medians(events_path: Path) -> str:
-    if not events_path.exists():
-        return ""
     durations = []
     try:
-        for line in events_path.read_text(encoding="utf-8").splitlines():
+        for line in read_event_lines(events_path):
             if not line.strip():
                 continue
             try:
@@ -200,38 +297,49 @@ def compute_session_medians(events_path: Path) -> str:
 
 
 def prune_events(events_path: Path, keep: int = 100) -> None:
-    if not events_path.exists():
-        return
-    try:
-        lines = [line for line in events_path.read_text(encoding="utf-8").splitlines() if line.strip()]
-        if len(lines) > keep:
-            atomic_write(events_path, "\n".join(lines[-keep:]) + "\n")
-    except Exception:
-        pass
+    for candidate in heartbeat_artifact_paths(events_path):
+        if not candidate.exists():
+            continue
+        try:
+            lines = [line for line in candidate.read_text(encoding="utf-8").splitlines() if line.strip()]
+            if len(lines) > keep:
+                atomic_write(candidate, "\n".join(lines[-keep:]) + "\n")
+        except Exception:
+            continue
 
 
 def set_sentinel(sentinel_path: Path, workspace: Path, now: int, session_id: str, status: str) -> None:
     if not workspace.exists():
         return
-    atomic_write(sentinel_path, f"{session_id}|{iso_utc(now)}|{status}\n")
+    text = f"{session_id}|{iso_utc(now)}|{status}\n"
+    last_error = None
+    for candidate in heartbeat_artifact_paths(sentinel_path):
+        try:
+            atomic_write(candidate, text)
+            return
+        except OSError as exc:
+            last_error = exc
+            continue
+    if last_error is not None:
+        raise last_error
 
 
 def sentinel_is_complete(sentinel_path: Path) -> bool:
-    if not sentinel_path.exists():
-        return False
-    try:
-        parts = sentinel_path.read_text(encoding="utf-8").strip().split("|")
-        return len(parts) >= 3 and parts[2].strip() == "complete"
-    except Exception:
-        return False
+    for candidate in heartbeat_artifact_paths(sentinel_path):
+        if not candidate.exists():
+            continue
+        try:
+            parts = candidate.read_text(encoding="utf-8").strip().split("|")
+            if len(parts) >= 3 and parts[2].strip() == "complete":
+                return True
+        except Exception:
+            continue
+    return False
 
 
 def reflection_event_complete(events_path: Path, session_id: str, session_start_epoch: int) -> bool:
-    if not events_path.exists():
-        return False
-    try:
-        lines = events_path.read_text(encoding="utf-8").splitlines()
-    except Exception:
+    lines = read_event_lines(events_path)
+    if not lines:
         return False
     for line in reversed(lines):
         if not line.strip():

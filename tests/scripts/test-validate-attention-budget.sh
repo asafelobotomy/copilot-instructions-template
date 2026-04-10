@@ -18,7 +18,7 @@ write_template() {
   : > "$file"
 
   local section line_count line_number
-  for section in $(seq 1 13); do
+  for section in $(seq 1 14); do
     line_count="${counts[$((section - 1))]}"
     printf '## §%s — Section %s\n' "$section" "$section" >> "$file"
     for line_number in $(seq 1 "$line_count"); do
@@ -33,7 +33,7 @@ echo ""
 
 echo "1. Within-budget fixture passes"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-write_template "$TMP/template/copilot-instructions.md" 5 5 5 5 5 5 5 5 5 5 5 5 5
+write_template "$TMP/template/copilot-instructions.md" 5 5 5 5 5 5 5 5 5 5 5 5 5 5
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" 2>&1)
 status=$?
 assert_success "within-budget fixture exits zero" "$status"
@@ -42,7 +42,7 @@ echo ""
 
 echo "2. Oversized regular section is detected"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-write_template "$TMP/template/copilot-instructions.md" 130 5 5 5 5 5 5 5 5 5 5 5 5
+write_template "$TMP/template/copilot-instructions.md" 130 5 5 5 5 5 5 5 5 5 5 5 5 5
 if output=$(ROOT_DIR="$TMP" bash "$SCRIPT" 2>&1); then
   status=0
 else
@@ -54,7 +54,7 @@ echo ""
 
 echo "3. Oversized §10 remains exempt"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-write_template "$TMP/template/copilot-instructions.md" 5 5 5 5 5 5 5 5 5 250 5 5 5
+write_template "$TMP/template/copilot-instructions.md" 5 5 5 5 5 5 5 5 5 250 5 5 5 5
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" 2>&1)
 status=$?
 assert_success "oversized §10 still exits zero" "$status"
@@ -63,7 +63,7 @@ echo ""
 
 echo "4. Oversized total file is detected"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-write_template "$TMP/template/copilot-instructions.md" 70 70 70 70 70 70 70 70 70 70 70 70 70
+write_template "$TMP/template/copilot-instructions.md" 65 65 65 65 65 65 65 65 65 65 65 65 65 65
 if output=$(ROOT_DIR="$TMP" bash "$SCRIPT" 2>&1); then
   status=0
 else

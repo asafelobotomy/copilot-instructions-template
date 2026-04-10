@@ -8,7 +8,7 @@ compatibility: ">=1.4"
 
 > Skill metadata: version "1.1"; license MIT; tags [review, pull-request, lean, kaizen, code-review]; compatibility ">=1.4"; recommended tools [codebase, githubRepo].
 
-Perform a structured pull request review using §2 Review Mode conventions and §6 waste categories.
+Perform a structured pull request review using §5 Review Mode conventions and §6 waste categories.
 
 ## When to use
 
@@ -58,7 +58,7 @@ Perform a structured pull request review using §2 Review Mode conventions and �
 
 4. **Check test coverage** — Verify that new or changed behaviour has corresponding tests. Flag untested paths as `major | W7 Defects`.
 
-5. **Check for baseline breaches** — Compare against §3 baselines:
+5. **Check for baseline breaches** — Compare against §2 baselines:
    - File LOC limits (warn / hard)
    - Dependency budget (if deps were added)
    - Type errors (must be zero)

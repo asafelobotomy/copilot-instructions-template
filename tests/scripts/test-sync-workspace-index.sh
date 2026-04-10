@@ -24,6 +24,7 @@ make_fixture() {
     "$root/template/skills/test-coverage-review" \
     "$root/template/skills/aaa-extra" \
     "$root/template/workspace" \
+    "$root/template/workspace/diaries" \
     "$root/template/hooks/scripts"
 
   : > "$root/.github/agents/setup.agent.md"
@@ -45,6 +46,7 @@ make_fixture() {
   : > "$root/template/prompts/review-file.prompt.md"
   : > "$root/template/workspace/BOOTSTRAP.md"
   : > "$root/template/workspace/TOOLS.md"
+  : > "$root/template/workspace/diaries/README.md"
   : > "$root/template/copilot-setup-steps.yml"
 
   : > "$root/template/hooks/scripts/session-start.sh"
@@ -190,7 +192,7 @@ for rel in ('.copilot/workspace/workspace-index.json', 'template/workspace/works
   assert data['skills']['template'] == ['skill-creator', 'test-coverage-review', 'aaa-extra']
   assert data['prompts'] == ['commit-msg.prompt.md', 'review-file.prompt.md']
   assert data['instructions'] == ['api-routes.instructions.md', 'tests.instructions.md']
-  assert data['workspaceFiles'] == ['BOOTSTRAP.md', 'TOOLS.md', 'workspace-index.json']
+  assert data['workspaceFiles'] == ['BOOTSTRAP.md', 'TOOLS.md', 'workspace-index.json', 'diaries/README.md']
   assert data['workflowFiles'] == ['copilot-setup-steps.yml']
   assert data['hookScripts']['shell'] == ['session-start.sh', 'guard-destructive.sh', 'save-context.sh']
   assert data['hookScripts']['powershell'] == ['session-start.ps1', 'guard-destructive.ps1', 'save-context.ps1']

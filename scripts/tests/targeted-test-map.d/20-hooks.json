@@ -183,7 +183,8 @@
       "pattern": "template/hooks/scripts/mcp-heartbeat-server.py",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/hooks/test-mcp-heartbeat-server.sh"
+        "tests/hooks/test-mcp-heartbeat-server.sh",
+        "tests/hooks/test-mcp-spatial-status.sh"
       ],
       "reason": "The heartbeat MCP server has a dedicated unit suite."
     },
@@ -193,7 +194,8 @@
       "pattern": ".github/hooks/scripts/mcp-heartbeat-server.py",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/hooks/test-mcp-heartbeat-server.sh"
+        "tests/hooks/test-mcp-heartbeat-server.sh",
+        "tests/hooks/test-mcp-spatial-status.sh"
       ],
       "reason": "The repo-live heartbeat MCP server has a dedicated unit suite."
     },

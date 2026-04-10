@@ -62,7 +62,12 @@ skills_repo_existing = [p.parent.name for p in (root / ".github/skills").glob("*
 skills_template_existing = [p.parent.name for p in (root / "template/skills").glob("*/SKILL.md")]
 prompts_existing = [p.name for p in (root / "template/prompts").glob("*.prompt.md")]
 instructions_existing = [p.name for p in (root / "template/instructions").glob("*.instructions.md")]
-workspace_files_existing = [p.name for p in (root / "template/workspace").glob("*") if p.is_file()]
+workspace_root = root / "template/workspace"
+workspace_files_existing = [
+    str(p.relative_to(workspace_root))
+    for p in workspace_root.rglob("*")
+    if p.is_file()
+]
 workflow_existing = [p.name for p in (root / "template").glob("copilot-setup-steps.yml")]
 shell_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.sh")]
 ps_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.ps1")]

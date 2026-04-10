@@ -8,6 +8,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5.1
 tools: [agent, codebase, runCommands, githubRepo, fetch, search, webSearch]
+mcp-servers: [filesystem, git, github, fetch]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Setup', 'Researcher', 'Extensions', 'Organise']
@@ -40,7 +41,7 @@ Do not modify any files — diagnosis only. Surface findings and use handoffs fo
 - Use `Extensions` when a finding is specifically about VS Code extension,
   recommendation, or profile configuration rather than general code changes.
 
-- Apply the Structured Thinking Discipline (§5): run each check sequentially.
+- Apply the Structured Thinking Discipline (§3): run each check sequentially.
   If a check requires data from a prior check, reuse it — do not re-read or
   re-fetch. If a fetch fails, flag it and move to the next check.
 
@@ -117,10 +118,10 @@ Count total lines and per-section lines using `wc -l` and `grep -n "^## §"`.
 | Scope | Limit |
 |-------|-------|
 | Entire file | ≤ 800 |
-| §2 Operating Modes | ≤ 210 |
-| §1, §3–§9 (each) | ≤ 120 |
+| §5 Operating Modes | ≤ 210 |
+| §1–§4, §6–§9 (each) | ≤ 120 |
 | §10 | No limit |
-| §11, §12, §13 (each) | ≤ 150 |
+| §11, §12, §13, §14 (each) | ≤ 150 |
 
 Flag: `[CRITICAL]` if any section exceeds limit. `[WARN]` if within 10 lines.
 
@@ -128,7 +129,7 @@ Flag: `[CRITICAL]` if any section exceeds limit. `[WARN]` if within 10 lines.
 
 Developer template repo only.
 
-Verify §1–§13 all present and in order.
+Verify §1–§14 all present and in order.
 Flag: `[CRITICAL]` if missing. `[WARN]` if out of order.
 
 ### D3 — Placeholder separation

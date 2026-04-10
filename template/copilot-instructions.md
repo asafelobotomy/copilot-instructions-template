@@ -7,8 +7,8 @@
 >
 > **⚡ Critical Reminders** — every session, every task:
 >
-> 1. **Test** — use deterministic targeted suites during intermediate phases when available; run `{{TEST_COMMAND}}` before marking a full task done end-to-end (§3).
-> 2. **PDCA** — Plan→Do→Check→Act for every non-trivial change (§5).
+> 1. **Test** — use deterministic targeted suites during intermediate phases when available; run `{{TEST_COMMAND}}` before marking a full task done end-to-end (§2).
+> 2. **PDCA** — Plan→Do→Check→Act for every non-trivial change (§3).
 > 3. **Read first** — never claim or modify a file not opened this session (§4).
 > 4. **Additive** — never delete existing rules without explicit user instruction (§8).
 
@@ -28,48 +28,7 @@
 
 ---
 
-## §2 — Operating Modes
-
-Switch modes explicitly. Default is **Implement**.
-
-### Implement Mode (default)
-
-- Plan → implement → test → document in one uninterrupted flow.
-- Full PDCA for every non-trivial change.
-- Three-check ritual before marking a full task complete end-to-end.
-
-### Review Mode
-
-- Read-only by default. State findings before proposing fixes.
-- Tag every finding with a waste category (§6).
-- Use format: `[severity] | [file:line] | [waste category] | [description]`
-- Severity: `critical` | `major` | `minor` | `advisory`
-
-  <examples>
-  `[critical] | [src/auth.ts:42] | [W7 Defects] | SQL query built by string concatenation — injection risk; use parameterised queries`
-  `[minor] | [src/utils/format.ts:18] | [W4 Over-processing] | One-liner wrapped in a function with no added value — consider inlining`
-  </examples>
-
-#### On-Demand Review Skills
-
-For deeper audits, activate the matching skill (§12) instead of expanding §2:
-
-- **Extension audits** → `extension-review` skill · **Test coverage** → `test-coverage-review` skill
-- Present report first; wait for approval before writing files.
-
-### Refactor Mode
-
-- No behaviour changes. Tests must pass before and after.
-- Measure LOC delta. Flag if a refactor increases LOC without justification.
-
-### Planning Mode
-
-- Produce a task breakdown before writing code.
-- Estimate complexity (S/M/L/XL). Flag anything XL for decomposition.
-
----
-
-## §3 — Standardised Work Baselines
+## §2 — Standardised Work Baselines
 
 | Baseline | Value | Action if exceeded |
 |----------|-------|--------------------|
@@ -85,45 +44,7 @@ For deeper audits, activate the matching skill (§12) instead of expanding §2:
 
 ---
 
-## §4 — Coding Conventions
-
-- Language: **{{LANGUAGE}}** · Runtime: **{{RUNTIME}}** · Package manager: **{{PACKAGE_MANAGER}}**
-- Test framework: **{{TEST_FRAMEWORK}}**
-- Preferred serialisation: **{{PREFERRED_SERIALISATION}}**
-
-**Patterns observed in this codebase**:
-
-- {{CODING_PATTERNS}}
-
-**Universal rules**:
-
-- No `any` / untyped unless explicitly commented with `// deliberately untyped: <reason>`.
-- No silent error swallowing — log or re-throw.
-- No commented-out code — git history is the undo stack.
-- Imports are grouped: stdlib → third-party → internal. One blank line between groups.
-- Functions do one thing. If you need "and" in the name, split it.
-- Read before claiming — never describe, reference, or modify a file not opened this session.
-  `semantic_search` or `grep_search` confirms existence; reading the file confirms content.
-
-**Terminal discipline**:
-
-- For high-volume commands, capture the full output to a log file and print only a bounded tail instead of streaming everything.
-- If the repo documents a terminal-safe wrapper for a noisy command, prefer it over the raw command when using terminal tools.
-- Prefer repo scripts or bash wrappers over ad hoc shell control flow when a command needs exit-status plumbing, redirection, or retries.
-- A single existing command with no shell control flow, tempfile plumbing, redirection, or shell-specific syntax may run directly in the terminal.
-- If the repo provides a generic isolated-shell wrapper, use it for ad hoc one-liners or multi-step snippets instead of relying on the persistent terminal's current shell state.
-- If the repo provides a stdin or here-doc isolated-shell wrapper, use it for multi-line snippets and shell-specific syntax.
-- Never run `set -euo pipefail` or `setopt errexit nounset pipefail` as a standalone terminal command in the persistent zsh session. Shell integration hooks can inherit that global state and terminate the session on the next prompt cycle.
-- For ad hoc strict-mode one-liners, prefer a repo wrapper if one exists. Otherwise run the snippet through a child Bash process with strict mode enabled instead of mutating the parent zsh session.
-- For multi-line strict-mode snippets, prefer a dedicated stdin or here-doc wrapper when the repo provides one. Otherwise run the snippet through a child Bash process with strict mode enabled instead of mutating the parent zsh session.
-- Use shell-specific child wrappers for zsh, `sh`, or PowerShell syntax instead of assuming the persistent terminal is already in the right shell.
-- In zsh workspaces, avoid reserved variable names such as `status`; use `rc`, `exit_code`, or `command_rc` instead.
-- Do not rely on profile files, aliases, or exported shell options for ad hoc snippets. Child wrappers should start from a clean shell state.
-- If a failure is caused by shell semantics rather than the underlying command, stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation.
-
----
-
-## §5 — PDCA Cycle
+## §3 — PDCA Cycle
 
 Apply to every non-trivial change.
 
@@ -182,6 +103,72 @@ loop traps and wasted tokens:
 
 ---
 
+## §4 — Coding Conventions
+
+- Language: **{{LANGUAGE}}** · Runtime: **{{RUNTIME}}** · Package manager: **{{PACKAGE_MANAGER}}**
+- Test framework: **{{TEST_FRAMEWORK}}**
+- Preferred serialisation: **{{PREFERRED_SERIALISATION}}**
+
+**Patterns observed in this codebase**:
+
+- {{CODING_PATTERNS}}
+
+**Universal rules**:
+
+- No `any` / untyped unless explicitly commented with `// deliberately untyped: <reason>`.
+- No silent error swallowing — log or re-throw.
+- No commented-out code — git history is the undo stack.
+- Imports are grouped: stdlib → third-party → internal. One blank line between groups.
+- Functions do one thing. If you need "and" in the name, split it.
+**Terminal discipline**: See `.github/instructions/terminal.instructions.md`. Key rule: never mutate the persistent terminal session's shell state with strict-mode commands.
+
+---
+
+## §5 — Operating Modes
+
+Switch modes explicitly. Default is **Implement**.
+
+### Implement Mode (default)
+
+- Plan → implement → test → document in one uninterrupted flow.
+
+Three-check ritual before marking a full task complete end-to-end:
+
+1. `{{THREE_CHECK_COMMAND}}` — Must pass before the full task is done.
+2. Documentation updated (README, CHANGELOG, inline).
+3. Smoke test manually if meaningful UI/API changed.
+
+### Review Mode
+
+- Read-only by default. State findings before proposing fixes.
+- Tag every finding with a waste category (§6).
+- Use format: `[severity] | [file:line] | [waste category] | [description]`
+- Severity: `critical` | `major` | `minor` | `advisory`
+
+  <examples>
+  `[critical] | [src/auth.ts:42] | [W7 Defects] | SQL query built by string concatenation — injection risk; use parameterised queries`
+  `[minor] | [src/utils/format.ts:18] | [W4 Over-processing] | One-liner wrapped in a function with no added value — consider inlining`
+  </examples>
+
+#### On-Demand Review Skills
+
+For deeper audits, activate the matching skill (§12) instead of expanding §5:
+
+- **Extension audits** → `extension-review` skill · **Test coverage** → `test-coverage-review` skill
+- Present report first; wait for approval before writing files.
+
+### Refactor Mode
+
+- No behaviour changes. Tests must pass before and after.
+- Measure LOC delta. Flag if a refactor increases LOC without justification.
+
+### Planning Mode
+
+- Produce a task breakdown before writing code.
+- Estimate complexity (S/M/L/XL). Flag anything XL for decomposition.
+
+---
+
 ## §6 — Waste Catalogue (Muda)
 
 Tag Review Mode findings with these codes:
@@ -217,28 +204,26 @@ This file is loaded into the LLM context on every interaction. To prevent instru
 
 | Scope | Budget | Enforced by |
 |-------|--------|-------------|
-| **Entire file** (§1–§13) | ≤ 800 lines | CI (`ci.yml`) |
-| **§2 (Operating Modes)** | ≤ 210 lines | CI (`ci.yml`) — largest section; contains all workflow modes |
+| **Entire file** (§1–§14) | ≤ 800 lines | CI (`ci.yml`) |
+| **§5 (Operating Modes)** | ≤ 210 lines | CI (`ci.yml`) — largest section; contains all workflow modes |
 | **Other §1–§9 sections** | ≤ 120 lines each | CI (`ci.yml`) |
 | **§10 (Project-Specific Overrides)** | No hard limit | Grows with project — review during heartbeat |
-| **§11–§13 (protocols)** | ≤ 150 lines each | CI (`ci.yml`) |
+| **§11–§14 (protocols)** | ≤ 150 lines each | CI (`ci.yml`) |
 
-**Overflow rule**: When a section approaches its budget, extract detailed procedures into a skill file (`.github/skills/`), a path-specific instruction file (`.github/instructions/`), or a prompt file (`.github/prompts/`). Leave a one-line reference in the main section. This keeps the always-loaded context tight while preserving the detail in on-demand files.
-
-**Why this matters**: LLMs exhibit attention degradation in long contexts — content in the middle of a large prompt receives less focus than content near the start or end. Keeping the core instructions concise ensures every rule gets reliable attention.
+**Overflow rule**: When a section approaches its budget, extract detailed procedures into a skill file (`.github/skills/`), a path-specific instruction file (`.github/instructions/`), or a prompt file (`.github/prompts/`). Leave a one-line reference in the main section.
 
 ### Heartbeat Protocol
 
 Event-triggered health checks that keep the agent aligned with real project state. The heartbeat checklist lives in `.copilot/workspace/HEARTBEAT.md`.
 
-**When to fire**: session start; after a task that trips the medium/large heuristic (one strong signal: 8+ modified files or 30+ minutes; or two supporting signals: 5+ modified files, 15+ minutes, context compaction); after any refactor, migration, or restructure task; after dependency manifest changes; after CI failure resolution; when a medium/large task completes; on the trigger phrase "Check your heartbeat"; or on any custom trigger defined in `HEARTBEAT.md`.
+**When to fire**: session start; after a medium/large task (one strong signal: 8+ modified files or 30+ minutes; or two supporting: 5+ files, 15+ minutes, context compaction); after refactor, migration, or restructure; after dependency manifest changes; after CI failure resolution; on "Check your heartbeat"; or on any custom trigger in `HEARTBEAT.md`.
 
 **Procedure**:
 
 1. Read `HEARTBEAT.md` — follow it strictly. Do not infer tasks from prior sessions.
 2. Run every check in the Checks section. Cross-reference: MEMORY.md (consolidation), TOOLS.md (dependency audit), SOUL.md (reasoning alignment), §10 (settings drift).
-3. If the trigger is **explicit** and the user asked for a retrospective, call the `session_reflect` MCP tool and process its output silently.
-4. If the session is **medium/large**, call the `session_reflect` MCP tool when the Stop hook instructs you to do so. Treat medium/large as one strong signal (8+ modified files or 30+ minutes active) or two supporting signals (5+ modified files, 15+ active minutes, context compaction). Skip it for small/localized tasks.
+3. If the trigger is **explicit** and the user asked for a retrospective, call `session_reflect` MCP tool and process silently.
+4. If the session is **medium/large**, call `session_reflect` when the Stop hook instructs. Medium/large = one strong signal (8+ files or 30+ minutes) or two supporting (5+ files, 15+ minutes, compaction). Skip for small tasks.
 5. Update Pulse: `HEARTBEAT_OK` if all checks pass; prepend `[!]` with a one-line alert for each failure.
 6. Append a row to History (keep last 5).
 7. Write observations to Agent Notes for the next heartbeat.
@@ -247,7 +232,7 @@ Event-triggered health checks that keep the agent aligned with real project stat
 
 ### Agent Hooks
 
-Hooks are deterministic shell commands that VS Code executes at specific lifecycle points during an agent session. Unlike instructions (soft guidance), hooks run your code with guaranteed outcomes — they enforce rules that the agent would otherwise follow probabilistically.
+Hooks are deterministic shell commands executed by VS Code at specific agent lifecycle points. Unlike instructions (soft guidance), hooks guarantee outcomes.
 
 Hook configuration lives in `.github/hooks/copilot-hooks.json`. VS Code supports eight lifecycle events. The template wires all eight events using deterministic scripts:
 
@@ -255,12 +240,14 @@ Hook configuration lives in `.github/hooks/copilot-hooks.json`. VS Code supports
 |-------|-------------------|---------|
 | `SessionStart` | `session-start.sh`, `pulse.sh --trigger session_start` | Inject project context and initialize heartbeat state |
 | `UserPromptSubmit` | `pulse.sh --trigger user_prompt` | Detect explicit heartbeat and retrospective prompts |
-| `PreToolUse` | `guard-destructive.sh` | Block dangerous commands; flag caution patterns for user confirmation (§5 enforcement) |
+| `PreToolUse` | `guard-destructive.sh` | Block dangerous commands; flag caution patterns for user confirmation (§3 enforcement) |
 | `PostToolUse` | `post-edit-lint.sh`, `pulse.sh --trigger soft_post_tool` | Auto-format edited files and debounce heartbeat soft triggers |
 | `Stop` | `scan-secrets.sh`, `pulse.sh --trigger stop` | Run secret scan and recommend retrospective only for medium/large completed tasks |
 | `PreCompact` | `save-context.sh`, `pulse.sh --trigger compaction` | Preserve workspace state before context compaction |
-| `SubagentStart` | `subagent-start.sh` | Inject governance context (depth limit, inherited protocols) when a subagent spawns |
-| `SubagentStop` | `subagent-stop.sh` | Log subagent completion and prompt result review |
+| `SubagentStart` | `subagent-start.sh` | Inject governance context and diary summary when a subagent spawns |
+| `SubagentStop` | `subagent-stop.sh` | Log subagent completion and write diary entry if durable findings exist |
+
+Agent-scoped hooks: individual agents can define a `hooks:` section in their `.agent.md` YAML frontmatter. Agent-scoped hooks run only when that agent is active and supplement (not replace) global hooks. Enable via `chat.useCustomAgentHooks` setting.
 
 ---
 
@@ -273,7 +260,6 @@ When spawning subagents:
   specialist workflow inline.
 - Each `.github/agents/*.agent.md` declares an `agents:` allow-list restricting which subagents it may invoke. Respect these boundaries.
 - Keep allow-lists narrow. Add a subagent only when the agent body defines a concrete workflow for using it. Do not keep speculative delegates "just in case".
-- Prefer the lightest valid handoff: use `Explore` for read-only repo scans, `Researcher` for current external docs, `Audit` for residual-risk or security checks, and `Organise` for pathing or file moves.
 - Preferred specialist map: `Explore` for read-only repo scans, `Researcher`
   for current external docs, `Review` for formal code review or architectural
   critique, `Audit` for health, security, or residual-risk checks,
@@ -284,11 +270,8 @@ When spawning subagents:
   `Organise` for file moves, path repair, or repository reshaping.
 - Pass the full contents of this file as system context.
 - Set `max_depth = {{SUBAGENT_MAX_DEPTH}}`. Stop and surface to user if reached.
-- Each subagent must run the three-check ritual before reporting done.
-- Each subagent inherits the full Tool Protocol (§11), Skill Protocol (§12), and MCP Protocol (§13) — check the toolbox before building, search before coding, and flag any proposed toolbox saves to the parent.
 - Subagent output must include: files changed, LOC delta, test result, any baseline breaches.
-- **Subagents inherit the Structured Thinking Discipline (§5)** — the anti-loop
-  rules, 3-strike rule, and monotonic progress requirement apply at every depth.
+- Subagents inherit §3 (Structured Thinking), §11 (Tools), §12 (Skills), §13 (MCP), §14 (Spatial Layer) — all anti-loop rules apply at every depth.
 - **Prompt clarity**: when spawning a subagent, the prompt must include: (a) the
   specific deliverable expected, (b) the format of the response, and (c) explicit
   stop conditions. Vague prompts cause subagent loops.
@@ -384,8 +367,7 @@ Key rules (always loaded):
 
 - Tools are saved to `.copilot/tools/` with a row in `INDEX.md`
 - `safe` tools run without confirmation; `destructive` tools **must pause and confirm**
-- Tools must be idempotent, accept arguments (no hardcoded paths), and follow §3 LOC baselines
-- Subagents inherit this protocol; they flag toolbox saves to the parent agent
+- Tools must be idempotent, accept arguments (no hardcoded paths), and follow §2 LOC baselines
 
 ---
 
@@ -398,7 +380,6 @@ Key rules (always loaded):
 - Skills are loaded **on demand** — read `SKILL.md` only when its `description` matches the current task
 - Priority: project (`.github/skills/`) > personal (`~/.copilot/skills/`) > agent plugins (`@agentPlugins`)
 - Agent plugins (VS Code 1.110+) distribute skills alongside agents — activate the **plugin-management** skill for discovery and conflict resolution
-- Subagents inherit this protocol; they flag skill creation to the parent agent
 
 ---
 
@@ -408,11 +389,39 @@ MCP enables Copilot to invoke external servers beyond built-in capabilities. Con
 
 Key rules (always loaded):
 
-- **Always-on** servers: filesystem, git — enabled by default
-- **Credentials-required** servers: github, fetch — need token configuration
+- **Sandbox stdio servers**: set `"sandboxEnabled": true` in `mcp.json` for locally-running stdio servers to restrict filesystem and network access (macOS/Linux). Sandboxed servers auto-approve tool calls.
 - The MCP `memory` server has been removed — VS Code's built-in memory tool (`/memories/`) provides superior persistent storage with three scopes (user, session, repository)
 - Never hardcode secrets — use `${input:}` or `${env:}` variable syntax
-- Subagents inherit access; they flag new server additions to the parent agent
+- **Monorepo discovery**: enable `chat.useCustomizationsInParentRepositories` to auto-discover instructions, prompts, agents, skills, and hooks from a parent Git repository root when opening a subfolder. Requires the parent folder to be trusted.
+- **Troubleshooting**: if customizations fail to load, select the ellipsis (…) menu in the Chat view → *Show Agent Debug Logs* to diagnose which files were discovered and which were rejected.
+
+---
+
+## §14 — Spatial Layer
+
+A shared mental model gives human and agent a common vocabulary for talking about where things live in the project.
+
+### Vocabulary
+
+| Term | Meaning | Maps to |
+|------|---------|---------|
+{{SPATIAL_VOCAB}}
+
+> **Full glossary**: `.copilot/workspace/ledger.md`. **Live status**: `{{SPATIAL_STATUS_TOOL}}` MCP tool.
+
+### Alignment Protocol
+
+- **Echo before acting**: when the task is ambiguous, restate the goal in one sentence using the vocabulary above before executing. This lets the human correct misunderstandings early.
+- **Surface assumptions**: if a plan depends on an assumption about the project state, name it explicitly: "I'm assuming X because Y."
+- **Memory protocol**: before persisting insights — (1) check `MEMORY.md` for existing entries on the same topic to avoid duplicates, (2) check `SOUL.md` for reasoning patterns — add only genuinely new heuristics, (3) update `USER.md` only from direct observation, never inference. Use provenance: `file:line` for code, URL for docs, `session:{id}` for observed. For `/memories/repo/` entries, use the Copilot Memory schema (`subject`, `fact`, `citations`, `reason`, `category`).
+
+### Per-Agent Diaries
+
+Each specialist agent may record significant findings in a diary file under `.copilot/workspace/diaries/`. Diaries are L2 (loaded on demand via SubagentStart hook, not always-loaded). Cap each diary at 30 lines; archive older entries.
+
+- Diary files: `.copilot/workspace/diaries/{agent-name}.md`
+- Write trigger: agent discovers a durable insight worth sharing across sessions.
+- Dedup: grep the diary for the finding text before writing — skip if already present.
 
 ---
 

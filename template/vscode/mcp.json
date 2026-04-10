@@ -1,7 +1,10 @@
 {
   "sandbox": {
     "filesystem": {
-      "allowWrite": ["${userHome}/.npm"]
+      "allowWrite": ["${userHome}/.npm", "${userHome}/.cache/uv", "${userHome}/.local/share/uv"]
+    },
+    "network": {
+      "allowedDomains": ["pypi.org", "files.pythonhosted.org"]
     }
   },
   "servers": {
@@ -20,7 +23,14 @@
     "git": {
       "type": "stdio",
       "command": "uvx",
-      "args": ["mcp-server-git", "--repository", "${workspaceFolder}"]
+      "args": ["mcp-server-git", "--repository", "${workspaceFolder}"],
+      "sandboxEnabled": true,
+      "sandbox": {
+        "filesystem": {
+          "allowWrite": ["${workspaceFolder}"],
+          "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
+        }
+      }
     },
     "github": {
       "type": "http",
@@ -30,8 +40,14 @@
     "fetch": {
       "type": "stdio",
       "command": "uvx",
-      "args": ["mcp-server-fetch"],
-      "disabled": true
+      "args": ["--with", "httpx[socks]>=0.28", "mcp-server-fetch"],
+      "disabled": true,
+      "sandboxEnabled": true,
+      "sandbox": {
+        "filesystem": {
+          "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
+        }
+      }
     },
     "context7": {
       "type": "http",
@@ -45,7 +61,14 @@
         "--from", "mcp[cli]",
         "mcp", "run",
         "${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py"
-      ]
+      ],
+      "sandboxEnabled": true,
+      "sandbox": {
+        "filesystem": {
+          "allowWrite": ["${workspaceFolder}"],
+          "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
+        }
+      }
     }
   }
 }

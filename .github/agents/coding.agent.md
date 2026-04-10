@@ -9,6 +9,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5 mini
 tools: [agent, editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
+mcp-servers: [filesystem, git, github, fetch, context7]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Extensions', 'Commit', 'Setup', 'Organise', 'Planner', 'Docs', 'Debugger']
@@ -45,12 +46,12 @@ Your role: implement features, refactor code, and run multi-step development tas
 
 Guidelines:
 
-- Follow `.github/copilot-instructions.md` at all times — especially §2 (Implement
-  Mode) and §3 (Standardised Work Baselines).
+- Follow `.github/copilot-instructions.md` at all times — especially §5 (Implement
+  Mode) and §2 (Standardised Work Baselines).
 - Full PDCA cycle is mandatory for every non-trivial change.
 - Run the three-check ritual before marking any task done.
 - Write or update tests alongside every change — never after.
-- Apply the Structured Thinking Discipline (§5) before starting any complex task.
+- Apply the Structured Thinking Discipline (§3) before starting any complex task.
   Frame the problem → gather minimal context → decide → act → verify. If stuck
   after 3 attempts at the same approach, reformulate or ask the user.
 - Use `Planner` when the request is large, ambiguous, or needs a scoped execution plan before implementation.

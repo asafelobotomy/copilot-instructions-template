@@ -286,6 +286,7 @@ derived_tokens = {
     "PREFERRED_SERIALISATION", "SKILL_SEARCH_PREFERENCE",
     "FLOW_DESCRIPTION", "MCP_CUSTOM_SERVERS", "MCP_STACK_SERVERS",
     "INTEGRATION_TEST_ENV_VAR",
+    "SPATIAL_STATUS_TOOL", "SPATIAL_VOCAB",
 }
 
 # Core tokens (§1 detection table) must appear in SETUP.md
@@ -440,10 +441,10 @@ if sandboxed != template_mcp:
 
 expected_unsandboxed = copy.deepcopy(template_mcp)
 expected_unsandboxed.pop("sandbox", None)
-filesystem = expected_unsandboxed.get("servers", {}).get("filesystem", {})
-if isinstance(filesystem, dict):
-    filesystem.pop("sandboxEnabled", None)
-    filesystem.pop("sandbox", None)
+for srv in expected_unsandboxed.get("servers", {}).values():
+    if isinstance(srv, dict):
+        srv.pop("sandboxEnabled", None)
+        srv.pop("sandbox", None)
 
 if unsandboxed != expected_unsandboxed:
     raise SystemExit("Unsandboxed manifests MCP config drifted from the template baseline")
@@ -564,6 +565,40 @@ assert_file_not_contains "UPDATE.md no longer fetches MIGRATION.archive for supp
 
 assert_file_not_contains "UPDATE.md no longer documents the legacy heuristic merge path" \
     "$UPDATE" "Legacy fallback"
+echo ""
+
+# ──────────────────────────────────────────────────────────────
+echo "26. Spatial defaults and nested workspace mappings are explicit"
+# ──────────────────────────────────────────────────────────────
+
+assert_file_contains "SETUP.md documents default spatial vocabulary rows" \
+    "$SETUP" 'Default `\{\{SPATIAL_VOCAB\}\}` rows'
+
+assert_file_contains "SETUP.md includes default Village row" \
+    "$SETUP" '\| Village \| This project workspace \| Repository root \|'
+
+assert_file_contains "UPDATE.md maps nested workspace companions" \
+    "$UPDATE" 'template/workspace/\*\*'
+
+assert_file_contains "UPDATE.md maps nested workspace destinations" \
+    "$UPDATE" '\.copilot/workspace/\*\*'
+echo ""
+
+# ──────────────────────────────────────────────────────────────
+echo "27. Setup manifests install terminal discipline and replace spatial vocabulary"
+# ──────────────────────────────────────────────────────────────
+
+assert_file_contains "manifests.md installs terminal instructions stub" \
+    "$MANIFESTS" 'terminal\.instructions\.md'
+
+assert_file_contains "SETUP.md replaces SPATIAL_VOCAB during workspace scaffold" \
+    "$SETUP" 'SPATIAL_VOCAB.*ledger\.md'
+
+assert_file_contains "manifests.md documents SPATIAL_VOCAB workspace replacement" \
+    "$MANIFESTS" 'SPATIAL_VOCAB'
+
+assert_file_contains "ledger template expands SPATIAL_VOCAB as full markdown rows" \
+    "$REPO_ROOT/template/workspace/ledger.md" '^\{\{SPATIAL_VOCAB\}\}$'
 echo ""
 
 finish_tests

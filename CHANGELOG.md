@@ -7,6 +7,15 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [Unreleased]
+
+### Changed
+
+* **agents:** declare first-wave MCP allowlists in specialist frontmatter
+* **mcp:** redesign consumer setup MCP selection as `E22` plus conditional `E22a`
+* **mcp:** preserve consumer per-server MCP enablement during update flows
+* **mcp:** tighten sandbox credential protections for `git` and `heartbeat`
+
 ## [5.8.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.7.0...v5.8.0) (2026-04-08)
 
 
@@ -265,8 +274,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 ### Bug Fixes
 
 * **docs:** resolve markdownlint errors in agent and research docs ([c50704c](https://github.com/asafelobotomy/copilot-instructions-template/commit/c50704c))
-
-## [Unreleased]
 
 ## [4.1.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v4.0.0...v4.1.0) (2026-03-28)
 

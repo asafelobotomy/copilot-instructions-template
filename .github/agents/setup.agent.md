@@ -104,7 +104,7 @@ Source of truth: `UPDATE.md` (fetched from upstream).
 ## Shared constraints
 
 - Follow `.github/copilot-instructions.md` at all times.
-- Apply the Structured Thinking Discipline (§5): frame each phase as a discrete
+- Apply the Structured Thinking Discipline (§3): frame each phase as a discrete
   problem, gather context once, do not re-fetch URLs already in memory.
 - Do not modify files in `asafelobotomy/copilot-instructions-template` — all
   writes go to the consumer project.

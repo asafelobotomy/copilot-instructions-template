@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Heartbeat MCP server — session reflection tool for autonomous retrospective.
+"""Heartbeat MCP server — session reflection and spatial navigation tools.
 
-Provides a single `session_reflect` tool that reads heartbeat state, computes
-session metrics, and returns structured reflection prompts.  The model calls
-this tool autonomously when the periodic health digest indicates significant
-work.  Output is compact (~200 tokens) so the model can process it silently
+Provides `session_reflect` (reads heartbeat state, computes session metrics,
+returns structured reflection prompts) and `spatial_status` (returns workspace
+vocabulary, diary summaries, and clock).  The model calls session_reflect
+autonomously when the periodic health digest indicates significant work.
+Output is compact (~200 tokens) so the model can process it silently
 and surface only actionable findings to the user.
 
 Transport: stdio  |  Run: uvx --from "mcp[cli]" mcp run <this-file>
@@ -13,8 +14,11 @@ from __future__ import annotations
 
 import json
 import os
+import pwd
 import subprocess
+import tempfile
 import time
+import hashlib
 from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
@@ -50,6 +54,62 @@ EVENTS_PATH = WORKSPACE / ".heartbeat-events.jsonl"
 SENTINEL_PATH = WORKSPACE / ".heartbeat-session"
 
 
+def _fallback_artifact_roots() -> list[Path]:
+    roots: list[Path] = []
+    seen: set[str] = set()
+
+    def add(candidate: Path | None) -> None:
+        if candidate is None:
+            return
+        key = str(candidate)
+        if key in seen:
+            return
+        seen.add(key)
+        roots.append(candidate)
+
+    claude_tmp = os.environ.get("CLAUDE_TMPDIR")
+    if claude_tmp:
+        add(Path(claude_tmp))
+    env_tmp = os.environ.get("TMPDIR")
+    if env_tmp:
+        add(Path(env_tmp))
+    add(Path(tempfile.gettempdir()))
+    xdg_cache_home = os.environ.get("XDG_CACHE_HOME")
+    if xdg_cache_home:
+        add(Path(xdg_cache_home) / "uv")
+    try:
+        passwd_home = Path(pwd.getpwuid(os.getuid()).pw_dir)
+    except Exception:
+        passwd_home = None
+    if passwd_home is not None:
+        add(passwd_home / ".cache" / "uv")
+        add(passwd_home / ".local" / "share" / "uv")
+    home = Path.home()
+    add(home / ".cache" / "uv")
+    add(home / ".local" / "share" / "uv")
+    return roots
+
+
+def _fallback_artifact_path(path: Path) -> Path:
+    roots = _fallback_artifact_roots()
+    tmp_root = roots[0] if roots else Path(tempfile.gettempdir())
+    repo_key = hashlib.sha256(str(ROOT).encode("utf-8")).hexdigest()[:12]
+    return tmp_root / "copilot-heartbeat" / repo_key / path.name
+
+
+def _fallback_artifact_paths(path: Path) -> list[Path]:
+    repo_key = hashlib.sha256(str(ROOT).encode("utf-8")).hexdigest()[:12]
+    return [root_path / "copilot-heartbeat" / repo_key / path.name for root_path in _fallback_artifact_roots()]
+
+
+def _artifact_candidates(path: Path) -> list[Path]:
+    candidates = [path]
+    for fallback in _fallback_artifact_paths(path):
+        if fallback != path and fallback not in candidates:
+            candidates.append(fallback)
+    return candidates
+
+
 def _load_state() -> dict:
     if not STATE_PATH.exists():
         return {}
@@ -77,19 +137,20 @@ def _git_modified_count() -> int:
 
 
 def _recent_events(limit: int = 20) -> list[dict]:
-    if not EVENTS_PATH.exists():
-        return []
     events: list[dict] = []
-    try:
-        for line in EVENTS_PATH.read_text(encoding="utf-8").splitlines():
-            if not line.strip():
-                continue
-            try:
-                events.append(json.loads(line))
-            except Exception:
-                continue
-    except Exception:
-        pass
+    for candidate in _artifact_candidates(EVENTS_PATH):
+        if not candidate.exists():
+            continue
+        try:
+            for line in candidate.read_text(encoding="utf-8").splitlines():
+                if not line.strip():
+                    continue
+                try:
+                    events.append(json.loads(line))
+                except Exception:
+                    continue
+        except Exception:
+            continue
     return events[-limit:]
 
 
@@ -107,8 +168,19 @@ def _append_event(trigger: str, detail: str = "", session_id: str = "", duration
         event["session_id"] = session_id
     if duration_s is not None:
         event["duration_s"] = int(duration_s)
-    with EVENTS_PATH.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(event, sort_keys=True) + "\n")
+    payload = json.dumps(event, sort_keys=True) + "\n"
+    last_error = None
+    for candidate in _artifact_candidates(EVENTS_PATH):
+        try:
+            candidate.parent.mkdir(parents=True, exist_ok=True)
+            with candidate.open("a", encoding="utf-8") as handle:
+                handle.write(payload)
+            return
+        except OSError as exc:
+            last_error = exc
+            continue
+    if last_error is not None:
+        raise last_error
 
 
 def _session_events(state: dict, limit: int = 50) -> list[dict]:
@@ -135,9 +207,24 @@ def _set_sentinel_complete(session_id: str) -> None:
     if not WORKSPACE.exists():
         return
     ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-    tmp = SENTINEL_PATH.with_suffix(".tmp")
-    tmp.write_text(f"{session_id}|{ts}|complete\n", encoding="utf-8")
-    os.replace(tmp, SENTINEL_PATH)
+    payload = f"{session_id}|{ts}|complete\n"
+    last_error = None
+    for candidate in _artifact_candidates(SENTINEL_PATH):
+        tmp = candidate.with_suffix(".tmp")
+        try:
+            candidate.parent.mkdir(parents=True, exist_ok=True)
+            tmp.write_text(payload, encoding="utf-8")
+            os.replace(tmp, candidate)
+            return
+        except OSError as exc:
+            last_error = exc
+            try:
+                tmp.unlink(missing_ok=True)
+            except OSError:
+                pass
+            continue
+    if last_error is not None:
+        raise last_error
 
 
 def _load_workspace_cues() -> dict:
@@ -292,16 +379,76 @@ def session_reflect() -> dict:
             "session_duration_minutes": session_duration_s // 60,
         },
         "reflection_prompts": prompts,
-        "memory_protocol": (
-            "Before persisting insights: "
-            "(1) check MEMORY.md for existing entries on the same topic — avoid duplicates, "
-            "(2) check SOUL.md for reasoning patterns — add only genuinely new heuristics, "
-            "(3) update USER.md only from direct observation, never inference. "
-            "Use the provenance convention: file:line for code, URL for docs, session:{id} for observed. "
-            "For /memories/repo/ entries, use the Copilot Memory schema: "
-            "{subject, fact, citations, reason, category} for structural compatibility."
-        ),
+        "memory_protocol": "See §14 Alignment Protocol in the instructions file.",
         "workspace_state": ws,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Tool: spatial_status — compact workspace navigation snapshot
+# ---------------------------------------------------------------------------
+
+DIARIES_DIR = WORKSPACE / "diaries"
+LEDGER_PATH = WORKSPACE / "ledger.md"
+
+
+def _read_diary_summaries(max_entries: int = 3) -> dict[str, list[str]]:
+    """Read the most recent entries from each agent diary file."""
+    summaries: dict[str, list[str]] = {}
+    if not DIARIES_DIR.is_dir():
+        return summaries
+    for diary in sorted(DIARIES_DIR.glob("*.md")):
+        if diary.name == "README.md":
+            continue
+        lines = [
+            l.strip()
+            for l in diary.read_text(encoding="utf-8").splitlines()
+            if l.strip().startswith("- ")
+        ]
+        if lines:
+            summaries[diary.stem] = lines[-max_entries:]
+    return summaries
+
+
+def _read_vocabulary() -> list[str]:
+    """Extract the vocabulary table from the ledger file."""
+    if not LEDGER_PATH.exists():
+        return []
+    lines = LEDGER_PATH.read_text(encoding="utf-8").splitlines()
+    vocab: list[str] = []
+    in_table = False
+    for line in lines:
+        if "|" in line and ("Term" in line or "Meaning" in line):
+            in_table = True
+            continue
+        if in_table and line.startswith("|"):
+            if line.replace("|", "").replace("-", "").strip():
+                vocab.append(line.strip())
+        elif in_table and not line.startswith("|"):
+            break
+    return vocab
+
+
+@mcp.tool()
+def spatial_status() -> dict:
+    """Return a compact workspace navigation snapshot.
+
+    Includes spatial vocabulary, recent diary entries per agent, and the
+    current session clock summary. Call when you need a quick overview of
+    the workspace state.
+    """
+    from heartbeat_clock_summary import build_clock_summary
+
+    clock = ""
+    try:
+        clock = build_clock_summary(WORKSPACE)
+    except Exception:
+        clock = "clock unavailable"
+
+    return {
+        "vocabulary": _read_vocabulary(),
+        "diaries": _read_diary_summaries(),
+        "clock": clock,
     }
 
 

@@ -3,7 +3,6 @@
 <!-- workspace-layer: L2 | trigger: research request -->
 > **Domain**: References — URLs, external documentation, and research notes.
 > **Boundary**: No internal project facts, preferences, or reasoning.
-
 > Living document. Append rows as new useful URLs are discovered. All agents may update this file.
 > Do not delete rows — mark stale entries with `(stale)` in the Summary column.
 
@@ -53,6 +52,47 @@
 | <https://code.visualstudio.com/docs/copilot/reference/copilot-vscode-features> | Cheat sheet for all VS Code Copilot features; confirms memory is listed under Planning; tool set reference table; `/memories` slash command for Claude agent | 2026-04-09 | reference, tools, features |
 | <https://docs.github.com/copilot/how-tos/use-copilot-agents/copilot-memory> | GitHub-hosted Copilot Memory (separate from local memory tool): cross-surface, repo-scoped, 28-day expiry, off by default | 2026-04-09 | memory, github, copilot-memory |
 | <https://github.blog/ai-and-ml/github-copilot/building-an-agentic-memory-system-for-github-copilot/> | Engineering blog: just-in-time citation verification, store_memory tool call schema (subject/fact/citations/reason), cross-agent memory sharing, 7% PR merge rate uplift, adversarial stress-testing | 2026-04-09 | memory, architecture, copilot-memory |
+
+## Dependency Evaluation — 2026-04-09
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://pypi.org/project/tiktoken/> | tiktoken: OpenAI BPE tokenizer; v0.12.0 Oct 2025; CDN vocab download on first use (~1.7MB); deps: regex+requests | 2026-04-09 | deps, tokenizer, tiktoken |
+| <https://github.com/openai/tiktoken/releases> | tiktoken release history: 0.12.0 (Oct 2025), 0.11.0 (Aug 2025) | 2026-04-09 | deps, tokenizer |
+| <https://github.com/astral-sh/ruff/releases> | ruff v0.15.9 (Apr 2026): Rust Python linter+formatter, zero Python deps, 10-100x faster than flake8/black | 2026-04-09 | deps, linter, ruff |
+| <https://github.com/gorakhargosh/watchdog/releases> | watchdog v6.0.0 (Nov 2024): Python file system events; inotify/kqueue; 1 transitive dep (pathtools) | 2026-04-09 | deps, filewatcher |
+| <https://github.com/rapidfuzz/RapidFuzz/releases> | rapidfuzz v3.14.5 (Apr 2026): C++ fuzzy string matching; ~9MB wheel; 0 runtime deps | 2026-04-09 | deps, fuzzy |
+| <https://github.com/jqlang/jq/releases> | jq 1.8.1 (Jul 2025): CVE-2025-49014 fix (heap UAF in f_strftime); ~1MB static binary | 2026-04-09 | deps, jq, security |
+| <https://github.com/koalaman/shellcheck/releases> | shellcheck v0.11.0 (Aug 2025): SC2327-2332 new checks; ~10MB Haskell static binary | 2026-04-09 | deps, shellcheck, ci |
+| <https://github.com/crate-ci/typos/releases> | typos-cli v1.45.0 (Apr 2026): monthly dictionary updates; MIT; Rust; zero deps; gitignore-aware | 2026-04-09 | deps, typos, spellcheck |
+| <https://github.com/crate-ci/typos/blob/master/docs/comparison.md> | typos vs codespell feature matrix: typos wins on CamelCase, snake_case, gitignore, UUID/hex/base64/SHA ignore | 2026-04-09 | deps, typos, spellcheck |
+| <https://github.com/sharkdp/fd/releases> | fd v10.4.2 (Mar 2026): modern find; ~5MB binary; no Python gap in this repo | 2026-04-09 | deps, fd, system |
+| <https://github.com/microsoft/LLMLingua> | LLMLingua: last active Jul 2024 (v0.2.2); effectively unmaintained; requires torch+transformers; SKIP | 2026-04-09 | deps, compression, stale |
+| <https://github.com/open-compress/claw-compactor> | Claw Compactor v7.0 (Apr 2026): 14-stage fusion pipeline; 15-82% compression; tree-sitter dep; not for instruction file authoring | 2026-04-09 | deps, compression, prompt |
+| <https://github.com/DelvyG/promptmin> | promptminify (Apr 2026): tiktoken-validated prompt minification; EN/ES; ~400 curated rules; not for structured Markdown | 2026-04-09 | deps, compression, prompt |
+| <https://github.com/topics/prompt-compression?l=python&o=desc&s=updated> | Prompt compression landscape Apr 2026: 17 repos; no purpose-built tool for agent instruction files exists | 2026-04-09 | deps, compression, landscape |
+| <https://pre-commit.com/> | pre-commit v4.5.1 (Dec 2025): git hook framework; ~15 transitive deps; SKIP for this repo due to contributor friction | 2026-04-09 | deps, pre-commit, hooks |
+| <https://pypi.org/project/check-jsonschema/> | check-jsonschema: CLI + pre-commit hook wrapping jsonschema; validates JSON Schema Draft 2020-12 and GitHub Actions YAML | 2026-04-09 | deps, jsonschema, validation |
+| <https://github.com/codespell-project/codespell/releases> | codespell v2.4.2 (Mar 2026): GPL v2; no gitignore support; no CamelCase; inferior to typos-cli for this repo | 2026-04-09 | deps, spellcheck |
+
+## VS Code Release Notes — v1.100–v1.115
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://code.visualstudio.com/updates/v1_100> | v1.100 Apr 2025 — `.instructions.md`/`.prompt.md` aligned; `applyTo`+`description` front matter; `#githubRepo` tool; MCP Streamable HTTP; faster agent edits; prompt caching | 2026-04-09 | release-notes, instructions, mcp, agents |
+| <https://code.visualstudio.com/updates/v1_103> | v1.103 Jul 2025 — GPT-5; chat checkpoints; revamped tool picker; tool grouping >128 tools; terminal auto-approve; input request detection | 2026-04-09 | release-notes, tools, terminal |
+| <https://code.visualstudio.com/updates/v1_105> | v1.105 Sep 2025 — Plan agent; handoffs front matter; isolated subagents (`#runSubagent`); fully qualified tool names (`server/tool`); nested AGENTS.md GA | 2026-04-09 | release-notes, agents, mcp, instructions |
+| <https://code.visualstudio.com/updates/v1_107> | v1.107 Nov 2025 — Multi-agent orchestration; background agents with Git worktrees; Agent Sessions view; custom agents as subagents; Claude skills reuse | 2026-04-09 | release-notes, agents, background |
+| <https://code.visualstudio.com/updates/v1_110> | v1.110 Feb 2026 — Agent plugins (skills+tools+hooks bundles); agentic browser tools; session memory; context compaction; fork session; Agent Debug panel; edit mode deprecated | 2026-04-09 | release-notes, agents, plugins |
+| <https://code.visualstudio.com/updates/v1_111> | v1.111 Mar 9 2026 — Autopilot + agent permissions (Default/Bypass/Autopilot); agent-scoped hooks in `.agent.md` frontmatter; `task_complete` tool; weekly stable releases begin | 2026-04-09 | release-notes, autopilot, hooks, agents |
+| <https://code.visualstudio.com/updates/v1_112> | v1.112 Mar 18 2026 — MCP server sandboxing (`sandboxEnabled`); monorepo parent-repo customisations discovery; image/binary in agents; Copilot CLI permissions; export/import debug logs | 2026-04-09 | release-notes, mcp, monorepo, sandbox |
+| <https://code.visualstudio.com/updates/v1_113> | v1.113 Mar 25 2026 — Chat Customisations editor; nested subagents; MCP in CLI/Claude agents; plugin URL handlers (`vscode://chat-plugin/install`); manage plugin marketplaces | 2026-04-09 | release-notes, customisation, plugins, mcp |
+| <https://code.visualstudio.com/updates/v1_114> | v1.114 Apr 1 2026 — `/troubleshoot` previous sessions; `#codebase` semantic-only; TypeScript 6.0; enterprise Claude group policy; fine-grained tool approval API (proposed) | 2026-04-09 | release-notes, troubleshoot, enterprise |
+| <https://code.visualstudio.com/updates/v1_115> | v1.115 Apr 8 2026 — VS Code Agents companion app (Insiders); `send_to_terminal` tool; background terminal notifications (experimental) | 2026-04-09 | release-notes, agents, terminal |
+| <https://code.visualstudio.com/docs/copilot/customization/hooks#_agentscoped-hooks> | Agent-scoped hooks: define `hooks:` in `.agent.md` frontmatter; fires only for that agent/subagent invocation | 2026-04-09 | hooks, agents, customisation |
+| <https://code.visualstudio.com/docs/copilot/customization/agent-plugins> | Agent plugins: bundle skills/tools/hooks for distribution; install from Extensions view or `vscode://chat-plugin/install?source=...` URL handler | 2026-04-09 | plugins, starter-kits, distribution |
+| <https://code.visualstudio.com/docs/copilot/agents/agent-tools#permission-levels> | Agent permission levels: Default Approvals / Bypass Approvals / Autopilot; `chat.autopilot.enabled`; `task_complete` tool | 2026-04-09 | agents, autopilot, security |
+| <https://code.visualstudio.com/docs/copilot/customization/overview#_chat-customizations-editor> | Chat Customisations editor: unified UI for instructions/prompts/agents/skills/MCP/plugins; `Chat: Open Chat Customisations` command | 2026-04-09 | customisation, editor |
 
 ## Multi-Agent Memory Architecture
 
@@ -290,3 +330,38 @@
 | <https://penfieldlabs.substack.com/p/milla-jovovich-just-released-an-ai> | Penfield Labs deep analysis: LoCoMo 100% via top-k=50 bypasses retrieval entirely; LongMemEval score is recall_any@5 on labels not QA; hybrid 100% patches 3 test-specific cases; benchmark wars context (Zep vs Mem0) | 2026-04-09 | memory, analysis, benchmarks, critique |
 | <https://github.com/lhl/agentic-memory/blob/main/ANALYSIS-mempalace.md> | lhl agentic-memory survey: NOT PROMOTED (only system with provably non-existent README features); spatial metaphor genuinely novel; wake-up cost best in survey; zero-LLM write path; deterministic chunking | 2026-04-09 | memory, survey, analysis, architecture |
 | <https://news.ycombinator.com/item?id=47672792> | Main HN thread (59 pts, 12 comments) — community mostly critical of benchmarks; consensus: real product under inflated marketing | 2026-04-09 | memory, community, hn |
+
+## Prompt Compression and Token Efficiency
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://arxiv.org/abs/2310.05736> | LLMLingua (EMNLP 2023, Microsoft): coarse-to-fine perplexity-based prompt compression; up to 20x compression with little performance loss; budget controller + token-level iteration | 2026-04-09 | compression, llmlingua, microsoft |
+| <https://arxiv.org/abs/2403.12968> | LLMLingua-2 (ACL Findings 2024, Microsoft): BERT-based bidirectional token classification; 3x-6x faster than LLMLingua; 2x-5x compression ratio; task-agnostic | 2026-04-09 | compression, llmlingua, microsoft |
+| <https://github.com/microsoft/LLMLingua> | LLMLingua GitHub repo: all 3 variants, integrations with LangChain/LlamaIndex/PromptFlow; demo on HuggingFace | 2026-04-09 | compression, llmlingua, tools |
+| <https://llmlingua.com/> | LLMLingua project page: benchmarks, case studies for RAG, meetings, CoT, code; SCBench KV-cache analysis | 2026-04-09 | compression, llmlingua, benchmarks |
+| <https://arxiv.org/abs/2310.06201> | Selective Context (Li et al., EMNLP 2023): 50% context reduction via self-information pruning; 36% memory reduction, 32% inference time reduction; 0.023 BERTscore drop only | 2026-04-09 | compression, selective-context |
+| <https://arxiv.org/abs/2310.04408> | RECOMP (Xu et al., 2023): extractive + abstractive document compressors for RAG; 6% compression rate with minimal QA performance loss | 2026-04-09 | compression, recomp, rag |
+| <https://arxiv.org/abs/2305.14788> | AutoCompressor (Chevalier et al., EMNLP 2023): fine-tunes LLMs to compress long context into soft-prompt summary vectors; 30,720-token contexts; requires model fine-tuning | 2026-04-09 | compression, autocompressor, soft-prompts |
+| <https://aclanthology.org/2025.naacl-long.376/> | GenPI / Generative Prompt Internalization (KAIST, NAACL 2025): fine-tunes a model to internalise system prompts, eliminating them at inference; data synthesis via role-swapping | 2026-04-09 | compression, fine-tuning, genpi |
+| <https://arxiv.org/abs/2307.03172> | "Lost in the Middle" (Liu et al., Stanford/Berkeley, TACL 2023): LLM recall worst in middle of long context; best at beginning and end; applies to instruction ordering | 2026-04-09 | context-window, position-bias, attention |
+| <https://arxiv.org/abs/2602.05447> | Structured Context Engineering for File-Native Agentic Systems (McMillan 2026): 9,649 experiments; YAML > TOON despite TOON being 25% smaller — "grep tax" 138-740% at scale; format familiarity >> raw token efficiency | 2026-04-09 | format, yaml, toon, context-engineering |
+| <https://simonwillison.net/2026/Feb/9/structured-context-engineering-for-file-native-agentic-systems/> | Simon Willison commentary on McMillan 2026 format study; explains the "grep tax" figure | 2026-04-09 | format, context-engineering, grep-tax |
+| <https://github.com/open-compress/claw-compactor> | Claw Compactor (2026): 14-stage deterministic Fusion Pipeline; 15-82% compression; zero LLM cost; reversible; AST-aware; JSON 82%, agent conversations 31%, Python 25% | 2026-04-09 | compression, tools, deterministic |
+| <https://github.com/sriinnu/clipforge-PAKT> | ClipForge PAKT (2026): lossless-first TypeScript compression library; structured payloads 27-33%, repetitive text 38-69%, logs 57%; includes MCP server + npm package | 2026-04-09 | compression, tools, typescript, lossless |
+| <https://github.com/gladehq/claude-shorthand> | Claude-shorthand (2026): LLMLingua-2 Claude Code plugin; ~55% compression on prompts >800 chars; protects code identifiers; configurable rate + protected tokens | 2026-04-09 | compression, tools, claude-code |
+| <https://github.com/topics/prompt-compression> | GitHub topic: 32 repos as of April 2026; claw-compactor, claude-shorthand, PAKT, contextcrunch among notable entries | 2026-04-09 | compression, tools, ecosystem |
+| <https://www.anthropic.com/news/prompt-caching> | Anthropic prompt caching (GA August 2025): cache reads 10% of base input cost; 90% cost reduction, 85% latency reduction for repeated 100K-token prompts | 2026-04-09 | caching, cost-reduction, anthropic |
+| <https://simonwillison.net/2026/Feb/20/thariq-shihipar/> | Thariq Shihipar (Claude Code): "We build our entire harness around prompt caching. We run alerts on prompt cache hit rate and declare SEVs if they're too low." | 2026-04-09 | caching, claude-code, production |
+| <https://simonwillison.net/2025/Jun/27/context-engineering/> | Simon Willison on context engineering (June 2025); Karpathy quote: "filling context window with just the right information... compacting is a key component" | 2026-04-09 | context-engineering, karpathy |
+| <https://www.anthropic.com/research/building-effective-agents> | Anthropic — Building Effective Agents: simplest solution first, routing for instruction specialist selection, workflows vs agents taxonomy | 2026-04-09 | agents, routing, patterns |
+
+## VS Code MCP Sandbox Runtime — Write Failures and Proxy Errors (2026-04-10)
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| `local:/opt/visual-studio-code-insiders/resources/app/node_modules/@anthropic-ai/sandbox-runtime@0.0.42/dist/sandbox/sandbox-utils.js` | `getDefaultWritePaths()` includes `/tmp/claude`; `generateProxyEnvVars()` sets `TMPDIR=/tmp/claude` (or `CLAUDE_TMPDIR`) and `ALL_PROXY=socks5h://localhost:<socksPort>` inside bwrap | 2026-04-10 | mcp, sandbox, proxy, tmpdir |
+| `local:/opt/visual-studio-code-insiders/resources/app/node_modules/@anthropic-ai/sandbox-runtime@0.0.42/dist/sandbox/linux-sandbox-utils.js` | `generateFilesystemArgs()` silently skips any `allowWrite` path that does not exist on the host (`!fs.existsSync(normalizedPath)` guard) — root cause of `/tmp/claude` write failures | 2026-04-10 | mcp, sandbox, bwrap, write-failure |
+| `local:/opt/visual-studio-code-insiders/resources/app/node_modules/@anthropic-ai/sandbox-runtime@0.0.42/dist/sandbox/sandbox-manager.js` | `wrapWithSandbox()` always prepends `getDefaultWritePaths()` to user `allowWrite`; `wrapCommandWithSandboxLinux()` injects proxy env vars via `--setenv` | 2026-04-10 | mcp, sandbox, allowwrite |
+| `local:~/.cache/uv/archive-v0/e69PtoFU3_LyN99J0jBF9/httpx/_config.py` | `httpx 0.27.2 Proxy.__init__` only accepts `http/https/socks5` schemes — `socks5h://` raises `ValueError: Unknown scheme for proxy URL` | 2026-04-10 | httpx, proxy, socks5h |
+| `local:~/.cache/uv/archive-v0/CTC1-HivFdy4UVtKcUEhy/httpx/_config.py` | `httpx 0.28.1` adds `socks5h` to the accepted scheme set — upgrade unblocks proxy | 2026-04-10 | httpx, proxy, socks5h, fix |
+| `local:~/.cache/uv/archive-v0/pO-kgK6IlruyghP-SK_wY/mcp_server_fetch-2025.4.7.dist-info/METADATA` | `mcp-server-fetch@2025.4.7` pins `httpx<0.28` — prevents the socks5h fix from being used | 2026-04-10 | mcp-server-fetch, httpx, dependency |

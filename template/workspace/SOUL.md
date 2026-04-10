@@ -17,6 +17,3 @@ Core values I apply to every decision in this project:
 
 - When two options seem equal, choose the one that keeps future options open.
 - When uncertain, read the source — do not rely on memory of a summary.
-- When a guideline caused wasted work three times, propose retiring it.
-
-*(Updated as reasoning patterns emerge across sessions.)*

@@ -160,6 +160,25 @@ Leave undetermined values as `{{PLACEHOLDER}}` with `<!-- TODO: fill once known 
 
 Replace every `{{PLACEHOLDER}}` in `template/copilot-instructions.md` with values from §1. Add user preferences to `## § 10 — Project-Specific Overrides` as a table (IDs S1–E24, one row per answered question). Write to `.github/copilot-instructions.md`.
 
+**Derived tokens** (auto-resolved, not asked in interview):
+
+| Token | Default value |
+|-------|--------------|
+| `{{SPATIAL_STATUS_TOOL}}` | `spatial_status` |
+| `{{SPATIAL_VOCAB}}` | Use the default row set below in both §14 and `ledger.md`; if `{{SPATIAL_THEME}}` differs from `village`, rename the first-column terms consistently |
+
+Default `{{SPATIAL_VOCAB}}` rows:
+
+```markdown
+| Village | This project workspace | Repository root |
+| Town Hall | Main instructions | `.github/copilot-instructions.md` |
+| Building | Agent workspace | `.github/agents/{name}.agent.md` |
+| Workshop | Template layer | `template/` |
+| Trade Route | Cross-repo memory | `/memories/repo/` |
+| Diary | Per-agent findings log | `.copilot/workspace/diaries/{agent}.md` |
+| Ledger | Full glossary | `.copilot/workspace/ledger.md` |
+```
+
 Fetch the companion manifests file for §2.5–§3:
 
 ```text
@@ -231,7 +250,16 @@ Populate runtime sections from §1. Remove unused runtime sections. Replace `{{R
 
 ## § 2.10 — Configure MCP servers (E22 only)
 
-Skip if E22 = A (None) or not asked. If E22 = B or C, create `.vscode/mcp.json` using the config from `manifests.md` § MCP server configs. Run sandbox detection on Linux first. If E22 = C, enable relevant servers and add stack-specific ones.
+Skip if E22 = A (No) or not asked.
+
+If E22 = B:
+
+1. Run sandbox detection on Linux first.
+2. Create `.vscode/mcp.json` using the config from `manifests.md` § MCP server configs.
+3. Treat `filesystem`, `git`, and `heartbeat` as the core server set.
+4. Ask E22a only when E22 = B. If the user selects optional servers in E22a, enable those server entries from the base config by removing `"disabled": true` for the selected entries.
+5. If E22a is unanswered, unavailable, or the user selects `None`, leave `github`, `fetch`, and `context7` disabled.
+6. Add stack-specific servers when appropriate using `manifests.md` § Optional and stack-specific servers.
 
 ---
 
@@ -244,6 +272,8 @@ https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/ma
 ```
 
 Merge keys into `.vscode/settings.json` (do not overwrite existing values). Also fetch extension recommendations:
+
+If the project is a monorepo or the user often opens subfolders rather than the repo root, also add `"chat.useCustomizationsInParentRepositories": true` so VS Code walks up to the Git root and discovers all customizations (instructions, prompts, agents, skills, hooks).
 
 ```text
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/template/vscode/extensions.json
@@ -335,7 +365,7 @@ If "Yes": `code --install-extension asafelobotomy.copilot-profile-tools`. If Mar
 
 ## § 3 — Scaffold workspace identity files
 
-Create `.copilot/workspace/`. Follow manifests.md § Workspace identity files for the ten-file table. Replace `{{PLACEHOLDER}}` tokens from §1 and `{{SETUP_DATE}}` with today's date. If any fetch fails, stop immediately.
+Create `.copilot/workspace/`. Follow manifests.md § Workspace identity files for the file table. Replace `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` with today's date, `{{SPATIAL_THEME}}` with a one-word spatial metaphor (default: `village`), and `{{SPATIAL_VOCAB}}` in `ledger.md` with the resolved Markdown row set from §2. If any fetch fails, stop immediately.
 
 ---
 

@@ -7,6 +7,7 @@ model:
   - Claude Sonnet 4.5
   - GPT-5 mini
 tools: [agent, fetch, webSearch, codebase, search, editFiles, runCommands]
+mcp-servers: [fetch, context7, filesystem]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Audit', 'Explore']

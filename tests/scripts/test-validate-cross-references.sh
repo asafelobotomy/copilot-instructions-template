@@ -31,7 +31,7 @@ write_questions() {
 make_fixture() {
   local dir="$1"
   mkdir -p "$dir/template"
-  write_sections "$dir/template/copilot-instructions.md" 13
+  write_sections "$dir/template/copilot-instructions.md" 14
   write_questions "$dir/SETUP.md" 24
 }
 

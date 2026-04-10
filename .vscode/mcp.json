@@ -1,7 +1,17 @@
 {
 	"sandbox": {
+		"network": {
+			"allowedDomains": [
+				"pypi.org",
+				"files.pythonhosted.org"
+			]
+		},
 		"filesystem": {
-			"allowWrite": ["${userHome}/.npm"]
+			"allowWrite": [
+				"${userHome}/.npm",
+				"${userHome}/.cache/uv",
+				"${userHome}/.local/share/uv"
+			]
 		}
 	},
 	"servers": {
@@ -16,8 +26,15 @@
 			"sandboxEnabled": true,
 			"sandbox": {
 				"filesystem": {
-					"allowWrite": ["${workspaceFolder}", "${userHome}/.npm"],
-					"denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
+					"allowWrite": [
+						"${workspaceFolder}",
+						"${userHome}/.npm"
+					],
+					"denyRead": [
+						"${userHome}/.ssh",
+						"${userHome}/.gnupg",
+						"${userHome}/.aws"
+					]
 				}
 			}
 		},
@@ -28,7 +45,20 @@
 				"mcp-server-git",
 				"--repository",
 				"${workspaceFolder}"
-			]
+			],
+			"sandboxEnabled": true,
+			"sandbox": {
+				"filesystem": {
+					"allowWrite": [
+						"${workspaceFolder}"
+					],
+					"denyRead": [
+						"${userHome}/.ssh",
+						"${userHome}/.gnupg",
+						"${userHome}/.aws"
+					]
+				}
+			}
 		},
 		"github": {
 			"type": "http",
@@ -38,8 +68,20 @@
 			"type": "stdio",
 			"command": "uvx",
 			"args": [
+				"--with",
+				"httpx[socks]>=0.28",
 				"mcp-server-fetch"
-			]
+			],
+			"sandboxEnabled": true,
+			"sandbox": {
+				"filesystem": {
+					"denyRead": [
+						"${userHome}/.ssh",
+						"${userHome}/.gnupg",
+						"${userHome}/.aws"
+					]
+				}
+			}
 		},
 		"context7": {
 			"type": "http",
@@ -49,10 +91,25 @@
 			"type": "stdio",
 			"command": "uvx",
 			"args": [
-				"--from", "mcp[cli]",
-				"mcp", "run",
+				"--from",
+				"mcp[cli]",
+				"mcp",
+				"run",
 				"${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py"
-			]
+			],
+			"sandboxEnabled": true,
+			"sandbox": {
+				"filesystem": {
+					"allowWrite": [
+						"${workspaceFolder}"
+					],
+					"denyRead": [
+						"${userHome}/.ssh",
+						"${userHome}/.gnupg",
+						"${userHome}/.aws"
+					]
+				}
+			}
 		}
 	}
 }
