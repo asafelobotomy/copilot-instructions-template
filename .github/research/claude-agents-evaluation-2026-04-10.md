@@ -26,7 +26,7 @@ recommend. **Recommendation: continue to defer.** Defer conditions are documente
 | https://code.visualstudio.com/docs/copilot/customization/custom-agents | VS Code custom agent frontmatter schema |
 | https://code.visualstudio.com/updates/v1_113 | v1.113: MCP in Copilot CLI and Claude agent sessions; nested subagents |
 | https://code.visualstudio.com/updates/v1_114 | v1.114: Group policy to disable Claude agent `Claude3PIntegration = false` |
-| `.github/research/copilot-audit-tool-design-2026-03-29.md` | Complete VS Code discovery path inventory as of March 2026 |
+| `.github/research/archive/2026-03/copilot-audit-tool-design-2026-03-29.md` | Complete VS Code discovery path inventory as of March 2026 |
 | `.github/research/sisyphus-ecosystem-synthesis-2026-04-05.md` | OMC (oh-my-claudecode) analysis: configuration precedence, `.claude/CLAUDE.md` pattern, project-scoped skills |
 | `CHANGELOG.md` v3.2.0 | Explicit deferral decision recorded: "current decision to defer dual-format stubs, and workaround for cross-tool teams" |
 | User memory note (debugging.md) | `.claude/agents` appears as `/dev/null` character-device placeholder in the VS Code Copilot sandbox |

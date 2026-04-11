@@ -1,7 +1,7 @@
 # Research: Model Availability and Agent Model Assignment — Delta Update
 
 > Date: 2026-04-04 | Agent: Researcher | Status: complete
-> Supersedes: `thinking-effort-and-model-lineup-2026-03-28.md` for new findings only.
+> Supersedes: `archive/2026-03/thinking-effort-and-model-lineup-2026-03-28.md` for new findings only.
 > The March 28 file remains the canonical reference for thinking effort mechanics.
 
 ## Summary

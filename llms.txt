@@ -10,6 +10,13 @@
 - [SETUP.md](SETUP.md): Remote bootstrap protocol for consumer projects.
 - [UPDATE.md](UPDATE.md): Remote update, backup restore, and factory restore protocol.
 - [MIGRATION.md](MIGRATION.md): Per-version migration registry.
+- [MIGRATION.archive.md](MIGRATION.archive.md): Legacy migration registry for installs earlier than v3.4.0.
+- [.github/research/README.md](.github/research/README.md): Research note layout and archive convention.
+
+## Archive conventions
+
+- `MIGRATION.archive.md` is the only top-level archive file because the update flow fetches it directly.
+- Research notes stay active under `.github/research/` first, then move into `.github/research/archive/YYYY-MM/`.
 
 ## Model strategy
 

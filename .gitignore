@@ -46,3 +46,5 @@ copilot-heartbeat/
 
 # Local test/debug artifacts
 test_*_output.txt
+test_output.log
+test_results.log

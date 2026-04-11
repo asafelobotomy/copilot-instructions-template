@@ -2,6 +2,21 @@
 
 A versioned, self-updating GitHub Copilot instruction template that keeps AI developer behaviour consistent across projects.
 
+## Repository map
+
+- [`AGENTS.md`](AGENTS.md): machine entry point and trigger phrases.
+- [`SETUP.md`](SETUP.md): first-time setup protocol for consumer projects.
+- [`UPDATE.md`](UPDATE.md): update, backup restore, and factory restore protocol.
+- [`MODELS.md`](MODELS.md): source of truth for agent model assignments.
+- [`MIGRATION.md`](MIGRATION.md): active migration registry for `v3.4.0+`.
+- [`MIGRATION.archive.md`](MIGRATION.archive.md): legacy migration registry for versions earlier than `v3.4.0`.
+- [`template/copilot-instructions.md`](template/copilot-instructions.md): consumer instruction template delivered by setup.
+- [`.github/research/README.md`](.github/research/README.md): research-note layout and archive rules.
+
+Archive naming stays explicit by design. The migration archive remains a single
+top-level file because the update flow fetches it directly, while research notes
+archive by month under `.github/research/archive/`.
+
 ## Set up in your project
 
 Tell Copilot:
@@ -38,6 +53,9 @@ Agent delegation stays narrow by design. See [`AGENTS.md`](AGENTS.md) for the en
 
 Current template version: **5.12.0** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md) and [`MIGRATION.md`](MIGRATION.md).
 
+For older installed versions, use [`MIGRATION.archive.md`](MIGRATION.archive.md)
+alongside [`MIGRATION.md`](MIGRATION.md).
+
 ## Release automation
 
 Pushes to `main` run the full validation workflow first. A final CI release job runs only after the validation jobs succeed, so the same workflow both validates the commit and drives release-please.
@@ -54,6 +72,14 @@ Within the release-driving set, the SemVer policy is explicit:
 Use `feat` only for a real consumer-facing capability. Use patch-level headers for corrections, maintenance, wording updates, and refactors. This keeps the minor digit meaningful instead of incrementing it for every release-driving change.
 
 Release-please is the only version writer. Do not bump `VERSION.md`, `.release-please-manifest.json`, or the `x-release-please-version` markers manually.
+
+## Validation entrypoints
+
+- Full suite: `bash tests/run-all.sh`
+- Captured full suite: `bash scripts/harness/run-all-captured.sh`
+- Targeted test selection: `bash scripts/harness/select-targeted-tests.sh <paths...>`
+- Workspace index drift: `bash scripts/workspace/sync-workspace-index.sh --check`
+- Model registry drift: `bash scripts/sync/sync-models.sh --check`
 
 ## Terminal-safe shell protocol
 
