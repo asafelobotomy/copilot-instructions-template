@@ -217,6 +217,10 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
     "heartbeat": {
       "type": "stdio",
       "command": "uvx",
+      "env": {
+        "CLAUDE_TMPDIR": "${userHome}/.cache/uv/.copilot-tmp",
+        "TMPDIR": "${userHome}/.cache/uv/.copilot-tmp"
+      },
       "args": [
         "--from", "mcp[cli]",
         "mcp", "run",
@@ -279,6 +283,10 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
     "heartbeat": {
       "type": "stdio",
       "command": "uvx",
+      "env": {
+        "CLAUDE_TMPDIR": "${userHome}/.cache/uv/.copilot-tmp",
+        "TMPDIR": "${userHome}/.cache/uv/.copilot-tmp"
+      },
       "args": [
         "--from", "mcp[cli]",
         "mcp", "run",

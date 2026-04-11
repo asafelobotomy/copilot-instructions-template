@@ -74,7 +74,10 @@ def _fallback_artifact_roots() -> list[Path]:
     env_tmp = os.environ.get("TMPDIR")
     if env_tmp:
         add(Path(env_tmp))
-    add(Path(tempfile.gettempdir()))
+    try:
+        add(Path(tempfile.gettempdir()))
+    except OSError:
+        pass
     xdg_cache_home = os.environ.get("XDG_CACHE_HOME")
     if xdg_cache_home:
         add(Path(xdg_cache_home) / "uv")
@@ -153,9 +156,10 @@ def _ensure_writable_tempdir() -> None:
     for candidate in candidates:
         try:
             candidate.mkdir(parents=True, exist_ok=True)
+            fd, test_path = tempfile.mkstemp(dir=str(candidate), prefix="._test_")
+            os.close(fd)
+            os.unlink(test_path)
         except OSError:
-            continue
-        if not os.access(candidate, os.W_OK | os.X_OK):
             continue
         tempfile.tempdir = str(candidate)
         return

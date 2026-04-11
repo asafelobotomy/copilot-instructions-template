@@ -463,6 +463,12 @@ for srv in expected_unsandboxed.get("servers", {}).values():
 
 if unsandboxed != expected_unsandboxed:
     raise SystemExit("Unsandboxed manifests MCP config drifted from the template baseline")
+
+heartbeat = template_mcp["servers"]["heartbeat"]
+expected_temp_root = "${userHome}/.cache/uv/.copilot-tmp"
+env = heartbeat.get("env")
+if env != {"CLAUDE_TMPDIR": expected_temp_root, "TMPDIR": expected_temp_root}:
+    raise SystemExit("Heartbeat MCP server is missing its launch-time tempdir env guard")
 '
 echo ""
 

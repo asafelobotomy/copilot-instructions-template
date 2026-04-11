@@ -8,7 +8,10 @@
 				"docs.anthropic.com",
 				"platform.claude.com",
 				"github.com",
-				"code.visualstudio.com"
+				"code.visualstudio.com",
+				"docs.github.com",
+				"platform.openai.com",
+				"example.com"
 			]
 		},
 		"filesystem": {
@@ -101,7 +104,6 @@
 				"--headless",
 				"--browser=chromium"
 			],
-			"disabled": true,
 			"sandboxEnabled": true,
 			"sandbox": {
 				"filesystem": {
@@ -121,6 +123,10 @@
 		"heartbeat": {
 			"type": "stdio",
 			"command": "uvx",
+			"env": {
+				"CLAUDE_TMPDIR": "${userHome}/.cache/uv/.copilot-tmp",
+				"TMPDIR": "${userHome}/.cache/uv/.copilot-tmp"
+			},
 			"args": [
 				"--from",
 				"mcp[cli]",
