@@ -55,7 +55,7 @@ description: Coding agent
 model:
   - Claude Sonnet 4.6
 tools: [agent, codebase]
-agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Extensions', 'Commit', 'Organise', 'Planner', 'Docs', 'Debugger']
+agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Organise', 'Planner', 'Docs', 'Debugger']
 ---
 # Code Agent
 AGENT
@@ -628,7 +628,7 @@ echo "6. A4: missing required delegate triggers HIGH"
 run_audit_case json mutate_a4_missing_delegate
 assert_failure "exits non-zero" "$CASE_STATUS"
 assert_contains "A4 HIGH" "$CASE_OUTPUT" '"check_id": "A4"'
-assert_contains "A4 missing delegate" "$CASE_OUTPUT" 'Missing required delegate(s): Setup'
+assert_contains "A4 missing delegate" "$CASE_OUTPUT" 'Missing required delegate(s): Commit'
 echo ""
 
 # ── 7. I1 — developer file has placeholder ───────────────────────────────────

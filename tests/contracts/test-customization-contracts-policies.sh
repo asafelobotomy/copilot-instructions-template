@@ -67,12 +67,8 @@ tools = {
 }
 if "search" not in tools:
     raise SystemExit("fast.agent.md missing search tool")
-if "Researcher" not in text:
-    raise SystemExit("fast.agent.md missing Researcher delegation path")
 if "Use `search` for fast exact-match or regex lookups" not in text:
     raise SystemExit("fast.agent.md missing search guidance")
-if "If the answer depends on current external documentation or version-specific" not in text:
-    raise SystemExit("fast.agent.md missing Researcher escalation guidance")
 '
 echo ""
 
@@ -422,13 +418,13 @@ def parse_tools_or_agents(frontmatter, field):
 
 expected = {
     "audit.agent.md": {"Code", "Setup", "Researcher", "Extensions", "Organise", "Planner"},
-    "coding.agent.md": {"Review", "Audit", "Researcher", "Explore", "Extensions", "Commit", "Setup", "Organise", "Planner", "Docs", "Debugger"},
+    "coding.agent.md": {"Review", "Audit", "Researcher", "Explore", "Commit", "Organise", "Planner", "Docs", "Debugger"},
     "commit.agent.md": {"Code", "Review", "Audit", "Debugger"},
     "debugger.agent.md": {"Code", "Researcher", "Audit", "Planner"},
     "docs.agent.md": {"Code", "Researcher", "Review", "Explore"},
     "explore.agent.md": {"Researcher"},
     "extensions.agent.md": {"Code", "Audit", "Organise", "Researcher"},
-    "fast.agent.md": {"Code", "Review", "Audit", "Explore", "Researcher", "Extensions", "Commit", "Setup", "Organise", "Planner", "Docs", "Debugger"},
+    "fast.agent.md": {"Code", "Explore", "Commit"},
     "organise.agent.md": {"Code", "Explore", "Docs"},
     "planner.agent.md": {"Code", "Explore", "Researcher", "Debugger", "Docs"},
     "researcher.agent.md": {"Code", "Audit", "Explore", "Docs", "Planner"},
@@ -457,8 +453,6 @@ checks = {
         "Use `Docs` when the work is primarily documentation, migration guidance, or user-facing technical explanation rather than product behavior.",
         "Use `Explore` for read-only codebase inventory across multiple files",
         "Use `Researcher` when a task depends on current external documentation",
-        "Use `Extensions` when the work shifts into VS Code extension recommendations",
-        "Use `Setup` when the task turns into template bootstrap, instruction update,",
     ],
     "commit.agent.md": [
         "Use `Code` when preflight or review finds implementation work",
@@ -475,17 +469,9 @@ checks = {
         "Do not silently change runtime behavior while doing docs-only work.",
     ],
     "fast.agent.md": [
-        "If the user is asking for a formal code review or architectural critique, use",
-        "If the user is mainly asking for task decomposition, phased planning, or scope control, use `Planner`.",
-        "If the user is primarily debugging a failure or regression, use `Debugger`.",
-        "If the task is really documentation generation, migration notes, or guide writing, use `Docs`.",
-        "If the user is asking for a health check, security audit, or vulnerability",
         "If the question expands beyond a single file but stays read-only, use",
-        "If the answer depends on current external documentation or version-specific",
         "If the user is asking to stage, commit, push, tag, or release changes, use",
-        "If the task is really VS Code extension, profile, or workspace recommendation",
-        "If the task is really template setup, instruction update, backup restore, or factory restore",
-        "If the task is primarily moving files, fixing broken paths, or reorganising",
+        "suggest switching to the Code agent using the",
     ],
     "organise.agent.md": [
         "Use `Code` when the task expands from structural cleanup into semantic",

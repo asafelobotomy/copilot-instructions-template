@@ -49,7 +49,7 @@ description: Coding agent
 model:
   - Claude Sonnet 4.6
 tools: [agent, codebase]
-agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Extensions', 'Commit', 'Setup', 'Organise', 'Planner', 'Docs', 'Debugger']
+agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Commit', 'Organise', 'Planner', 'Docs', 'Debugger']
 ---
 # Code Agent
 AGENT

@@ -20,29 +20,24 @@
 
 ## Model strategy
 
-> **Single source of truth**: [MODELS.md](MODELS.md) — edit there, then run
-> `bash scripts/sync/sync-models.sh --write` to propagate to agent files.
+Single source of truth: [MODELS.md](MODELS.md).
+Sync command: `bash scripts/sync/sync-models.sh --write`.
 
 | Surface | Recommended model | Thinking Effort | Role |
 |---------|-------------------|-----------------|------|
-| `setup.agent.md` | Claude Sonnet 4.6 | Medium | Template lifecycle (setup, updates, backup restore, factory restore) |
-| `coding.agent.md` | GPT-5.3-Codex | High | Implementation, refactoring, multi-step coding |
-| `organise.agent.md` | GPT-5.3-Codex | Medium | Subagent-only structural cleanup, file moves, path repair, and directory layout normalization |
-| `review.agent.md` | GPT-5.4 | High | Deep review, debugging, architectural analysis |
-| `fast.agent.md` | Claude Haiku 4.5 | Low | Quick lookups and lightweight edits |
-| `audit.agent.md` | GPT-5.4 | High | Read-only health check and security audit (structural, OWASP, secrets, supply chain) |
-| `explore.agent.md` | Claude Haiku 4.5 | Low | Fast read-only codebase exploration and Q&A |
-| `extensions.agent.md` | Claude Sonnet 4.6 | Medium | VS Code extension management and profiles |
-| `researcher.agent.md` | Claude Sonnet 4.6 | High | Online/offline research and documentation |
-| `commit.agent.md` | GPT-5.2 | Low | Stage, commit, push, tag, and release management |
-| `planner.agent.md` | Claude Sonnet 4.6 | High | Read-only planning, scoping, and implementation sequencing |
-| `docs.agent.md` | Claude Sonnet 4.6 | Medium | Documentation generation, guides, and user-facing explanations |
-| `debugger.agent.md` | GPT-5.4 | High | Root-cause diagnosis, failure triage, and minimal fix-path analysis |
-
-> **Thinking Effort** is a per-user, per-model setting in the VS Code model picker.
-> Low = fast/cheap, Medium = balanced, High = deep reasoning. See `MODELS.md`
-> "Thinking Effort Guide" for rationale. No per-agent override exists in
-> `.agent.md` frontmatter — these are configuration recommendations.
+| `setup.agent.md` | Claude Sonnet 4.6 | Medium | Template lifecycle |
+| `coding.agent.md` | GPT-5.3-Codex | High | Implementation |
+| `organise.agent.md` | GPT-5.3-Codex | Medium | Structural cleanup |
+| `review.agent.md` | GPT-5.4 | High | Deep review |
+| `fast.agent.md` | Claude Haiku 4.5 | Low | Quick lookups |
+| `audit.agent.md` | GPT-5.4 | High | Health and security audit |
+| `explore.agent.md` | Claude Haiku 4.5 | Low | Codebase exploration |
+| `extensions.agent.md` | Claude Sonnet 4.6 | Medium | Extension management |
+| `researcher.agent.md` | Claude Sonnet 4.6 | High | Research |
+| `commit.agent.md` | GPT-5.2 | Low | Git lifecycle |
+| `planner.agent.md` | Claude Sonnet 4.6 | High | Planning |
+| `docs.agent.md` | Claude Sonnet 4.6 | Medium | Documentation |
+| `debugger.agent.md` | GPT-5.4 | High | Failure diagnosis |
 
 ## Skills
 
@@ -60,37 +55,14 @@ High-signal examples:
 
 ## Hooks
 
-Hook orchestration is configured in `.github/hooks/copilot-hooks.json` and mirrored in
-`template/hooks/copilot-hooks.json`. Canonical script inventory and counts live in
-`.copilot/workspace/operations/workspace-index.json`.
-
-Current lifecycle events:
-
-This table is a quick summary. For exact executable wiring, use `.github/hooks/copilot-hooks.json`.
-
-| Event | Primary script(s) | Purpose |
-|-------|-------------------|---------|
-| SessionStart | `session-start`, `pulse --trigger session_start` | Initialize session context and heartbeat state |
-| UserPromptSubmit | `pulse --trigger user_prompt` | Detect explicit heartbeat or retrospective prompts |
-| PreToolUse | `guard-destructive` | Block dangerous terminal commands |
-| PostToolUse | `post-edit-lint`, `pulse --trigger soft_post_tool` | Lint edits and debounce heartbeat soft triggers |
-| PreCompact | `save-context`, `pulse --trigger compaction` | Preserve state before context compaction |
-| Stop | `scan-secrets`, `pulse --trigger stop` | Secret scan and retrospective gate |
-| SubagentStart | `subagent-start` | Inject governance context for subagents |
-| SubagentStop | `subagent-stop` | Log subagent completion |
+Hook orchestration config: `.github/hooks/copilot-hooks.json`.
+Canonical script inventory: `.copilot/workspace/operations/workspace-index.json`.
 
 ## Subagent orchestration
 
-Each agent declares an `agents:` allow-list in `.github/agents/*.agent.md` frontmatter.
-Treat each agent file as the source of truth for permitted subagents.
-Max subagent depth is 3 (configurable via `{{SUBAGENT_MAX_DEPTH}}`).
-
-Current agents:
-
-- Surfaced coordinators: Setup, Code, Review, Fast, Explore, Commit.
-- Hidden specialists: Planner, Docs, Debugger, Audit, Researcher, Extensions, Organise.
-
-Exact handoff permissions can evolve. Read `.github/agents/*.agent.md` frontmatter for authoritative `agents:` allow-lists.
+Allow-lists live in `.github/agents/*.agent.md` frontmatter (`agents:` field).
+Max subagent depth: 3. Surfaced coordinators: Setup, Code, Review, Fast, Explore, Commit.
+Hidden specialists: Planner, Docs, Debugger, Audit, Researcher, Extensions, Organise.
 
 ## Cross-tool compatibility
 

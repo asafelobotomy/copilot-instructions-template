@@ -12,7 +12,7 @@ tools: [agent, editFiles, runCommands, codebase, githubRepo, fetch, search, askQ
 mcp-servers: [filesystem, git, github, fetch, context7, playwright]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Extensions', 'Commit', 'Setup', 'Organise', 'Planner', 'Docs', 'Debugger']
+agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Commit', 'Organise', 'Planner', 'Docs', 'Debugger']
 handoffs:
   - label: Review changes
     agent: Review
@@ -61,10 +61,6 @@ Guidelines:
   you start changing implementation.
 - Use `Researcher` when a task depends on current external documentation or
   API behavior.
-- Use `Extensions` when the work shifts into VS Code extension recommendations,
-  profile isolation, or extension configuration rather than repo code changes.
-- Use `Setup` when the task turns into template bootstrap, instruction update,
-  backup restore, or factory restore work rather than implementation.
 - Delegate to `Organise` when the task is primarily about moving files,
   fixing path references, or reshaping directory structure.
 
