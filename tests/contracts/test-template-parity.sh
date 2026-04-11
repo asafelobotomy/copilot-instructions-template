@@ -66,6 +66,7 @@ expected = {
     ".github/skills/mcp-builder/SKILL.md": "template/skills/mcp-builder/SKILL.md",
     ".github/skills/mcp-management/SKILL.md": "template/skills/mcp-management/SKILL.md",
     ".github/skills/plugin-management/SKILL.md": "template/skills/plugin-management/SKILL.md",
+    ".github/skills/security-audit/SKILL.md": "template/skills/security-audit/SKILL.md",
     ".github/skills/skill-creator/SKILL.md": "template/skills/skill-creator/SKILL.md",
     ".github/skills/skill-management/SKILL.md": "template/skills/skill-management/SKILL.md",
     ".github/skills/test-coverage-review/SKILL.md": "template/skills/test-coverage-review/SKILL.md",
