@@ -7,6 +7,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [5.12.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.11.0...v5.12.0) (2026-04-11)
+
+
+### Features
+
+* **workspace:** add heartbeat events, session tracking, and state management ([e47fd30](https://github.com/asafelobotomy/copilot-instructions-template/commit/e47fd30281559ff81e48196b90b71ff2cb7a5be0))
+
+
+### Bug Fixes
+
+* **hooks:** harden secrets scanning and path safety ([71b1058](https://github.com/asafelobotomy/copilot-instructions-template/commit/71b10587bbc0bc9701050f14e7cc055f53babc57))
+* **hooks:** refine pulse state and heartbeat reporting ([b0b2fbf](https://github.com/asafelobotomy/copilot-instructions-template/commit/b0b2fbfc96bf7b88542a6e93796f77fbf2126193))
+
 ## [Unreleased]
 
 ### Changed
