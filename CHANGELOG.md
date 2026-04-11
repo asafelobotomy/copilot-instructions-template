@@ -7,6 +7,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [5.11.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.10.1...v5.11.0) (2026-04-11)
+
+
+### Features
+
+* **agents:** strengthen delegation policy and update model assignments ([38c962b](https://github.com/asafelobotomy/copilot-instructions-template/commit/38c962b8a3475a9a9e570aa40855087884b3f2c5))
+* **template:** add memory routing tree and intent-phase extraction ([3e57f6d](https://github.com/asafelobotomy/copilot-instructions-template/commit/3e57f6dfa35074caf0e6a927dbfa16b43877b55c))
+
+
+### Bug Fixes
+
+* **hooks:** harden heartbeat tempdir and add sandbox env vars ([5e10cdc](https://github.com/asafelobotomy/copilot-instructions-template/commit/5e10cdcc4ef9f12f6262391d4b1282a83bb5f240))
+
 ## [5.10.1](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.10.0...v5.10.1) (2026-04-10)
 
 
