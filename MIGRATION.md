@@ -28,7 +28,7 @@ the next tagged version (listed in **Includes**).
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<tag>/<template-source-path>
 ```
 
-**Available tags**: v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1, v4.2.0, v5.0.0, v5.0.1, v5.1.0, v5.2.0, v5.3.0, v5.4.0, v5.5.0, v5.6.0, v5.7.0, v5.8.0, v5.9.0, v5.10.0, v5.10.1
+**Available tags**: v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1, v4.2.0, v5.0.0, v5.0.1, v5.1.0, v5.2.0, v5.3.0, v5.4.0, v5.5.0, v5.6.0, v5.7.0, v5.8.0, v5.9.0, v5.10.0, v5.10.1, v5.11.0
 
 ## Unreleased — workspace and scripts reorganization
 
@@ -142,6 +142,22 @@ rm -rf logs/copilot
 | Destination | Template source | Action |
 |-------------|----------------|--------|
 | `.github/hooks/scripts/mcp-heartbeat-server.py` | `template/hooks/scripts/mcp-heartbeat-server.py` | Updated (tempdir bootstrap hardening and artifact fallback) |
+
+**Manual actions**: None
+
+## v5.11.0
+
+| Breaking | Sections changed | Sections added | Includes |
+|----------|-----------------|----------------|----------|
+| TBD | — | — | — |
+
+**What changed**: *(stub — fill in before the next release or immediately after)*
+
+**New placeholders**: none
+
+**Companion files added**: none
+
+**Companion files updated**: none
 
 **Manual actions**: None
 
