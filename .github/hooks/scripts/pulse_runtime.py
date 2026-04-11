@@ -940,10 +940,14 @@ if TRIGGER == "stop":
 
     state = close_work_window(state)
     session_start_epoch = int(state.get("session_start_epoch") or 0)
-    retro_ran = sentinel_is_complete(SENTINEL_PATH) or reflection_event_complete(
-        EVENTS_PATH,
-        session_id,
-        session_start_epoch,
+    retro_ran = (
+        state.get("retrospective_state") == "complete"
+        or sentinel_is_complete(SENTINEL_PATH, session_id)
+        or reflection_event_complete(
+            EVENTS_PATH,
+            session_id,
+            session_start_epoch,
+        )
     )
 
     duration_seconds = max(0, NOW - session_start_epoch)

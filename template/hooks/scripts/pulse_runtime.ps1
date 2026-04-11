@@ -746,7 +746,7 @@ if ($Trigger -eq 'stop') {
 
     $state = Close-WorkWindow $state
     $startEpoch = if ($state['session_start_epoch']) { [int64]$state['session_start_epoch'] } else { 0 }
-    $retroRan = (Test-SentinelComplete) -or (Test-ReflectionComplete $sessionId $startEpoch)
+    $retroRan = ($state.retrospective_state -eq 'complete') -or (Test-SentinelComplete $sessionId) -or (Test-ReflectionComplete $sessionId $startEpoch)
 
     $durationStart = if ($startEpoch -gt 0) { $startEpoch } else { $now }
     $durationS = [int]($now - $durationStart)

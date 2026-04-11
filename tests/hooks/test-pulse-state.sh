@@ -283,6 +283,38 @@ assert not list((root / ".copilot/workspace").glob("*.tmp"))
 '
 echo ""
 
+echo "8b. sentinel_is_complete filters by session_id — rejects a prior-session sentinel"
+TMP_SESSION_FILTER=$(mktemp -d); CLEANUP_DIRS+=("$TMP_SESSION_FILTER")
+mkdir -p "$TMP_SESSION_FILTER/.copilot/workspace/identity" "$TMP_SESSION_FILTER/.copilot/workspace/knowledge/diaries" "$TMP_SESSION_FILTER/.copilot/workspace/operations" "$TMP_SESSION_FILTER/.copilot/workspace/runtime"
+assert_python_in_root "session-aware sentinel check isolates cross-session completions" "$TMP_SESSION_FILTER" '
+import importlib.util
+
+spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_PATH"])
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+workspace = root / ".copilot/workspace"
+sentinel_path = workspace / "runtime/.heartbeat-session"
+
+# Write a complete sentinel from a prior session
+module.set_sentinel(sentinel_path, workspace, 1704067200, "sess-old", "complete")
+
+# Without session filter — legacy path still returns True (backward compat)
+assert module.sentinel_is_complete(sentinel_path) is True, "no-filter should return True"
+
+# Matching session id — should return True
+assert module.sentinel_is_complete(sentinel_path, "sess-old") is True, "matching session should return True"
+
+# Different (current) session id — prior-session complete must be ignored
+assert module.sentinel_is_complete(sentinel_path, "sess-new") is False, "cross-session complete should return False"
+
+# Overwrite sentinel with current session complete
+module.set_sentinel(sentinel_path, workspace, 1704068400, "sess-new", "complete")
+
+# Current session now matches
+assert module.sentinel_is_complete(sentinel_path, "sess-new") is True, "current session should now return True"
+'
+echo ""
+
 echo "9. file_lock serializes append_event while another process holds the lock"
 TMP_LOCKED=$(mktemp -d); CLEANUP_DIRS+=("$TMP_LOCKED")
 mkdir -p "$TMP_LOCKED/.copilot/workspace/identity" "$TMP_LOCKED/.copilot/workspace/knowledge/diaries" "$TMP_LOCKED/.copilot/workspace/operations" "$TMP_LOCKED/.copilot/workspace/runtime"

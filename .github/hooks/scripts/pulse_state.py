@@ -173,12 +173,27 @@ def fallback_artifact_roots() -> list[Path]:
     except Exception:
         passwd_home = None
     if passwd_home is not None:
+        add(passwd_home / ".cache" / "uv" / ".copilot-tmp")
         add(passwd_home / ".cache" / "uv")
         add(passwd_home / ".local" / "share" / "uv")
     home = Path.home()
+    add(home / ".cache" / "uv" / ".copilot-tmp")
     add(home / ".cache" / "uv")
     add(home / ".local" / "share" / "uv")
     return roots
+
+
+def _copilot_repo_root(workspace_resolved: Path) -> Path:
+    """Return the repo root (= parent of the .copilot directory) from a resolved path."""
+    if workspace_resolved.name == ".copilot":
+        return workspace_resolved.parent
+    for candidate in workspace_resolved.parents:
+        if candidate.name == ".copilot":
+            return candidate.parent
+    # Fallback: handle direct .copilot/workspace/ children
+    if workspace_resolved.name == "workspace" and workspace_resolved.parent.name == ".copilot":
+        return workspace_resolved.parent.parent
+    return workspace_resolved.parent
 
 
 def fallback_artifact_path(path: Path) -> Path:
@@ -187,10 +202,7 @@ def fallback_artifact_path(path: Path) -> Path:
         workspace_resolved = workspace.resolve()
     except Exception:
         workspace_resolved = workspace
-    if workspace_resolved.name == "workspace" and workspace_resolved.parent.name == ".copilot":
-        root = workspace_resolved.parent.parent
-    else:
-        root = workspace_resolved.parent
+    root = _copilot_repo_root(workspace_resolved)
     roots = fallback_artifact_roots()
     tmp_root = roots[0] if roots else Path(tempfile.gettempdir())
     repo_key = hashlib.sha256(str(root).encode("utf-8")).hexdigest()[:12]
@@ -203,10 +215,7 @@ def fallback_artifact_paths(path: Path) -> list[Path]:
         workspace_resolved = workspace.resolve()
     except Exception:
         workspace_resolved = workspace
-    if workspace_resolved.name == "workspace" and workspace_resolved.parent.name == ".copilot":
-        root = workspace_resolved.parent.parent
-    else:
-        root = workspace_resolved.parent
+    root = _copilot_repo_root(workspace_resolved)
     repo_key = hashlib.sha256(str(root).encode("utf-8")).hexdigest()[:12]
     return [root_path / "copilot-heartbeat" / repo_key / path.name for root_path in fallback_artifact_roots()]
 
@@ -356,7 +365,7 @@ def set_sentinel(sentinel_path: Path, workspace: Path, now: int, session_id: str
         raise last_error
 
 
-def sentinel_is_complete(sentinel_path: Path) -> bool:
+def sentinel_is_complete(sentinel_path: Path, session_id: str | None = None) -> bool:
     for candidate in heartbeat_artifact_paths(sentinel_path):
         with file_lock(candidate):
             if not candidate.exists():
@@ -364,6 +373,8 @@ def sentinel_is_complete(sentinel_path: Path) -> bool:
             try:
                 parts = candidate.read_text(encoding="utf-8").strip().split("|")
                 if len(parts) >= 3 and parts[2].strip() == "complete":
+                    if session_id is not None and parts[0].strip() != session_id:
+                        continue
                     return True
             except Exception:
                 continue

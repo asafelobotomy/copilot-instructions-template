@@ -183,12 +183,16 @@ function Set-Sentinel([string]$SessionId, [string]$Status) {
     "$SessionId|$ts|$Status" | Set-Content $sentinelPath -Encoding utf8 -NoNewline
 }
 
-function Test-SentinelComplete {
+function Test-SentinelComplete([string]$SessionId = '') {
     if (-not (Test-Path $sentinelPath)) { return $false }
     try {
         $line = (Get-Content $sentinelPath -Raw).Trim()
         $parts = $line -split '\|'
-        return ($parts.Count -ge 3 -and $parts[2] -eq 'complete')
+        if ($parts.Count -ge 3 -and $parts[2] -eq 'complete') {
+            if ($SessionId -and $parts[0] -ne $SessionId) { return $false }
+            return $true
+        }
+        return $false
     } catch {
         return $false
     }
