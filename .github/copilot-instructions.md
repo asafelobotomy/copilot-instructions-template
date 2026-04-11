@@ -165,8 +165,13 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 
 - Skills: `.github/skills/` — loaded on demand. Read `SKILL.md` when description matches task.
 - Agents: `.github/agents/` — each pins a model.
-- Main/default agent delegation: when the request is primarily specialist work,
-  delegate instead of absorbing the workflow inline.
+- Main/default agent delegation: when the request matches a named specialist
+  workflow, delegate instead of absorbing the workflow inline.
+- Do not keep specialist work inline because it seems small, quick, or
+  manageable.
+- Trust the selected specialist to complete the task unless you know it is
+  outside the specialist scope, allow-list, or capabilities, or it
+  reports a concrete blocker.
 - Preferred specialist map: `Explore` for read-only repo scans, `Researcher`
   for current external docs, `Review` for formal code review or architectural
   critique, `Audit` for health, security, or residual-risk checks,
@@ -206,8 +211,12 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 - **Skill Protocol**: Skills loaded on demand from `.github/skills/`. Follow `.github/skills/skill-management/SKILL.md`.
 - **MCP Protocol**: Config in `.vscode/mcp.json`. Always-on: filesystem, git. Credentials-required: github, fetch.
 - **Delegation Protocol**: The top-level agent follows the same specialist-first
-  delegation rule as subagents. If a request clearly belongs to a specialist
-  agent, hand it off rather than attempting the specialist workflow inline.
+  delegation rule as subagents. If a request matches a named specialist
+  workflow, hand it off rather than attempting the specialist workflow inline.
+  Do not use task size, perceived simplicity, or personal preference as a
+  reason to keep specialist work inline. Trust the selected specialist unless
+  you know the task is outside the specialist scope, allow-list, or
+  capabilities, or the specialist reports a concrete blocker.
 - **Subagent depth**: max 3. Stop and surface to user if reached. Subagents inherit all protocols including the Structured Thinking Discipline and anti-loop rules.
 
 *See also: `template/copilot-instructions.md` (consumer template) · `.github/agents/` · `.github/skills/` · `AGENTS.md` · `UPDATE.md` · `MIGRATION.md`*

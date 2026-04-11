@@ -8,6 +8,7 @@ model:
   - GPT-5 mini
   - Claude Sonnet 4.6
 tools: [agent, codebase, search, runCommands]
+mcp-servers: [filesystem, git]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Researcher']

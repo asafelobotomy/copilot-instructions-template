@@ -2,12 +2,14 @@
 
 Single source of truth for all agent model assignments in this repository.
 
-Current external review date: 2026-04-04. GitHub now designates GPT-5.3-Codex
-as the Copilot base + LTS model. GitHub's supported-models docs also note that
-Claude Sonnet 4.6 and GPT-5.4 mini multipliers are subject to change.
+Current external review date: 2026-04-11. GitHub now designates GPT-5.3-Codex
+as the Copilot base + LTS model, and GPT-5.2 is the current GA non-Codex
+replacement for retiring GPT-5.1. GitHub's supported-models docs also note
+that Claude Sonnet 4.6 and GPT-5.4 mini multipliers are subject to change.
 
 `llms.txt` mirrors only the primary-model and thinking-effort summary for quick
-navigation. Edit this file to change assignments.
+navigation. Edit this file to change assignments; `sync-models.sh` propagates
+the primary-model and thinking-effort summary to `llms.txt` automatically.
 
 The `model:` list in each `.agent.md` file is ordered: VS Code Copilot picks the
 first available model and falls back down the list. Edit this file to change any
@@ -62,11 +64,12 @@ Recommended effort levels per agent:
 
 Implementation, refactoring, and multi-step coding tasks. GPT-5.3-Codex is the
 primary because GitHub now treats it as the Copilot base + LTS model for
-agentic software development; GPT-5.2-Codex is the like-for-like fallback.
+agentic software development; GPT-5.2-Codex is the like-for-like fallback, and
+GPT-5.2 replaces retiring GPT-5.1 as the general-purpose fallback.
 
 - GPT-5.3-Codex
 - GPT-5.2-Codex
-- GPT-5.1
+- GPT-5.2
 - Claude Sonnet 4.6
 - GPT-5 mini
 
@@ -74,7 +77,11 @@ agentic software development; GPT-5.2-Codex is the like-for-like fallback.
 
 Structural cleanup, directory reorganisation, file moves, and path repair.
 
-- GPT-5.1
+GPT-5.3-Codex is primary because this role is explicitly agentic and benefits
+from the Copilot base + LTS coding model.
+
+- GPT-5.3-Codex
+- GPT-5.2-Codex
 - Claude Sonnet 4.6
 - GPT-5 mini
 
@@ -87,7 +94,7 @@ hardening. GPT-5.4 for deep analytical capability; Opus as fallback.
 - GPT-5.4
 - Claude Opus 4.6
 - Claude Sonnet 4.6
-- GPT-5.1
+- GPT-5.2
 
 ## fast
 
@@ -105,7 +112,7 @@ GPT-5.4 is the primary; Claude Opus 4.6 provides Agent Teams capability.
 - GPT-5.4
 - Claude Opus 4.6
 - Claude Sonnet 4.6
-- GPT-5.1
+- GPT-5.2
 
 ## setup
 
@@ -114,7 +121,7 @@ Requires interactive question capability (never use Codex/autonomous models).
 
 - Claude Sonnet 4.6
 - Claude Sonnet 4.5
-- GPT-5.1
+- GPT-5.2
 - GPT-5 mini
 
 ## explore
@@ -134,7 +141,7 @@ VS Code extension management, profile isolation, and workspace configuration.
 
 - Claude Sonnet 4.6
 - Claude Opus 4.6
-- GPT-5.1
+- GPT-5.2
 
 ## researcher
 
@@ -148,9 +155,10 @@ structured research output.
 ## commit
 
 Stage, commit, push, tag, and manage releases. Low-context operations; fast
-models are preferred for commit message formatting.
+models are preferred for commit message formatting, so GPT-5.2 replaces
+retiring GPT-5.1 as the current general-purpose primary.
 
-- GPT-5.1
+- GPT-5.2
 - Claude Sonnet 4.6
 - GPT-5 mini
 
@@ -159,7 +167,7 @@ models are preferred for commit message formatting.
 Read-only planning, scoping, and execution sequencing before implementation.
 
 - Claude Sonnet 4.6
-- GPT-5.1
+- GPT-5.2
 - GPT-5 mini
 
 ## docs
@@ -167,7 +175,7 @@ Read-only planning, scoping, and execution sequencing before implementation.
 Documentation generation, migration notes, README work, and user-facing guides.
 
 - Claude Sonnet 4.6
-- GPT-5.1
+- GPT-5.2
 - GPT-5 mini
 
 ## debugger
@@ -176,4 +184,4 @@ Root-cause analysis, error diagnosis, and regression triage.
 
 - GPT-5.4
 - Claude Sonnet 4.6
-- GPT-5.1
+- GPT-5.2

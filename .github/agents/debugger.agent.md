@@ -5,12 +5,12 @@ argument-hint: Describe the failure or regression — e.g. "debug the broken set
 model:
   - GPT-5.4
   - Claude Sonnet 4.6
-  - GPT-5.1
+  - GPT-5.2
 tools: [agent, codebase, search, runCommands]
-mcp-servers: [filesystem, git]
+mcp-servers: [filesystem, git, fetch, context7, playwright]
 user-invocable: false
 disable-model-invocation: false
-agents: ['Code', 'Researcher', 'Audit']
+agents: ['Code', 'Researcher', 'Audit', 'Planner']
 handoffs:
   - label: Implement the fix
     agent: Code
@@ -38,6 +38,7 @@ Guidelines:
 - Use `Researcher` when the failure depends on current external docs, release notes, or API behavior.
 - Use `Audit` when the likely cause involves security posture, secrets, shell hardening, or unsafe configuration.
 - Use `Code` only after the diagnosis is specific enough to implement without guessing.
+- Use `Planner` when the diagnosis reveals a multi-component fix that benefits from a scoped execution plan before implementation begins.
 - Do not mix diagnosis with broad refactoring.
 
 ## Skill activation map

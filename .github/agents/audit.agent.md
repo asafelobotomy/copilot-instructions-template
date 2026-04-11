@@ -6,12 +6,12 @@ model:
   - GPT-5.4
   - Claude Opus 4.6
   - Claude Sonnet 4.6
-  - GPT-5.1
+  - GPT-5.2
 tools: [agent, codebase, runCommands, githubRepo, fetch, search, webSearch]
-mcp-servers: [filesystem, git, github, fetch]
+mcp-servers: [filesystem, git, github, fetch, playwright]
 user-invocable: false
 disable-model-invocation: false
-agents: ['Code', 'Setup', 'Researcher', 'Extensions', 'Organise']
+agents: ['Code', 'Setup', 'Researcher', 'Extensions', 'Organise', 'Planner']
 handoffs:
   - label: Apply fixes
     agent: Code
@@ -40,6 +40,8 @@ Do not modify any files — diagnosis only. Surface findings and use handoffs fo
   or path repair rather than general implementation.
 - Use `Extensions` when a finding is specifically about VS Code extension,
   recommendation, or profile configuration rather than general code changes.
+- Use `Planner` when audit findings require a phased, multi-step remediation plan
+  before implementation begins.
 
 - Apply the Structured Thinking Discipline (§3): run each check sequentially.
   If a check requires data from a prior check, reuse it — do not re-read or

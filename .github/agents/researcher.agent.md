@@ -7,10 +7,10 @@ model:
   - Claude Sonnet 4.5
   - GPT-5 mini
 tools: [agent, fetch, webSearch, codebase, search, editFiles, runCommands]
-mcp-servers: [fetch, context7, filesystem, playwright]
+mcp-servers: [fetch, context7, filesystem, github, playwright]
 user-invocable: false
 disable-model-invocation: false
-agents: ['Code', 'Audit', 'Explore']
+agents: ['Code', 'Audit', 'Explore', 'Docs', 'Planner']
 handoffs:
   - label: Implement findings
     agent: Code
@@ -19,6 +19,10 @@ handoffs:
   - label: Run health check
     agent: Audit
     prompt: Research complete. Run a health check to verify any files written during this session are well-formed.
+    send: false
+  - label: Document findings
+    agent: Docs
+    prompt: The research is complete. Draft or update project documentation to reflect the findings and recommendations.
     send: false
 ---
 
@@ -108,6 +112,10 @@ One-paragraph executive summary.
 - Use `#codebase` and `#search` to understand the current implementation before
   fetching external docs — avoid re-fetching what already exists locally.
 - Use `#editFiles` to write research documents and update `RESEARCH.md`.
+- Use `Docs` when findings should be written into project documentation or guides
+  rather than a standalone research report.
+- Use `Planner` when research output reveals a complex implementation that
+  benefits from a scoped execution plan before handing off to Code.
 
 ---
 

@@ -20,14 +20,14 @@
 |---------|-------------------|-----------------|------|
 | `setup.agent.md` | Claude Sonnet 4.6 | Medium | Template lifecycle (setup, updates, backup restore, factory restore) |
 | `coding.agent.md` | GPT-5.3-Codex | High | Implementation, refactoring, multi-step coding |
-| `organise.agent.md` | GPT-5.1 | Medium | Subagent-only structural cleanup, file moves, path repair, and directory layout normalization |
+| `organise.agent.md` | GPT-5.3-Codex | Medium | Subagent-only structural cleanup, file moves, path repair, and directory layout normalization |
 | `review.agent.md` | GPT-5.4 | High | Deep review, debugging, architectural analysis |
 | `fast.agent.md` | Claude Haiku 4.5 | Low | Quick lookups and lightweight edits |
 | `audit.agent.md` | GPT-5.4 | High | Read-only health check and security audit (structural, OWASP, secrets, supply chain) |
 | `explore.agent.md` | Claude Haiku 4.5 | Low | Fast read-only codebase exploration and Q&A |
 | `extensions.agent.md` | Claude Sonnet 4.6 | Medium | VS Code extension management and profiles |
 | `researcher.agent.md` | Claude Sonnet 4.6 | High | Online/offline research and documentation |
-| `commit.agent.md` | GPT-5.1 | Low | Stage, commit, push, tag, and release management |
+| `commit.agent.md` | GPT-5.2 | Low | Stage, commit, push, tag, and release management |
 | `planner.agent.md` | Claude Sonnet 4.6 | High | Read-only planning, scoping, and implementation sequencing |
 | `docs.agent.md` | Claude Sonnet 4.6 | Medium | Documentation generation, guides, and user-facing explanations |
 | `debugger.agent.md` | GPT-5.4 | High | Root-cause diagnosis, failure triage, and minimal fix-path analysis |

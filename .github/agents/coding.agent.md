@@ -5,7 +5,7 @@ argument-hint: Describe what to build or fix — e.g. "add pagination to the sea
 model:
   - GPT-5.3-Codex
   - GPT-5.2-Codex
-  - GPT-5.1
+  - GPT-5.2
   - Claude Sonnet 4.6
   - GPT-5 mini
 tools: [agent, editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]

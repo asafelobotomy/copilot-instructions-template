@@ -99,6 +99,8 @@ required_by_file = {
     ".github/copilot-instructions.md": [
         "Main/default agent delegation:",
         "delegate instead of absorbing",
+        "Do not keep specialist work inline because it seems small, quick, or manageable.",
+        "Trust the selected specialist to complete the task unless you know it is outside the specialist scope, allow-list, or capabilities, or it reports a concrete blocker.",
         "Preferred specialist map:",
         "`Explore` for read-only repo scans",
         "`Researcher` for current external docs",
@@ -112,6 +114,8 @@ required_by_file = {
     "template/copilot-instructions.md": [
         "The parent/default agent follows this protocol too:",
         "delegate to the matching agent instead of absorbing",
+        "Do not keep specialist work inline because it seems small, quick, or manageable.",
+        "Trust the selected specialist to complete the task unless you know it is outside the specialist scope, allow-list, or capabilities, or the specialist reports a concrete blocker.",
         "Preferred specialist map:",
         "`Explore` for read-only repo scans",
         "`Researcher` for current external docs",
@@ -125,6 +129,8 @@ required_by_file = {
     "AGENTS.md": [
         "The main/default agent follows the same specialist-first rule:",
         "delegate instead of handling the specialist workflow inline.",
+        "Do not use task size, perceived simplicity, or personal preference as a reason to keep specialist work inline.",
+        "Trust the selected specialist to complete the task unless you know it is outside the specialist scope, allow-list, or capabilities, or the specialist reports a concrete blocker.",
     ],
 }
 for rel, needles in required_by_file.items():
@@ -415,19 +421,19 @@ def parse_tools_or_agents(frontmatter, field):
     }
 
 expected = {
-    "audit.agent.md": {"Code", "Setup", "Researcher", "Extensions", "Organise"},
+    "audit.agent.md": {"Code", "Setup", "Researcher", "Extensions", "Organise", "Planner"},
     "coding.agent.md": {"Review", "Audit", "Researcher", "Explore", "Extensions", "Commit", "Setup", "Organise", "Planner", "Docs", "Debugger"},
-    "commit.agent.md": {"Code", "Review", "Audit"},
-    "debugger.agent.md": {"Code", "Researcher", "Audit"},
-    "docs.agent.md": {"Code", "Researcher", "Review"},
+    "commit.agent.md": {"Code", "Review", "Audit", "Debugger"},
+    "debugger.agent.md": {"Code", "Researcher", "Audit", "Planner"},
+    "docs.agent.md": {"Code", "Researcher", "Review", "Explore"},
     "explore.agent.md": {"Researcher"},
-    "extensions.agent.md": {"Code", "Audit", "Organise"},
+    "extensions.agent.md": {"Code", "Audit", "Organise", "Researcher"},
     "fast.agent.md": {"Code", "Review", "Audit", "Explore", "Researcher", "Extensions", "Commit", "Setup", "Organise", "Planner", "Docs", "Debugger"},
-    "organise.agent.md": {"Code", "Explore"},
-    "planner.agent.md": {"Code", "Explore", "Researcher"},
-    "researcher.agent.md": {"Code", "Audit", "Explore"},
+    "organise.agent.md": {"Code", "Explore", "Docs"},
+    "planner.agent.md": {"Code", "Explore", "Researcher", "Debugger", "Docs"},
+    "researcher.agent.md": {"Code", "Audit", "Explore", "Docs", "Planner"},
     "review.agent.md": {"Code", "Audit", "Organise", "Docs", "Debugger"},
-    "setup.agent.md": {"Audit", "Extensions", "Organise"},
+    "setup.agent.md": {"Audit", "Extensions", "Organise", "Researcher"},
 }
 
 for name, expected_agents in expected.items():

@@ -255,9 +255,14 @@ Agent-scoped hooks: individual agents can define a `hooks:` section in their `.a
 
 When spawning subagents:
 
-- The parent/default agent follows this protocol too: if a request is primarily
-  specialist work, delegate to the matching agent instead of absorbing the
-  specialist workflow inline.
+- The parent/default agent follows this protocol too: if a request matches a
+  named specialist workflow, delegate to the matching agent instead of
+  absorbing the specialist workflow inline.
+- Do not keep specialist work inline because it seems small, quick, or
+  manageable.
+- Trust the selected specialist to complete the task unless you know it is
+  outside the specialist scope, allow-list, or capabilities, or the specialist
+  reports a concrete blocker.
 - Each `.github/agents/*.agent.md` declares an `agents:` allow-list restricting which subagents it may invoke. Respect these boundaries.
 - Keep allow-lists narrow. Add a subagent only when the agent body defines a concrete workflow for using it. Do not keep speculative delegates "just in case".
 - Preferred specialist map: `Explore` for read-only repo scans, `Researcher`
@@ -413,7 +418,7 @@ A shared mental model gives human and agent a common vocabulary for talking abou
 
 - **Echo before acting**: when the task is ambiguous, restate the goal in one sentence using the vocabulary above before executing. This lets the human correct misunderstandings early.
 - **Surface assumptions**: if a plan depends on an assumption about the project state, name it explicitly: "I'm assuming X because Y."
-- **Memory protocol**: before persisting insights — (1) check `MEMORY.md` for existing entries on the same topic to avoid duplicates, (2) check `SOUL.md` for reasoning patterns — add only genuinely new heuristics, (3) update `USER.md` only from direct observation, never inference. Use provenance: `file:line` for code, URL for docs, `session:{id}` for observed. For `/memories/repo/` entries, use the Copilot Memory schema (`subject`, `fact`, `citations`, `reason`, `category`).
+- **Memory protocol**: before persisting any insight, walk the routing decision tree in `MEMORY-GUIDE.md` to select the correct store. Then: (1) check the target store for duplicates, (2) check `SOUL.md` if the insight is a reasoning heuristic — add only genuinely new patterns, (3) update `USER.md` only from direct observation, never inference. Use provenance: `file:line` for code, URL for docs, `session:{id}` for observed. For `/memories/repo/` entries, use the Copilot Memory JSON schema (`subject`, `fact`, `citations`, `reason`, `category`). For user memory (`/memories/`), organise by topic file with `[YYYY-MM]` date prefixes.
 
 ### Per-Agent Diaries
 

@@ -5,11 +5,12 @@ argument-hint: Say "review extensions", "check my profile", "sync extensions", o
 model:
   - Claude Sonnet 4.6
   - Claude Opus 4.6
-  - GPT-5.1
+  - GPT-5.2
 tools: [agent, codebase, runCommands, fetch, editFiles, askQuestions, get_active_profile, list_profiles, get_workspace_profile_association, ensure_repo_profile, get_installed_extensions, install_extension, uninstall_extension, sync_extensions_with_recommendations]
+mcp-servers: [filesystem, git]
 user-invocable: false
 disable-model-invocation: false
-agents: ['Code', 'Audit', 'Organise']
+agents: ['Code', 'Audit', 'Organise', 'Researcher']
 handoffs:
   - label: Apply changes
     agent: Code
@@ -19,6 +20,10 @@ handoffs:
     agent: Audit
     prompt: Run a full health check to verify extension configuration and agent files are well-formed.
     send: true
+  - label: Reorganise workspace config
+    agent: Organise
+    prompt: Extension or workspace configuration work requires structural changes — file moves, path updates, or directory layout fixes.
+    send: false
 ---
 
 You are the Extensions agent for the current project.
@@ -199,6 +204,8 @@ For full profile support, install the companion extension:
   before executing any `code --install-extension` or `code --uninstall-extension`
   command.
 - Do not modify `.vscode/extensions.json` until the user approves the changes.
+- Use `Researcher` when evaluating unfamiliar extension publishers, comparing extension functionality, or verifying compatibility before making recommendations.
+- Use `Organise` when workspace configuration work requires file moves, path repairs, or directory restructuring beyond profile settings.
 
 ## Skill activation map
 

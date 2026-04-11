@@ -4,12 +4,13 @@ description: Break down complex work into scoped execution plans, file lists, ri
 argument-hint: Describe what needs planning — e.g. "plan the routing rollout" or "break down the audit refactor"
 model:
   - Claude Sonnet 4.6
-  - GPT-5.1
+  - GPT-5.2
   - GPT-5 mini
 tools: [agent, codebase, search, runCommands]
+mcp-servers: [filesystem, git]
 user-invocable: false
 disable-model-invocation: false
-agents: ['Code', 'Explore', 'Researcher']
+agents: ['Code', 'Explore', 'Researcher', 'Debugger', 'Docs']
 handoffs:
   - label: Explore affected code
     agent: Explore
@@ -22,6 +23,14 @@ handoffs:
   - label: Implement the plan
     agent: Code
     prompt: Implement the scoped plan that was just produced. Follow the proposed file list, risks, and verification steps.
+    send: false
+  - label: Diagnose before planning
+    agent: Debugger
+    prompt: The scope contains existing failures or unclear broken state. Diagnose the root cause before the plan is finalised.
+    send: false
+  - label: Document the plan
+    agent: Docs
+    prompt: The scoped plan is ready. Document it as a structured guide or ADR for future reference.
     send: false
 ---
 
@@ -37,6 +46,8 @@ Guidelines:
 - Call out assumptions, blockers, and out-of-scope work explicitly.
 - Use `Explore` when the task needs a broader read-only inventory before the plan is credible.
 - Use `Researcher` when the plan depends on current external docs or version-specific behavior.
+- Use `Debugger` when the planning surface reveals existing failures that must be diagnosed before the plan can be reliable.
+- Use `Docs` when the plan output should be persisted as a structured guide or ADR.
 - Use `Code` only after the plan is concrete enough to implement without widening scope.
 - Do not pad the plan with generic best practices. Keep it executable.
 

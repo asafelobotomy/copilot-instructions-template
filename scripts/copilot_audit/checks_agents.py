@@ -10,20 +10,20 @@ from .helpers import strip_code_spans, PLACEHOLDER_RE
 
 
 AGENT_DELEGATION_POLICY: dict[str, set[str]] = {
-    "audit.agent.md": {"Code", "Setup", "Researcher", "Extensions", "Organise"},
+    "audit.agent.md": {"Code", "Setup", "Researcher", "Extensions", "Organise", "Planner"},
     "code.agent.md": {"Review", "Audit", "Researcher", "Explore", "Extensions", "Commit", "Setup", "Organise", "Planner", "Docs", "Debugger"},
     "coding.agent.md": {"Review", "Audit", "Researcher", "Explore", "Extensions", "Commit", "Setup", "Organise", "Planner", "Docs", "Debugger"},
-    "commit.agent.md": {"Code", "Review", "Audit"},
-    "debugger.agent.md": {"Code", "Researcher", "Audit"},
-    "docs.agent.md": {"Code", "Researcher", "Review"},
+    "commit.agent.md": {"Code", "Review", "Audit", "Debugger"},
+    "debugger.agent.md": {"Code", "Researcher", "Audit", "Planner"},
+    "docs.agent.md": {"Code", "Researcher", "Review", "Explore"},
     "explore.agent.md": {"Researcher"},
-    "extensions.agent.md": {"Code", "Audit", "Organise"},
+    "extensions.agent.md": {"Code", "Audit", "Organise", "Researcher"},
     "fast.agent.md": {"Code", "Review", "Audit", "Explore", "Researcher", "Extensions", "Commit", "Setup", "Organise", "Planner", "Docs", "Debugger"},
-    "organise.agent.md": {"Code", "Explore"},
-    "planner.agent.md": {"Code", "Explore", "Researcher"},
-    "researcher.agent.md": {"Code", "Audit", "Explore"},
+    "organise.agent.md": {"Code", "Explore", "Docs"},
+    "planner.agent.md": {"Code", "Explore", "Researcher", "Debugger", "Docs"},
+    "researcher.agent.md": {"Code", "Audit", "Explore", "Docs", "Planner"},
     "review.agent.md": {"Code", "Audit", "Organise", "Docs", "Debugger"},
-    "setup.agent.md": {"Audit", "Extensions", "Organise"},
+    "setup.agent.md": {"Audit", "Extensions", "Organise", "Researcher"},
 }
 
 

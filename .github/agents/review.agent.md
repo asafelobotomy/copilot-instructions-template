@@ -6,9 +6,9 @@ model:
   - GPT-5.4
   - Claude Opus 4.6
   - Claude Sonnet 4.6
-  - GPT-5.1
+  - GPT-5.2
 tools: [agent, codebase, githubRepo, runCommands, search]
-mcp-servers: [filesystem, git, github]
+mcp-servers: [filesystem, git, github, fetch, context7]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Audit', 'Organise', 'Docs', 'Debugger']

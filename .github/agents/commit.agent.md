@@ -3,14 +3,14 @@ name: Commit
 description: Stage, preflight, commit, push, tag, and manage releases — applying the consumer's commit-style preferences from .copilot/workspace/operations/commit-style.md
 argument-hint: "Say 'commit my changes', 'stage and commit', 'push changes', 'tag this version', or 'create a release'"
 model:
-  - GPT-5.1
+  - GPT-5.2
   - Claude Sonnet 4.6
   - GPT-5 mini
 tools: [agent, editFiles, runCommands, codebase, githubRepo, askQuestions]
 mcp-servers: [filesystem, git, github]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Review', 'Audit']
+agents: ['Code', 'Review', 'Audit', 'Debugger']
 handoffs:
   - label: Review before committing
     agent: Review
@@ -19,6 +19,10 @@ handoffs:
   - label: Audit before push or release
     agent: Audit
     prompt: Run a focused health and security audit on the commit or release scope before proceeding. Highlight residual risk that should block the push or release.
+    send: false
+  - label: Diagnose CI failure
+    agent: Debugger
+    prompt: A push or CI check failed. Diagnose the root cause and return the minimal fix path before retrying.
     send: false
 ---
 
@@ -57,8 +61,8 @@ to widen the fix scope beyond the proposed commit.
   completed before the commit or push can proceed.
 8. Use `Audit` when the user requests a deeper security or health check before
   push or release, or when preflight leaves material residual risk.
-
-## TaskBrief validation
+9. Use `Debugger` when a push or CI check fails and the root cause needs
+   diagnosis before the commit scope can be fixed.
 
 Before entering the commit or push workflow, confirm the change has a task brief.
 Use the user's request, approved file scope, or `/memories/session/plan.md` when

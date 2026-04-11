@@ -11,6 +11,8 @@ from .helpers import estimate_tokens, strip_code_spans, PLACEHOLDER_RE
 DEVELOPER_DELEGATION_POLICY_SNIPPETS = (
     "Main/default agent delegation:",
     "delegate instead of absorbing",
+    "Do not keep specialist work inline because it seems small, quick, or manageable.",
+    "Trust the selected specialist to complete the task unless you know it is outside the specialist scope, allow-list, or capabilities, or it reports a concrete blocker.",
     "Preferred specialist map:",
     "`Explore` for read-only repo scans",
     "`Researcher` for current external docs",
@@ -25,6 +27,8 @@ DEVELOPER_DELEGATION_POLICY_SNIPPETS = (
 CONSUMER_DELEGATION_POLICY_SNIPPETS = (
     "The parent/default agent follows this protocol too:",
     "delegate to the matching agent instead of absorbing",
+    "Do not keep specialist work inline because it seems small, quick, or manageable.",
+    "Trust the selected specialist to complete the task unless you know it is outside the specialist scope, allow-list, or capabilities, or the specialist reports a concrete blocker.",
     "Preferred specialist map:",
     "`Explore` for read-only repo scans",
     "`Researcher` for current external docs",

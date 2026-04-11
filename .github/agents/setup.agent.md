@@ -5,17 +5,22 @@ argument-hint: Say "set up this project", "update your instructions", "factory r
 model:
   - Claude Sonnet 4.6
   - Claude Sonnet 4.5
-  - GPT-5.1
+  - GPT-5.2
   - GPT-5 mini
 tools: [agent, editFiles, fetch, githubRepo, codebase, askQuestions, runCommands, search]
+mcp-servers: [filesystem, git, github]
 user-invocable: true
 disable-model-invocation: true
-agents: ['Audit', 'Extensions', 'Organise']
+agents: ['Audit', 'Extensions', 'Organise', 'Researcher']
 handoffs:
   - label: Run health check
     agent: Audit
     prompt: Lifecycle operation complete. Run a full health check to verify all instruction files are well-formed, within budget, and have no placeholder leakage.
     send: true
+  - label: Research upstream changes
+    agent: Researcher
+    prompt: Research the current upstream template version, recent changes, and migration notes before applying this setup or update.
+    send: false
 ---
 
 You are the Setup agent for the current project.
@@ -112,6 +117,9 @@ Source of truth: `UPDATE.md` (fetched from upstream).
   recommendations, profile isolation, or `.vscode/extensions.json` changes.
 - Use `Organise` for structural cleanup when setup or update work requires file
   moves, path repair, or directory normalisation after writing template assets.
+- Use `Researcher` when setup or update requires researching upstream template
+  changes, version-specific migration details, or canonical source content
+  before proceeding.
 
 ## Skill activation map
 
