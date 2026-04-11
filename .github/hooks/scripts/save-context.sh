@@ -193,6 +193,21 @@ append_summary_line "Memory entries" "$MEMORY_SUMMARY"
 SOUL_SUMMARY=$(extract_soul_summary 2>/dev/null || echo "")
 append_summary_line "SOUL cues" "$SOUL_SUMMARY"
 
+# Intent phase from pulse state (task-state recovery after compaction)
+if command -v python3 >/dev/null 2>&1 && [[ -f .copilot/workspace/runtime/state.json ]]; then
+  INTENT_PHASE=$(python3 -c "
+import json, sys
+try:
+    state = json.load(open('.copilot/workspace/runtime/state.json'))
+    phase = state.get('intent_phase', '')
+    if phase and phase != 'quiet':
+        print(phase, end='')
+except Exception:
+    pass
+" 2>/dev/null || true)
+  append_summary_line "Intent" "$INTENT_PHASE"
+fi
+
 # Git status snapshot
 GIT_STATUS=$(git status --porcelain 2>/dev/null | head -10 || echo "")
 if [[ -n "$GIT_STATUS" ]]; then

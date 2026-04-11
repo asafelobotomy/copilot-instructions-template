@@ -27,6 +27,45 @@ VS Code's **built-in memory tool** (`/memories/`) provides persistent storage ac
 
 **Promotion rule**: Use `/memories/repo/` as a repo-local inbox while a task is in flight. Promote only validated, team-relevant facts into MEMORY.md once stable.
 
+### Routing Decision Tree
+
+Before writing a memory, walk the tree top-to-bottom. Use the first match.
+
+| # | Question | Yes → Route to | Notes |
+|---|----------|----------------|-------|
+| 1 | Only relevant to the current conversation? | `/memories/session/` | Auto-cleared when conversation ends |
+| 2 | Personal preference that applies across all repos? | `/memories/` user file | Organise by topic: one file per domain |
+| 3 | Durable project fact, team-shareable, ready for review? | **MEMORY.md** | Add provenance; use the appropriate table |
+| 4 | Reasoning heuristic or value learned from this project? | **SOUL.md** | Append with `— added YYYY-MM-DD` suffix |
+| 5 | Observed user behaviour within this project? | **USER.md** | Only from direct observation, never inference |
+| 6 | Quick repo fact discovered in-flight, not yet validated? | `/memories/repo/` | Treated as inbox — promote or discard at heartbeat |
+
+### Entry Format Standards
+
+**User memory (`/memories/`)** — organise into topic files (e.g. `debugging.md`, `mcp-sandbox.md`):
+
+```markdown
+# {Topic Title}
+
+## {Sub-category}
+
+- [{YYYY-MM}] {Fact in one sentence} — Source: {provenance}
+```
+
+**Repo memory (`/memories/repo/`)** — use the Copilot Memory JSON schema:
+
+```json
+{"subject": "...", "fact": "...", "citations": ["file:line"], "reason": "...", "category": "..."}
+```
+
+**MEMORY.md** — use the existing table schemas. Always include a Date and Source column.
+
+**SOUL.md** — append to the appropriate list with a date suffix:
+
+```markdown
+- {Heuristic statement} — added YYYY-MM-DD
+```
+
 ### Known Constraints
 
 - **User memory auto-load cap**: first 200 lines of `/memories/` auto-injected; beyond 200 requires explicit read.

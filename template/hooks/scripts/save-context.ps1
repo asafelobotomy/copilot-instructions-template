@@ -201,6 +201,18 @@ Add-SummaryLine -Label 'Memory entries' -Value $memorySummary
 $soulSummary = Get-SoulSummary
 Add-SummaryLine -Label 'SOUL cues' -Value $soulSummary
 
+# Intent phase from pulse state (task-state recovery after compaction)
+$statePath = '.copilot/workspace/runtime/state.json'
+if ((Test-Path $statePath) -and (Get-PythonCommand)) {
+    try {
+        $stateContent = Get-Content $statePath -Raw | ConvertFrom-Json
+        $intentPhase = $stateContent.intent_phase
+        if ($intentPhase -and $intentPhase -ne 'quiet') {
+            Add-SummaryLine -Label 'Intent' -Value $intentPhase
+        }
+    } catch {}
+}
+
 # Git status snapshot
 try {
     $gitStatus = & git status --porcelain 2>$null | Select-Object -First 10

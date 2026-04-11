@@ -58,6 +58,14 @@
 | URL | Summary | Date | Tags |
 |-----|---------|------|------|
 | <https://pypi.org/project/tiktoken/> | tiktoken: OpenAI BPE tokenizer; v0.12.0 Oct 2025; CDN vocab download on first use (~1.7MB); deps: regex+requests | 2026-04-09 | deps, tokenizer, tiktoken |
+
+## Model Landscape Audit — 2026-04-11
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://docs.github.com/en/copilot/reference/ai-models/supported-models> | Canonical supported-models page: full GA/preview table, per-client, per-plan, multipliers, retirement history | 2026-04-11 | models, reference, retirement |
+| <https://docs.github.com/en/copilot/concepts/fallback-and-lts-models> | GPT-5.3-Codex designated base+LTS 2026-03-18; GPT-4.1 is premium-exhausted fallback; GPT-5.1 retiring 2026-04-15 | 2026-04-11 | models, lts, base-model, retirement |
+| <https://code.visualstudio.com/docs/copilot/customization/custom-agents> | Agent frontmatter: model field is string or array of plain display names; handoffs.model uses qualified `Model Name (vendor)` format | 2026-04-11 | agents, frontmatter, models |
 | <https://github.com/openai/tiktoken/releases> | tiktoken release history: 0.12.0 (Oct 2025), 0.11.0 (Aug 2025) | 2026-04-09 | deps, tokenizer |
 | <https://github.com/astral-sh/ruff/releases> | ruff v0.15.9 (Apr 2026): Rust Python linter+formatter, zero Python deps, 10-100x faster than flake8/black | 2026-04-09 | deps, linter, ruff |
 | <https://github.com/gorakhargosh/watchdog/releases> | watchdog v6.0.0 (Nov 2024): Python file system events; inotify/kqueue; 1 transitive dep (pathtools) | 2026-04-09 | deps, filewatcher |
