@@ -241,4 +241,24 @@ fi
 
 echo ""
 
+echo "10. CHANGELOG [Unreleased] block must precede the first versioned release"
+assert_python "Unreleased block if present must precede the first versioned release" '
+import re
+text = (root / "CHANGELOG.md").read_text(encoding="utf-8")
+unreleased_pos = -1
+first_version_pos = -1
+for m in re.finditer(r"^## \[", text, re.M):
+    heading = text[m.start():text.find("\n", m.start())]
+    if "Unreleased" in heading:
+        if unreleased_pos == -1:
+            unreleased_pos = m.start()
+    elif re.search(r"## \[\d", heading):
+        if first_version_pos == -1:
+            first_version_pos = m.start()
+if unreleased_pos != -1 and first_version_pos != -1:
+    if unreleased_pos > first_version_pos:
+        raise SystemExit("CHANGELOG [Unreleased] block appears after a versioned release — stale leftover?")
+'
+echo ""
+
 finish_tests

@@ -149,15 +149,38 @@ rm -rf logs/copilot
 
 | Breaking | Sections changed | Sections added | Includes |
 |----------|-----------------|----------------|----------|
-| TBD | — | — | — |
+| No | None | None | — |
 
-**What changed**: *(stub — fill in before the next release or immediately after)*
+**What changed**: Strengthens specialist-first delegation policy across all specialist agents and updates model assignments (replaces GPT-5.1 with GPT-5.2 across fallback lists; promotes GPT-5.3-Codex for the Organise agent). Adds `.copilot/workspace/knowledge/MEMORY-GUIDE.md` with a memory routing decision tree and intent-phase extraction entry format standards. Extends `save-context` hooks to capture the current task phase (QW5 intent-phase extraction). Hardens the MCP heartbeat server's tempdir bootstrap by setting `CLAUDE_TMPDIR` and `TMPDIR` environment variables on the server entry so the sandbox tempdir is rooted in a writable path before the Python fallback can run.
 
 **New placeholders**: none
 
-**Companion files added**: none
+**Companion files added**:
 
-**Companion files updated**: none
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.copilot/workspace/knowledge/MEMORY-GUIDE.md` | `template/workspace/knowledge/MEMORY-GUIDE.md` | New file — memory routing decision tree and intent-phase extraction guide |
+
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/agents/audit.agent.md` | `.github/agents/audit.agent.md` | Updated (delegation policy + model assignments) |
+| `.github/agents/coding.agent.md` | `.github/agents/coding.agent.md` | Updated (delegation policy + model assignments) |
+| `.github/agents/commit.agent.md` | `.github/agents/commit.agent.md` | Updated (delegation policy + model assignments) |
+| `.github/agents/debugger.agent.md` | `.github/agents/debugger.agent.md` | Updated (delegation policy + model assignments) |
+| `.github/agents/docs.agent.md` | `.github/agents/docs.agent.md` | Updated (delegation policy + model assignments) |
+| `.github/agents/explore.agent.md` | `.github/agents/explore.agent.md` | Updated (delegation policy + model assignments) |
+| `.github/agents/extensions.agent.md` | `.github/agents/extensions.agent.md` | Updated (delegation policy + model assignments) |
+| `.github/agents/organise.agent.md` | `.github/agents/organise.agent.md` | Updated (delegation policy + GPT-5.3-Codex assignment) |
+| `.github/agents/planner.agent.md` | `.github/agents/planner.agent.md` | Updated (delegation policy + model assignments) |
+| `.github/agents/researcher.agent.md` | `.github/agents/researcher.agent.md` | Updated (delegation policy + model assignments) |
+| `.github/agents/review.agent.md` | `.github/agents/review.agent.md` | Updated (delegation policy + model assignments) |
+| `.github/agents/setup.agent.md` | `.github/agents/setup.agent.md` | Updated (delegation policy + model assignments) |
+| `.github/hooks/scripts/save-context.sh` | `template/hooks/scripts/save-context.sh` | Updated (intent-phase extraction) |
+| `.github/hooks/scripts/save-context.ps1` | `template/hooks/scripts/save-context.ps1` | Updated (intent-phase extraction) |
+| `.github/hooks/scripts/mcp-heartbeat-server.py` | `template/hooks/scripts/mcp-heartbeat-server.py` | Updated (tempdir bootstrap hardening and sandbox env vars) |
+| `.vscode/mcp.json` | `template/vscode/mcp.json` | Updated (adds CLAUDE_TMPDIR and TMPDIR to heartbeat server entry) |
 
 **Manual actions**: None
 

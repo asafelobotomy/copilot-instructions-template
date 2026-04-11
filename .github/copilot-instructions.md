@@ -22,8 +22,8 @@ This repo has two distinct layers that must never be mixed:
 |-------|------|---------|
 | **Consumer template** | `template/copilot-instructions.md` | Delivered to consumers by `SETUP.md`. Contains `{{PLACEHOLDER}}` tokens. |
 | **Developer instructions** | `.github/copilot-instructions.md` *(this file)* | Governs how I act in this repo. Zero `{{}}` tokens. |
-| **Consumer instruction stubs** | `template/instructions/` | Path-scoped stubs with `{{}}` tokens; resolved during consumer setup. |
-| **Consumer prompt stubs** | `template/prompts/` | Slash command prompts with `{{}}` tokens; resolved during consumer setup. |
+| **Consumer instruction stubs** | `template/instructions/` | Path-scoped stubs; most are delivered verbatim, a subset contain `{{}}` tokens resolved during consumer setup. |
+| **Consumer prompt stubs** | `template/prompts/` | Slash command prompts; most are delivered verbatim, a subset contain `{{}}` tokens resolved during consumer setup. |
 | **Developer instruction files** | `.github/instructions/` | Resolved path-stubs for this repo — no `{{}}` tokens. |
 | **Developer prompts** | `.github/prompts/` | Resolved prompts for this repo — no `{{}}` tokens. |
 | **Template artefacts** | `template/skills/`, `template/hooks/`, `template/workspace/` | Delivered verbatim; must stay in parity with `.github/skills/`, `.github/hooks/`. |
@@ -48,6 +48,8 @@ This repo has two distinct layers that must never be mixed:
 
 Run deterministic targeted suites during intermediate phases when the repo has a reliable path-to-test mapping. Run `bash tests/run-all.sh` only before marking a full task done end-to-end.
 
+**`execution_subagent` cwd**: The subagent does not inherit the current shell directory. Always embed the absolute repo path inside the command string (`cd /mnt/SteamLibrary/git/copilot-instructions-template && <cmd>`), not just in the prose description. For single final-gate commands where full output matters, use `run_in_terminal` instead.
+
 ## Coding Conventions
 
 - Language: **Markdown / Shell** · Runtime: **bash** · Package manager: **N/A**
@@ -60,7 +62,11 @@ Run deterministic targeted suites during intermediate phases when the repo has a
 - No commented-out code — git history is the undo stack.
 - Read before claiming — never describe or modify a file not opened this session.
 
-**Terminal discipline**: See `.github/instructions/terminal.instructions.md` (loaded automatically for shell files).
+**Terminal discipline**: See `.github/instructions/terminal.instructions.md` (loaded automatically for shell files). The following rules apply regardless of file type:
+
+- Prefer `execution_subagent` or synchronous `run_in_terminal` over async+poll for any command that will finish on its own. Reserve async sessions for genuinely persistent processes (servers, watchers).
+- `get_terminal_output` is only valid with the exact opaque UUID returned by `run_in_terminal` async mode. Integer terminal IDs, shell names, and labels are not valid inputs.
+- If `get_terminal_output` returns "command not found", the call used an invalid ID. Discard the result and re-run with `execution_subagent` or synchronous `run_in_terminal`.
 
 ## PDCA Cycle
 
@@ -132,8 +138,8 @@ Before acting on any medium-to-complex task:
 | `template/skills/` | Consumer skill stubs |
 | `template/hooks/` | Consumer hook scripts |
 | `template/workspace/` | Consumer workspace identity stubs |
-| `template/instructions/` | Consumer path-instruction stubs (with `{{}}` tokens) |
-| `template/prompts/` | Consumer prompt stubs (with `{{}}` tokens) |
+| `template/instructions/` | Consumer path-instruction stubs (most verbatim; subset with `{{}}` tokens) |
+| `template/prompts/` | Consumer prompt stubs (most verbatim; subset with `{{}}` tokens) |
 | `.github/agents/` | Model-pinned VS Code agents (Code, Review, Fast, Audit, Setup, Researcher, Explore, Extensions) |
 | `.github/skills/` | Skill library (repo-live copies, mirrors template) |
 | `.github/hooks/` | Hook scripts (repo-live copies, mirrors template) |

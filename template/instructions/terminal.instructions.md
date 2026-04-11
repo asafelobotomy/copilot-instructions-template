@@ -27,3 +27,5 @@ description: "Terminal session safety — shell isolation, strict-mode wrappers,
 - In zsh workspaces, avoid reserved variable names such as `status`; use `rc`, `exit_code`, or `command_rc` instead.
 - Do not rely on profile files, aliases, or exported shell options for ad hoc snippets. Child wrappers should start from a clean shell state.
 - If a failure is caused by shell semantics rather than the underlying command, stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation.
+- If `get_terminal_output` returns a "command not found" error, the call used an invalid terminal ID (an integer panel ID or a subagent result instead of an async UUID). Discard the result, do not retry with the same ID, and re-run the command using `execution_subagent` or synchronous `run_in_terminal`.
+- The VS Code sandbox injects a restricted PATH. Tools present in the user's interactive shell (e.g. `python`, `actionlint`, `shellcheck`) may be absent. Probe with `command -v <tool>` before invoking, or use `execution_subagent` which handles sandbox PATH transparently.

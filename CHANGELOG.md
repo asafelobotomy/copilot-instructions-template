@@ -7,6 +7,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [Unreleased]
+
+### Changed
+
+* N/A
+
 ## [5.11.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.10.1...v5.11.0) (2026-04-11)
 
 
@@ -42,15 +48,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 * harden MCP setup and add spatial workspace tooling ([686332a](https://github.com/asafelobotomy/copilot-instructions-template/commit/686332ae7687166a15e298aa1a8978e7a696bbf1))
 * **hooks:** add advisory file locking to heartbeat state I/O ([acf4705](https://github.com/asafelobotomy/copilot-instructions-template/commit/acf4705b7dcebd9a13e5183f13069166d856f4ab))
-
-## [Unreleased]
-
-### Changed
-
-* **agents:** declare first-wave MCP allowlists in specialist frontmatter
-* **mcp:** redesign consumer setup MCP selection as `E22` plus conditional `E22a`
-* **mcp:** preserve consumer per-server MCP enablement during update flows
-* **mcp:** tighten sandbox credential protections for `git` and `heartbeat`
 
 ## [5.8.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.7.0...v5.8.0) (2026-04-08)
 
