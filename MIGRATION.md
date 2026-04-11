@@ -129,15 +129,19 @@ rm -rf logs/copilot
 
 | Breaking | Sections changed | Sections added | Includes |
 |----------|-----------------|----------------|----------|
-| TBD | — | — | — |
+| No | None | None | — |
 
-**What changed**: *(stub — fill in before the next release or immediately after)*
+**What changed**: Hardens the MCP heartbeat server's tempdir bootstrap so it creates the fallback directory atomically and preserves heartbeat artifact files when the primary workspace path is not writable.
 
 **New placeholders**: none
 
 **Companion files added**: none
 
-**Companion files updated**: none
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/hooks/scripts/mcp-heartbeat-server.py` | `template/hooks/scripts/mcp-heartbeat-server.py` | Updated (tempdir bootstrap hardening and artifact fallback) |
 
 **Manual actions**: None
 
