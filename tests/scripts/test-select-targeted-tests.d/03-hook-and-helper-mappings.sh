@@ -223,15 +223,16 @@ if payload["intermediate_phase_strategy"] != "targeted":
 '
 echo ""
 
-echo "36. template workspace-index maps to sync and audit suites"
+echo "36. template workspace-index maps to sync, audit, and setup-update suites"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/workspace/operations/workspace-index.json")
 status=$?
 assert_success "selector exits zero on template workspace-index" "$status"
-SELECTOR_OUTPUT="$output" assert_python "template workspace-index maps to sync and audit suites" '
+SELECTOR_OUTPUT="$output" assert_python "template workspace-index maps to sync, audit, and setup-update suites" '
 payload = json.loads(os.environ["SELECTOR_OUTPUT"])
 if set(payload["selected_tests"]) != {
     "tests/scripts/test-copilot-audit.sh",
     "tests/scripts/test-sync-workspace-index.sh",
+    "tests/contracts/test-setup-update-contracts.sh",
 }:
     raise SystemExit(str(payload["selected_tests"]))
 if payload["intermediate_phase_strategy"] != "targeted":

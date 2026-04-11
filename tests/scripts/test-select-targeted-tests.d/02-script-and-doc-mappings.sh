@@ -173,4 +173,29 @@ if payload["selected_tests"] != ["tests/contracts/test-customization-contracts.s
 if payload["intermediate_phase_strategy"] != "targeted":
     raise SystemExit(payload["intermediate_phase_strategy"])
 '
+
+echo "25. README.md maps to the release contract suite"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "README.md")
+status=$?
+assert_success "selector exits zero on README.md" "$status"
+SELECTOR_OUTPUT="$output" assert_python "README.md maps to the release contract suite" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if payload["selected_tests"] != ["tests/contracts/test-release-contracts.sh"]:
+    raise SystemExit(str(payload["selected_tests"]))
+if payload["intermediate_phase_strategy"] != "targeted":
+    raise SystemExit(payload["intermediate_phase_strategy"])
+'
+echo ""
+
+echo "26. template/workspace/ stub files map to the setup-update contract suite"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/workspace/knowledge/MEMORY-GUIDE.md")
+status=$?
+assert_success "selector exits zero on template/workspace/ stub" "$status"
+SELECTOR_OUTPUT="$output" assert_python "template/workspace/ stubs map to setup-update contracts" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if "tests/contracts/test-setup-update-contracts.sh" not in payload["selected_tests"]:
+    raise SystemExit(str(payload["selected_tests"]))
+if payload["intermediate_phase_strategy"] != "targeted":
+    raise SystemExit(payload["intermediate_phase_strategy"])
+'
 echo ""

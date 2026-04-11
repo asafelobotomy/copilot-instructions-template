@@ -340,6 +340,26 @@
         "tests/contracts/test-release-contracts.sh"
       ],
       "reason": "Release workflow contracts validate the CI-integrated release flow."
+    },
+    {
+      "id": "readme",
+      "matchType": "exact",
+      "pattern": "README.md",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-release-contracts.sh"
+      ],
+      "reason": "README documents release governance and repository settings validated by release contracts."
+    },
+    {
+      "id": "template-workspace-stubs",
+      "matchType": "prefix",
+      "pattern": "template/workspace/",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-setup-update-contracts.sh"
+      ],
+      "reason": "Workspace template stubs are companion files delivered via setup/update; setup-update contracts validate delivery."
     }
   ]
 }

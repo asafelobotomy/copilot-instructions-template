@@ -84,4 +84,17 @@ assert_file_exists "failure log file is created" "$LOG_FILE"
 assert_file_contains "failure log preserves transcript" "$LOG_FILE" "about to fail"
 echo ""
 
+echo "4. Default log path respects TMPDIR (sandbox-safe)"
+TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
+SAFE_TMPDIR=$(mktemp -d); CLEANUP_DIRS+=("$SAFE_TMPDIR")
+make_fixture "$TMP"
+# Run without --log-file; TMPDIR override must determine the log location.
+output=$(ROOT_DIR="$TMP" TMPDIR="$SAFE_TMPDIR" bash "$SCRIPT" 2>&1)
+status=$?
+expected_log="$SAFE_TMPDIR/copilot-run-all.log"
+assert_success "wrapper exits zero with default log path" "$status"
+assert_contains "log path is derived from TMPDIR" "$output" "LOG_FILE=$expected_log"
+assert_file_exists "log file created under TMPDIR" "$expected_log"
+echo ""
+
 finish_tests

@@ -8,7 +8,7 @@
 set -euo pipefail
 
 ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
-LOG_FILE="${LOG_FILE:-/tmp/copilot-run-all.log}"
+LOG_FILE="${LOG_FILE:-${TMPDIR:-/tmp}/copilot-run-all.log}"
 TAIL_LINES="${TAIL_LINES:-120}"
 
 usage() {
