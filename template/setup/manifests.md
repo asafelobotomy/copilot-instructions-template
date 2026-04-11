@@ -174,6 +174,10 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
     "fetch": {
       "type": "stdio",
       "command": "uvx",
+      "env": {
+        "CLAUDE_TMPDIR": "${userHome}/.cache/uv",
+        "TMPDIR": "${userHome}/.cache/uv"
+      },
       "args": ["--with", "httpx[socks]>=0.28", "mcp-server-fetch"],
       "disabled": true,
       "sandboxEnabled": true,
@@ -261,6 +265,10 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
     "fetch": {
       "type": "stdio",
       "command": "uvx",
+      "env": {
+        "CLAUDE_TMPDIR": "${userHome}/.cache/uv",
+        "TMPDIR": "${userHome}/.cache/uv"
+      },
       "args": ["--with", "httpx[socks]>=0.28", "mcp-server-fetch"],
       "disabled": true
     },
