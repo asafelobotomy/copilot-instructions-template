@@ -37,6 +37,14 @@ if ($files.Count -eq 0) {
 
 foreach ($filepath in $files) {
     if (-not $filepath -or -not (Test-Path $filepath)) { continue }
+
+    # Workspace boundary check — reject paths outside the repo root
+    $repoRoot = (git rev-parse --show-toplevel 2>$null)
+    if (-not $repoRoot) { $repoRoot = $PWD.Path }
+    $repoRoot = $repoRoot.Trim().TrimEnd('/', '\')
+    $resolvedPath = (Resolve-Path $filepath -ErrorAction SilentlyContinue)?.Path
+    if (-not $resolvedPath -or -not $resolvedPath.StartsWith($repoRoot)) { continue }
+
     $ext = [System.IO.Path]::GetExtension($filepath).TrimStart('.')
 
     switch ($ext) {

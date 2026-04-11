@@ -261,7 +261,7 @@ if [[ $FINDING_COUNT -gt 0 ]]; then
   if [[ "$MODE" == "block" ]]; then
     echo "🚫 Session blocked: resolve the findings above before committing." >&2
     echo "   Set SCAN_MODE=warn to log without blocking, or add patterns to SECRETS_ALLOWLIST." >&2
-    printf '{"continue": false}'
+    printf '{"hookSpecificOutput":{"hookEventName":"Stop","decision":"block","reason":"Secrets detected (%d finding(s)). Resolve before ending the session or set SCAN_MODE=warn to continue."},"continue":true}' "$FINDING_COUNT"
     exit 0
   else
     echo "💡 Review the findings above. Set SCAN_MODE=block to prevent commits with secrets." >&2

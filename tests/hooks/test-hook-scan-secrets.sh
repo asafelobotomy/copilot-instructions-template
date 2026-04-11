@@ -62,7 +62,7 @@ echo "5. AWS key blocks in block mode"
 TMPDIR_BLOCK=$(make_git_sandbox); CLEANUP_DIRS+=("$TMPDIR_BLOCK")
 echo "aws_key=AKIAZ3MGNRTWFD7GHXQL" > "$TMPDIR_BLOCK/config.env"
 output=$(cd "$TMPDIR_BLOCK" && echo '{}' | SCAN_MODE=block bash "$SCRIPT" 2>/dev/null)
-assert_contains "blocks on findings" "$output" '"continue": false'
+assert_contains "blocks on findings" "$output" '"decision":"block"'
 echo ""
 
 # ---------------------------------------------------------------------------

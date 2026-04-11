@@ -63,8 +63,13 @@ printf 'aws_key=AKIAZ3MGNRTWFD7GHXQL\n' > "$TMP_WARN/config.env"
 output=$(run_scan_in_dir "$TMP_WARN" '{}' 'SCAN_MODE=warn')
 status=$?
 assert_success "warn mode exits zero" "$status"
-assert_contains "warn mode reports the AWS finding" "$output" 'AWS_ACCESS_KEY'
 assert_contains "warn mode continues" "$output" '"continue": true'
+# Findings go to stderr; verify stdout is clean JSON
+if echo "$output" | grep -qE '^\{'; then
+  pass_note "warn mode stdout is JSON"
+else
+  fail_note "warn mode stdout is JSON" "     output: $output"
+fi
 echo ""
 
 echo "5. AWS keys block in block mode"
@@ -73,8 +78,7 @@ printf 'aws_key=AKIAZ3MGNRTWFD7GHXQL\n' > "$TMP_BLOCK/config.env"
 output=$(run_scan_in_dir "$TMP_BLOCK" '{}' 'SCAN_MODE=block')
 status=$?
 assert_success "block mode exits zero with hook decision" "$status"
-assert_contains "block mode reports the AWS finding" "$output" 'AWS_ACCESS_KEY'
-assert_contains "block mode returns continue=false" "$output" '"continue": false'
+assert_contains "block mode returns hookSpecificOutput block" "$output" '"decision":"block"'
 echo ""
 
 echo "6. stop_hook_active=true bypasses repeat blocking"
@@ -111,6 +115,26 @@ output=$(run_scan_in_dir "$TMP_LOCK" '{}' 'SCAN_MODE=block')
 status=$?
 assert_success "lock-file scan exits zero" "$status"
 assert_contains "lock-file scan continues" "$output" '"continue": true'
+echo ""
+
+echo "10. Staged scope reads the git index blob, not the working-tree file"
+TMP_STAGED=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_STAGED")
+# Stage a file containing a GitHub token, then overwrite working tree with clean content
+(cd "$TMP_STAGED" && printf 'token=ghp_TESTSTAGEDSCOPE0123456789ABCDEFGHIJ\n' > secret.env && git add secret.env && printf 'token=placeholder\n' > secret.env)
+output=$(run_scan_in_dir "$TMP_STAGED" '{}' 'SCAN_SCOPE=staged' 'SCAN_MODE=block')
+status=$?
+assert_success "staged scope exits zero with hook decision" "$status"
+assert_contains "staged scope blocks on secret in git index" "$output" '"decision":"block"'
+echo ""
+
+echo "11. Staged scope ignores working-tree-only secrets"
+TMP_WTSTAGED=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_WTSTAGED")
+# Write a secret only to the working tree without staging it
+(cd "$TMP_WTSTAGED" && printf 'token=ghp_WORKTREEONLYSECRET0123456789ABCDEFGH\n' > untracked.env)
+output=$(run_scan_in_dir "$TMP_WTSTAGED" '{}' 'SCAN_SCOPE=staged' 'SCAN_MODE=block')
+status=$?
+assert_success "staged scope skips working-tree-only file" "$status"
+assert_contains "staged scope continues when nothing staged" "$output" '"continue": true'
 echo ""
 
 finish_tests

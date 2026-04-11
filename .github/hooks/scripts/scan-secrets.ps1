@@ -1,7 +1,7 @@
 # purpose:  Scan modified files for leaked secrets at session end
 # when:     Stop hook — fires when the agent session ends
 # inputs:   JSON via stdin
-# outputs:  JSON continuation signal; scan results on stderr
+# outputs:  JSON continuation signal on stdout; diagnostics on stderr
 # risk:     read-only
 # ESCALATION: block
 # STOP LOOP: if stop_hook_active is true in the Stop payload, do not re-enter blocking Stop logic.
@@ -34,37 +34,47 @@ if ($stopHookActive) {
 # ---------------------------------------------------------------------------
 
 if ($env:SKIP_SECRETS_SCAN -eq 'true') {
-    Write-Host "⏭️  Secrets scan skipped (SKIP_SECRETS_SCAN=true)" -ForegroundColor Yellow
+    Write-Error "Secrets scan skipped (SKIP_SECRETS_SCAN=true)"
     '{"continue": true}'; exit 0
 }
 
 # Verify git is available and we are in a repo
 $gitCheck = git rev-parse --is-inside-work-tree 2>$null
 if ($LASTEXITCODE -ne 0 -or $gitCheck -ne 'true') {
-    Write-Host "⚠️  Not in a git repository, skipping secrets scan" -ForegroundColor Yellow
+    Write-Error "Not in a git repository, skipping secrets scan"
     '{"continue": true}'; exit 0
 }
 
 $Mode  = if ($env:SCAN_MODE)  { $env:SCAN_MODE }  else { 'warn' }
 $Scope = if ($env:SCAN_SCOPE) { $env:SCAN_SCOPE } else { 'diff' }
 
-# Secret patterns: Name, Severity, Regex
+# Secret patterns: Name, Severity, Regex  (kept in parity with scan-secrets.sh)
 $Patterns = @(
-    [PSCustomObject]@{ Name = 'AWS_ACCESS_KEY'; Severity = 'critical'; Regex = 'AKIA[0-9A-Z]{16}' }
-    [PSCustomObject]@{ Name = 'AWS_SECRET_KEY'; Severity = 'critical'; Regex = 'aws_secret_access_key\s*[:=]\s*[''\"]?[A-Za-z0-9/+=]{40}' }
-    [PSCustomObject]@{ Name = 'GCP_API_KEY'; Severity = 'high'; Regex = 'AIza[0-9A-Za-z_-]{35}' }
-    [PSCustomObject]@{ Name = 'GITHUB_PAT'; Severity = 'critical'; Regex = 'ghp_[0-9A-Za-z]{36}' }
-    [PSCustomObject]@{ Name = 'GITHUB_OAUTH'; Severity = 'critical'; Regex = 'gho_[0-9A-Za-z]{36}' }
-    [PSCustomObject]@{ Name = 'GITHUB_APP_TOKEN'; Severity = 'critical'; Regex = 'ghs_[0-9A-Za-z]{36}' }
-    [PSCustomObject]@{ Name = 'GITHUB_REFRESH_TOKEN'; Severity = 'critical'; Regex = 'ghr_[0-9A-Za-z]{36}' }
-    [PSCustomObject]@{ Name = 'GITHUB_FINE_PAT'; Severity = 'critical'; Regex = 'github_pat_[0-9A-Za-z_]{82}' }
-    [PSCustomObject]@{ Name = 'PRIVATE_KEY'; Severity = 'critical'; Regex = '-----BEGIN (RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----' }
-    [PSCustomObject]@{ Name = 'GENERIC_SECRET'; Severity = 'high'; Regex = '(secret|token|password|passwd|pwd|api[_-]?key|apikey|access[_-]?key|auth[_-]?token|client[_-]?secret)\s*[:=]\s*[''\"]?[A-Za-z0-9_/+=~.-]{8,}' }
-    [PSCustomObject]@{ Name = 'CONNECTION_STRING'; Severity = 'high'; Regex = '(mongodb(\+srv)?|postgres(ql)?|mysql|redis|amqp|mssql)://[^\s''\"]{10,}' }
-    [PSCustomObject]@{ Name = 'SLACK_TOKEN'; Severity = 'high'; Regex = 'xox[baprs]-[0-9]{10,}-[0-9A-Za-z-]+' }
-    [PSCustomObject]@{ Name = 'STRIPE_SECRET_KEY'; Severity = 'critical'; Regex = 'sk_live_[0-9A-Za-z]{24,}' }
-    [PSCustomObject]@{ Name = 'NPM_TOKEN'; Severity = 'high'; Regex = 'npm_[0-9A-Za-z]{36}' }
-    [PSCustomObject]@{ Name = 'JWT_TOKEN'; Severity = 'medium'; Regex = 'eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}' }
+    [PSCustomObject]@{ Name = 'AWS_ACCESS_KEY';          Severity = 'critical'; Regex = 'AKIA[0-9A-Z]{16}' }
+    [PSCustomObject]@{ Name = 'AWS_SECRET_KEY';          Severity = 'critical'; Regex = 'aws_secret_access_key\s*[:=]\s*[''"]?[A-Za-z0-9/+=]{40}' }
+    [PSCustomObject]@{ Name = 'GCP_SERVICE_ACCOUNT';     Severity = 'critical'; Regex = '"type"\s*:\s*"service_account"' }
+    [PSCustomObject]@{ Name = 'GCP_API_KEY';             Severity = 'high';     Regex = 'AIza[0-9A-Za-z_-]{35}' }
+    [PSCustomObject]@{ Name = 'AZURE_CLIENT_SECRET';     Severity = 'critical'; Regex = 'azure[_\-]?client[_\-]?secret\s*[:=]\s*[''"]?[A-Za-z0-9_~.\-]{34,}' }
+    [PSCustomObject]@{ Name = 'GITHUB_PAT';              Severity = 'critical'; Regex = 'ghp_[0-9A-Za-z]{36}' }
+    [PSCustomObject]@{ Name = 'GITHUB_OAUTH';            Severity = 'critical'; Regex = 'gho_[0-9A-Za-z]{36}' }
+    [PSCustomObject]@{ Name = 'GITHUB_APP_TOKEN';        Severity = 'critical'; Regex = 'ghs_[0-9A-Za-z]{36}' }
+    [PSCustomObject]@{ Name = 'GITHUB_REFRESH_TOKEN';    Severity = 'critical'; Regex = 'ghr_[0-9A-Za-z]{36}' }
+    [PSCustomObject]@{ Name = 'GITHUB_FINE_GRAINED_PAT'; Severity = 'critical'; Regex = 'github_pat_[0-9A-Za-z_]{82}' }
+    [PSCustomObject]@{ Name = 'PRIVATE_KEY';             Severity = 'critical'; Regex = '-----BEGIN (RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----' }
+    [PSCustomObject]@{ Name = 'PGP_PRIVATE_BLOCK';       Severity = 'critical'; Regex = '-----BEGIN PGP PRIVATE KEY BLOCK-----' }
+    [PSCustomObject]@{ Name = 'GENERIC_SECRET';          Severity = 'high';     Regex = '(secret|token|password|passwd|pwd|api[_\-]?key|apikey|access[_\-]?key|auth[_\-]?token|client[_\-]?secret)\s*[:=]\s*[''"]?[A-Za-z0-9_/+=~.\-]{8,}' }
+    [PSCustomObject]@{ Name = 'CONNECTION_STRING';       Severity = 'high';     Regex = '(mongodb(\+srv)?|postgres(ql)?|mysql|redis|amqp|mssql)://[^\s''"][^\s''"]{9,}' }
+    [PSCustomObject]@{ Name = 'BEARER_TOKEN';            Severity = 'medium';   Regex = '[Bb]earer\s+[A-Za-z0-9_\-]{20,}\.[A-Za-z0-9_\-]{20,}' }
+    [PSCustomObject]@{ Name = 'SLACK_TOKEN';             Severity = 'high';     Regex = 'xox[baprs]-[0-9]{10,}-[0-9A-Za-z\-]+' }
+    [PSCustomObject]@{ Name = 'SLACK_WEBHOOK';           Severity = 'high';     Regex = 'https://hooks\.slack\.com/services/T[0-9A-Z]{8,}/B[0-9A-Z]{8,}/[0-9A-Za-z]{24}' }
+    [PSCustomObject]@{ Name = 'DISCORD_TOKEN';           Severity = 'high';     Regex = '[MN][A-Za-z0-9]{23,}\.[A-Za-z0-9_\-]{6}\.[A-Za-z0-9_\-]{27,}' }
+    [PSCustomObject]@{ Name = 'TWILIO_API_KEY';          Severity = 'high';     Regex = 'SK[0-9a-fA-F]{32}' }
+    [PSCustomObject]@{ Name = 'SENDGRID_API_KEY';        Severity = 'high';     Regex = 'SG\.[0-9A-Za-z_\-]{22}\.[0-9A-Za-z_\-]{43}' }
+    [PSCustomObject]@{ Name = 'STRIPE_SECRET_KEY';       Severity = 'critical'; Regex = 'sk_live_[0-9A-Za-z]{24,}' }
+    [PSCustomObject]@{ Name = 'STRIPE_RESTRICTED_KEY';   Severity = 'high';     Regex = 'rk_live_[0-9A-Za-z]{24,}' }
+    [PSCustomObject]@{ Name = 'NPM_TOKEN';               Severity = 'high';     Regex = 'npm_[0-9A-Za-z]{36}' }
+    [PSCustomObject]@{ Name = 'JWT_TOKEN';               Severity = 'medium';   Regex = 'eyJ[A-Za-z0-9_\-]{10,}\.eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}' }
+    [PSCustomObject]@{ Name = 'INTERNAL_IP_PORT';        Severity = 'low';      Regex = '10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{2,5}|192\.168\.[0-9]{1,3}\.[0-9]{1,3}:[0-9]{2,5}' }
 )
 
 # Collect files to scan
@@ -81,7 +91,7 @@ if ($Scope -eq 'staged') {
 }
 
 if (-not $Files -or $Files.Count -eq 0) {
-    Write-Host "✨ No modified files to scan" -ForegroundColor Green
+    Write-Error "No modified files to scan"
     '{"continue": true}'; exit 0
 }
 
@@ -96,64 +106,87 @@ $SkipExtensions = @('.lock')
 $SkipNames = @('package-lock.json', 'pnpm-lock.yaml', 'go.sum')
 
 $Findings = @()
+$TempFiles = @()
 
-Write-Host "🔍 Scanning $($Files.Count) modified file(s) for secrets..." -ForegroundColor Cyan
+Write-Error "Scanning $($Files.Count) modified file(s) for secrets..."
 
-foreach ($filepath in $Files) {
-    if (-not (Test-Path $filepath -PathType Leaf)) { continue }
-    $filename = Split-Path $filepath -Leaf
-    if ($SkipNames -contains $filename) { continue }
-    if ($SkipExtensions -contains [System.IO.Path]::GetExtension($filepath)) { continue }
+try {
+    foreach ($filepath in $Files) {
+        $filename = Split-Path $filepath -Leaf
+        if ($SkipNames -contains $filename) { continue }
+        if ($SkipExtensions -contains [System.IO.Path]::GetExtension($filepath)) { continue }
 
-    $lineNum = 0
-    foreach ($line in Get-Content $filepath -ErrorAction SilentlyContinue) {
-        $lineNum++
-        $lineText = [string]$line
-        foreach ($pat in $Patterns) {
-            $pName = [string]$pat.Name
-            $pSev = [string]$pat.Severity
-            $pRegex = [string]$pat.Regex
-            if (-not $pRegex) { continue }
-            $match = [regex]::Match($lineText, $pRegex)
-            if (-not $match.Success) { continue }
-
-            $matchVal = $match.Value
-            # Skip placeholder / example values
-            if ($matchVal -match '(example|placeholder|your[_-]|xxx|changeme|TODO|FIXME|replace[_-]?me|dummy|fake|test[_-]?key|sample)') { continue }
-            # Check allowlist
-            $allowed = $false
-            foreach ($al in $Allowlist) {
-                if ($matchVal -like "*$al*") { $allowed = $true; break }
-            }
-            if ($allowed) { continue }
-            # Redact
-            $redacted = if ($matchVal.Length -le 12) { '[REDACTED]' } else { $matchVal.Substring(0,4) + '...' + $matchVal.Substring($matchVal.Length - 4) }
-            $Findings += [PSCustomObject]@{ File=$filepath; Line=$lineNum; Pattern=$pName; Severity=$pSev; Match=$redacted }
+        # For staged scope, read the staged blob via git show rather than the working-tree file
+        $readPath = $filepath
+        if ($Scope -eq 'staged') {
+            $tmpFile = [System.IO.Path]::GetTempFileName()
+            $TempFiles += $tmpFile
+            git show ":$filepath" 2>$null | Set-Content $tmpFile -Encoding utf8 -ErrorAction SilentlyContinue
+            if (Test-Path $tmpFile) { $readPath = $tmpFile } else { continue }
+        } else {
+            if (-not (Test-Path $filepath -PathType Leaf)) { continue }
         }
+
+        $lineNum = 0
+        foreach ($line in Get-Content $readPath -ErrorAction SilentlyContinue) {
+            $lineNum++
+            $lineText = [string]$line
+            foreach ($pat in $Patterns) {
+                $pRegex = [string]$pat.Regex
+                if (-not $pRegex) { continue }
+                $match = [regex]::Match($lineText, $pRegex)
+                if (-not $match.Success) { continue }
+
+                $matchVal = $match.Value
+                # Skip placeholder / example values
+                if ($matchVal -match '(example|placeholder|your[_\-]|xxx|changeme|TODO|FIXME|replace[_\-]?me|dummy|fake|test[_\-]?key|sample)') { continue }
+                # Check allowlist
+                $allowed = $false
+                foreach ($al in $Allowlist) {
+                    if ($matchVal -like "*$al*") { $allowed = $true; break }
+                }
+                if ($allowed) { continue }
+                # Redact match value
+                $redacted = if ($matchVal.Length -le 12) { '[REDACTED]' } else { $matchVal.Substring(0,4) + '...' + $matchVal.Substring($matchVal.Length - 4) }
+                $Findings += [PSCustomObject]@{ File=$filepath; Line=$lineNum; Pattern=[string]$pat.Name; Severity=[string]$pat.Severity; Match=$redacted }
+            }
+        }
+    }
+} finally {
+    foreach ($tmp in $TempFiles) {
+        Remove-Item $tmp -ErrorAction SilentlyContinue
     }
 }
 
 if ($Findings.Count -gt 0) {
-    Write-Host "" -ForegroundColor Yellow
-    Write-Host "⚠️  Found $($Findings.Count) potential secret(s) in modified files:" -ForegroundColor Yellow
-    Write-Host ""
-    Write-Host ("  {0,-40} {1,-6} {2,-28} {3}" -f 'FILE','LINE','PATTERN','SEVERITY') -ForegroundColor Yellow
-    Write-Host ("  {0,-40} {1,-6} {2,-28} {3}" -f '----','----','-------','--------') -ForegroundColor Yellow
+    Write-Error ""
+    Write-Error "Found $($Findings.Count) potential secret(s) in modified files:"
+    Write-Error ""
+    Write-Error ("  {0,-40} {1,-6} {2,-28} {3}" -f 'FILE','LINE','PATTERN','SEVERITY')
+    Write-Error ("  {0,-40} {1,-6} {2,-28} {3}" -f '----','----','-------','--------')
 
     foreach ($f in $Findings) {
-        Write-Host ("  {0,-40} {1,-6} {2,-28} {3}" -f $f.File, $f.Line, $f.Pattern, $f.Severity)
+        Write-Error ("  {0,-40} {1,-6} {2,-28} {3}" -f $f.File, $f.Line, $f.Pattern, $f.Severity)
     }
-    Write-Host ""
+    Write-Error ""
 
     if ($Mode -eq 'block') {
-        Write-Host "🚫 Session blocked: resolve the findings above before committing." -ForegroundColor Red
-        Write-Host "   Set SCAN_MODE=warn to log without blocking, or add patterns to SECRETS_ALLOWLIST." -ForegroundColor Red
-        '{"continue": false}'; exit 0
+        Write-Error "Session blocked: resolve the findings above before committing."
+        Write-Error "Set SCAN_MODE=warn to log without blocking, or add patterns to SECRETS_ALLOWLIST."
+        ConvertTo-Json -Compress @{
+            hookSpecificOutput = @{
+                hookEventName = 'Stop'
+                decision = 'block'
+                reason = "Secrets detected ($($Findings.Count) finding(s)). Resolve before ending the session or set SCAN_MODE=warn to continue."
+            }
+            continue = $true
+        }
+        exit 0
     } else {
-        Write-Host "💡 Review the findings above. Set SCAN_MODE=block to prevent commits with secrets." -ForegroundColor Yellow
+        Write-Error "Review the findings above. Set SCAN_MODE=block to prevent commits with secrets."
     }
 } else {
-    Write-Host "✅ No secrets detected in $($Files.Count) scanned file(s)" -ForegroundColor Green
+    Write-Error "No secrets detected in $($Files.Count) scanned file(s)"
 }
 
 '{"continue": true}'
