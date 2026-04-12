@@ -53,6 +53,31 @@
 | <https://docs.github.com/copilot/how-tos/use-copilot-agents/copilot-memory> | GitHub-hosted Copilot Memory (separate from local memory tool): cross-surface, repo-scoped, 28-day expiry, off by default | 2026-04-09 | memory, github, copilot-memory |
 | <https://github.blog/ai-and-ml/github-copilot/building-an-agentic-memory-system-for-github-copilot/> | Engineering blog: just-in-time citation verification, store_memory tool call schema (subject/fact/citations/reason), cross-agent memory sharing, 7% PR merge rate uplift, adversarial stress-testing | 2026-04-09 | memory, architecture, copilot-memory |
 
+## Bootstrap & Distribution — 2026-04-12
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://code.visualstudio.com/docs/copilot/customization/agent-plugins> | Agent plugins (preview): install from Git URL, workspace recommendations, enabledPlugins + extraKnownMarketplaces, plugin.json structure, hooks.json and .mcp.json in plugin root | 2026-04-12 | plugins, distribution, bootstrap |
+
+## Risk-Based Test Selection — 2026-04-12
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://engineering.fb.com/2018/11/21/developer-tools/predictive-test-selection/> | Meta predictive test selection: gradient-boosted model, 99.9% faulty-change catch rate, runs 1/3 of impacted tests, doubles infrastructure efficiency | 2026-04-12 | test-selection, ml, meta |
+| <https://arxiv.org/abs/1810.05286> | Machalica et al. — Predictive Test Selection paper: >95% individual failure catch, flakiness handling, gradient-boosted trees on change features | 2026-04-12 | test-selection, ml, paper |
+| <https://abseil.io/resources/swe-book/html/ch23.html> | Google SWE Book Ch.23 — TAP: global dependency graph, presubmit/post-submit split, 11-min avg wait, Takeout case study (50% fewer broken deploys) | 2026-04-12 | test-selection, google, ci |
+| <https://devblogs.microsoft.com/devops/accelerated-continuous-testing-with-test-impact-analysis-part-1/> | Microsoft TIA: file-level instrumentation, >15 min threshold for ROI, periodic override required, managed .NET only | 2026-04-12 | test-selection, microsoft, tia |
+| <https://docs.datadoghq.com/tests/test_impact_analysis.md> | Datadog Test Impact Analysis (ITR): coverage-based, tracked files, unskippable tests, ITR:NoSkip commit/PR escape hatches, branch exclusion | 2026-04-12 | test-selection, datadog, ci |
+| <https://docs.launchableinc.com/> | Launchable: SaaS ML predictive selection, confidence scoring, test health trends, parallelization bin-packing, Slack notifications | 2026-04-12 | test-selection, launchable, ml |
+| <https://engineering.fb.com/2026/02/11/developer-tools/the-death-of-traditional-testing-agentic-development-jit-testing-revival/> | Meta JiTTesting 2026: LLM-generated on-the-fly tests for each change via mutation testing; addresses agentic development test burden | 2026-04-12 | jit-testing, meta, agentic, 2026 |
+| <https://testmon.org/> | pytest-testmon: Coverage.py-based per-method dependency tracking; --testmon-noselect for risk-ordered execution without deselection | 2026-04-12 | test-selection, python, testmon |
+| <https://code.visualstudio.com/docs/copilot/security> | Trust boundaries: workspace, extension publisher, MCP server, network domain; sandbox constraints; recommended security baseline | 2026-04-12 | security, trust, sandbox |
+| <https://code.visualstudio.com/docs/editor/workspace-trust> | Workspace Trust Restricted Mode disables agents, tasks, debugging; trust required before agent bootstrap can run | 2026-04-12 | security, workspace-trust |
+| <https://code.visualstudio.com/docs/devcontainers/create-dev-container> | devcontainer.json: postCreateCommand + customizations.vscode.extensions for zero-touch Copilot + template install | 2026-04-12 | devcontainer, bootstrap |
+| <https://code.visualstudio.com/api/working-with-extensions/publishing-extension> | VSIX packaging via vsce; Azure DevOps publisher account required; sideload vs Marketplace paths | 2026-04-12 | vsix, extension, distribution |
+| <https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository> | GitHub template repos: copies directory structure + files on "Use this template"; branches have unrelated histories | 2026-04-12 | github, template-repo, bootstrap |
+| <https://github.com/github/copilot-plugins> | Official Copilot plugins marketplace repo; skills only as of Apr 2026; MCP servers and hooks listed as "coming soon" | 2026-04-12 | plugins, marketplace |
+
 ## Dependency Evaluation — 2026-04-09
 
 | URL | Summary | Date | Tags |
@@ -389,3 +414,20 @@
 | `local:~/.cache/uv/archive-v0/e69PtoFU3_LyN99J0jBF9/httpx/_config.py` | `httpx 0.27.2 Proxy.__init__` only accepts `http/https/socks5` schemes — `socks5h://` raises `ValueError: Unknown scheme for proxy URL` | 2026-04-10 | httpx, proxy, socks5h |
 | `local:~/.cache/uv/archive-v0/CTC1-HivFdy4UVtKcUEhy/httpx/_config.py` | `httpx 0.28.1` adds `socks5h` to the accepted scheme set — upgrade unblocks proxy | 2026-04-10 | httpx, proxy, socks5h, fix |
 | `local:~/.cache/uv/archive-v0/pO-kgK6IlruyghP-SK_wY/mcp_server_fetch-2025.4.7.dist-info/METADATA` | `mcp-server-fetch@2025.4.7` pins `httpx<0.28` — prevents the socks5h fix from being used | 2026-04-10 | mcp-server-fetch, httpx, dependency |
+
+## Test Execution Optimization — 2026-04-12
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://devblogs.microsoft.com/devops/accelerated-continuous-testing-with-test-impact-analysis-part-1/> | Microsoft TIA in Azure DevOps: auto test selection via instrumentation; apply when full run >15min; runs impacted + failing + new tests | 2026-04-12 | tia, ci, testing |
+| <https://engineering.fb.com/2018/11/21/developer-tools/predictive-test-selection/> | Meta predictive test selection: gradient-boosted DT model; catches >99.9% of regressions; runs only 1/3 of impacted tests; doubles infra efficiency | 2026-04-12 | tia, ml, testing |
+| <https://engineering.fb.com/2026/02/11/developer-tools/the-death-of-traditional-testing-agentic-development-jit-testing-revival/> | Meta JiTTesting (Feb 2026): LLM-generated tests on-the-fly for each code change; no maintenance; uses mutation testing; designed for agentic dev | 2026-04-12 | ai-agents, testing, jit |
+| <https://abseil.io/resources/swe-book/html/ch23.html> | Google SWE Book Ch.23 CI: TAP handles 50K changes/day, 4B tests/day; avg presubmit wait 11min; hermetic presubmit cut Google Assistant runtime 14x | 2026-04-12 | ci, tap, google, testing |
+| <https://martinfowler.com/articles/practical-test-pyramid.html> | Fowler test pyramid: many unit, some integration, few E2E; push tests down; every test is "additional baggage"; avoid ice cream cone | 2026-04-12 | testing, pyramid, strategy |
+| <https://www.nngroup.com/articles/response-times-3-important-limits/> | Nielsen 10-second rule: 0.1s=direct, 1s=flow, 10s=attention limit; basis for test feedback timing thresholds | 2026-04-12 | ux, timing, flow-state |
+| <https://testmon.org/> | pytest-testmon: Coverage.py-based incremental test selection; pip install pytest-testmon; works with pytest-watch | 2026-04-12 | python, tia, testing, incremental |
+| <https://github.com/tarpas/pytest-testmon> | pytest-testmon source: 965 stars; v2.2.0 Dec 2025; Python 3.10+; MIT | 2026-04-12 | python, tia, testing |
+| <https://aider.chat/docs/usage/lint-test.html> | Aider --auto-test + --test-cmd: runs tests after each AI edit; agent self-repairs on failure; per-file --no-auto-lint to disable | 2026-04-12 | ai-agents, aider, testing |
+| <https://www.swebench.com/> | SWE-bench official leaderboard: current SOTA Claude 4.5 Opus 76.8% Verified; mini-SWE-agent 65% in 100 lines Python | 2026-04-12 | ai-agents, benchmark, swe-bench |
+| <https://arxiv.org/abs/2310.06770> | SWE-bench paper (ICLR 2024): 2294 GitHub issues in 12 Python repos; original Claude 2 scored 1.96%; test execution central to agent success | 2026-04-12 | ai-agents, benchmark, swe-bench |
+| <https://arxiv.org/pdf/2601.22832> | Meta JiTTesting paper: "Just-in-Time Catching Test Generation at Meta"; mutation-based LLM test generation for regressions | 2026-04-12 | ai-agents, testing, jit, paper |

@@ -1,0 +1,318 @@
+=== pulse.sh ===
+
+1. session_start initializes sentinel and state
+  PASS: session_start output is valid JSON
+  PASS: session_start continues
+  PASS: session_start includes UTC timestamp
+  PASS: sentinel contains session id
+  PASS: sentinel starts pending
+  PASS: state written with pending session
+  PASS: session_start event records UTC timestamp
+
+2. soft_post_tool trigger is debounced
+  PASS: debounced soft trigger keeps same epoch
+
+3. stop trigger continues for small tasks
+  PASS: small stop continues
+  PASS: small stop records retrospective not-needed
+
+4. stop trigger skips retrospective for borderline file churn
+  PASS: borderline stop continues
+  PASS: borderline stop records retrospective not-needed
+
+5. stop trigger blocks with reflect instruction on strong signals
+  PASS: large stop blocks
+  PASS: large stop instructs model to call session_reflect
+  PASS: large stop records retrospective suggested
+
+6. stop passes when sentinel complete after reflect
+  PASS: sentinel-complete stop continues
+  PASS: sentinel-complete updates state to complete
+
+7. transcript mentions alone do not satisfy retrospective completion
+  PASS: transcript mention still blocks
+  PASS: transcript mention keeps retrospective suggested
+
+8. reflection completion event passes stop without a sentinel
+  PASS: completion event without sentinel continues
+  PASS: completion event updates state to complete
+
+9. reflection completion events from other sessions do not pass stop
+  PASS: other-session completion event still blocks
+
+10. user accepting retrospective keyword blocks at stop
+  PASS: retrospective keyword continues
+  PASS: accepted stop blocks for retrospective
+  PASS: accepted stop explains retrospective run
+
+11. stop trigger passes when retrospective is complete
+  PASS: stop continues when complete
+  PASS: state transitions to complete
+  PASS: stop completion event records duration and UTC timestamp
+
+12. user_prompt heartbeat keyword emits system message
+  PASS: keyword prompt includes guidance
+
+13. policy discussion prompts do not arm heartbeat or retrospective
+  PASS: discussion-only prompt returns valid JSON
+  PASS: discussion-only prompt stays quiet
+  PASS: discussion-only stop continues
+  PASS: discussion-only prompt keeps retrospective idle
+
+14. explanation prompts stay informational
+  PASS: retrospective policy prompt returns valid JSON
+  PASS: retrospective policy prompt stays informational
+  PASS: heartbeat policy prompt returns valid JSON
+  PASS: heartbeat policy prompt stays informational
+  PASS: explanation prompts do not arm stop
+
+15. session_start captures git baseline
+  PASS: session_start records git baseline count
+
+16. soft_post_tool increments edit count only for file-writing tools
+  PASS: non-file tool does not increment edit count
+  PASS: create_file increments edit count to 1
+  PASS: replace_string_in_file increments edit count to 2
+
+17. soft_post_tool opens and accumulates work windows
+  PASS: first tool use opens work window
+  PASS: idle gap closes old window and accumulates time
+
+18. pure planning session (0 file changes) never triggers retrospective
+  PASS: planning-only session continues (no retro)
+  PASS: planning session records not-needed
+
+19. pre-existing dirty files do not inflate the delta count
+  PASS: pre-existing dirty files do not trigger retro
+  PASS: state is not-needed due to zero delta
+
+20. corrupt state file is recovered safely
+  PASS: session_start still returns valid JSON
+  PASS: state file becomes valid JSON
+
+21. transition digest stays quiet while the session is only orienting
+  PASS: orienting call output is valid JSON
+  PASS: orienting call has no additionalContext
+  PASS: orienting call records phase without digest emission
+
+22. transition digest appears when work crosses into consolidating
+  PASS: consolidating call includes digest
+  PASS: digest reports validation intent
+  PASS: consolidating call records runtime family and digest state
+  PASS: follow-up consolidating call output is valid JSON
+  PASS: follow-up consolidating call has no additionalContext
+
+23. session_start initializes transition state
+  PASS: transition state initialised on session_start
+
+24. stop_hook_active=true bypasses repeat blocking
+  PASS: repeat stop continues
+  PASS: repeat stop preserves pending state and avoids new events
+
+25. user_prompt captures high-confidence Commit route candidate
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: commit route candidate captured from prompt
+
+26. pre_tool emits sparse Commit routing hint once
+  FAIL: commit pre_tool emits routing hint
+     expected pattern: Routing hint: Commit specialist
+     output: {"continue": true}
+  PASS: commit hint is not repeated
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: commit hint marks emitted state
+
+27. guarded Setup does not auto-route from behavior without strict prompt candidate
+  PASS: setup behavior-only output is valid JSON
+  PASS: setup behavior-only does not emit hint
+  PASS: setup behavior-only leaves candidate empty
+
+28. guarded Setup is blocked when running in template repo
+  PASS: setup hint is blocked in template repo
+
+29. Stage 3 prompt+behavior routes are deterministic for newly active specialists
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Planner prompt candidate captured
+  FAIL: Planner pre_tool emits routing hint
+     expected pattern: Routing hint: Planner specialist
+     output: {"continue": true}
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Planner hint records emitted state
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Docs prompt candidate captured
+  FAIL: Docs pre_tool emits routing hint
+     expected pattern: Routing hint: Docs specialist
+     output: {"continue": true}
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Docs hint records emitted state
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Debugger prompt candidate captured
+  FAIL: Debugger pre_tool emits routing hint
+     expected pattern: Routing hint: Debugger specialist
+     output: {"continue": true}
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Debugger hint records emitted state
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Review prompt candidate captured
+  FAIL: Review pre_tool emits routing hint
+     expected pattern: Routing hint: Review specialist
+     output: {"continue": true}
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Review hint records emitted state
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Audit prompt candidate captured
+  FAIL: Audit pre_tool emits routing hint
+     expected pattern: Routing hint: Audit specialist
+     output: {"continue": true}
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Audit hint records emitted state
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Extensions prompt candidate captured
+  FAIL: Extensions pre_tool emits routing hint
+     expected pattern: Routing hint: Extensions specialist
+     output: {"continue": true}
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Extensions hint records emitted state
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Organise prompt candidate captured
+  FAIL: Organise pre_tool emits routing hint
+     expected pattern: Routing hint: Organise specialist
+     output: {"continue": true}
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Organise hint records emitted state
+
+30. overlap-sensitive Fast and Code do not auto-route from behavior alone
+  PASS: Fast behavior-only output is valid JSON
+  PASS: Fast behavior-only does not emit hint
+  PASS: Fast behavior-only leaves candidate empty
+  PASS: Code behavior-only output is valid JSON
+  PASS: Code behavior-only does not emit hint
+  PASS: Code behavior-only leaves candidate empty
+
+31. Stage 4 prompt+behavior routes are deterministic for overlap-sensitive specialists
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Fast prompt candidate captured
+  FAIL: Fast pre_tool emits routing hint
+     expected pattern: Routing hint: Fast specialist
+     output: {"continue": true}
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Fast hint records emitted state
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Code prompt candidate captured
+  FAIL: Code pre_tool emits routing hint
+     expected pattern: Routing hint: Code specialist
+     output: {"continue": true}
+Traceback (most recent call last):
+  File "<stdin>", line 19, in <module>
+  File "<string>", line 3, in <module>
+AssertionError
+  FAIL: Code hint records emitted state
+
+Results: 72 passed, 30 failed (test-hook-pulse.sh)
+--- Failures ---
+  FAIL: commit route candidate captured from prompt
+  FAIL: commit pre_tool emits routing hint
+     expected pattern: Routing hint: Commit specialist
+     output: {"continue": true}
+  FAIL: commit hint marks emitted state
+  FAIL: Planner prompt candidate captured
+  FAIL: Planner pre_tool emits routing hint
+     expected pattern: Routing hint: Planner specialist
+     output: {"continue": true}
+  FAIL: Planner hint records emitted state
+  FAIL: Docs prompt candidate captured
+  FAIL: Docs pre_tool emits routing hint
+     expected pattern: Routing hint: Docs specialist
+     output: {"continue": true}
+  FAIL: Docs hint records emitted state
+  FAIL: Debugger prompt candidate captured
+  FAIL: Debugger pre_tool emits routing hint
+     expected pattern: Routing hint: Debugger specialist
+     output: {"continue": true}
+  FAIL: Debugger hint records emitted state
+  FAIL: Review prompt candidate captured
+  FAIL: Review pre_tool emits routing hint
+     expected pattern: Routing hint: Review specialist
+     output: {"continue": true}
+  FAIL: Review hint records emitted state
+  FAIL: Audit prompt candidate captured
+  FAIL: Audit pre_tool emits routing hint
+     expected pattern: Routing hint: Audit specialist
+     output: {"continue": true}
+  FAIL: Audit hint records emitted state
+  FAIL: Extensions prompt candidate captured
+  FAIL: Extensions pre_tool emits routing hint
+     expected pattern: Routing hint: Extensions specialist
+     output: {"continue": true}
+  FAIL: Extensions hint records emitted state
+  FAIL: Organise prompt candidate captured
+  FAIL: Organise pre_tool emits routing hint
+     expected pattern: Routing hint: Organise specialist
+     output: {"continue": true}
+  FAIL: Organise hint records emitted state
+  FAIL: Fast prompt candidate captured
+  FAIL: Fast pre_tool emits routing hint
+     expected pattern: Routing hint: Fast specialist
+     output: {"continue": true}
+  FAIL: Fast hint records emitted state
+  FAIL: Code prompt candidate captured
+  FAIL: Code pre_tool emits routing hint
+     expected pattern: Routing hint: Code specialist
+     output: {"continue": true}
+  FAIL: Code hint records emitted state
