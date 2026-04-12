@@ -1,10 +1,21 @@
 {
-  "schemaVersion": "1.0",
-  "description": "Deterministic path-to-targeted-test mapping for intermediate-phase verification in copilot-instructions-template.",
+  "schemaVersion": "2.0",
+  "description": "Deterministic path-to-targeted-test mapping with risk-based escalation for intermediate-phase verification in copilot-instructions-template.",
   "defaults": {
     "unmappedPhaseStrategy": "full-suite",
-    "runFullSuiteAtCompletion": true
+    "runFullSuiteAtCompletion": true,
+    "intermediatePhaseBudgetSeconds": 10,
+    "earlyFullSuiteOnCriticalSurface": true,
+    "earlyFullSuiteOnMultipleBroadenDomains": 2,
+    "confidenceFloor": 0.5,
+    "trackedFilePatterns": [
+      "Makefile",
+      "*.lock",
+      "requirements*.txt",
+      ".github/workflows/*.yml"
+    ]
   },
+  "riskClasses": ["critical-surface", "security-sensitive", "cross-cutting"],
   "ruleFiles": [
     "scripts/harness/targeted-test-map.d/00-selector-core.json",
     "scripts/harness/targeted-test-map.d/10-repo-scripts.json",

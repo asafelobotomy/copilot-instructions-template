@@ -41,6 +41,8 @@ if set(payload["selected_tests"]) != expected:
     raise SystemExit(str(payload["selected_tests"]))
 if payload["normalized_paths"] != ["scripts/release/verify-version-references.sh"]:
     raise SystemExit(str(payload["normalized_paths"]))
+if payload["intermediate_phase_budget_seconds"] != 10:
+    raise SystemExit(str(payload["intermediate_phase_budget_seconds"]))
 if payload["run_full_suite_at_completion"] is not True:
     raise SystemExit("final full-suite gate missing")
 if payload["terminal_safe_final_gate"] != "bash scripts/harness/run-all-captured.sh":
@@ -183,5 +185,98 @@ if payload["selected_tests"] != ["tests/contracts/test-setup-update-contracts.sh
     raise SystemExit(str(payload["selected_tests"]))
 if payload["intermediate_phase_strategy"] != "targeted":
     raise SystemExit(payload["intermediate_phase_strategy"])
+'
+echo ""
+
+echo "12. Escalation fields are present with no escalation on safe targeted path"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/release/verify-version-references.sh")
+SELECTOR_OUTPUT="$output" assert_python "escalation fields present and false for safe path" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if payload["should_run_full_suite_early"] is not False:
+    raise SystemExit(f"should_run_full_suite_early={payload['should_run_full_suite_early']}")
+if payload["early_full_suite_reasons"]:
+    raise SystemExit(str(payload["early_full_suite_reasons"]))
+if not isinstance(payload["confidence_score"], (int, float)):
+    raise SystemExit(f"confidence_score type: {type(payload['confidence_score'])}")
+if payload["confidence_score"] != 1.0:
+    raise SystemExit(f"confidence_score={payload['confidence_score']}")
+if not isinstance(payload["risk_classes_matched"], list):
+    raise SystemExit(f"risk_classes_matched type: {type(payload['risk_classes_matched'])}")
+if not isinstance(payload["domains_touched"], list):
+    raise SystemExit(f"domains_touched type: {type(payload['domains_touched'])}")
+if not isinstance(payload["decision_log"], list):
+    raise SystemExit(f"decision_log type: {type(payload['decision_log'])}")
+if len(payload["decision_log"]) < 4:
+    raise SystemExit(f"expected >= 4 decision_log entries, got {len(payload['decision_log'])}")
+'
+echo ""
+
+echo "13. Critical-surface risk class triggers early full suite"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" ".github/copilot-instructions.md")
+SELECTOR_OUTPUT="$output" assert_python "critical-surface triggers should_run_full_suite_early" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if payload["should_run_full_suite_early"] is not True:
+    raise SystemExit(f"should_run_full_suite_early={payload['should_run_full_suite_early']}")
+if "critical-surface" not in payload["risk_classes_matched"]:
+    raise SystemExit(str(payload["risk_classes_matched"]))
+reasons = " ".join(payload["early_full_suite_reasons"])
+if "critical-surface" not in reasons.lower() and "Critical-surface" not in reasons:
+    raise SystemExit(str(payload["early_full_suite_reasons"]))
+rules_matched = [r for r in payload["matched_rules"] if r.get("riskClass") == "critical-surface"]
+if not rules_matched:
+    raise SystemExit("no matched_rules have riskClass=critical-surface")
+'
+echo ""
+
+echo "14. Security-sensitive risk class triggers early full suite"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/hooks/scripts/scan-secrets.sh")
+SELECTOR_OUTPUT="$output" assert_python "security-sensitive triggers should_run_full_suite_early" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if payload["should_run_full_suite_early"] is not True:
+    raise SystemExit(f"should_run_full_suite_early={payload['should_run_full_suite_early']}")
+if "security-sensitive" not in payload["risk_classes_matched"]:
+    raise SystemExit(str(payload["risk_classes_matched"]))
+'
+echo ""
+
+echo "15. Cross-cutting risk class is collected in risk_classes_matched"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/lib.sh")
+SELECTOR_OUTPUT="$output" assert_python "cross-cutting risk class collected" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if "cross-cutting" not in payload["risk_classes_matched"]:
+    raise SystemExit(str(payload["risk_classes_matched"]))
+'
+echo ""
+
+echo "16. Decision log records all five escalation rules"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/release/verify-version-references.sh")
+SELECTOR_OUTPUT="$output" assert_python "decision log has all five rule entries" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+rules = [entry["rule"] for entry in payload["decision_log"]]
+expected = {"tracked-file-pattern", "critical-surface", "security-sensitive", "multi-domain-broaden", "confidence-floor"}
+missing = expected - set(rules)
+if missing:
+    raise SystemExit(f"missing decision log rules: {sorted(missing)}")
+'
+echo ""
+
+echo "17. Confidence score drops below 1.0 when unmapped paths exist"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/release/verify-version-references.sh" ".gitignore")
+SELECTOR_OUTPUT="$output" assert_python "confidence score reflects unmapped paths" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if payload["confidence_score"] >= 1.0:
+    raise SystemExit(f"expected < 1.0, got {payload['confidence_score']}")
+if payload["confidence_score"] != 0.5:
+    raise SystemExit(f"expected 0.5 (1/2), got {payload['confidence_score']}")
+'
+echo ""
+
+echo "18. Domains touched reflects top-level directories"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/lib.sh" "template/copilot-instructions.md")
+SELECTOR_OUTPUT="$output" assert_python "domains_touched includes both top-level dirs" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+domains = set(payload["domains_touched"])
+if "scripts" not in domains or "template" not in domains:
+    raise SystemExit(str(payload["domains_touched"]))
 '
 echo ""

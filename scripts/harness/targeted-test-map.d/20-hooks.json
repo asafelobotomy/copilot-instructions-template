@@ -226,6 +226,7 @@
       "matchType": "exact",
       "pattern": "template/hooks/scripts/scan-secrets.sh",
       "phaseStrategy": "targeted",
+      "riskClass": "security-sensitive",
       "tests": [
         "tests/hooks/test-hook-scan-secrets.sh"
       ],
@@ -236,6 +237,7 @@
       "matchType": "exact",
       "pattern": "template/hooks/scripts/scan-secrets.ps1",
       "phaseStrategy": "targeted",
+      "riskClass": "security-sensitive",
       "tests": [
         "tests/hooks/test-hook-scan-secrets-powershell.sh"
       ],

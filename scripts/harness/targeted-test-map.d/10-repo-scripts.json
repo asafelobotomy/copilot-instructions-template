@@ -6,6 +6,7 @@
       "matchType": "exact",
       "pattern": "scripts/lib.sh",
       "phaseStrategy": "broaden-aggressively",
+      "riskClass": "cross-cutting",
       "tests": [
         "tests/scripts/test-release-plan.sh",
         "tests/scripts/test-verify-version-references.sh",

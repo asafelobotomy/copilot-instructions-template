@@ -198,29 +198,37 @@ echo "6. Task completion and testing policy distinguish targeted vs full-suite g
 assert_python "instruction files define phase testing vs final completion semantics" '
 required_by_file = {
     ".github/copilot-instructions.md": [
-        "use deterministic targeted suites during intermediate phases; run `bash tests/run-all.sh` before marking a full task done end-to-end",
+        "use deterministic targeted suites during intermediate phases; run `bash tests/run-all.sh` once before marking a full task done end-to-end",
         "During intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites",
-        "Run `bash tests/run-all.sh` only before marking the full user task complete end-to-end",
+        "Run `bash tests/run-all.sh` only once before marking the full user task complete end-to-end",
         "### Test Scope Policy",
         "**Task complete** means the full user-visible task is finished end-to-end",
         "During intermediate phases, prefer deterministic path-based targeted suites",
         "If multiple sub-parts are still in progress, do not treat a passing targeted subset as permission to declare the whole task complete",
         "Broaden early when changes touch shared helpers, broad policy surfaces, parity mirrors, or any area without a reliable targeted test mapping",
+        "Keep intermediate verification under roughly 10 seconds when the targeted mapping allows",
+        "Re-run the full suite during active work only if a targeted failure required a fix",
+        "Never run the full suite repeatedly between intermediate steps just to be safe",
         "Final gate: before marking the full task complete, run the full suite with `bash tests/run-all.sh`",
+        "**Risk-based early escalation**: when the selector emits `should_run_full_suite_early: true`, run the full suite immediately",
     ],
     "template/copilot-instructions.md": [
-        "use deterministic targeted suites during intermediate phases when available; run `{{TEST_COMMAND}}` before marking a full task done end-to-end",
+        "use deterministic targeted suites during intermediate phases when available; run `{{TEST_COMMAND}}` once before marking a full task done end-to-end",
         "Three-check ritual before marking a full task complete end-to-end",
         "Must pass before the full task is done",
         "During intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites",
-        "Run `{{TEST_COMMAND}}` only before marking the full user task complete end-to-end",
+        "Run `{{TEST_COMMAND}}` only once before marking the full user task complete end-to-end",
         "### Test Scope Policy",
         "**Task complete** means the full user-visible task is finished end-to-end",
         "During intermediate phases, prefer deterministic path-based targeted suites",
         "If the repo documents a targeted-test selector or phase-test command, use it to choose deterministic phase checks from changed paths",
         "If multiple sub-parts are still in progress, do not treat a passing targeted subset as permission to declare the whole task complete",
         "Broaden early when changes touch shared helpers, broad policy surfaces, parity mirrors, or any area without a reliable targeted test mapping",
+        "Keep intermediate verification under roughly 10 seconds when the targeted mapping allows",
+        "Re-run the full suite during active work only if a targeted failure required a fix",
+        "Never run the full suite repeatedly between intermediate steps just to be safe",
         "Final gate: before marking the full task complete, run the full suite with `{{TEST_COMMAND}}`",
+        "**Risk-based early escalation**: when the selector emits `should_run_full_suite_early: true`, run the full suite immediately",
     ],
 }
 for rel, needles in required_by_file.items():
@@ -530,6 +538,8 @@ for needle in [
     ".github/copilot-instructions.md",
     "bash tests/run-all.sh",
     "## Canonical instructions",
+    "targeted tests during iterative work",
+    "once as the final full-suite gate",
 ]:
     if needle not in claude_text:
         raise SystemExit("CLAUDE.md missing canonical source pointer: " + needle)
@@ -565,12 +575,55 @@ for needle in [
     "{{TEST_COMMAND}}",
     "{{PROJECT_NAME}}",
     "{{LANGUAGE}}",
+    "targeted tests during iterative work",
+    "once as the final full-suite gate",
 ]:
     if needle not in template_claude_text:
         raise SystemExit("template/CLAUDE.md missing expected content: " + needle)
 for forbidden in ["## Rules", "## Coding conventions"]:
     if forbidden in template_claude_text:
         raise SystemExit("template/CLAUDE.md still duplicates deprecated section: " + forbidden)
+'
+echo ""
+
+echo "14. Test instructions, prompts, agents, and validation docs align with targeted-first execution"
+assert_python "targeted-first policy is enforced across test-facing surfaces" '
+checks = {
+    ".github/instructions/tests.instructions.md": [
+        "select-targeted-tests.sh <paths...>",
+        "Run `bash tests/run-all.sh` once only when the full task is complete",
+        "targeted failure required broader re-verification",
+    ],
+    "template/instructions/tests.instructions.md": [
+        "targeted-test selector or phase-test command",
+        "Run `{{TEST_COMMAND}}` once only when the full task is complete",
+        "targeted failure required broader re-verification",
+    ],
+    ".github/prompts/test-gen.prompt.md": [
+        "select-targeted-tests.sh <paths...>",
+        "Run `bash tests/run-all.sh` once only if the generated tests finish the full task",
+        "targeted failure required broader re-verification",
+    ],
+    "template/prompts/test-gen.prompt.md": [
+        "targeted-test selector or phase-test command",
+        "Run `{{TEST_COMMAND}}` once only if the generated tests finish the full task",
+        "targeted failure required broader re-verification",
+    ],
+    ".github/agents/organise.agent.md": [
+        "Run the repo test suite once before task completion",
+        "targeted failure required a fix and broader re-verification is warranted",
+    ],
+    "README.md": [
+        "During iterative work, prefer `bash scripts/harness/select-targeted-tests.sh <paths...>`",
+        "single end-of-task full-suite gate",
+        "targeted failure forces broader re-verification",
+    ],
+}
+for rel, needles in checks.items():
+    text = (root / rel).read_text(encoding="utf-8")
+    for needle in needles:
+        if needle not in text:
+            raise SystemExit(rel + " missing targeted-first policy guidance: " + needle)
 '
 echo ""
 

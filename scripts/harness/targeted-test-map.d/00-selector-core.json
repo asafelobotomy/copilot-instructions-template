@@ -26,6 +26,7 @@
       "matchType": "exact",
       "pattern": "scripts/harness/suite-manifest.py",
       "phaseStrategy": "broaden-aggressively",
+      "riskClass": "cross-cutting",
       "tests": [
         "tests/scripts/test-suite-manifest.sh",
         "tests/scripts/test-select-targeted-tests.sh",
@@ -38,6 +39,7 @@
       "matchType": "exact",
       "pattern": "scripts/harness/suite-manifest.json",
       "phaseStrategy": "broaden-aggressively",
+      "riskClass": "cross-cutting",
       "tests": [
         "tests/scripts/test-suite-manifest.sh",
         "tests/scripts/test-select-targeted-tests.sh",

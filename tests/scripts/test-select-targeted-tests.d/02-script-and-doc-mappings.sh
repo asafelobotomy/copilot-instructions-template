@@ -174,13 +174,16 @@ if payload["intermediate_phase_strategy"] != "targeted":
     raise SystemExit(payload["intermediate_phase_strategy"])
 '
 
-echo "25. README.md maps to the release contract suite"
+echo "25. README.md maps to the release and customization contract suites"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "README.md")
 status=$?
 assert_success "selector exits zero on README.md" "$status"
-SELECTOR_OUTPUT="$output" assert_python "README.md maps to the release contract suite" '
+SELECTOR_OUTPUT="$output" assert_python "README.md maps to the release and customization contract suites" '
 payload = json.loads(os.environ["SELECTOR_OUTPUT"])
-if payload["selected_tests"] != ["tests/contracts/test-release-contracts.sh"]:
+if set(payload["selected_tests"]) != {
+    "tests/contracts/test-release-contracts.sh",
+    "tests/contracts/test-customization-contracts.sh",
+}:
     raise SystemExit(str(payload["selected_tests"]))
 if payload["intermediate_phase_strategy"] != "targeted":
     raise SystemExit(payload["intermediate_phase_strategy"])

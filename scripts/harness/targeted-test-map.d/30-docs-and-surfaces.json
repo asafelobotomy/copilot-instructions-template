@@ -141,6 +141,7 @@
       "matchType": "exact",
       "pattern": ".github/copilot-instructions.md",
       "phaseStrategy": "targeted",
+      "riskClass": "critical-surface",
       "tests": [
         "tests/contracts/test-customization-contracts.sh",
         "tests/scripts/test-copilot-audit.sh"
@@ -152,6 +153,7 @@
       "matchType": "exact",
       "pattern": "template/copilot-instructions.md",
       "phaseStrategy": "targeted",
+      "riskClass": "critical-surface",
       "tests": [
         "tests/contracts/test-customization-contracts.sh",
         "tests/contracts/test-setup-update-contracts.sh",
@@ -254,6 +256,7 @@
       "matchType": "exact",
       "pattern": ".vscode/mcp.json",
       "phaseStrategy": "targeted",
+      "riskClass": "security-sensitive",
       "tests": [
         "tests/scripts/test-copilot-audit.sh",
         "tests/scripts/test-mcp-launchers.sh"
@@ -347,9 +350,10 @@
       "pattern": "README.md",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-release-contracts.sh"
+        "tests/contracts/test-release-contracts.sh",
+        "tests/contracts/test-customization-contracts.sh"
       ],
-      "reason": "README documents release governance and repository settings validated by release contracts."
+      "reason": "README documents both release governance and the targeted-first validation workflow, so it should run release and customization policy contracts."
     },
     {
       "id": "template-workspace-stubs",

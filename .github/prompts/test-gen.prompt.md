@@ -18,6 +18,7 @@ Generate tests for the selected code following project conventions.
 4. Follow the arrange/act/assert pattern.
 5. Use descriptive test names: `"should <expected behaviour> when <condition>"`.
 6. Mock external dependencies but not the module under test.
-7. Run `bash tests/run-all.sh` after generating to verify tests pass.
+7. During iterative work, run the narrowest relevant targeted tests first. In this repo, prefer `bash scripts/harness/select-targeted-tests.sh <paths...>` to choose the phase checks from changed paths.
+8. Run `bash tests/run-all.sh` once only if the generated tests finish the full task, or if a targeted failure required broader re-verification.
 
 Do not modify the source code — only create or update test files.

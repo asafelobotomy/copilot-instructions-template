@@ -2,7 +2,7 @@
 # purpose:  Map changed repository paths to deterministic targeted test suites for intermediate-phase verification.
 # when:     Use during task phases to choose targeted suites from changed paths; not a replacement for the final full-suite gate.
 # inputs:   One or more repo-relative or absolute file or directory paths under the current repository root.
-# outputs:  JSON describing normalized paths, selected test suites, intermediate-phase strategy, matched rules, and the final full-suite gate.
+# outputs:  JSON describing normalized paths, selected test suites, intermediate-phase strategy, the inner-loop time budget, matched rules, and the final full-suite gate.
 # risk:     safe
 # source:   original
 set -euo pipefail
@@ -148,6 +148,13 @@ for rule in rules:
         raise SystemExit(f"invalid matchType in {MAP_FILE}: {rule}")
     if rule.get("phaseStrategy") not in PHASE_RANK:
         raise SystemExit(f"invalid phaseStrategy in {MAP_FILE}: {rule}")
+    risk_class = rule.get("riskClass")
+    valid_risk_classes = config.get("riskClasses", [])
+    if risk_class is not None and risk_class not in valid_risk_classes:
+        raise SystemExit(
+            f"invalid riskClass {risk_class!r} in rule {rule_id}; "
+            f"valid classes: {valid_risk_classes}"
+        )
     for test in rule.get("tests", []):
         if test == "self":
             continue
@@ -196,6 +203,7 @@ for path in normalized_paths:
                 "phase_strategy": rule_strategy,
                 "tests": tests,
                 "reason": rule["reason"],
+                **({"riskClass": rule["riskClass"]} if "riskClass" in rule else {}),
             }
         )
         if PHASE_RANK[rule_strategy] > PHASE_RANK[current_strategy]:
@@ -203,15 +211,136 @@ for path in normalized_paths:
         if rule_strategy != "targeted":
             broadening_reasons.append(f"{path}: {rule['reason']}")
 
+# ── Risk-based escalation ──────────────────────────────────────────────────
+
+tracked_file_patterns: list[str] = defaults.get("trackedFilePatterns", [])
+confidence_floor: float = float(defaults.get("confidenceFloor", 0.5))
+early_on_critical: bool = bool(defaults.get("earlyFullSuiteOnCriticalSurface", True))
+early_broaden_domain_threshold: int = int(defaults.get("earlyFullSuiteOnMultipleBroadenDomains", 2))
+
+# 1. Tracked-file-pattern check: any changed path that matches a tracked
+#    pattern forces full suite (mirrors Datadog's "tracked files" concept).
+tracked_hits: list[str] = []
+for path in normalized_paths:
+    for pattern in tracked_file_patterns:
+        if fnmatch.fnmatch(path, pattern) or fnmatch.fnmatch(pathlib.PurePosixPath(path).name, pattern):
+            tracked_hits.append(path)
+            break
+
+# 2. Collect risk classes from matched rules.
+risk_classes_matched: list[str] = unique(
+    [str(r["riskClass"]) for r in matched_rules if r.get("riskClass")]
+)
+
+# 3. Derive top-level domains touched by the change set.
+def top_level_domain(p: str) -> str:
+    parts = pathlib.PurePosixPath(p).parts
+    return parts[0] if parts else "."
+
+domains_touched: list[str] = unique([top_level_domain(p) for p in normalized_paths])
+
+# 4. Count distinct broadening domains (top-level dir of the path that triggered broadening).
+broaden_domains: set[str] = set()
+for entry in matched_rules:
+    if entry.get("phase_strategy") not in ("targeted",):
+        broaden_domains.add(top_level_domain(str(entry["path"])))
+
+# 5. Confidence score: ratio of mapped (non-unmapped) files to total changed files.
+total_files = len(normalized_paths)
+mapped_files = total_files - len(unmapped_paths)
+confidence_score = round(mapped_files / total_files, 4) if total_files > 0 else 1.0
+
+# 6. Escalation decision.
+should_run_full_suite_early = False
+early_full_suite_reasons: list[str] = []
+decision_log: list[dict[str, object]] = []
+
+# Rule: tracked-file-pattern hit
+decision_log.append({
+    "rule": "tracked-file-pattern",
+    "matched": bool(tracked_hits),
+    "detail": tracked_hits[:5] if tracked_hits else "no tracked-file hits",
+})
+if tracked_hits:
+    should_run_full_suite_early = True
+    early_full_suite_reasons.append(
+        f"Tracked file pattern matched: {', '.join(tracked_hits[:3])}"
+    )
+
+# Rule: critical-surface risk class
+critical_hit = "critical-surface" in risk_classes_matched
+decision_log.append({
+    "rule": "critical-surface",
+    "matched": critical_hit and early_on_critical,
+    "detail": "critical-surface risk class found in matched rules" if critical_hit else "no critical-surface rules matched",
+})
+if critical_hit and early_on_critical:
+    should_run_full_suite_early = True
+    early_full_suite_reasons.append("Critical-surface risk class matched")
+
+# Rule: security-sensitive risk class
+security_hit = "security-sensitive" in risk_classes_matched
+decision_log.append({
+    "rule": "security-sensitive",
+    "matched": security_hit,
+    "detail": "security-sensitive risk class found in matched rules" if security_hit else "no security-sensitive rules matched",
+})
+if security_hit:
+    should_run_full_suite_early = True
+    early_full_suite_reasons.append("Security-sensitive risk class matched")
+
+# Rule: cross-domain broadening spread
+multi_domain = len(broaden_domains) >= early_broaden_domain_threshold
+decision_log.append({
+    "rule": "multi-domain-broaden",
+    "matched": multi_domain,
+    "detail": {
+        "broaden_domains": sorted(broaden_domains),
+        "threshold": early_broaden_domain_threshold,
+    },
+})
+if multi_domain:
+    should_run_full_suite_early = True
+    early_full_suite_reasons.append(
+        f"Broadening triggered across {len(broaden_domains)} domains "
+        f"(threshold: {early_broaden_domain_threshold}): {', '.join(sorted(broaden_domains))}"
+    )
+
+# Rule: confidence floor breach
+low_confidence = confidence_score < confidence_floor
+decision_log.append({
+    "rule": "confidence-floor",
+    "matched": low_confidence,
+    "detail": {
+        "confidence_score": confidence_score,
+        "floor": confidence_floor,
+        "mapped_files": mapped_files,
+        "total_files": total_files,
+    },
+})
+if low_confidence:
+    should_run_full_suite_early = True
+    early_full_suite_reasons.append(
+        f"Confidence score {confidence_score} below floor {confidence_floor} "
+        f"({mapped_files}/{total_files} files mapped)"
+    )
+
 output = {
     "input_paths": RAW_PATHS,
     "normalized_paths": normalized_paths,
     "selected_tests": ordered_suite_paths(selected_tests),
     "intermediate_phase_strategy": current_strategy,
+    "intermediate_phase_budget_seconds": int(defaults.get("intermediatePhaseBudgetSeconds", 10)),
+    "should_run_full_suite_early": should_run_full_suite_early,
+    "early_full_suite_reasons": early_full_suite_reasons,
+    "confidence_score": confidence_score,
+    "risk_classes_matched": risk_classes_matched,
+    "domains_touched": domains_touched,
     "run_full_suite_at_completion": bool(defaults.get("runFullSuiteAtCompletion", True)),
     "matched_rules": matched_rules,
     "broadening_reasons": unique(broadening_reasons),
     "unmapped_paths": unmapped_paths,
+    "decision_log": decision_log,
     "final_gate": "bash tests/run-all.sh",
     "terminal_safe_final_gate": "bash scripts/harness/run-all-captured.sh",
 }

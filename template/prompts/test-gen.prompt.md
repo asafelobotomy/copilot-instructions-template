@@ -18,6 +18,8 @@ Generate tests for the selected code following project conventions.
 4. Follow the arrange/act/assert pattern.
 5. Use descriptive test names: `"should <expected behaviour> when <condition>"`.
 6. Mock external dependencies but not the module under test.
-7. Run `{{TEST_COMMAND}}` after generating to verify tests pass.
+7. During iterative work, run the narrowest relevant targeted tests first.
+8. If the repo documents a targeted-test selector or phase-test command, use it to choose phase checks from changed paths instead of defaulting to `{{TEST_COMMAND}}`.
+9. Run `{{TEST_COMMAND}}` once only if the generated tests finish the full task, or if a targeted failure required broader re-verification.
 
 Do not modify the source code — only create or update test files.

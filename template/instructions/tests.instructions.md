@@ -7,7 +7,9 @@ description: "Conventions for test and spec files — naming, structure, mocking
 # Test File Instructions
 
 - Testing framework: {{TEST_FRAMEWORK}}
-- Run tests: `{{TEST_COMMAND}}`
+- During iterative work, run the narrowest relevant targeted tests first.
+- If the repo documents a targeted-test selector or phase-test command, use it to choose phase checks from changed paths instead of defaulting to `{{TEST_COMMAND}}`.
+- Run `{{TEST_COMMAND}}` once only when the full task is complete, or earlier only if a targeted failure required broader re-verification.
 - Name test files to mirror the source file they cover (e.g. `utils.ts` → `utils.test.ts`).
 - Each test should have a clear arrange/act/assert structure.
 - Prefer testing behaviour over implementation details — avoid asserting internal state.

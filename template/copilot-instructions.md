@@ -7,7 +7,7 @@
 >
 > **⚡ Critical Reminders** — every session, every task:
 >
-> 1. **Test** — use deterministic targeted suites during intermediate phases when available; run `{{TEST_COMMAND}}` before marking a full task done end-to-end (§2).
+> 1. **Test** — use deterministic targeted suites during intermediate phases when available; run `{{TEST_COMMAND}}` once before marking a full task done end-to-end (§2).
 > 2. **PDCA** — Plan→Do→Check→Act for every non-trivial change (§3).
 > 3. **Read first** — never claim or modify a file not opened this session (§4).
 > 4. **Additive** — never delete existing rules without explicit user instruction (§8).
@@ -50,7 +50,7 @@ Apply to every non-trivial change.
 
 **Plan**: State the goal. List the files that will change. Estimate LOC delta. For non-trivial tasks that span multiple files or introduce new behaviour, write a brief requirements summary before coding. Realign before proceeding if that summary changes the plan.
 **Do**: Implement. Write tests alongside code, not after.
-**Check**: During intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites for the touched paths when available. If the blast radius includes shared helpers, broad contract surfaces, or no reliable mapping exists, broaden aggressively. Run `{{TEST_COMMAND}}` only before marking the full user task complete end-to-end. Review output. Fix before proceeding.
+**Check**: During intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites for the touched paths when available. If the blast radius includes shared helpers, broad contract surfaces, or no reliable mapping exists, broaden aggressively. Run `{{TEST_COMMAND}}` only once before marking the full user task complete end-to-end. Do not rerun the full suite between intermediate steps just to be safe. Review output. Fix before proceeding.
 **Act**: If baseline exceeded, address it now. Summarise what changed.
 
 ### Test Scope Policy
@@ -59,14 +59,18 @@ Apply to every non-trivial change.
 |------|---------|----------|
 | `PathTargeted` | Narrow deterministic checks mapped to touched paths | Default during intermediate work |
 | `AffectedSuite` | Broader checks for shared helpers or broad contract surfaces | Path-targeted coverage is too narrow |
-| `FullSuite` | Entire local test suite | Before marking the full task complete |
+| `FullSuite` | Entire local test suite | Before marking the full task complete, or when the selector emits `should_run_full_suite_early` |
 | `MergeGate` | Verified state required before merge, release, or final handoff | The change is ready to leave the working session |
 
 - **Task complete** means the full user-visible task is finished end-to-end and the required verification has passed, not that one phase of a larger plan is done and not that one item in a multi-part TODO list is done.
 - During intermediate phases, prefer deterministic path-based targeted suites tied to the files or directories actually touched.
 - If the repo documents a targeted-test selector or phase-test command, use it to choose deterministic phase checks from changed paths instead of guessing the phase-time suite set manually.
+- Keep intermediate verification under roughly 10 seconds when the targeted mapping allows; if the selected phase checks exceed that, narrow the scope or defer broader coverage to the next task boundary.
 - If multiple sub-parts are still in progress, do not treat a passing targeted subset as permission to declare the whole task complete.
 - Broaden early when changes touch shared helpers, broad policy surfaces, parity mirrors, or any area without a reliable targeted test mapping.
+- **Risk-based early escalation**: when the selector emits `should_run_full_suite_early: true`, run the full suite immediately rather than deferring to task completion. Escalation triggers include: critical-surface or security-sensitive risk classes matched, broadening across multiple top-level domains, confidence score below the configured floor, or tracked file patterns matched.
+- Re-run the full suite during active work only if a targeted failure required a fix and you need to verify that the fix did not broaden the regression surface.
+- Never run the full suite repeatedly between intermediate steps just to be safe.
 - Final gate: before marking the full task complete, run the full suite with `{{TEST_COMMAND}}`.
 
 ### Structured Thinking Discipline

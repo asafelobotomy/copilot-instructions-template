@@ -75,6 +75,7 @@ Release-please is the only version writer. Do not bump `VERSION.md`, `.release-p
 
 ## Validation entrypoints
 
+- During iterative work, prefer `bash scripts/harness/select-targeted-tests.sh <paths...>` and keep the selected checks narrow. Reserve `bash tests/run-all.sh` for a single end-of-task full-suite gate unless a targeted failure forces broader re-verification.
 - Full suite: `bash tests/run-all.sh`
 - Captured full suite: `bash scripts/harness/run-all-captured.sh`
 - Targeted test selection: `bash scripts/harness/select-targeted-tests.sh <paths...>`
