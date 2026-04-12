@@ -50,7 +50,7 @@ Guidelines:
 - Use `Docs` when file moves require updating documentation, migration guides, or user-facing references beyond inline path fixes.
 - Update every direct caller in the same pass so the tree stays runnable.
 - Prefer direct path retargeting over temporary wrappers.
-- Validate with targeted checks first, then run the repo test suite when the change is substantial.
+- Validate with targeted checks first. Run the repo test suite once before task completion, or earlier only if a targeted failure required a fix and broader re-verification is warranted.
 - If the scope is ambiguous or a move would conflict with user changes, stop and surface the ambiguity.
 
 ## Skill activation map
