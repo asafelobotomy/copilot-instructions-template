@@ -7,6 +7,12 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
+## [Unreleased]
+
+### Changed
+
+* N/A
+
 ## [5.12.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.11.0...v5.12.0) (2026-04-11)
 
 
@@ -19,12 +25,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 * **hooks:** harden secrets scanning and path safety ([71b1058](https://github.com/asafelobotomy/copilot-instructions-template/commit/71b10587bbc0bc9701050f14e7cc055f53babc57))
 * **hooks:** refine pulse state and heartbeat reporting ([b0b2fbf](https://github.com/asafelobotomy/copilot-instructions-template/commit/b0b2fbfc96bf7b88542a6e93796f77fbf2126193))
-
-## [Unreleased]
-
-### Changed
-
-* N/A
 
 ## [5.11.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.10.1...v5.11.0) (2026-04-11)
 

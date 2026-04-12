@@ -141,23 +141,17 @@ if count < 6:
 echo ""
 
 # ──────────────────────────────────────────────────────────────
-echo "7. Every ask_questions block has a Fallback note nearby"
+echo "7. ask_questions convention declares fallback behaviour"
 # ──────────────────────────────────────────────────────────────
 
 assert_python "ask_questions blocks have fallback notes" '
 for fname in ("SETUP.md", "UPDATE.md"):
     text = (root / fname).read_text(encoding="utf-8")
-    # Split on ask_questions fence markers
-    parts = text.split("```ask_questions")
-    # Skip the first part (before any block)
-    for i, part in enumerate(parts[1:], start=1):
-        # Find the closing fence, then check the next ~500 chars for fallback
-        close = part.find("```")
-        if close == -1:
-            raise SystemExit(f"{fname} ask_questions block {i} has no closing fence")
-        after_block = part[close:close+500]
-        if "Fallback" not in after_block and "fallback" not in after_block and "unavailable" not in after_block:
-            raise SystemExit(f"{fname} ask_questions block {i} missing fallback note within 500 chars after closing fence")
+    # Convention line must appear near the top of the file
+    if "ask_questions convention" not in text:
+        raise SystemExit(f"{fname} missing ask_questions convention header")
+    if "unavailable" not in text:
+        raise SystemExit(f"{fname} ask_questions convention does not mention unavailable fallback")
 '
 echo ""
 
@@ -333,26 +327,8 @@ assert_file_contains "manifests.md file manifest tracks hook Python helpers" \
 assert_file_contains "manifests.md file manifest tracks agent JSON support files" \
     "$MANIFESTS" "\\.github/agents/\\*\\.json"
 
-assert_file_contains "UPDATE.md file manifest tracks hook JSON helpers" \
-    "$UPDATE" "\\.github/hooks/scripts/\\*\\.json"
-
-assert_file_contains "UPDATE.md file manifest tracks hook Python helpers" \
-    "$UPDATE" "\\.github/hooks/scripts/\\*\\.py"
-
-assert_file_contains "UPDATE.md file manifest tracks agent JSON support files" \
-    "$UPDATE" "\\.github/agents/\\*\\.json"
-
-assert_file_contains "UPDATE.md file manifest tracks workspace identity files" \
-    "$UPDATE" "\\.copilot/workspace/identity/\\*\\.md"
-
-assert_file_contains "UPDATE.md file manifest tracks workspace knowledge files" \
-    "$UPDATE" "\\.copilot/workspace/knowledge/\\*\\.md"
-
-assert_file_contains "UPDATE.md file manifest tracks workspace diaries" \
-    "$UPDATE" "\\.copilot/workspace/knowledge/diaries/\\*\\.md"
-
-assert_file_contains "UPDATE.md file manifest tracks workspace operations markdown" \
-    "$UPDATE" "\\.copilot/workspace/operations/\\*\\.md"
+assert_file_contains "UPDATE.md file manifest delegates to manifests.md" \
+    "$UPDATE" "manifests.md.*Version file template"
 
 assert_file_not_contains "UPDATE.md no longer uses the flat workspace markdown glob" \
     "$UPDATE" "\\.copilot/workspace/\\*\\.md"
@@ -403,18 +379,6 @@ assert_file_contains "manifests.md file manifest tracks VS Code MCP config" \
 
 assert_file_contains "manifests.md file manifest tracks CLAUDE.md" \
     "$MANIFESTS" "CLAUDE\.md"
-
-assert_file_contains "UPDATE.md file manifest tracks starter-kit plugin manifests" \
-    "$UPDATE" "\\.github/starter-kits/\\*/plugin\.json"
-
-assert_file_contains "UPDATE.md file manifest tracks starter-kit skills" \
-    "$UPDATE" "\\.github/starter-kits/\\*/skills/\\*/SKILL\.md"
-
-assert_file_contains "UPDATE.md file manifest tracks starter-kit instructions" \
-    "$UPDATE" "\\.github/starter-kits/\\*/instructions/\\*\.instructions\.md"
-
-assert_file_contains "UPDATE.md file manifest tracks starter-kit prompts" \
-    "$UPDATE" "\\.github/starter-kits/\\*/prompts/\\*\.prompt\.md"
 
 assert_file_contains "UPDATE.md file manifest tracks VS Code settings" \
     "$UPDATE" "\\.vscode/settings\.json"

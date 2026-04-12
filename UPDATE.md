@@ -6,7 +6,7 @@
 >
 > **For the human**: Say one of the trigger phrases below in a Copilot chat.
 >
-> **ask_questions convention**: Use `ask_questions` for ALL user-facing decisions. Each block must have `header:`, `question:`, `options:` with `- label:` entries.
+> **ask_questions convention**: Use `ask_questions` for ALL user-facing decisions. Each block must have `header:`, `question:`, `options:` with `- label:` entries. If `ask_questions` is unavailable, present options in chat instead — this applies to every decision block below.
 
 ---
 
@@ -121,7 +121,7 @@ Match = not modified. Mismatch = modified. If unavailable, stop and direct the u
 | `template/CLAUDE.md` | `CLAUDE.md` |
 | `starter-kits/<kit>/**` | `.github/starter-kits/<kit>/**` (only if installed) |
 
-**Excluded** (template internals): `tests/`, `scripts/`, `.github/workflows/`, `.github/copilot-instructions.md`, `.github/instructions/`, `.github/prompts/`, `.github/hooks/`, `.github/skills/`, `SETUP.md`, `UPDATE.md`, `MIGRATION.md`, `AGENTS.md`, `MODELS.md`, `VERSION.md`, `CHANGELOG.md`, `README.md`, `llms.txt`, `release-please-config.json`, `CLAUDE.md` (dev copy), `.markdownlint*`, `.gitignore`, `.github/copilot-version.md`.
+**Excluded** (template internals — not delivered to consumers): `tests/`, `scripts/`, `.github/workflows/`, `.github/copilot-instructions.md`, `.github/instructions/`, `.github/prompts/`, `.github/hooks/`, `.github/skills/`, `SETUP.md`, `UPDATE.md`, `MIGRATION.md`, `AGENTS.md`, `MODELS.md`, `VERSION.md`, `CHANGELOG.md`, `README.md`, `llms.txt`, `release-please-config.json`, `.markdownlint*`, `.gitignore`, `.github/copilot-version.md`.
 
 **Roster completeness**: fetch `git/trees/main?recursive=1` (reuse U3b cache). Filter for `.github/agents/*.agent.md`, `.github/agents/*.json`, and `template/skills/*/SKILL.md`. Add missing items with status `NEW`.
 
@@ -152,8 +152,6 @@ options:
     description: "Choose which companion files to update"
 allowFreeformInput: false
 ```
-
-> **Fallback**: If `ask_questions` unavailable, present as Y/N/list in chat.
 
 If confirmed, write files, update version + CHANGELOG, skip full report.
 
@@ -195,8 +193,6 @@ options:
 allowFreeformInput: false
 ```
 
-> **Fallback**: If `ask_questions` unavailable, present as U/S/C in chat.
-
 ---
 
 ## Pre-write Backup
@@ -217,8 +213,6 @@ Back up `.github/copilot-instructions.md` + companion files with status `UPDATAB
 Special case for `.vscode/mcp.json`: after writing the latest template structure, restore the consumer's previous per-server `disabled` state for every server present in both the old and new configs. If a server was previously enabled (no `disabled` field), remove `disabled` from the updated config as well. Newly introduced servers keep the template default. Sandbox and other structural fields always come from the template.
 
 **New placeholders**: use `ask_questions` with `allowFreeformInput: true` (batch ≤4). Add to §10.
-
-> **Fallback**: If `ask_questions` unavailable, present as numbered list in chat.
 
 Proceed to Post-update steps.
 
@@ -242,8 +236,6 @@ options:
 allowFreeformInput: false
 ```
 
-> **Fallback**: If `ask_questions` unavailable, present as A/B/C in chat.
-
 Then companion files:
 
 ```ask_questions
@@ -257,8 +249,6 @@ options:
     description: "Leave unchanged"
 allowFreeformInput: false
 ```
-
-> **Fallback**: If `ask_questions` unavailable, present as A/B in chat.
 
 If **C** chosen: show full text, accept adjustments, confirm via ask_questions (Yes/No, `allowFreeformInput: true`). After all reviewed, summarise and confirm:
 
@@ -274,8 +264,6 @@ options:
 allowFreeformInput: false
 ```
 
-> **Fallback**: If `ask_questions` unavailable, present as yes/no in chat.
-
 Pre-write Backup runs after "yes", before first write.
 
 ---
@@ -289,8 +277,8 @@ Apply before writing any section, regardless of decision path:
 | **§10 collision** | Change would overwrite §10 | Skip automatically, log anomaly |
 | **Migrated content** | Section has `<!-- migrated -->` blocks | Preserve verbatim; write around them |
 | **User-added content** | Section has `<!-- user-added -->` blocks | Preserve verbatim; write around them |
-| **User preference conflict** | New section changes behaviour in User Preferences | Flag. Use `ask_questions`: "Keep my preference" / "Use template version". Fallback: ask in chat. |
-| **Metric threshold conflict** | New section changes resolved thresholds in §10 | Show current vs defaults. Use `ask_questions`: "Keep current values" / "Use template defaults". Fallback: ask in chat. |
+| **User preference conflict** | New section changes behaviour in User Preferences | Flag. Use `ask_questions`: "Keep my preference" / "Use template version". |
+| **Metric threshold conflict** | New section changes resolved thresholds in §10 | Show current vs defaults. Use `ask_questions`: "Keep current values" / "Use template defaults". |
 | **MCP enablement state** | Updating `.vscode/mcp.json` and consumer has existing per-server `disabled` choices | Apply the latest template structure first, then restore the consumer's prior per-server `disabled` state for servers present in both old and new configs. Keep template defaults for newly introduced servers. Always take sandbox and structural fields from the template. |
 
 **Items never modified by updates**: §10 (all subsections), `<!-- migrated -->` blocks, `<!-- user-added -->` blocks, resolved placeholder values. **Items flagged for user decision**: `USER_MODIFIED` sections, sections with `<!-- update-note: -->`, differing thresholds, preference conflicts.
@@ -299,68 +287,8 @@ Apply before writing any section, regardless of decision path:
 
 ## Post-update steps
 ### 1 — Update version file, fingerprints, and file manifest
-Recompute fingerprints and file-manifest hashes:
-
-```bash
-# Section fingerprints
-for i in $(seq 1 9); do
-  fp=$(awk "/^## §${i} —/{found=1; next} /^## §/{if(found) exit} found{print}" \
-    .github/copilot-instructions.md | sha256sum | cut -c1-12)
-  echo "§${i}=${fp}"
-done
-# File manifest
-for f in .github/agents/*.agent.md .github/agents/*.json .github/skills/*/SKILL.md \
-  .github/starter-kits/*/plugin.json \
-  .github/starter-kits/*/skills/*/SKILL.md \
-  .github/starter-kits/*/instructions/*.instructions.md \
-  .github/starter-kits/*/prompts/*.prompt.md \
-  .github/hooks/copilot-hooks.json .github/hooks/scripts/*.sh \
-  .github/hooks/scripts/*.ps1 .github/hooks/scripts/*.json \
-  .github/hooks/scripts/*.py .github/instructions/*.instructions.md \
-  .github/prompts/*.prompt.md .github/workflows/copilot-setup-steps.yml \
-  .vscode/settings.json .vscode/extensions.json .vscode/mcp.json \
-  CLAUDE.md \
-  .copilot/workspace/identity/*.md \
-  .copilot/workspace/knowledge/*.md .copilot/workspace/knowledge/diaries/*.md \
-  .copilot/workspace/operations/*.md .copilot/workspace/operations/workspace-index.json; do
-  [ -f "$f" ] || continue; echo "${f}=$(sha256sum "$f" | cut -c1-12)"
-done
-```
-
-If `sha256sum` is unavailable, use this Python fallback:
-
-```python
-import hashlib, pathlib, glob, re
-
-# Section fingerprints
-text = pathlib.Path('.github/copilot-instructions.md').read_text(encoding='utf-8')
-for i in range(1, 10):
-    match = re.search(rf'(?m)^## §{i} —.*?(?=^## §|\Z)', text, re.DOTALL)
-    body = match.group(0) if match else ''
-    fp = hashlib.sha256(body.encode()).hexdigest()[:12]
-    print(f'§{i}={fp}')
-
-# File manifest
-for pattern in [
-  '.github/agents/*.agent.md', '.github/agents/*.json', '.github/skills/*/SKILL.md',
-    '.github/starter-kits/*/plugin.json',
-    '.github/starter-kits/*/skills/*/SKILL.md',
-    '.github/starter-kits/*/instructions/*.instructions.md',
-    '.github/starter-kits/*/prompts/*.prompt.md',
-    '.github/hooks/copilot-hooks.json', '.github/hooks/scripts/*.sh',
-  '.github/hooks/scripts/*.ps1', '.github/hooks/scripts/*.json',
-  '.github/hooks/scripts/*.py', '.github/instructions/*.instructions.md',
-    '.github/prompts/*.prompt.md', '.github/workflows/copilot-setup-steps.yml',
-    '.vscode/settings.json', '.vscode/extensions.json', '.vscode/mcp.json',
-    'CLAUDE.md',
-    '.copilot/workspace/identity/*.md',
-    '.copilot/workspace/knowledge/*.md', '.copilot/workspace/knowledge/diaries/*.md',
-    '.copilot/workspace/operations/*.md', '.copilot/workspace/operations/workspace-index.json',
-]:
-    for f in sorted(glob.glob(pattern)):
-        h = hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()[:12]
-        print(f'{f}={h}')
-```
+Recompute fingerprints and file-manifest hashes using the bash script (or Python
+fallback) from **manifests.md § Version file template**.
 
 Write `.github/copilot-version.md`: version, `Applied:` (preserved), `Updated: YYYY-MM-DD`, `<!-- section-fingerprints -->`, `<!-- file-manifest -->`, `<!-- setup-answers -->` (preserved). Omit fingerprint/manifest blocks only if neither `sha256sum` nor Python is available.
 
@@ -387,8 +315,6 @@ options:
     description: "Cancel"
 allowFreeformInput: false
 ```
-
-> **Fallback**: If `ask_questions` unavailable, present as yes/no in chat.
 
 If the user declines, stop with no writes.
 
@@ -448,8 +374,6 @@ options:
 allowFreeformInput: false
 ```
 
-> **Fallback**: If `ask_questions` unavailable, list as numbered choices in chat.
-
 Populate dynamically from scanned directories.
 
 #### R2 — Show backup manifest and confirm
@@ -466,8 +390,6 @@ options:
     description: "Cancel"
 allowFreeformInput: false
 ```
-
-> **Fallback**: If `ask_questions` unavailable, present as yes/no in chat.
 
 #### R3 — Back up current managed files
 Create `.github/archive/pre-restore-<TODAY>-v<CURRENT_VERSION_OR_UNKNOWN>/` with current managed files and `BACKUP-MANIFEST.md`. Always reversible.

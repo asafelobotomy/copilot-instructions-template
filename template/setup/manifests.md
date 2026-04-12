@@ -16,7 +16,7 @@ inventory of supporting upstream sources so `AGENTS.md` and
 | Protocol | Canonical behaviour file | Supporting upstream sources |
 |----------|--------------------------|-----------------------------|
 | Setup | `SETUP.md` | `template/copilot-instructions.md`, `template/setup/interview.md`, `template/setup/manifests.md`, `template/workspace/operations/workspace-index.json`, `template/copilot-setup-steps.yml`, `template/vscode/settings.json`, `template/vscode/extensions.json`, `starter-kits/REGISTRY.json` |
-| Update, backup restore, and factory restore | `UPDATE.md` | `VERSION.md`, `MIGRATION.md`, `MIGRATION.archive.md`, `CHANGELOG.md`, `template/copilot-instructions.md`, `template/setup/manifests.md`, `SETUP.md` |
+| Update, backup restore, and factory restore | `UPDATE.md` | `VERSION.md`, `MIGRATION.md`, `CHANGELOG.md`, `template/copilot-instructions.md`, `template/setup/manifests.md`, `SETUP.md` |
 
 ---
 
@@ -123,10 +123,14 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
 ### Sandbox detection (Linux only)
 
 ```bash
-[[ "$(readlink -f /home)" != "/home" ]] && echo "immutable" || echo "standard"
+if [[ "$OSTYPE" == darwin* ]]; then
+  echo "standard"
+else
+  [[ "$(readlink -f /home)" != "/home" ]] && echo "immutable" || echo "standard"
+fi
 ```
 
-- `standard` (or macOS): use **sandboxed** config
+- `standard` (Linux and macOS): use **sandboxed** config
 - `immutable` (Fedora Atomic, Bazzite, NixOS etc.): use **unsandboxed** config
 
 ### Sandboxed config (default)
@@ -372,7 +376,7 @@ for f in .github/agents/*.agent.md .github/agents/*.json .github/skills/*/SKILL.
   .github/prompts/*.prompt.md .github/workflows/copilot-setup-steps.yml \
   .vscode/settings.json .vscode/extensions.json .vscode/mcp.json \
   CLAUDE.md \
-  .copilot/workspace/identity/*.md .copilot/workspace/knowledge/*.md .copilot/workspace/operations/*.md .copilot/workspace/operations/workspace-index.json .copilot/workspace/knowledge/diaries/README.md; do
+  .copilot/workspace/identity/*.md .copilot/workspace/knowledge/*.md .copilot/workspace/operations/*.md .copilot/workspace/operations/workspace-index.json .copilot/workspace/knowledge/diaries/*.md; do
   [ -f "$f" ] || continue; echo "${f}=$(sha256sum "$f" | cut -c1-12)"
 done
 ```
@@ -406,7 +410,7 @@ patterns = [
     'CLAUDE.md',
     '.copilot/workspace/identity/*.md', '.copilot/workspace/knowledge/*.md',
     '.copilot/workspace/operations/*.md', '.copilot/workspace/operations/workspace-index.json',
-    '.copilot/workspace/knowledge/diaries/README.md',
+    '.copilot/workspace/knowledge/diaries/*.md',
 ]
 for pattern in patterns:
     for f in sorted(glob.glob(pattern)):
@@ -434,8 +438,6 @@ Applied: YYYY-MM-DD
 PLACEHOLDER=value (one per resolved token)
 -->
 ```
-
-Omit fingerprint/manifest blocks if terminal unavailable. Always write setup-answers.
 
 ---
 

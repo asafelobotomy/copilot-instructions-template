@@ -28,7 +28,7 @@ the next tagged version (listed in **Includes**).
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<tag>/<template-source-path>
 ```
 
-**Available tags**: v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1, v4.2.0, v5.0.0, v5.0.1, v5.1.0, v5.2.0, v5.3.0, v5.4.0, v5.5.0, v5.6.0, v5.7.0, v5.8.0, v5.9.0, v5.10.0, v5.10.1, v5.11.0, v5.11.1
+**Available tags**: v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1, v4.2.0, v5.0.0, v5.0.1, v5.1.0, v5.2.0, v5.3.0, v5.4.0, v5.5.0, v5.6.0, v5.7.0, v5.8.0, v5.9.0, v5.10.0, v5.10.1, v5.11.0, v5.12.0
 
 ## Unreleased — workspace and scripts reorganization
 
@@ -184,19 +184,25 @@ rm -rf logs/copilot
 
 **Manual actions**: None
 
-## v5.11.1
+## v5.12.0
 
 | Breaking | Sections changed | Sections added | Includes |
 |----------|-----------------|----------------|----------|
-| TBD | — | — | — |
+| No | None | None | v5.11.1 (untagged) |
 
-**What changed**: *(stub — fill in before the next release or immediately after)*
+**What changed**: Adds heartbeat lifecycle events, session tracking, and pulse state management. Hardens secrets scanning with safer path handling. Refines pulse state and heartbeat reporting for more reliable retrospective data. Sets `TMPDIR` env for uvx server bootstrap to prevent sandbox tempdir failures. Extends targeted test suite mapping and captured runner.
 
 **New placeholders**: none
 
 **Companion files added**: none
 
-**Companion files updated**: none
+**Companion files updated**:
+
+| Destination | Template source | Action |
+|-------------|----------------|--------|
+| `.github/hooks/scripts/pulse_state.py` | `template/hooks/scripts/pulse_state.py` | Updated (pulse state and heartbeat reporting refinements) |
+| `.github/hooks/scripts/mcp-heartbeat-server.py` | `template/hooks/scripts/mcp-heartbeat-server.py` | Updated (secrets scanning hardening, path safety) |
+| `.vscode/mcp.json` | `template/vscode/mcp.json` | Updated (TMPDIR env for uvx server bootstrap) |
 
 **Manual actions**: None
 

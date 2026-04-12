@@ -12,7 +12,7 @@
 ## Canonical instructions
 
 - Primary project rules live in `.github/copilot-instructions.md`.
-- Use `{{TEST_COMMAND}}` as the full-suite gate.
+- Use targeted tests during iterative work and `{{TEST_COMMAND}}` once as the final full-suite gate.
 - Follow the project instructions file for workflow, testing, and editing rules.
 
 ## See also

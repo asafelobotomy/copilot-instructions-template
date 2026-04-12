@@ -12,7 +12,7 @@
 ## Canonical instructions
 
 - Primary repo rules live in `.github/copilot-instructions.md`.
-- Use `bash tests/run-all.sh` as the full-suite gate.
+- Use targeted tests during iterative work and `bash tests/run-all.sh` once as the final full-suite gate.
 - Follow the developer instructions file for workflow, testing, and editing rules.
 
 ## See also

@@ -3,6 +3,8 @@
 > **Machine-readable.** Fetched and executed by the Setup agent.
 > All writes go to the **user's current project** — never to the template repository.
 > After setup completes and the user confirms, delete this file from the user's project.
+>
+> **ask_questions convention**: Use `ask_questions` for ALL user-facing decisions. Each block must have `header:`, `question:`, `options:` with `- label:` entries. If `ask_questions` is unavailable, present options as a numbered list in chat instead.
 
 ## Recovery mode
 
@@ -46,7 +48,7 @@ options:
 allowFreeformInput: false
 ```
 
-Default **A** if user skips. **Fallback**: present as a numbered list in chat if `ask_questions` is unavailable.
+Default **A** if user skips.
 
 ### § 0b — Existing workspace identity files
 
@@ -66,7 +68,7 @@ options:
 allowFreeformInput: false
 ```
 
-Default **K**. **Fallback**: present as a numbered list in chat if unavailable.
+Default **K**.
 
 ### § 0c — Existing documentation stubs
 
@@ -97,8 +99,6 @@ options:
     description: "Use all defaults immediately — no questions asked"
 allowFreeformInput: false
 ```
-
-**Fallback**: present as a numbered list in chat if unavailable.
 
 Present questions for the selected tier from `interview.md` in batches of up to 4 per `ask_questions` call. Question IDs by tier:
 
@@ -206,7 +206,7 @@ question: "I couldn't auto-detect a value for {{PLACEHOLDER_NAME}}. What should 
 allowFreeformInput: true
 ```
 
-Batch up to 4 per call. Do not proceed with unresolved tokens. **Fallback**: present as a numbered list in chat if unavailable.
+Batch up to 4 per call. Do not proceed with unresolved tokens.
 
 ---
 
@@ -303,8 +303,6 @@ options:
 allowFreeformInput: false
 ```
 
-> **Fallback**: present as a numbered list in chat if unavailable.
-
 1. Fetch kit files from `starter-kits/<kit-name>/`, write to `.github/starter-kits/<kit-name>/`.
 2. Register in `.vscode/settings.json` under `chat.pluginLocations`.
 3. Report installed kits. If none matched: "No starter kits installed. Say 'Install a starter kit' later."
@@ -357,8 +355,6 @@ options:
 allowFreeformInput: false
 ```
 
-**Fallback**: present as yes/skip in chat if unavailable.
-
 If "Yes": `code --install-extension asafelobotomy.copilot-profile-tools`. If Marketplace fails, fetch VSIX from GitHub Releases. Add to `.vscode/extensions.json` recommendations.
 
 ---
@@ -404,8 +400,6 @@ options:
 allowFreeformInput: false
 ```
 
-**Fallback**: present as yes/no in chat if unavailable.
-
 If confirmed, delete `SETUP.md` from the user's project (never the template repository).
 
 ```ask_questions
@@ -419,5 +413,3 @@ options:
     description: "Skip the health check"
 allowFreeformInput: false
 ```
-
-**Fallback**: present as yes/no in chat if unavailable.
