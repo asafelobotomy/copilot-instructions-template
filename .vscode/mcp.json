@@ -19,6 +19,12 @@
 			],
 			"sandboxEnabled": true,
 			"sandbox": {
+				"network": {
+					"allowedDomains": [
+						"registry.npmjs.org",
+						"npmjs.org"
+					]
+				},
 				"filesystem": {
 					"allowWrite": [
 						"${workspaceFolder}",
@@ -126,6 +132,12 @@
 			],
 			"sandboxEnabled": true,
 			"sandbox": {
+				"network": {
+					"allowedDomains": [
+						"pypi.org",
+						"files.pythonhosted.org"
+					]
+				},
 				"filesystem": {
 					"allowWrite": [
 						"${workspaceFolder}"
