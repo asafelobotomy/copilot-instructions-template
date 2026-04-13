@@ -15,10 +15,9 @@ OPTIONAL_ROOT_FILES = (
     "CLAUDE.md",
 )
 STARTER_KIT_MANIFEST_GLOBS = (
-    ".github/starter-kits/*/plugin.json",
+    ".github/starter-kits/*/.claude-plugin/plugin.json",
     ".github/starter-kits/*/skills/*/SKILL.md",
-    ".github/starter-kits/*/instructions/*.instructions.md",
-    ".github/starter-kits/*/prompts/*.prompt.md",
+    ".github/starter-kits/*/commands/*.md",
 )
 
 

@@ -9,7 +9,7 @@ from .models import Finding, CheckResult, CRITICAL, HIGH, WARN, INFO
 
 def _validate_plugin_metadata(ctx: AuditContext, result: CheckResult, kit_dir: pathlib.Path) -> None:
     """Append findings for a starter-kit plugin manifest when invalid."""
-    plugin_path = kit_dir / "plugin.json"
+    plugin_path = kit_dir / ".claude-plugin" / "plugin.json"
     rel = ctx.rel(plugin_path)
     if not plugin_path.exists():
         result.findings.append(Finding("K1", rel, HIGH,
@@ -20,7 +20,7 @@ def _validate_plugin_metadata(ctx: AuditContext, result: CheckResult, kit_dir: p
         result.findings.append(Finding("K1", rel, CRITICAL,
                                        f"Invalid JSON: {error}"))
         return
-    for key in ("name", "displayName", "description", "version"):
+    for key in ("name", "description", "version"):
         val = data.get(key)
         if not isinstance(val, str) or not val:
             result.findings.append(Finding("K1", rel, HIGH,
@@ -96,14 +96,19 @@ def check_k2_starter_registry(root: pathlib.Path | AuditContext) -> CheckResult:
         for kit_dir in sorted(path for path in installed_root.iterdir() if path.is_dir()):
             rel = ctx.rel(kit_dir)
             has_assets = False
-            for subdir_name in ("instructions", "prompts", "skills"):
+            for subdir_name in ("skills", "commands"):
                 subdir = kit_dir / subdir_name
                 if subdir.is_dir() and any(path.is_file() for path in subdir.rglob("*")):
                     has_assets = True
                     break
+            # Also check for .claude-plugin/plugin.json as a valid asset
+            if not has_assets:
+                claude_plugin = kit_dir / ".claude-plugin" / "plugin.json"
+                if claude_plugin.is_file():
+                    has_assets = True
             if not has_assets:
                 result.findings.append(Finding("K2", rel, HIGH,
-                                               "Installed starter kit has no instructions, prompts, or skills"))
+                                               "Installed starter kit has no skills, commands, or plugin manifest"))
 
     if not found_surface:
         result.findings.append(Finding("K2", ".github/starter-kits/", INFO,
