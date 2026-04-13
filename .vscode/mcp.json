@@ -1,24 +1,5 @@
 {
 	"sandbox": {
-		"network": {
-			"allowedDomains": [
-				"pypi.org",
-				"files.pythonhosted.org",
-				"modelcontextprotocol.io",
-				"docs.anthropic.com",
-				"platform.claude.com",
-				"github.com",
-				"code.visualstudio.com",
-				"docs.github.com",
-				"platform.openai.com",
-				"example.com",
-				"containers.dev",
-				"www.microsoft.com",
-				"martinfowler.com",
-				"arxiv.org",
-				"docs.buildkite.com"
-			]
-		},
 		"filesystem": {
 			"allowWrite": [
 				"${userHome}/.npm",

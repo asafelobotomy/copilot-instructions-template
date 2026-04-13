@@ -192,22 +192,27 @@ echo "12. Escalation fields are present with no escalation on safe targeted path
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/release/verify-version-references.sh")
 SELECTOR_OUTPUT="$output" assert_python "escalation fields present and false for safe path" '
 payload = json.loads(os.environ["SELECTOR_OUTPUT"])
-if payload["should_run_full_suite_early"] is not False:
-    raise SystemExit(f"should_run_full_suite_early={payload['should_run_full_suite_early']}")
+_v = payload["should_run_full_suite_early"]
+if _v is not False:
+    raise SystemExit(f"should_run_full_suite_early={_v}")
 if payload["early_full_suite_reasons"]:
     raise SystemExit(str(payload["early_full_suite_reasons"]))
-if not isinstance(payload["confidence_score"], (int, float)):
-    raise SystemExit(f"confidence_score type: {type(payload['confidence_score'])}")
-if payload["confidence_score"] != 1.0:
-    raise SystemExit(f"confidence_score={payload['confidence_score']}")
-if not isinstance(payload["risk_classes_matched"], list):
-    raise SystemExit(f"risk_classes_matched type: {type(payload['risk_classes_matched'])}")
-if not isinstance(payload["domains_touched"], list):
-    raise SystemExit(f"domains_touched type: {type(payload['domains_touched'])}")
-if not isinstance(payload["decision_log"], list):
-    raise SystemExit(f"decision_log type: {type(payload['decision_log'])}")
-if len(payload["decision_log"]) < 4:
-    raise SystemExit(f"expected >= 4 decision_log entries, got {len(payload['decision_log'])}")
+_v = payload["confidence_score"]
+if not isinstance(_v, (int, float)):
+    raise SystemExit(f"confidence_score type: {type(_v)}")
+if _v != 1.0:
+    raise SystemExit(f"confidence_score={_v}")
+_v = payload["risk_classes_matched"]
+if not isinstance(_v, list):
+    raise SystemExit(f"risk_classes_matched type: {type(_v)}")
+_v = payload["domains_touched"]
+if not isinstance(_v, list):
+    raise SystemExit(f"domains_touched type: {type(_v)}")
+_v = payload["decision_log"]
+if not isinstance(_v, list):
+    raise SystemExit(f"decision_log type: {type(_v)}")
+if len(_v) < 4:
+    raise SystemExit(f"expected >= 4 decision_log entries, got {len(_v)}")
 '
 echo ""
 
@@ -264,10 +269,11 @@ echo "17. Confidence score drops below 1.0 when unmapped paths exist"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/release/verify-version-references.sh" ".gitignore")
 SELECTOR_OUTPUT="$output" assert_python "confidence score reflects unmapped paths" '
 payload = json.loads(os.environ["SELECTOR_OUTPUT"])
-if payload["confidence_score"] >= 1.0:
-    raise SystemExit(f"expected < 1.0, got {payload['confidence_score']}")
-if payload["confidence_score"] != 0.5:
-    raise SystemExit(f"expected 0.5 (1/2), got {payload['confidence_score']}")
+_v = payload["confidence_score"]
+if _v >= 1.0:
+    raise SystemExit(f"expected < 1.0, got {_v}")
+if _v != 0.5:
+    raise SystemExit(f"expected 0.5 (1/2), got {_v}")
 '
 echo ""
 
