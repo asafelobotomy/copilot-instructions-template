@@ -1,0 +1,9 @@
+{
+  "name": "go-starter-kit",
+  "description": "Stack-specific skills and commands for Go projects — testing patterns, golangci-lint, module management, and idiomatic Go conventions.",
+  "version": "1.0.0",
+  "author": "copilot-instructions-template",
+  "license": "MIT",
+  "keywords": ["go", "golang", "golangci-lint", "modules"],
+  "category": "starter-kit"
+}

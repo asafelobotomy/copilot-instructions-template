@@ -1,0 +1,9 @@
+{
+  "name": "typescript-starter-kit",
+  "description": "Stack-specific skills and commands for TypeScript projects — Jest/Vitest testing, strict type safety, ESLint patterns, and module conventions.",
+  "version": "1.0.0",
+  "author": "copilot-instructions-template",
+  "license": "MIT",
+  "keywords": ["typescript", "jest", "vitest", "eslint", "strict"],
+  "category": "starter-kit"
+}

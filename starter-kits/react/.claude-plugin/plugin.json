@@ -1,0 +1,9 @@
+{
+  "name": "react-starter-kit",
+  "description": "Stack-specific skills and commands for React projects — component testing, accessibility, hooks patterns, state management, and Next.js conventions.",
+  "version": "1.0.0",
+  "author": "copilot-instructions-template",
+  "license": "MIT",
+  "keywords": ["react", "jsx", "tsx", "accessibility", "nextjs"],
+  "category": "starter-kit"
+}

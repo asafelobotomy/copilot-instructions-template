@@ -1,0 +1,9 @@
+{
+  "name": "cpp-starter-kit",
+  "description": "Stack-specific skills and commands for C++ projects — CMake patterns, memory safety, clang-tidy conventions, and modern C++ practices.",
+  "version": "1.0.0",
+  "author": "copilot-instructions-template",
+  "license": "MIT",
+  "keywords": ["cpp", "c++", "cmake", "clang-tidy", "memory-safety"],
+  "category": "starter-kit"
+}
