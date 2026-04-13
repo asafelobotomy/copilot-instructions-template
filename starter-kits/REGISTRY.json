@@ -11,12 +11,12 @@
         "language": "Python"
       },
       "files": [
-        "plugin.json",
+        ".claude-plugin/plugin.json",
         "skills/python-testing/SKILL.md",
         "skills/python-typing/SKILL.md",
-        "instructions/python-conventions.instructions.md",
-        "instructions/python-security.instructions.md",
-        "prompts/python-debug.prompt.md"
+        "skills/python-conventions/SKILL.md",
+        "skills/python-security/SKILL.md",
+        "commands/python-debug.md"
       ]
     },
     {
@@ -28,12 +28,12 @@
         "language": "TypeScript"
       },
       "files": [
-        "plugin.json",
+        ".claude-plugin/plugin.json",
         "skills/typescript-testing/SKILL.md",
         "skills/typescript-strict/SKILL.md",
-        "instructions/typescript-conventions.instructions.md",
-        "instructions/typescript-security.instructions.md",
-        "prompts/typescript-debug.prompt.md"
+        "skills/typescript-conventions/SKILL.md",
+        "skills/typescript-security/SKILL.md",
+        "commands/typescript-debug.md"
       ]
     },
     {
@@ -45,11 +45,11 @@
         "language": "C++"
       },
       "files": [
-        "plugin.json",
+        ".claude-plugin/plugin.json",
         "skills/cpp-build-systems/SKILL.md",
-        "instructions/cpp-conventions.instructions.md",
-        "instructions/cpp-safety.instructions.md",
-        "prompts/cpp-debug.prompt.md"
+        "skills/cpp-conventions/SKILL.md",
+        "skills/cpp-safety/SKILL.md",
+        "commands/cpp-debug.md"
       ]
     },
     {
@@ -61,10 +61,10 @@
         "language": "Rust"
       },
       "files": [
-        "plugin.json",
+        ".claude-plugin/plugin.json",
         "skills/rust-patterns/SKILL.md",
-        "instructions/rust-conventions.instructions.md",
-        "prompts/rust-debug.prompt.md"
+        "skills/rust-conventions/SKILL.md",
+        "commands/rust-debug.md"
       ]
     },
     {
@@ -76,10 +76,10 @@
         "language": "Go"
       },
       "files": [
-        "plugin.json",
+        ".claude-plugin/plugin.json",
         "skills/go-patterns/SKILL.md",
-        "instructions/go-conventions.instructions.md",
-        "prompts/go-debug.prompt.md"
+        "skills/go-conventions/SKILL.md",
+        "commands/go-debug.md"
       ]
     },
     {
@@ -91,10 +91,10 @@
         "language": "Java"
       },
       "files": [
-        "plugin.json",
+        ".claude-plugin/plugin.json",
         "skills/java-build-test/SKILL.md",
-        "instructions/java-conventions.instructions.md",
-        "prompts/java-debug.prompt.md"
+        "skills/java-conventions/SKILL.md",
+        "commands/java-debug.md"
       ]
     },
     {
@@ -105,10 +105,10 @@
         "files": ["Dockerfile", "docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml"]
       },
       "files": [
-        "plugin.json",
+        ".claude-plugin/plugin.json",
         "skills/docker-patterns/SKILL.md",
-        "instructions/docker-conventions.instructions.md",
-        "prompts/docker-debug.prompt.md"
+        "skills/docker-conventions/SKILL.md",
+        "commands/docker-debug.md"
       ]
     },
     {
@@ -119,11 +119,11 @@
         "dependencies": ["react", "react-dom", "next"]
       },
       "files": [
-        "plugin.json",
+        ".claude-plugin/plugin.json",
         "skills/react-testing/SKILL.md",
-        "instructions/react-conventions.instructions.md",
-        "instructions/react-accessibility.instructions.md",
-        "prompts/react-component.prompt.md"
+        "skills/react-conventions/SKILL.md",
+        "skills/react-accessibility/SKILL.md",
+        "commands/react-component.md"
       ]
     }
   ]
