@@ -290,6 +290,67 @@ Apply before writing any section, regardless of decision path:
 Recompute fingerprints and file-manifest hashes using the bash script (or Python
 fallback) from **manifests.md § Version file template**.
 
+Recompute fingerprints and file-manifest hashes:
+
+```bash
+# Section fingerprints
+for i in $(seq 1 9); do
+  fp=$(awk "/^## §${i} —/{found=1; next} /^## §/{if(found) exit} found{print}" \
+    .github/copilot-instructions.md | sha256sum | cut -c1-12)
+  echo "§${i}=${fp}"
+done
+# File manifest
+for f in .github/agents/*.agent.md .github/agents/*.json .github/skills/*/SKILL.md \
+  .github/starter-kits/*/.claude-plugin/plugin.json \
+  .github/starter-kits/*/skills/*/SKILL.md \
+  .github/starter-kits/*/commands/*.md \
+  .github/hooks/copilot-hooks.json .github/hooks/scripts/*.sh \
+  .github/hooks/scripts/*.ps1 .github/hooks/scripts/*.json \
+  .github/hooks/scripts/*.py .github/instructions/*.instructions.md \
+  .github/prompts/*.prompt.md .github/workflows/copilot-setup-steps.yml \
+  .vscode/settings.json .vscode/extensions.json .vscode/mcp.json \
+  CLAUDE.md \
+  .copilot/workspace/identity/*.md \
+  .copilot/workspace/knowledge/*.md .copilot/workspace/knowledge/diaries/*.md \
+  .copilot/workspace/operations/*.md .copilot/workspace/operations/workspace-index.json; do
+  [ -f "$f" ] || continue; echo "${f}=$(sha256sum "$f" | cut -c1-12)"
+done
+```
+
+If `sha256sum` is unavailable, use this Python fallback:
+
+```python
+import hashlib, pathlib, glob, re
+
+# Section fingerprints
+text = pathlib.Path('.github/copilot-instructions.md').read_text(encoding='utf-8')
+for i in range(1, 10):
+    match = re.search(rf'(?m)^## §{i} —.*?(?=^## §|\Z)', text, re.DOTALL)
+    body = match.group(0) if match else ''
+    fp = hashlib.sha256(body.encode()).hexdigest()[:12]
+    print(f'§{i}={fp}')
+
+# File manifest
+for pattern in [
+  '.github/agents/*.agent.md', '.github/agents/*.json', '.github/skills/*/SKILL.md',
+    '.github/starter-kits/*/.claude-plugin/plugin.json',
+    '.github/starter-kits/*/skills/*/SKILL.md',
+    '.github/starter-kits/*/commands/*.md',
+    '.github/hooks/copilot-hooks.json', '.github/hooks/scripts/*.sh',
+  '.github/hooks/scripts/*.ps1', '.github/hooks/scripts/*.json',
+  '.github/hooks/scripts/*.py', '.github/instructions/*.instructions.md',
+    '.github/prompts/*.prompt.md', '.github/workflows/copilot-setup-steps.yml',
+    '.vscode/settings.json', '.vscode/extensions.json', '.vscode/mcp.json',
+    'CLAUDE.md',
+    '.copilot/workspace/identity/*.md',
+    '.copilot/workspace/knowledge/*.md', '.copilot/workspace/knowledge/diaries/*.md',
+    '.copilot/workspace/operations/*.md', '.copilot/workspace/operations/workspace-index.json',
+]:
+    for f in sorted(glob.glob(pattern)):
+        h = hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()[:12]
+        print(f'{f}={h}')
+```
+
 Write `.github/copilot-version.md`: version, `Applied:` (preserved), `Updated: YYYY-MM-DD`, `<!-- section-fingerprints -->`, `<!-- file-manifest -->`, `<!-- setup-answers -->` (preserved). Omit fingerprint/manifest blocks only if neither `sha256sum` nor Python is available.
 
 ### 2 — Append to CHANGELOG.md

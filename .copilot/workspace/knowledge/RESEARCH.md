@@ -78,6 +78,17 @@
 | <https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository> | GitHub template repos: copies directory structure + files on "Use this template"; branches have unrelated histories | 2026-04-12 | github, template-repo, bootstrap |
 | <https://github.com/github/copilot-plugins> | Official Copilot plugins marketplace repo; skills only as of Apr 2026; MCP servers and hooks listed as "coming soon" | 2026-04-12 | plugins, marketplace |
 
+## VS Code Agent Plugins — Schema and Install Flow
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://code.visualstudio.com/docs/copilot/customization/agent-plugins> | Primary agent-plugins doc: directory structure, install via Extensions view and "Install from Source" (full repo URL only), hooks, MCP, `chat.pluginLocations`, marketplace config | 2026-04-13 | agent-plugins, schema, install |
+| <https://code.claude.com/docs/en/plugins-reference> | Canonical plugin manifest schema: `name` is the only required field, complete optional fields, component paths, auto-discovery rules | 2026-04-13 | agent-plugins, schema, claude-code |
+| <https://code.claude.com/docs/en/plugin-marketplaces> | Marketplace schema: `git-subdir` source type for subdirectory plugin install, `strict` mode, version management, plugin sources table | 2026-04-13 | agent-plugins, marketplace, subdirectory |
+| <https://raw.githubusercontent.com/rwoll/markdown-review/main/plugin.json> | Real plugin.json cited by official VS Code docs: `name`, `description`, `version`, `author`, `repository`, `license`, `keywords`, `category`, `skills` — no `displayName`, `publisher`, `engines`, or `contributes` | 2026-04-13 | agent-plugins, example, schema |
+| <https://github.com/github/copilot-plugins> | Official GitHub Copilot plugins marketplace repo — structure mirrors awesome-copilot | 2026-04-13 | agent-plugins, marketplace |
+| <https://github.com/github/awesome-copilot> | Community Copilot marketplace with 50+ plugins, skills, agents, hooks; default marketplace in VS Code | 2026-04-13 | agent-plugins, marketplace |
+
 ## Dependency Evaluation — 2026-04-09
 
 | URL | Summary | Date | Tags |

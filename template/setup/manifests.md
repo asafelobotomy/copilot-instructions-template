@@ -366,10 +366,9 @@ for i in $(seq 1 9); do
 done
 # File manifest
 for f in .github/agents/*.agent.md .github/agents/*.json .github/skills/*/SKILL.md \
-  .github/starter-kits/*/plugin.json \
+  .github/starter-kits/*/.claude-plugin/plugin.json \
   .github/starter-kits/*/skills/*/SKILL.md \
-  .github/starter-kits/*/instructions/*.instructions.md \
-  .github/starter-kits/*/prompts/*.prompt.md \
+  .github/starter-kits/*/commands/*.md \
   .github/hooks/copilot-hooks.json .github/hooks/scripts/*.sh \
   .github/hooks/scripts/*.ps1 .github/hooks/scripts/*.json \
   .github/hooks/scripts/*.py .github/instructions/*.instructions.md \
@@ -398,10 +397,9 @@ for i in range(1, 10):
 # File manifest
 patterns = [
   '.github/agents/*.agent.md', '.github/agents/*.json', '.github/skills/*/SKILL.md',
-    '.github/starter-kits/*/plugin.json',
+    '.github/starter-kits/*/.claude-plugin/plugin.json',
     '.github/starter-kits/*/skills/*/SKILL.md',
-    '.github/starter-kits/*/instructions/*.instructions.md',
-    '.github/starter-kits/*/prompts/*.prompt.md',
+    '.github/starter-kits/*/commands/*.md',
     '.github/hooks/copilot-hooks.json', '.github/hooks/scripts/*.sh',
   '.github/hooks/scripts/*.ps1', '.github/hooks/scripts/*.json',
   '.github/hooks/scripts/*.py', '.github/instructions/*.instructions.md',
