@@ -1,6 +1,0 @@
-{
-  "name": "rust-starter-kit",
-  "displayName": "Rust Starter Kit",
-  "description": "Stack-specific skills, instructions, and prompts for Rust projects — cargo/clippy patterns, unsafe review, error handling, and crate conventions.",
-  "version": "1.0.0"
-}

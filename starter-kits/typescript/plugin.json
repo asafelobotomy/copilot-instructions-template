@@ -1,6 +1,0 @@
-{
-  "name": "typescript-starter-kit",
-  "displayName": "TypeScript Starter Kit",
-  "description": "Stack-specific skills, instructions, and prompts for TypeScript projects — Jest/Vitest testing, strict type safety, ESLint patterns, and module conventions.",
-  "version": "1.0.0"
-}

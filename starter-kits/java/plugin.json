@@ -1,6 +1,0 @@
-{
-  "name": "java-starter-kit",
-  "displayName": "Java Starter Kit",
-  "description": "Stack-specific skills, instructions, and prompts for Java projects — Maven/Gradle patterns, JUnit testing, Spring Boot conventions, and dependency management.",
-  "version": "1.0.0"
-}

@@ -1,6 +1,0 @@
-{
-  "name": "docker-starter-kit",
-  "displayName": "Docker Starter Kit",
-  "description": "Stack-specific skills, instructions, and prompts for Docker projects — Dockerfile best practices, compose patterns, image security, and multi-stage builds.",
-  "version": "1.0.0"
-}
