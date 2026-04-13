@@ -211,16 +211,15 @@ MD
 }
 JSON
 
-  mkdir -p "$SANDBOX/.github/starter-kits/python/prompts"
-  cat > "$SANDBOX/.github/starter-kits/python/plugin.json" <<'JSON'
+  mkdir -p "$SANDBOX/.github/starter-kits/python/.claude-plugin" "$SANDBOX/.github/starter-kits/python/commands"
+  cat > "$SANDBOX/.github/starter-kits/python/.claude-plugin/plugin.json" <<'JSON'
 {
   "name": "python-starter-kit",
-  "displayName": "Python Starter Kit",
   "description": "Sandbox installed starter kit",
   "version": "1.0.0"
 }
 JSON
-  cat > "$SANDBOX/.github/starter-kits/python/prompts/python-debug.prompt.md" <<'PROMPT'
+  cat > "$SANDBOX/.github/starter-kits/python/commands/python-debug.md" <<'PROMPT'
 ---
 description: Python debug helper
 agent: agent
@@ -266,8 +265,8 @@ Updated: 2026-04-04
 .copilot/workspace/knowledge/USER.md=bbbbbbbbbbbb
 .copilot/workspace/operations/commit-style.md=bbbbbbbbbbbb
 .copilot/workspace/operations/workspace-index.json=bbbbbbbbbbbb
-.github/starter-kits/python/plugin.json=bbbbbbbbbbbb
-.github/starter-kits/python/prompts/python-debug.prompt.md=bbbbbbbbbbbb
+.github/starter-kits/python/.claude-plugin/plugin.json=bbbbbbbbbbbb
+.github/starter-kits/python/commands/python-debug.md=bbbbbbbbbbbb
 -->
 <!-- setup-answers
 PROJECT_NAME=Sandbox
@@ -314,8 +313,8 @@ Updated: 2026-04-04
 .copilot/workspace/knowledge/USER.md=bbbbbbbbbbbb
 .copilot/workspace/operations/commit-style.md=bbbbbbbbbbbb
 .copilot/workspace/operations/workspace-index.json=bbbbbbbbbbbb
-.github/starter-kits/python/plugin.json=bbbbbbbbbbbb
-.github/starter-kits/python/prompts/python-debug.prompt.md=bbbbbbbbbbbb
+.github/starter-kits/python/.claude-plugin/plugin.json=bbbbbbbbbbbb
+.github/starter-kits/python/commands/python-debug.md=bbbbbbbbbbbb
 -->
 <!-- setup-answers
 PROJECT_NAME=Sandbox
@@ -384,7 +383,9 @@ MD
 
 mutate_consumer_missing_starter_kit_assets() {
   mutate_consumer_layout
-  remove_sandbox_path ".github/starter-kits/python/prompts"
+  remove_sandbox_path ".github/starter-kits/python/commands"
+  remove_sandbox_path ".github/starter-kits/python/skills"
+  remove_sandbox_path ".github/starter-kits/python/.claude-plugin"
 }
 
 mutate_consumer_version_file_missing_blocks() {
@@ -464,8 +465,8 @@ Updated: 2026-04-04
 .copilot/workspace/knowledge/USER.md=bbbbbbbbbbbb
 .copilot/workspace/operations/commit-style.md=bbbbbbbbbbbb
 .copilot/workspace/operations/workspace-index.json=bbbbbbbbbbbb
-.github/starter-kits/python/plugin.json=bbbbbbbbbbbb
-.github/starter-kits/python/prompts/python-debug.prompt.md=bbbbbbbbbbbb
+.github/starter-kits/python/.claude-plugin/plugin.json=bbbbbbbbbbbb
+.github/starter-kits/python/commands/python-debug.md=bbbbbbbbbbbb
 -->
 <!-- setup-answers
 PROJECT_NAME=Sandbox
@@ -559,7 +560,8 @@ JSON
 }
 
 mutate_k1_invalid_plugin_json() {
-  write_sandbox_file "starter-kits/python/plugin.json" <<'JSON'
+  mkdir -p "$SANDBOX/starter-kits/python/.claude-plugin"
+  write_sandbox_file "starter-kits/python/.claude-plugin/plugin.json" <<'JSON'
 not json
 JSON
 }
@@ -574,7 +576,7 @@ mutate_k2_missing_registry_file() {
       "name": "python",
       "displayName": "Python Starter Kit",
       "description": "Sandbox kit",
-      "files": ["plugin.json", "skills/python-testing/SKILL.md"]
+      "files": [".claude-plugin/plugin.json", "skills/python-testing/SKILL.md"]
     }
   ]
 }

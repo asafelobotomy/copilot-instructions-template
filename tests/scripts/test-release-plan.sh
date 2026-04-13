@@ -60,7 +60,8 @@ EOF_TEMPLATE
 model: gpt-5.4
 EOF_AGENT
 
-  cat > "$dir/starter-kits/python/plugin.json" <<'EOF_PLUGIN'
+  mkdir -p "$dir/starter-kits/python/.claude-plugin"
+  cat > "$dir/starter-kits/python/.claude-plugin/plugin.json" <<'EOF_PLUGIN'
 {}
 EOF_PLUGIN
 
@@ -146,8 +147,8 @@ echo "4. Release-driving feat commits keep native minor bumping"
 sandbox=$(make_release_sandbox)
 (
   cd "$sandbox" || exit 1
-  printf '{"name":"python-v2"}\n' > starter-kits/python/plugin.json
-  git add starter-kits/python/plugin.json
+  printf '{"name":"python-v2"}\n' > starter-kits/python/.claude-plugin/plugin.json
+  git add starter-kits/python/.claude-plugin/plugin.json
   git commit -q -m "feat: expand python starter kit"
 )
 output=$(run_plan "$sandbox")

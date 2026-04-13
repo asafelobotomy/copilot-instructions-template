@@ -117,10 +117,10 @@ SH
 JSON
 
   # Minimal starter-kit metadata (one kit with plugin + registry entry)
-  cat > "$SANDBOX/starter-kits/python/plugin.json" <<'JSON'
+  mkdir -p "$SANDBOX/starter-kits/python/.claude-plugin"
+  cat > "$SANDBOX/starter-kits/python/.claude-plugin/plugin.json" <<'JSON'
 {
   "name": "python-starter-kit",
-  "displayName": "Python Starter Kit",
   "description": "Sandbox starter kit",
   "version": "1.0.0"
 }
@@ -135,7 +135,7 @@ JSON
       "name": "python",
       "displayName": "Python Starter Kit",
       "description": "Sandbox starter kit",
-      "files": ["plugin.json"]
+      "files": [".claude-plugin/plugin.json"]
     }
   ]
 }

@@ -357,16 +357,13 @@ assert_file_contains "UPDATE.md maps template VS Code MCP config" \
     "$UPDATE" "template/vscode/mcp\.json"
 
 assert_file_contains "manifests.md file manifest tracks starter-kit plugin manifests" \
-    "$MANIFESTS" "\\.github/starter-kits/\\*/plugin\.json"
+    "$MANIFESTS" "\\.github/starter-kits/\\*/\.claude-plugin/plugin\.json"
 
 assert_file_contains "manifests.md file manifest tracks starter-kit skills" \
     "$MANIFESTS" "\\.github/starter-kits/\\*/skills/\\*/SKILL\.md"
 
-assert_file_contains "manifests.md file manifest tracks starter-kit instructions" \
-    "$MANIFESTS" "\\.github/starter-kits/\\*/instructions/\\*\.instructions\.md"
-
-assert_file_contains "manifests.md file manifest tracks starter-kit prompts" \
-    "$MANIFESTS" "\\.github/starter-kits/\\*/prompts/\\*\.prompt\.md"
+assert_file_contains "manifests.md file manifest tracks starter-kit commands" \
+    "$MANIFESTS" "\\.github/starter-kits/\\*/commands/\\*\.md"
 
 assert_file_contains "manifests.md file manifest tracks VS Code settings" \
     "$MANIFESTS" "\\.vscode/settings\.json"
@@ -380,6 +377,14 @@ assert_file_contains "manifests.md file manifest tracks VS Code MCP config" \
 assert_file_contains "manifests.md file manifest tracks CLAUDE.md" \
     "$MANIFESTS" "CLAUDE\.md"
 
+assert_file_contains "UPDATE.md file manifest tracks starter-kit plugin manifests" \
+    "$UPDATE" "\\.github/starter-kits/\\*/\.claude-plugin/plugin\.json"
+
+assert_file_contains "UPDATE.md file manifest tracks starter-kit skills" \
+    "$UPDATE" "\\.github/starter-kits/\\*/skills/\\*/SKILL\.md"
+
+assert_file_contains "UPDATE.md file manifest tracks starter-kit commands" \
+    "$UPDATE" "\\.github/starter-kits/\\*/commands/\\*\.md"
 assert_file_contains "UPDATE.md file manifest tracks VS Code settings" \
     "$UPDATE" "\\.vscode/settings\.json"
 

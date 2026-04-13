@@ -25,8 +25,8 @@ for kit in kits:
             raise SystemExit("kit " + kit.get("name", "?") + " missing field: " + field)
     if not isinstance(kit["files"], list) or len(kit["files"]) == 0:
         raise SystemExit("kit " + kit["name"] + " has empty files list")
-    if "plugin.json" not in kit["files"]:
-        raise SystemExit("kit " + kit["name"] + " missing plugin.json in files list")
+    if ".claude-plugin/plugin.json" not in kit["files"]:
+        raise SystemExit("kit " + kit["name"] + " missing .claude-plugin/plugin.json in files list")
     detect = kit["detect"]
     has_signal = "files" in detect or "language" in detect or "dependencies" in detect
     if not has_signal:
@@ -56,15 +56,17 @@ for kit in registry["kits"]:
 '
 echo ""
 
-echo "4. Every plugin.json has required fields"
+echo "4. Every .claude-plugin/plugin.json has required fields"
 assert_python "plugin.json schema is valid" '
 registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
 for kit in registry["kits"]:
-    pj_path = root / "starter-kits" / kit["name"] / "plugin.json"
+    pj_path = root / "starter-kits" / kit["name"] / ".claude-plugin" / "plugin.json"
     pj = json.loads(pj_path.read_text(encoding="utf-8"))
-    for field in ("name", "displayName", "description", "version"):
+    for field in ("name", "description", "version"):
         if field not in pj:
-            raise SystemExit("plugin.json in " + kit["name"] + " missing field: " + field)
+            raise SystemExit(".claude-plugin/plugin.json in " + kit["name"] + " missing field: " + field)
+    if "displayName" in pj:
+        raise SystemExit(".claude-plugin/plugin.json in " + kit["name"] + " has unsupported displayName field")
 '
 echo ""
 
@@ -86,36 +88,15 @@ for kit in registry["kits"]:
 '
 echo ""
 
-echo "6. Kit instruction files have valid frontmatter"
-assert_python "kit instruction frontmatter is valid" '
+echo "6. Kit command files have valid frontmatter"
+assert_python "kit command frontmatter is valid" '
 registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
 for kit in registry["kits"]:
     kit_dir = root / "starter-kits" / kit["name"]
-    instr_dir = kit_dir / "instructions"
-    if not instr_dir.exists():
+    cmd_dir = kit_dir / "commands"
+    if not cmd_dir.exists():
         continue
-    for path in instr_dir.glob("*.instructions.md"):
-        text = path.read_text(encoding="utf-8")
-        if not text.startswith("---\n"):
-            raise SystemExit("missing frontmatter in " + str(path.relative_to(root)))
-        end = text.find("\n---\n", 4)
-        if end == -1:
-            raise SystemExit("unterminated frontmatter in " + str(path.relative_to(root)))
-        fm = text[4:end]
-        if "applyTo:" not in fm or "description:" not in fm:
-            raise SystemExit("missing applyTo/description in " + str(path.relative_to(root)))
-'
-echo ""
-
-echo "7. Kit prompt files have valid frontmatter"
-assert_python "kit prompt frontmatter is valid" '
-registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
-for kit in registry["kits"]:
-    kit_dir = root / "starter-kits" / kit["name"]
-    prompts_dir = kit_dir / "prompts"
-    if not prompts_dir.exists():
-        continue
-    for path in prompts_dir.glob("*.prompt.md"):
+    for path in cmd_dir.glob("*.md"):
         text = path.read_text(encoding="utf-8")
         if not text.startswith("---\n"):
             raise SystemExit("missing frontmatter in " + str(path.relative_to(root)))
@@ -125,6 +106,19 @@ for kit in registry["kits"]:
         fm = text[4:end]
         if "description:" not in fm:
             raise SystemExit("missing description in " + str(path.relative_to(root)))
+'
+echo ""
+
+echo "7. Plugin manifests are in .claude-plugin/ directory"
+assert_python "plugin.json location is correct" '
+registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
+for kit in registry["kits"]:
+    kit_dir = root / "starter-kits" / kit["name"]
+    # Must be in .claude-plugin/ not root
+    if (kit_dir / "plugin.json").exists():
+        raise SystemExit("plugin.json in root of " + kit["name"] + " — should be in .claude-plugin/")
+    if not (kit_dir / ".claude-plugin" / "plugin.json").exists():
+        raise SystemExit("missing .claude-plugin/plugin.json in " + kit["name"])
 '
 echo ""
 
