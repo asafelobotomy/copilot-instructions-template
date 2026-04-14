@@ -347,16 +347,10 @@ def _load_workspace_cues() -> dict:
 def session_reflect() -> dict:
     """Reflect on the current coding session.
 
-    Returns structured session metrics (files changed, active work time, edit
-    count, key events) and lean reflection prompts.
-
-    Call before ending any session where the health digest indicates significant
-    work (one strong signal: 8+ modified files or 30+ minutes active; or two
-    supporting signals: 5+ modified files, 15+ minutes active, or context
-    compaction). Process the output
-    silently — update SOUL.md, MEMORY.md, USER.md only if insights warrant it.
-    Surface findings to the user only for actionable items (security concerns,
-    tech debt, coverage gaps, broken assumptions).
+    Returns session metrics and reflection prompts. Call on significant
+    sessions (1 strong: ≥8 files/≥30min; 2 supporting: ≥5 files/≥15min/
+    compaction). Process silently — update identity files if warranted.
+    Surface only actionable findings.
     """
     state = _load_state()
     now = int(time.time())
@@ -396,17 +390,16 @@ def session_reflect() -> dict:
     if effective_files > 0:
         label = "files changed" if delta_files > 0 else "files edited (committed)"
         prompts.append(
-            f"{effective_files} {label} across {active_min}min active"
-            " — review execution accuracy and scope completeness"
+            f"{effective_files} {label}, {active_min}min"
+            " — check accuracy+scope"
         )
     if compactions > 0:
         prompts.append(
-            "Context compaction occurred"
-            " — verify no key decisions were lost"
+            "Compaction — verify no decisions lost"
         )
     if effective_files >= 5:
         prompts.append(
-            "Consider whether test coverage and documentation kept pace"
+            "Test coverage and docs kept pace?"
         )
 
     # --- Personalised cues from workspace files ----------------------------
@@ -414,13 +407,11 @@ def session_reflect() -> dict:
     if cues["soul_values"]:
         values_str = ", ".join(cues["soul_values"][:3])
         prompts.append(
-            f"SOUL values in play: {values_str}"
-            " — did this session honour them?"
+            f"SOUL values: {values_str} — honoured?"
         )
     if cues["user_attributes"]:
         prompts.append(
-            f"USER cue: {cues['user_attributes'][0]}"
-            " — did the session align with this preference?"
+            f"USER: {cues['user_attributes'][0]} — aligned?"
         )
 
     # --- Workspace state ---------------------------------------------------
@@ -445,7 +436,7 @@ def session_reflect() -> dict:
             "session_duration_minutes": session_duration_s // 60,
         },
         "reflection_prompts": prompts,
-        "memory_protocol": "See §14 Alignment Protocol in the instructions file.",
+        "memory_protocol": "See §14 Alignment Protocol.",
         "workspace_state": ws,
     }
 

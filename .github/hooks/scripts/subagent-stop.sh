@@ -49,7 +49,7 @@ if [[ -n "$RESULT" ]]; then
 fi
 
 # Build summary context
-CONTEXT="Subagent ${AGENT_NAME} completed. Review results before continuing."
+CONTEXT="${AGENT_NAME} done. Review before continuing."
 
 # JSON-escape the context
 CONTEXT_ESC=$(json_escape "$CONTEXT")

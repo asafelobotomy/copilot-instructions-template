@@ -245,13 +245,24 @@ def top_level_domain(p: str) -> str:
     parts = pathlib.PurePosixPath(p).parts
     return parts[0] if parts else "."
 
-domains_touched: list[str] = unique([top_level_domain(p) for p in normalized_paths])
+# 3a. Mirror-domain collapsing: parity-mirror paths map to a single canonical domain.
+mirror_domains: dict[str, list[str]] = config.get("mirrorDomains", {})
 
-# 4. Count distinct broadening domains (top-level dir of the path that triggered broadening).
+def resolve_domain(p: str) -> str:
+    for canonical, prefixes in mirror_domains.items():
+        for prefix in prefixes:
+            normalized_prefix = prefix.rstrip("/")
+            if p == normalized_prefix or p.startswith(normalized_prefix + "/"):
+                return canonical
+    return top_level_domain(p)
+
+domains_touched: list[str] = unique([resolve_domain(p) for p in normalized_paths])
+
+# 4. Count distinct broadening domains (resolved domain of the path that triggered broadening).
 broaden_domains: set[str] = set()
 for entry in matched_rules:
     if entry.get("phase_strategy") not in ("targeted",):
-        broaden_domains.add(top_level_domain(str(entry["path"])))
+        broaden_domains.add(resolve_domain(str(entry["path"])))
 
 # 5. Confidence score: ratio of mapped (non-unmapped) files to total changed files.
 total_files = len(normalized_paths)

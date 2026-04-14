@@ -26,6 +26,62 @@ if ($stopHookActive) {
 }
 
 # ---------------------------------------------------------------------------
+# Concurrency guard — prevent duplicate scans from overlapping Stop cycles
+# ---------------------------------------------------------------------------
+$lockDir = if ($env:SECRETS_LOG_DIR) { $env:SECRETS_LOG_DIR } else { 'logs/secrets' }
+if (-not (Test-Path $lockDir)) { New-Item -ItemType Directory -Path $lockDir -Force | Out-Null }
+$lockFile = Join-Path $lockDir '.scan-secrets.lock'
+
+function Remove-ScanLock { Remove-Item $lockFile -ErrorAction SilentlyContinue }
+
+if (Test-Path $lockFile) {
+    $lockPid = Get-Content $lockFile -ErrorAction SilentlyContinue
+    $lockAlive = $false
+    if ($lockPid) {
+        try { $lockAlive = [bool](Get-Process -Id ([int]$lockPid) -ErrorAction Stop) } catch { $lockAlive = $false }
+    }
+    if ($lockAlive) {
+        Write-Error "Scan already in progress — check that terminal for results."
+        '{"continue": true}'; exit 0
+    }
+    Remove-Item $lockFile -ErrorAction SilentlyContinue
+}
+$PID | Set-Content $lockFile -ErrorAction SilentlyContinue
+try {
+
+# ---------------------------------------------------------------------------
+# Debounce — skip if last scan was clean, recent, and file count unchanged
+# ---------------------------------------------------------------------------
+$debounceSeconds = if ($env:SCAN_DEBOUNCE_SECONDS) { [int]$env:SCAN_DEBOUNCE_SECONDS } else { 60 }
+$logFilePath = Join-Path $lockDir 'scan.log'
+if ((Test-Path $logFilePath) -and $debounceSeconds -gt 0) {
+    $lastLine = Get-Content $logFilePath -Tail 1 -ErrorAction SilentlyContinue
+    if ($lastLine -match '"status":"clean"') {
+        $tsMatch = [regex]::Match($lastLine, '"timestamp":"([^"]+)"')
+        $countMatch = [regex]::Match($lastLine, '"files_scanned":(\d+)')
+        if ($tsMatch.Success) {
+            try {
+                $lastEpoch = [DateTimeOffset]::Parse($tsMatch.Groups[1].Value).ToUnixTimeSeconds()
+                $nowEpoch  = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+                $age = $nowEpoch - $lastEpoch
+                if ($age -ge 0 -and $age -lt $debounceSeconds) {
+                    $lastCount = if ($countMatch.Success) { [int]$countMatch.Groups[1].Value } else { -1 }
+                    $curDiff = (git diff --name-only --diff-filter=ACMR HEAD 2>$null | Where-Object { $_ }).Count
+                    $curUntracked = (git ls-files --others --exclude-standard 2>$null | Where-Object { $_ }).Count
+                    $curCount = $curDiff + $curUntracked
+                    if ($lastCount -eq $curCount) {
+                        Write-Error "Scan skipped — clean scan ${age}s ago with same file count."
+                        '{"continue": true}'
+                        Remove-ScanLock
+                        exit 0
+                    }
+                }
+            } catch { <# date parse failed — proceed with scan #> }
+        }
+    }
+}
+
+# ---------------------------------------------------------------------------
 # Environment variables
 #   SCAN_MODE          - "warn" (log only) or "block" (block on findings)
 #   SCAN_SCOPE         - "diff" (changed files) or "staged" (staged files)
@@ -190,3 +246,7 @@ if ($Findings.Count -gt 0) {
 }
 
 '{"continue": true}'
+
+} finally {
+    Remove-ScanLock
+}

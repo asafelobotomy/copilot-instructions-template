@@ -11,6 +11,21 @@ from .models import Finding, CheckResult, CRITICAL, HIGH, WARN, INFO
 from .helpers import has_command
 
 
+def _powershell_candidate_usable(candidate: str, cwd: pathlib.Path) -> bool:
+    """Return True when the PowerShell executable can run a trivial command."""
+    try:
+        proc = subprocess.run(
+            [candidate, "-NoLogo", "-NoProfile", "-Command", "exit 0"],
+            capture_output=True,
+            text=True,
+            cwd=cwd,
+            check=False,
+        )
+    except OSError:
+        return False
+    return proc.returncode == 0
+
+
 def check_h1_hooks_valid_json(root: pathlib.Path | AuditContext) -> CheckResult:
     """H1 — copilot-hooks.json: exists and is valid JSON."""
     ctx = ensure_context(root)
@@ -147,11 +162,11 @@ def check_ps1_basic_sanity(root: pathlib.Path | AuditContext) -> CheckResult:
             proc = None
         if proc and proc.returncode == 0:
             candidate = (proc.stdout or "").strip()
-            if candidate:
+            if candidate and _powershell_candidate_usable(candidate, ctx.root):
                 pwsh_path = candidate
     if not pwsh_path:
         for candidate in ("pwsh", "powershell"):
-            if has_command(candidate):
+            if has_command(candidate) and _powershell_candidate_usable(candidate, ctx.root):
                 pwsh_path = candidate
                 break
     for ps1 in ctx.ps_scripts:

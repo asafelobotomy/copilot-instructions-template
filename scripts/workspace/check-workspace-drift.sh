@@ -23,7 +23,7 @@ REGISTRY=(
 
 HEARTBEAT_RESPONSE_LINES=(
     '- Always append a History row when the trigger is Session start or Explicit — regardless of check results.'
-    '- For all other triggers, append a History row only if a check raised an alert or retrospective output was persisted to SOUL.md / MEMORY.md / USER.md.'
+    '- For all other triggers, append a History row only if a check raised an alert or retrospective output was persisted to identity files.'
     '- If checks pass and nothing was persisted on a non-explicit trigger, keep Pulse as `HEARTBEAT_OK` and omit the History row.'
 )
 

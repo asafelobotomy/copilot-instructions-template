@@ -53,15 +53,15 @@
     "Stop": [
       {
         "type": "command",
-        "command": "./.github/hooks/scripts/scan-secrets.sh",
-        "windows": "powershell -File .github\\hooks\\scripts\\scan-secrets.ps1",
-        "timeout": 30
-      },
-      {
-        "type": "command",
         "command": "./.github/hooks/scripts/pulse.sh --trigger stop",
         "windows": "powershell -File .github\\hooks\\scripts\\pulse.ps1 -Trigger stop",
         "timeout": 5
+      },
+      {
+        "type": "command",
+        "command": "./.github/hooks/scripts/scan-secrets.sh",
+        "windows": "powershell -File .github\\hooks\\scripts\\scan-secrets.ps1",
+        "timeout": 30
       }
     ],
     "PreCompact": [

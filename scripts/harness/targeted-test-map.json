@@ -4,7 +4,7 @@
   "defaults": {
     "unmappedPhaseStrategy": "broaden-aggressively",
     "runFullSuiteAtCompletion": false,
-    "runFullSuiteAtCompletionOnMultipleDomains": 3,
+    "runFullSuiteAtCompletionOnMultipleDomains": 4,
     "runFullSuiteAtCompletionOnMultiplePhases": 3,
     "runFullSuiteAtCompletionOnMultipleSuites": 4,
     "intermediatePhaseBudgetSeconds": 10,
@@ -17,6 +17,11 @@
       "requirements*.txt",
       ".github/workflows/*.yml"
     ]
+  },
+  "mirrorDomains": {
+    "hooks-mirror": [".github/hooks/", "template/hooks/"],
+    "skills-mirror": [".github/skills/", "template/skills/"],
+    "workspace-mirror": [".copilot/workspace/", "template/workspace/"]
   },
   "riskClasses": ["critical-surface", "security-sensitive", "cross-cutting"],
   "ruleFiles": [

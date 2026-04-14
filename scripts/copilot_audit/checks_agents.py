@@ -13,7 +13,7 @@ AGENT_DELEGATION_POLICY: dict[str, set[str]] = {
     "audit.agent.md": {"Code", "Setup", "Researcher", "Extensions", "Organise", "Planner"},
     "code.agent.md": {"Review", "Audit", "Researcher", "Explore", "Commit", "Organise", "Planner", "Docs", "Debugger"},
     "coding.agent.md": {"Review", "Audit", "Researcher", "Explore", "Commit", "Organise", "Planner", "Docs", "Debugger"},
-    "commit.agent.md": {"Code", "Review", "Audit", "Debugger"},
+    "commit.agent.md": {"Code", "Review", "Audit", "Debugger", "Organise"},
     "debugger.agent.md": {"Code", "Researcher", "Audit", "Planner"},
     "docs.agent.md": {"Code", "Researcher", "Review", "Explore"},
     "explore.agent.md": {"Researcher"},

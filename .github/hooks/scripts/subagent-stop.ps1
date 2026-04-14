@@ -53,7 +53,7 @@ if ([string]::IsNullOrWhiteSpace($result) -eq $false) {
   }
 }
 
-$context = "Subagent ${agentName} completed. Review results before continuing."
+$context = "${agentName} done. Review before continuing."
 
 $output = [ordered]@{
   hookSpecificOutput = [ordered]@{

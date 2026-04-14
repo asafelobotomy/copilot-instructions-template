@@ -149,12 +149,6 @@
       "ciLabel": "Script behavior | resolve-powershell.sh"
     },
     {
-      "id": "script-release-plan",
-      "path": "tests/scripts/test-release-plan.sh",
-      "phase": "scripts",
-      "ciLabel": "Script behavior | release-plan.sh"
-    },
-    {
       "id": "script-run-isolated-shell",
       "path": "tests/scripts/test-run-isolated-shell.sh",
       "phase": "scripts",

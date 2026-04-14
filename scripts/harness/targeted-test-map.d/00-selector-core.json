@@ -179,6 +179,56 @@
       "reason": "PowerShell coverage wrappers affect every PowerShell hook suite."
     },
     {
+      "id": "powershell-hook-child-session-start-test",
+      "matchType": "exact",
+      "pattern": "tests/hooks/test-hook-session-start-powershell.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hooks-powershell.sh"
+      ],
+      "reason": "The session-start PowerShell child suite runs through the umbrella PowerShell hook suite in the canonical inventory."
+    },
+    {
+      "id": "powershell-hook-child-post-edit-lint-test",
+      "matchType": "exact",
+      "pattern": "tests/hooks/test-hook-post-edit-lint-powershell.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hooks-powershell.sh"
+      ],
+      "reason": "The post-edit-lint PowerShell child suite runs through the umbrella PowerShell hook suite in the canonical inventory."
+    },
+    {
+      "id": "powershell-hook-child-pulse-paths-test",
+      "matchType": "exact",
+      "pattern": "tests/hooks/test-pulse-paths-powershell.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hooks-powershell.sh"
+      ],
+      "reason": "The pulse-paths PowerShell child suite runs through the umbrella PowerShell hook suite in the canonical inventory."
+    },
+    {
+      "id": "powershell-hook-child-pulse-test",
+      "matchType": "exact",
+      "pattern": "tests/hooks/test-hook-pulse-powershell.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hooks-powershell.sh"
+      ],
+      "reason": "The pulse PowerShell child suite runs through the umbrella PowerShell hook suite in the canonical inventory."
+    },
+    {
+      "id": "powershell-hook-child-save-context-test",
+      "matchType": "exact",
+      "pattern": "tests/hooks/test-hook-save-context-powershell.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/hooks/test-hooks-powershell.sh"
+      ],
+      "reason": "The save-context PowerShell child suite runs through the umbrella PowerShell hook suite in the canonical inventory."
+    },
+    {
       "id": "runnable-hook-tests",
       "matchType": "prefix",
       "pattern": "tests/hooks/",

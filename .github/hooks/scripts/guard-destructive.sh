@@ -33,7 +33,7 @@ if ! command -v python3 >/dev/null 2>&1; then
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
     "permissionDecision": "ask",
-    "permissionDecisionReason": "python3 not found — guard-destructive hook cannot parse command. Falling back to manual confirmation."
+    "permissionDecisionReason": "python3 missing — cannot parse command. Manual confirmation."
   }
 }
 EOF
@@ -57,7 +57,7 @@ if [[ -z "$TOOL_INPUT" ]]; then
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
     "permissionDecision": "ask",
-    "permissionDecisionReason": "tool_input.command is required for terminal tools. Falling back to manual confirmation."
+    "permissionDecisionReason": "Missing tool_input.command. Manual confirmation."
   }
 }
 EOF
@@ -142,7 +142,7 @@ for pattern in "${BLOCKED_PATTERNS[@]}"; do
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
     "permissionDecision": "deny",
-    "permissionDecisionReason": "Blocked by security hook: matched destructive pattern '${PATTERN_ESC}'"
+    "permissionDecisionReason": "Blocked: destructive pattern '${PATTERN_ESC}'"
   }
 }
 EOF
@@ -174,8 +174,8 @@ for pattern in "${CAUTION_PATTERNS[@]}"; do
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
     "permissionDecision": "ask",
-    "permissionDecisionReason": "Potentially destructive command detected: matches '${PATTERN_ESC}'. Requires user confirmation.",
-    "additionalContext": "The command '${COMMAND_ESC}' matched a caution pattern. Verify this is intended before proceeding."
+    "permissionDecisionReason": "Caution pattern '${PATTERN_ESC}' matched. Confirm to proceed.",
+    "additionalContext": "Command: '${COMMAND_ESC}'"
   }
 }
 EOF
@@ -204,8 +204,8 @@ if [[ "$AGENT_NAME" =~ ^(Audit|Review|Explore)$ ]]; then
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
     "permissionDecision": "ask",
-    "permissionDecisionReason": "${AGENT_ESC} is a read-only agent. Mutating terminal commands require explicit user confirmation.",
-    "additionalContext": "The command '${COMMAND_ESC}' appears to mutate files or repository state. Use the Code agent for implementation tasks or confirm this one-off command."
+    "permissionDecisionReason": "${AGENT_ESC} is read-only. Mutations need confirmation.",
+    "additionalContext": "Command '${COMMAND_ESC}' mutates state. Use Code agent or confirm."
   }
 }
 EOF

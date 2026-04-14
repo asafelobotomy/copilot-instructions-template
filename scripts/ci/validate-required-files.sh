@@ -18,7 +18,6 @@ required_files=(
   "AGENTS.md"
   "VERSION.md"
   "CHANGELOG.md"
-  "scripts/release/plan-release.sh"
   "scripts/release/stub-migration.sh"
   "scripts/release/verify-version-references.sh"
   "scripts/harness/run-all-captured.sh"

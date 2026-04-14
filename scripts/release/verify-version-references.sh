@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# verify-version-references.sh — verify release-managed version references stay aligned.
+# verify-version-references.sh — verify version references stay aligned.
 #
 # Single source of truth: VERSION.md
-# Single writer: release-please (version-file, manifest-file, extra-files)
-# This script is read-only and fails if the managed files drift from VERSION.md.
+# Version bumps are done locally. This script is read-only and fails if the
+# managed files drift from VERSION.md.
 set -euo pipefail
 
 ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
@@ -72,22 +72,11 @@ require_text_match(
     require_marker=True,
 )
 
-manifest_path = root / ".release-please-manifest.json"
-if not manifest_path.exists():
-    errors.append("missing file: .release-please-manifest.json")
-else:
-    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    actual = manifest.get(".")
-    if actual != version:
-        errors.append(
-            f"version drift in .release-please-manifest.json: expected {version}, found {actual}"
-        )
-
 if errors:
     for err in errors:
         print(f"❌ {err}")
-    print("Run release-please or repair the managed files before releasing again.")
+    print("Repair the version markers in the managed files before releasing.")
     raise SystemExit(1)
 
-print(f"✅ Release-managed version references match VERSION.md ({version})")
+print(f"✅ Version references match VERSION.md ({version})")
 PY

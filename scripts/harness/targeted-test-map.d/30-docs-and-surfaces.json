@@ -29,6 +29,16 @@
       "reason": "The routing manifest drives hook routing behavior and participates in the canonical consumer inventory."
     },
     {
+      "id": "copilot-workspace-heartbeat",
+      "matchType": "exact",
+      "pattern": ".copilot/workspace/operations/HEARTBEAT.md",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/scripts/test-workspace-drift.sh"
+      ],
+      "reason": "Developer HEARTBEAT.md is validated by the workspace drift checker."
+    },
+    {
       "id": "repo-workspace-index",
       "matchType": "exact",
       "pattern": ".copilot/workspace/operations/workspace-index.json",
@@ -314,26 +324,6 @@
         "tests/contracts/test-release-contracts.sh"
       ],
       "reason": "Migration documentation is validated by the release contract suite."
-    },
-    {
-      "id": "release-config",
-      "matchType": "exact",
-      "pattern": "release-please-config.json",
-      "phaseStrategy": "targeted",
-      "tests": [
-        "tests/contracts/test-release-contracts.sh"
-      ],
-      "reason": "release-please config is validated by the release contract suite."
-    },
-    {
-      "id": "release-manifest",
-      "matchType": "exact",
-      "pattern": ".release-please-manifest.json",
-      "phaseStrategy": "targeted",
-      "tests": [
-        "tests/contracts/test-release-contracts.sh"
-      ],
-      "reason": "release-please manifest is validated by the release contract suite."
     },
     {
       "id": "release-workflows",

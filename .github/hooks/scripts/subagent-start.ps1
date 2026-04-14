@@ -19,7 +19,7 @@ catch {
   $payload = $null
 }
 
-$context = "Subagent governance: max depth 3. Inherited protocols: PDCA cycle, Tool Protocol, Skill Protocol. Agent: ${agentName}."
+$context = "Depth<=3. Protocols: PDCA, Tool, Skill. Agent: ${agentName}."
 
 $agentLower = $agentName.ToLowerInvariant()
 $diaryFile = Join-Path '.copilot/workspace/knowledge/diaries' "${agentLower}.md"

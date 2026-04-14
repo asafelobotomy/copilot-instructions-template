@@ -9,7 +9,6 @@
       "riskClass": "cross-cutting",
       "tests": [
         "tests/scripts/test-audit-release-settings.sh",
-        "tests/scripts/test-release-plan.sh",
         "tests/scripts/test-verify-version-references.sh",
         "tests/scripts/test-stub-migration.sh",
         "tests/scripts/test-run-isolated-shell.sh",
@@ -30,16 +29,6 @@
         "tests/scripts/test-security-edge-cases.sh"
       ],
       "reason": "verify-version-references has direct unit coverage plus an idempotency regression in security edge cases."
-    },
-    {
-      "id": "release-plan",
-      "matchType": "exact",
-      "pattern": "scripts/release/plan-release.sh",
-      "phaseStrategy": "targeted",
-      "tests": [
-        "tests/scripts/test-release-plan.sh"
-      ],
-      "reason": "plan-release is covered by a dedicated behavior suite."
     },
     {
       "id": "release-audit-settings",
