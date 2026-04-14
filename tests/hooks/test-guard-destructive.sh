@@ -109,7 +109,7 @@ echo "7. permissionDecisionReason field is informative"
 assert_contains "deny reason field present"      "$(run_guard "$(make_guard_input 'bash' 'rm -rf /')")"         "permissionDecisionReason"
 assert_contains "deny reason mentions pattern"   "$(run_guard "$(make_guard_input 'bash' 'rm -rf /')")"         "rm -rf"
 assert_contains "caution reason field present"   "$(run_guard "$(make_guard_input 'bash' 'git push --force')")" "permissionDecisionReason"
-assert_contains "caution reason is descriptive"  "$(run_guard "$(make_guard_input 'bash' 'git push --force')")" "Potentially destructive"
+assert_contains "caution reason is descriptive"  "$(run_guard "$(make_guard_input 'bash' 'git push --force')")" "Caution pattern"
 echo ""
 
 # ── 8. Additional blocked patterns ───────────────────────────────────────────

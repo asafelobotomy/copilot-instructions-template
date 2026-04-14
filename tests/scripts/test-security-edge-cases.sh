@@ -89,8 +89,6 @@ echo ""
 
 # ── 6. verify-version-references.sh read-only stability ──────────────────────
 # Running verify-version-references.sh twice should leave the managed files unchanged.
-# The script is a verifier now, so any mutation would reintroduce a second
-# version writer outside release-please.
 echo "6. verify-version-references.sh read-only stability"
 
 TMPDIR_SYNC=$(mktemp -d)
@@ -98,7 +96,6 @@ CLEANUP_DIRS+=("$TMPDIR_SYNC")
 
 # Mirror the files verify-version-references.sh verifies
 cp "$REPO_ROOT/VERSION.md" "$TMPDIR_SYNC/"
-cp "$REPO_ROOT/.release-please-manifest.json" "$TMPDIR_SYNC/"
 mkdir -p "$TMPDIR_SYNC/.github"
 mkdir -p "$TMPDIR_SYNC/template"
 cp "$REPO_ROOT/.github/copilot-instructions.md" "$TMPDIR_SYNC/.github/"
@@ -109,15 +106,13 @@ cp "$REPO_ROOT/README.md" "$TMPDIR_SYNC/"
 ROOT_DIR="$TMPDIR_SYNC" bash "$VERIFY_SCRIPT" >/dev/null 2>&1
 SNAP1=$(cat "$TMPDIR_SYNC/.github/copilot-instructions.md" \
             "$TMPDIR_SYNC/template/copilot-instructions.md" \
-            "$TMPDIR_SYNC/README.md" \
-            "$TMPDIR_SYNC/.release-please-manifest.json" 2>/dev/null)
+            "$TMPDIR_SYNC/README.md" 2>/dev/null)
 
 # Second run — must be an exact no-op relative to the first run
 ROOT_DIR="$TMPDIR_SYNC" bash "$VERIFY_SCRIPT" >/dev/null 2>&1
 SNAP2=$(cat "$TMPDIR_SYNC/.github/copilot-instructions.md" \
             "$TMPDIR_SYNC/template/copilot-instructions.md" \
-            "$TMPDIR_SYNC/README.md" \
-            "$TMPDIR_SYNC/.release-please-manifest.json" 2>/dev/null)
+            "$TMPDIR_SYNC/README.md" 2>/dev/null)
 
 if [[ "$SNAP1" == "$SNAP2" ]]; then
   pass_note "verify-version-references.sh is read-only (second run produces no changes)"

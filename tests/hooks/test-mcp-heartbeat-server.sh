@@ -174,8 +174,8 @@ assert payload["workspace_state"] == {
 }
 joined = " ".join(payload["reflection_prompts"])
 assert "6 files edited (committed)" in joined
-assert "Context compaction occurred" in joined
-assert "test coverage and documentation kept pace" in joined
+assert "Compaction" in joined
+assert "coverage and docs kept pace" in joined
 '
 assert_matches "sentinel is marked complete" "$(cat "$TMP_SESSION/.copilot/workspace/runtime/.heartbeat-session")" 'sess-heartbeat\|.*\|complete'
 assert_python_in_root "session_reflect appends a completion event" "$TMP_SESSION" '
@@ -218,7 +218,7 @@ assert payload["metrics"]["compactions"] == 1
 echo ""
 
 echo "4. Source guidance uses the strong or supporting threshold contract"
-assert_contains "mcp heartbeat server docstring matches threshold contract" "$(cat "$SCRIPT")" 'one strong signal: 8+ modified files or 30+ minutes active; or two'
+assert_contains "mcp heartbeat server docstring matches threshold contract" "$(cat "$SCRIPT")" '1 strong:'
 echo ""
 
 echo "5. Corrupt state falls back safely and still completes the sentinel"

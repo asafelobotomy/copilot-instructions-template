@@ -146,7 +146,6 @@ echo ""
 echo "7. Repo utility scripts are executable"
 UTIL_SCRIPTS=(
   scripts/workspace/check-workspace-drift.sh
-  scripts/release/plan-release.sh
   scripts/harness/run-all-captured.sh
   scripts/harness/select-targeted-tests.sh
   scripts/release/verify-version-references.sh

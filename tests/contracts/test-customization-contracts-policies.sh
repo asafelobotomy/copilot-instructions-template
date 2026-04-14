@@ -427,7 +427,7 @@ def parse_tools_or_agents(frontmatter, field):
 expected = {
     "audit.agent.md": {"Code", "Setup", "Researcher", "Extensions", "Organise", "Planner"},
     "coding.agent.md": {"Review", "Audit", "Researcher", "Explore", "Commit", "Organise", "Planner", "Docs", "Debugger"},
-    "commit.agent.md": {"Code", "Review", "Audit", "Debugger"},
+    "commit.agent.md": {"Code", "Review", "Audit", "Debugger", "Organise"},
     "debugger.agent.md": {"Code", "Researcher", "Audit", "Planner"},
     "docs.agent.md": {"Code", "Researcher", "Review", "Explore"},
     "explore.agent.md": {"Researcher"},
@@ -465,6 +465,7 @@ checks = {
     "commit.agent.md": [
         "Use `Code` when preflight or review finds implementation work",
         "Use `Audit` when the user requests a deeper security or health check",
+        "Use `Organise` when branch cleanup or file restructuring is needed",
     ],
     "debugger.agent.md": [
         "Focus on reproduction, symptom isolation, root cause, and the smallest credible fix path.",

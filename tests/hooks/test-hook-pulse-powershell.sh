@@ -191,7 +191,7 @@ echo "11. user_prompt heartbeat keyword emits system message"
 TMP_PROMPT_PULSE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_PROMPT_PULSE")
 mkdir -p "$TMP_PROMPT_PULSE/.copilot/workspace/identity" "$TMP_PROMPT_PULSE/.copilot/workspace/knowledge/diaries" "$TMP_PROMPT_PULSE/.copilot/workspace/operations" "$TMP_PROMPT_PULSE/.copilot/workspace/runtime"
 output=$(run_pulse_in_dir "$TMP_PROMPT_PULSE" '{"prompt":"Can you check your heartbeat now?"}' -Trigger user_prompt)
-assert_contains "powershell keyword prompt includes guidance" "$output" 'Heartbeat trigger detected'
+assert_contains "powershell keyword prompt includes guidance" "$output" 'Heartbeat triggered'
 echo ""
 
 echo "12. discussion-only prompt does not arm heartbeat or retrospective"

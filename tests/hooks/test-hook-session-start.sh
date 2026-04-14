@@ -75,19 +75,19 @@ echo ""
 echo "10. Output contains Node and Python version fields"
 output=$(echo '{}' | bash "$SCRIPT" 2>/dev/null)
 assert_matches "Node: field present" "$output" "Node:"
-assert_matches "Python: field present" "$output" "Python:"
+assert_matches "Py: field present" "$output" "Py:"
 echo ""
 
 echo "11. Output contains OS detection fields"
 output=$(echo '{}' | bash "$SCRIPT" 2>/dev/null)
 assert_matches "OS: field present" "$output" "OS:"
 assert_matches "Pkg: field present" "$output" "Pkg:"
-assert_matches "Immutable: field present" "$output" "Immutable:"
+assert_matches "Imm: field present" "$output" "Imm:"
 echo ""
 
 echo "12. Output contains compact routing roster"
 output=$(echo '{}' | bash "$SCRIPT" 2>/dev/null)
-assert_matches "Routing roster field present" "$output" "Routing:"
+assert_matches "Routing roster field present" "$output" "Route:"
 assert_matches "Routing roster includes guarded marker" "$output" "guarded:"
 assert_matches "Routing roster includes Stage 4 surfaced code agent" "$output" "Code"
 assert_matches "Routing roster includes Stage 4 surfaced fast agent" "$output" "Fast"

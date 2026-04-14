@@ -12,29 +12,21 @@ trap cleanup_dirs EXIT
 echo "=== Release metadata contract checks ==="
 echo ""
 
-echo "1. VERSION.md and release-please manifest agree"
-assert_python "version matches manifest" '
+echo "1. VERSION.md is valid semver"
+assert_python "VERSION.md is valid semver" '
 version = (root / "VERSION.md").read_text(encoding="utf-8").strip()
-manifest = json.loads((root / ".release-please-manifest.json").read_text(encoding="utf-8"))
-actual = manifest.get(".")
-if actual != version:
-    raise SystemExit("manifest=" + str(actual) + " version=" + version)
+if not re.match(r"^\d+\.\d+\.\d+$", version):
+    raise SystemExit("invalid semver: " + version)
 '
 echo ""
 
-echo "2. Release config points at the canonical version and changelog files"
-assert_python "release-please config stays aligned" '
-config = json.loads((root / "release-please-config.json").read_text(encoding="utf-8"))
-pkg = config["packages"]["."]
-if pkg.get("version-file") != "VERSION.md":
-    raise SystemExit(pkg.get("version-file"))
-if pkg.get("changelog-path") != "CHANGELOG.md":
-    raise SystemExit(pkg.get("changelog-path"))
-if ".release-please-manifest.json" in pkg.get("extra-files", []):
-    raise SystemExit("manifest must not be listed in extra-files")
-for rel in pkg.get("extra-files", []):
-    if not (root / rel).exists():
-        raise SystemExit(rel)
+echo "2. Legacy release-please files are removed"
+assert_python "no release-please artifacts remain" '
+for name in ["release-please-config.json", ".release-please-manifest.json"]:
+    if (root / name).exists():
+        raise SystemExit(f"legacy file still present: {name}")
+if (root / ".github/workflows/release-please.yml").exists():
+    raise SystemExit("legacy release-please workflow should be removed")
 '
 echo ""
 
@@ -54,11 +46,14 @@ if available_tags is None or tag not in available_tags.group(1):
 '
 echo ""
 
-echo "4. Version markers remain in release-managed files"
+echo "4. Version markers remain in managed files"
 assert_python "x-release markers remain discoverable" '
 version = (root / "VERSION.md").read_text(encoding="utf-8").strip()
-config = json.loads((root / "release-please-config.json").read_text(encoding="utf-8"))
-targets = [root / rel for rel in config["packages"]["."].get("extra-files", [])]
+targets = [
+    root / "template/copilot-instructions.md",
+    root / "README.md",
+    root / ".github/copilot-instructions.md",
+]
 for path in targets:
     text = path.read_text(encoding="utf-8")
     if path.suffix == ".md" and "x-release-please-version" not in text:
@@ -83,51 +78,37 @@ required = [
     "- shellcheck",
     "- script-tests",
     "github.event_name == push && github.ref == refs/heads/main",
-    "bash scripts/release/plan-release.sh",
-    "googleapis/release-please-action",
+    "Detect version bump",
+    "gh release create",
 ]
 for needle in required:
     if needle not in normalized:
         raise SystemExit("missing CI release orchestration detail: " + needle)
+for forbidden in [
+    "googleapis/release-please-action",
+    "bash scripts/release/plan-release.sh",
+    "release-please-config.json",
+    ".release-please-manifest.json",
+]:
+    if forbidden in normalized:
+        raise SystemExit("legacy release-please reference still present: " + forbidden)
 '
 echo ""
 
-echo "6. Release job removes CI writeback and prepares MIGRATION on the release PR"
-assert_python "single-authority release flow has no extra main-branch writers" '
+echo "6. Release job has no extra main-branch writers"
+assert_python "release flow has no extra main-branch writers" '
 ci_text = (root / ".github/workflows/ci.yml").read_text(encoding="utf-8")
-normalized = ci_text.replace(chr(39), "")
 for forbidden in [
     "Sync derived version references",
     "Auto-commit version sync",
     "chore: sync version references [skip ci]",
     "git pull --ff-only",
-    "stub MIGRATION.md entry for $NEXT_TAG [skip ci]",
+    "googleapis/release-please-action",
+    "release-please-config.json",
+    ".release-please-manifest.json",
 ]:
     if forbidden in ci_text:
         raise SystemExit("forbidden legacy flow still present: " + forbidden)
-required = [
-    "Detect release commit",
-    "is_release_commit=true",
-    "steps.release_commit.outputs.is_release_commit == true",
-    "bash scripts/release/stub-migration.sh \"$NEXT_TAG\"",
-    "gh pr view \"$pr_number\"",
-    "git push origin HEAD:\"$pr_branch\"",
-    "gh pr merge \"$pr_number\"",
-    "mergeStateStatus",
-    "Release PR merge attempt $attempt/6 failed",
-    "Release PR was not immediately mergeable after retries",
-    "skip-github-release: true",
-    "skip-github-pull-request: true",
-    "Refresh merged main for publish pass",
-    "steps.refresh_release_main.outputs.merged == true",
-]
-for needle in required:
-    if needle not in normalized:
-        raise SystemExit("missing release finalization detail: " + needle)
-if "[skip ci]" in ci_text and "stub MIGRATION.md entry for $NEXT_TAG" in ci_text:
-    raise SystemExit("release PR stub commit must not contain [skip ci] because squash merges copy it into main release commits")
-if (root / ".github/workflows/release-please.yml").exists():
-    raise SystemExit("legacy release-please workflow should be removed")
 '
 echo ""
 
@@ -137,23 +118,20 @@ readme = (root / "README.md").read_text(encoding="utf-8")
 required = [
     "## Recommended GitHub settings",
     "bash scripts/release/audit-release-settings.sh",
-    "Enable auto-merge and squash merge.",
-    "GitHub Actions to create and approve pull requests.",
-    "Only release-driving changes produce a release.",
-    "Major: any commit marked as a breaking change",
+    "Enable squash merge.",
+    "Version bumps are done locally.",
     "Minor: `feat:` for a consumer-facing addition.",
-    "Patch: `fix:`, `deps:`",
     "Use `feat` only for a real consumer-facing capability.",
-    "scripts/workspace/check-workspace-drift.sh",
 ]
 for needle in required:
     if needle not in readme:
         raise SystemExit("README missing release-governance guidance: " + needle)
 for forbidden in [
     "Any successful push to `main` is releaseable.",
+    "Release-please is the only version writer.",
 ]:
     if forbidden in readme:
-        raise SystemExit("README still documents retired broad-release rule: " + forbidden)
+        raise SystemExit("README still documents retired release rule: " + forbidden)
 '
 echo ""
 

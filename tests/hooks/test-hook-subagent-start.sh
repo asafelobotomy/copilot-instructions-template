@@ -19,7 +19,7 @@ assert_success "subagent-start exits zero" "$status"
 assert_valid_json "subagent-start emits valid JSON" "$output"
 assert_contains "hookEventName present" "$output" 'SubagentStart'
 assert_contains "agent name is surfaced" "$output" 'Review-Agent_v2'
-assert_contains "governance context mentions inherited protocols" "$output" 'Tool Protocol'
+assert_contains "governance context mentions protocols" "$output" 'PDCA, Tool, Skill'
 echo ""
 
 echo "2. Missing agent names fall back to unknown"

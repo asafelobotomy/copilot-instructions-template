@@ -93,7 +93,7 @@ output=$(run_guard "$(make_input 'bash' 'git push origin --force')")
 assert_contains "ask reason present" "$output" "permissionDecisionReason"
 assert_contains "ask context present" "$output" "additionalContext"
 output=$(run_guard "$(make_input 'bash' 'rm -rf /')")
-assert_contains "deny reason present" "$output" "Blocked by security hook"
+assert_contains "deny reason present" "$output" "Blocked: destructive pattern"
 echo ""
 
 finish_tests

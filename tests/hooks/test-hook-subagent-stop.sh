@@ -19,7 +19,7 @@ assert_success "subagent-stop exits zero" "$status"
 assert_valid_json "subagent-stop emits valid JSON" "$output"
 assert_contains "hookEventName present" "$output" 'SubagentStop'
 assert_contains "agent name is surfaced" "$output" 'Explore-Agent_v2'
-assert_contains "completion guidance is included" "$output" 'Review results before continuing'
+assert_contains "completion guidance is included" "$output" 'Review before continuing'
 echo ""
 
 echo "2. Missing agent names fall back to unknown"

@@ -9,6 +9,7 @@ source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
 MODULE_PATH="$REPO_ROOT/template/hooks/scripts/pulse_state.py"
 export MODULE_PATH
+export PYTHONPATH="$(dirname "$MODULE_PATH")${PYTHONPATH:+:$PYTHONPATH}"
 trap cleanup_dirs EXIT
 
 echo "=== pulse_state.py ==="
@@ -177,7 +178,8 @@ os.environ["XDG_CACHE_HOME"] = str(root / ".cache")
 spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_PATH"])
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-module.tempfile.gettempdir = lambda: str(root / "blocked-tmp")
+import pulse_artifacts
+pulse_artifacts.tempfile.gettempdir = lambda: str(root / "blocked-tmp")
 workspace = root / ".copilot/workspace"
 sentinel_path = workspace / "runtime/.heartbeat-session"
 events_path = workspace / "runtime/.heartbeat-events.jsonl"
@@ -214,7 +216,8 @@ os.environ["CLAUDE_TMPDIR"] = str(root / "claude-tmp")
 spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_PATH"])
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-module.tempfile.gettempdir = lambda: str(root / "blocked-tmp")
+import pulse_artifacts
+pulse_artifacts.tempfile.gettempdir = lambda: str(root / "blocked-tmp")
 workspace = root / ".copilot/workspace"
 sentinel_path = workspace / "runtime/.heartbeat-session"
 events_path = workspace / "runtime/.heartbeat-events.jsonl"

@@ -137,4 +137,27 @@ assert_success "staged scope skips working-tree-only file" "$status"
 assert_contains "staged scope continues when nothing staged" "$output" '"continue": true'
 echo ""
 
+echo "12. Lockfile prevents concurrent scans"
+TMP_LOCK2=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_LOCK2")
+printf 'clean_file=ok\n' > "$TMP_LOCK2/app.txt"
+mkdir -p "$TMP_LOCK2/logs/secrets"
+# Write a lockfile with a PID that is alive (current shell)
+printf '%s' "$$" > "$TMP_LOCK2/logs/secrets/.scan-secrets.lock"
+output=$(run_scan_in_dir "$TMP_LOCK2" '{}')
+status=$?
+assert_success "lockfile scan exits zero" "$status"
+assert_contains "lockfile continues" "$output" '"continue": true'
+rm -f "$TMP_LOCK2/logs/secrets/.scan-secrets.lock"
+echo ""
+
+echo "13. Stale lockfile does not block"
+TMP_STALE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMP_STALE")
+mkdir -p "$TMP_STALE/logs/secrets"
+printf '99999999' > "$TMP_STALE/logs/secrets/.scan-secrets.lock"
+output=$(run_scan_in_dir "$TMP_STALE" '{}')
+status=$?
+assert_success "stale lock scan exits zero" "$status"
+assert_contains "stale lock continues" "$output" '"continue": true'
+echo ""
+
 finish_tests

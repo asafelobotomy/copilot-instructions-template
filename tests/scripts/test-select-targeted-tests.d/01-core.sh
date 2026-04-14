@@ -83,7 +83,6 @@ if payload["intermediate_phase_strategy"] != "broaden-aggressively":
     raise SystemExit(payload["intermediate_phase_strategy"])
 required = {
     "tests/scripts/test-audit-release-settings.sh",
-    "tests/scripts/test-release-plan.sh",
     "tests/scripts/test-verify-version-references.sh",
     "tests/scripts/test-stub-migration.sh",
     "tests/scripts/test-run-isolated-shell.sh",
@@ -326,7 +325,7 @@ if payload["run_full_suite_at_completion_reasons"]:
 echo ""
 
 echo "20. Broad multi-surface changes require a completion full-suite gate"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/release/verify-version-references.sh" "template/hooks/scripts/session-start.sh" "README.md")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/release/verify-version-references.sh" "template/hooks/scripts/session-start.sh" "README.md" "tests/scripts/test-workspace-drift.sh")
 SELECTOR_OUTPUT="$output" assert_python "multi-surface changes enable the completion full-suite gate" '
 payload = json.loads(os.environ["SELECTOR_OUTPUT"])
 if payload["should_run_full_suite_early"] is not False:
@@ -336,7 +335,7 @@ if payload["run_full_suite_at_completion"] is not True:
 reasons = " ".join(payload["run_full_suite_at_completion_reasons"])
 if "domains" not in reasons or "phases" not in reasons or "targeted suites" not in reasons:
     raise SystemExit(str(payload["run_full_suite_at_completion_reasons"]))
-if len(payload["domains_touched"]) < 3:
+if len(payload["domains_touched"]) < 4:
     raise SystemExit(str(payload["domains_touched"]))
 if not {"scripts", "hooks", "contracts"}.issubset(set(payload["selected_phases"])):
     raise SystemExit(str(payload["selected_phases"]))

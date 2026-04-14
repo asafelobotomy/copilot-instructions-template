@@ -29,8 +29,6 @@ setup_sandbox() {
 INST
   sed -i "s/__VERSION__/$managed_ver/" "$SANDBOX/template/copilot-instructions.md"
 
-  printf '{"." : "%s"}\n' "$managed_ver" > "$SANDBOX/.release-please-manifest.json"
-
   printf 'Current template version: **%s** <!-- x-release-please-version --> — see CHANGELOG.md.\n' "$managed_ver" \
     > "$SANDBOX/README.md"
 
@@ -61,7 +59,7 @@ setup_sandbox "1.2.3" "1.2.3"
 output=$(run_script)
 status=$?
 assert_success "exits 0" "$status"
-assert_contains "success message mentions VERSION.md" "$output" "Release-managed version references match VERSION.md (1.2.3)"
+assert_contains "success message mentions VERSION.md" "$output" "Version references match VERSION.md (1.2.3)"
 teardown_sandbox
 echo ""
 
@@ -72,7 +70,6 @@ output=$(run_script 2>&1)
 status=$?
 assert_failure "drift exits non-zero" "$status"
 assert_contains "template drift is reported" "$output" "template/copilot-instructions.md"
-assert_contains "manifest drift is reported" "$output" "version drift in .release-please-manifest.json"
 teardown_sandbox
 echo ""
 
@@ -91,16 +88,14 @@ echo ""
 echo "4. Verification is read-only across repeated runs"
 setup_sandbox "3.1.0" "3.1.0"
 sha1_inst=$(sha256sum "$SANDBOX/template/copilot-instructions.md")
-sha1_manifest=$(sha256sum "$SANDBOX/.release-please-manifest.json")
 sha1_readme=$(sha256sum "$SANDBOX/README.md")
 sha1_dev=$(sha256sum "$SANDBOX/.github/copilot-instructions.md")
 run_script >/dev/null
 run_script >/dev/null
 sha2_inst=$(sha256sum "$SANDBOX/template/copilot-instructions.md")
-sha2_manifest=$(sha256sum "$SANDBOX/.release-please-manifest.json")
 sha2_readme=$(sha256sum "$SANDBOX/README.md")
 sha2_dev=$(sha256sum "$SANDBOX/.github/copilot-instructions.md")
-if [[ "$sha1_inst" == "$sha2_inst" && "$sha1_manifest" == "$sha2_manifest" && "$sha1_readme" == "$sha2_readme" && "$sha1_dev" == "$sha2_dev" ]]; then
+if [[ "$sha1_inst" == "$sha2_inst" && "$sha1_readme" == "$sha2_readme" && "$sha1_dev" == "$sha2_dev" ]]; then
   pass_note "verification leaves files unchanged"
 else
   fail_note "verification leaves files unchanged"
@@ -144,17 +139,6 @@ output=$(run_script)
 status=$?
 assert_success "surrounding whitespace is tolerated" "$status"
 assert_contains "whitespace-normalized version is echoed" "$output" "4.5.6"
-teardown_sandbox
-echo ""
-
-# ── 9. Manifest drift is reported directly ────────────────────────────────────
-echo "9. Manifest drift is reported directly"
-setup_sandbox "7.8.9" "7.8.9"
-printf '{"." : "7.8.8"}\n' > "$SANDBOX/.release-please-manifest.json"
-output=$(run_script 2>&1)
-status=$?
-assert_failure "manifest drift exits non-zero" "$status"
-assert_contains "manifest drift points at manifest file" "$output" ".release-please-manifest.json"
 teardown_sandbox
 echo ""
 

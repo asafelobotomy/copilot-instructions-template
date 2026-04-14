@@ -239,3 +239,23 @@ if payload["intermediate_phase_strategy"] != "targeted":
     raise SystemExit(payload["intermediate_phase_strategy"])
 '
 echo ""
+
+echo "37. PowerShell child hook suites map back to the umbrella PowerShell suite"
+for child_suite in \
+  "tests/hooks/test-hook-session-start-powershell.sh" \
+  "tests/hooks/test-hook-post-edit-lint-powershell.sh" \
+  "tests/hooks/test-pulse-paths-powershell.sh" \
+  "tests/hooks/test-hook-pulse-powershell.sh" \
+  "tests/hooks/test-hook-save-context-powershell.sh"; do
+  output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "$child_suite")
+  status=$?
+  assert_success "selector exits zero on ${child_suite##*/}" "$status"
+  SELECTOR_OUTPUT="$output" assert_python "${child_suite##*/} maps to the umbrella PowerShell suite" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if payload["selected_tests"] != ["tests/hooks/test-hooks-powershell.sh"]:
+    raise SystemExit(str(payload["selected_tests"]))
+if payload["intermediate_phase_strategy"] != "targeted":
+    raise SystemExit(payload["intermediate_phase_strategy"])
+'
+done
+echo ""

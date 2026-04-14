@@ -147,4 +147,76 @@ assert_matches "private key reported" "$stderr_output" "PRIVATE_KEY"
 echo ""
 
 # ---------------------------------------------------------------------------
+# 13. Lockfile prevents concurrent scans
+# ---------------------------------------------------------------------------
+echo "13. Lockfile prevents concurrent scans"
+TMPDIR_LOCK2=$(make_git_sandbox); CLEANUP_DIRS+=("$TMPDIR_LOCK2")
+echo "clean_file=ok" > "$TMPDIR_LOCK2/app.txt"
+mkdir -p "$TMPDIR_LOCK2/logs/secrets"
+# Write a lockfile with the current shell PID (which is alive)
+printf '%s' "$$" > "$TMPDIR_LOCK2/logs/secrets/.scan-secrets.lock"
+output=$(cd "$TMPDIR_LOCK2" && echo '{}' | bash "$SCRIPT" 2>/dev/null)
+assert_contains "lockfile continues" "$output" '"continue": true'
+stderr_output=$(cd "$TMPDIR_LOCK2" && echo '{}' | bash "$SCRIPT" 2>&1 1>/dev/null)
+assert_contains "lockfile message" "$stderr_output" "Scan already in progress"
+rm -f "$TMPDIR_LOCK2/logs/secrets/.scan-secrets.lock"
+echo ""
+
+# ---------------------------------------------------------------------------
+# 14. Stale lockfile (dead PID) does not block
+# ---------------------------------------------------------------------------
+echo "14. Stale lockfile is cleaned up"
+TMPDIR_STALE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMPDIR_STALE")
+mkdir -p "$TMPDIR_STALE/logs/secrets"
+# Use PID 99999999 which is almost certainly not running
+printf '99999999' > "$TMPDIR_STALE/logs/secrets/.scan-secrets.lock"
+output=$(cd "$TMPDIR_STALE" && echo '{}' | bash "$SCRIPT" 2>/dev/null)
+assert_contains "stale lock continues" "$output" '"continue": true'
+# The stale lock should have been cleaned up (no "already in progress" message)
+stderr_output=$(cd "$TMPDIR_STALE" && echo '{}' | bash "$SCRIPT" 2>&1 1>/dev/null)
+if echo "$stderr_output" | grep -q "Scan already in progress"; then
+  fail_note "stale lock was cleaned up" "     still blocked after stale PID"
+else
+  pass_note "stale lock was cleaned up"
+fi
+echo ""
+
+# ---------------------------------------------------------------------------
+# 15. Debounce skips scan when last was clean and recent
+# ---------------------------------------------------------------------------
+echo "15. Debounce skips scan when recent clean scan exists"
+TMPDIR_DEB=$(make_git_sandbox); CLEANUP_DIRS+=("$TMPDIR_DEB")
+echo "clean_file=ok" > "$TMPDIR_DEB/app.txt"
+# Pre-create log dir and gitignore it so the first scan's log files
+# don't change the untracked file count between runs
+mkdir -p "$TMPDIR_DEB/logs/secrets"
+printf 'logs/\n' > "$TMPDIR_DEB/.gitignore"
+# Run a first scan to populate the log
+(cd "$TMPDIR_DEB" && echo '{}' | bash "$SCRIPT" 2>/dev/null) >/dev/null
+# Run immediately again with debounce — should skip
+stderr_output=$(cd "$TMPDIR_DEB" && echo '{}' | SCAN_DEBOUNCE_SECONDS=120 bash "$SCRIPT" 2>&1 1>/dev/null)
+assert_contains "debounce skip message" "$stderr_output" "Scan skipped"
+echo ""
+
+# ---------------------------------------------------------------------------
+# 16. Debounce does NOT skip when file count changed
+# ---------------------------------------------------------------------------
+echo "16. Debounce allows scan when file count changed"
+TMPDIR_DEB2=$(make_git_sandbox); CLEANUP_DIRS+=("$TMPDIR_DEB2")
+echo "clean_file=ok" > "$TMPDIR_DEB2/app.txt"
+mkdir -p "$TMPDIR_DEB2/logs/secrets"
+printf 'logs/\n' > "$TMPDIR_DEB2/.gitignore"
+# Run a first scan
+(cd "$TMPDIR_DEB2" && echo '{}' | bash "$SCRIPT" 2>/dev/null) >/dev/null
+# Add another file to change the count
+echo "new_file=ok" > "$TMPDIR_DEB2/new.txt"
+stderr_output=$(cd "$TMPDIR_DEB2" && echo '{}' | SCAN_DEBOUNCE_SECONDS=120 bash "$SCRIPT" 2>&1 1>/dev/null)
+if echo "$stderr_output" | grep -q "Scan skipped"; then
+  fail_note "debounce re-scans on file count change" "     still skipped after file count changed"
+else
+  pass_note "debounce re-scans on file count change"
+fi
+echo ""
+
+# ---------------------------------------------------------------------------
 finish_tests

@@ -51,7 +51,7 @@ expected = {
     'template/hooks/scripts/pulse.sh': 'hook',
     '.github/agents/code.agent.md': 'agent',
     'tests/hooks/test-hook-pulse.sh': 'tests',
-    'scripts/release/plan-release.sh': 'ci_release',
+    'scripts/release/verify-version-references.sh': 'ci_release',
     'release-please-config.json': 'manifest',
     '.vscode/settings.json': 'config',
     'README.md': 'docs',
@@ -68,7 +68,7 @@ MODULE_PATH="$MODULE_PATH" assert_python "path_requires_parity identifies mirror
 assert module.path_requires_parity('template/hooks/scripts/pulse.sh')
 assert module.path_requires_parity('.github/prompts/context-map.prompt.md')
 assert module.path_requires_parity('template/workspace/operations/workspace-index.json')
-assert not module.path_requires_parity('scripts/release/plan-release.sh')
+assert not module.path_requires_parity('scripts/release/verify-version-references.sh')
 "
 echo ""
 

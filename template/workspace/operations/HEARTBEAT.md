@@ -60,7 +60,7 @@ When a lesson first lands in built-in repo memory, decide during heartbeat wheth
 
 The MCP tool records completion automatically by setting the session sentinel and writing a `session_reflect` completion event. No manual sentinel management is needed.
 
-If the `session_reflect` MCP tool is unavailable, briefly self-review: execution accuracy, scope completeness, and anything worth persisting to SOUL.md / MEMORY.md / USER.md, then rerun `session_reflect` once the heartbeat MCP server is restored.
+If the `session_reflect` MCP tool is unavailable, briefly self-review: execution accuracy, scope completeness, and anything worth persisting to identity files, then rerun `session_reflect` once the heartbeat MCP server is restored.
 
 <!-- Add custom retrospective questions below this line -->
 
@@ -68,7 +68,7 @@ If the `session_reflect` MCP tool is unavailable, briefly self-review: execution
 <!-- template-section: heartbeat-response-contract v2 -->
 
 - Always append a History row when the trigger is Session start or Explicit — regardless of check results.
-- For all other triggers, append a History row only if a check raised an alert or retrospective output was persisted to SOUL.md / MEMORY.md / USER.md.
+- For all other triggers, append a History row only if a check raised an alert or retrospective output was persisted to identity files.
 - If checks pass and nothing was persisted on a non-explicit trigger, keep Pulse as `HEARTBEAT_OK` and omit the History row.
 
 ## Agent Notes

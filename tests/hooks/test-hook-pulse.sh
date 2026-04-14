@@ -220,7 +220,7 @@ echo "12. user_prompt heartbeat keyword emits system message"
 TMPDIR_PROMPT=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_PROMPT")
 mkdir -p "$TMPDIR_PROMPT/.copilot/workspace/identity" "$TMPDIR_PROMPT/.copilot/workspace/knowledge/diaries" "$TMPDIR_PROMPT/.copilot/workspace/operations" "$TMPDIR_PROMPT/.copilot/workspace/runtime"
 output=$(run_pulse "$TMPDIR_PROMPT" user_prompt '{"prompt":"Can you check your heartbeat now?"}')
-assert_matches "keyword prompt includes guidance" "$output" 'Heartbeat trigger detected'
+assert_matches "keyword prompt includes guidance" "$output" 'Heartbeat triggered'
 echo ""
 
 echo "13. policy discussion prompts do not arm heartbeat or retrospective"

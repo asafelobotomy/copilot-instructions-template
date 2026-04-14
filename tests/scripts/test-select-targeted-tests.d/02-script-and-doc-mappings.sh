@@ -202,3 +202,33 @@ if payload["intermediate_phase_strategy"] != "targeted":
     raise SystemExit(payload["intermediate_phase_strategy"])
 '
 echo ""
+
+echo "37. .copilot/workspace/operations/HEARTBEAT.md maps to drift check suite"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" ".copilot/workspace/operations/HEARTBEAT.md")
+status=$?
+assert_success "selector exits zero on developer HEARTBEAT.md" "$status"
+SELECTOR_OUTPUT="$output" assert_python "developer HEARTBEAT.md maps to workspace drift suite" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if "tests/scripts/test-workspace-drift.sh" not in payload["selected_tests"]:
+    raise SystemExit(str(payload["selected_tests"]))
+if payload["intermediate_phase_strategy"] != "targeted":
+    raise SystemExit(payload["intermediate_phase_strategy"])
+if payload.get("unmapped_paths"):
+    _um = payload["unmapped_paths"]
+    raise SystemExit(f"unexpected unmapped: {_um}")
+'
+echo ""
+
+echo "38. mirror-domain collapsing reduces domain count for parity-mirror changes"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" ".github/hooks/scripts/pulse_state.py" "template/hooks/scripts/pulse_state.py")
+status=$?
+assert_success "selector exits zero on parity mirror pair" "$status"
+SELECTOR_OUTPUT="$output" assert_python "parity mirror pair collapses to a single domain" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+domains = payload["domains_touched"]
+if len(domains) != 1:
+    raise SystemExit(f"expected 1 collapsed domain, got {len(domains)}: {domains}")
+if domains[0] != "hooks-mirror":
+    raise SystemExit(f"expected hooks-mirror domain, got: {domains[0]}")
+'
+echo ""
