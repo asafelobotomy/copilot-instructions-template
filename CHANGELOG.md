@@ -13,6 +13,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 * N/A
 
+## [0.5.13](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.12.0...v0.5.13) (2026-04-14)
+
+
+### Changed
+
+* **versioning:** reset version scheme from 5.x to 0.x to signal beta status ([migration](MIGRATION.md))
+
 ## [5.12.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.11.0...v5.12.0) (2026-04-11)
 
 

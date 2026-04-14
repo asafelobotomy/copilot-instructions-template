@@ -28,7 +28,19 @@ the next tagged version (listed in **Includes**).
 https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/<tag>/<template-source-path>
 ```
 
-**Available tags**: v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1, v4.2.0, v5.0.0, v5.0.1, v5.1.0, v5.2.0, v5.3.0, v5.4.0, v5.5.0, v5.6.0, v5.7.0, v5.8.0, v5.9.0, v5.10.0, v5.10.1, v5.11.0, v5.12.0
+**Available tags**: v3.4.0, v3.4.1, v4.0.0, v4.1.0, v4.1.1, v4.2.0, v5.0.0, v5.0.1, v5.1.0, v5.2.0, v5.3.0, v5.4.0, v5.5.0, v5.6.0, v5.7.0, v5.8.0, v5.9.0, v5.10.0, v5.10.1, v5.11.0, v5.12.0, v0.5.13
+
+## v0.5.13
+
+| Breaking | Sections changed | Sections added | Includes |
+|----------|-----------------|----------------|----------|
+| No | — | — | — |
+
+**What changed**: Version scheme reset from `5.x.y` to `0.x.y` to signal beta status. The previous `5.12.0` becomes `0.5.13`. This prepends `0.` to all future versions, making room for a `1.0.0` milestone when the template reaches stable. No functional changes to template content.
+
+**Manual actions**: Consumers updating from `v5.12.0` should treat `v0.5.13` as the direct successor. The `0.` prefix signals beta — it does not indicate a downgrade.
+
+---
 
 ## Unreleased — workspace and scripts reorganization
 

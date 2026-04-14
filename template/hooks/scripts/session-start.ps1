@@ -118,6 +118,6 @@ if (Test-Path '.github/agents/routing-manifest.json') {
 [PSCustomObject]@{
     hookSpecificOutput = [PSCustomObject]@{
         hookEventName     = 'SessionStart'
-        additionalContext = "OS: $osDisplay | Pkg: $pkgMgr | Immutable: $immutable | Project: $projectName v$projectVer | Branch: $branch ($commit) | Node: $nodeVer | Python: $pyVer | Heartbeat: $pulse | Routing: $routingRoster"
+        additionalContext = "OS:$osDisplay|Pkg:$pkgMgr|Imm:$immutable|Proj:$projectName v$projectVer|Branch:$branch($commit)|Node:$nodeVer|Py:$pyVer|HB:$pulse|Route:$routingRoster"
     }
 } | ConvertTo-Json -Depth 5

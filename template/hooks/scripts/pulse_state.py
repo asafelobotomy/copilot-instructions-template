@@ -30,10 +30,10 @@ DEFAULT_POLICY = {
             "min_emit_spacing_seconds": 120,
         },
         "messages": {
-            "session_start_guidance": "Open .copilot/workspace/operations/HEARTBEAT.md and run the Checks section. If the Stop hook later flags significant work, call the session_reflect MCP tool before stopping.",
-            "explicit_system": "Heartbeat trigger detected. Run HEARTBEAT.md checks now.",
-            "stop_reflect_instruction": "Significant session detected. Call the session_reflect MCP tool now, process its output silently, then stop normally. If the MCP tool is unavailable, briefly review: execution accuracy, scope completeness, and anything worth persisting to SOUL.md / MEMORY.md / USER.md, then rerun session_reflect once the heartbeat MCP server is restored.",
-            "accepted_reason": "The user requested a retrospective. Call the session_reflect MCP tool, process its output, persist insights, then stop normally.",
+            "session_start_guidance": "Run HEARTBEAT.md Checks. If Stop flags significant work, call session_reflect first.",
+            "explicit_system": "Heartbeat triggered. Run HEARTBEAT.md checks.",
+            "stop_reflect_instruction": "Call session_reflect → process silently → stop. If MCP unavailable: review accuracy, scope, identity file persistence. Retry session_reflect when restored.",
+            "accepted_reason": "User requested retrospective. session_reflect → process → persist → stop.",
         },
     }
 }

@@ -1,6 +1,6 @@
 # Developer Instructions — copilot-instructions-template
 
-> Role: AI developer for this repository. Template version: 5.12.0 <!-- x-release-please-version --> | Updated: 2026-03-29
+> Role: AI developer for this repository. Template version: 0.5.13 <!-- x-release-please-version --> | Updated: 2026-04-14
 >
 > **⚡ Critical Reminders** — every session, every task:
 >
@@ -130,7 +130,7 @@ Before acting on any medium-to-complex task:
 - `template/copilot-instructions.md` must contain ≥ 3 `{{PLACEHOLDER}}` tokens (CI enforced).
 - `.github/copilot-instructions.md` *(this file)* must contain **zero** `{{}}` tokens (CI enforced).
 - Parity: `.github/skills/` must mirror `template/skills/`. `.github/hooks/` must mirror `template/hooks/` exactly. CI enforces.
-- Version source of truth: `VERSION.md`. Release-please owns version bumps, the manifest, and version markers. Do not bump release files manually; `bash scripts/release/verify-version-references.sh` is read-only and verifies the managed files if you suspect drift.
+- Version source of truth: `VERSION.md`. Version bumps are done locally. Bump `VERSION.md` and all `x-release-please-version` markers together, then verify with `bash scripts/release/verify-version-references.sh`. CI creates a GitHub release when `VERSION.md` changes.
 - `workspace-index.json` must stay in sync: `bash scripts/workspace/sync-workspace-index.sh --write` then commit.
 
 ## File Inventory

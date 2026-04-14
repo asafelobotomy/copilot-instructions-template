@@ -161,9 +161,7 @@ jobs:
             .github/hooks/copilot-hooks.json \
             .copilot/workspace/operations/workspace-index.json \
             .markdownlint.json \
-            starter-kits/REGISTRY.json \
-            release-please-config.json \
-            .release-please-manifest.json; do
+            starter-kits/REGISTRY.json; do
             if [[ -f "$f" ]]; then
               if python3 -c "import json, sys; json.load(open(sys.argv[1]))" "$f"; then
                 echo "✅ $f"
@@ -320,7 +318,6 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: write
-      pull-requests: write
     steps:
       - name: Harden runner
         uses: step-security/harden-runner@a90bcbc6539c36a85cdfeb73f7e2f433735f215b # v2
@@ -332,131 +329,29 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Detect release commit
-        id: release_commit
-        env:
-          HEAD_SUBJECT: ${{ github.event.head_commit.message }}
+      - name: Detect version bump
+        id: version
         run: |
-          if [[ "$HEAD_SUBJECT" == chore\(main\):\ release\ * ]]; then
-            echo "is_release_commit=true" >> "$GITHUB_OUTPUT"
+          version=$(tr -d '[:space:]' < VERSION.md)
+          tag="v${version}"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          if git rev-parse "$tag" >/dev/null 2>&1; then
+            echo "needs_release=false" >> "$GITHUB_OUTPUT"
+            echo "Tag $tag already exists — no release needed."
           else
-            echo "is_release_commit=false" >> "$GITHUB_OUTPUT"
+            echo "needs_release=true" >> "$GITHUB_OUTPUT"
+            echo "Tag $tag does not exist — creating release."
           fi
 
-      - name: Plan release
-        id: plan
-        if: steps.release_commit.outputs.is_release_commit != 'true'
-        run: bash scripts/release/plan-release.sh
-
-      - name: Skip release when planner finds no release-driving changes
-        if: steps.release_commit.outputs.is_release_commit != 'true' && steps.plan.outputs.should_release != 'true'
-        run: |
-          echo "Skipping release: ${{ steps.plan.outputs.reason }}"
-
-      - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
-        id: release_pr_native
-        if: steps.release_commit.outputs.is_release_commit != 'true' && steps.plan.outputs.should_release == 'true' && steps.plan.outputs.force_release_as != 'true'
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          skip-github-release: true
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
-
-      - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
-        id: release_pr_forced
-        if: steps.release_commit.outputs.is_release_commit != 'true' && steps.plan.outputs.should_release == 'true' && steps.plan.outputs.force_release_as == 'true'
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          release-as: ${{ steps.plan.outputs.next_version }}
-          skip-github-release: true
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
-
-      - name: Prepare MIGRATION stub on release PR
-        if: steps.release_pr_native.outputs.pr || steps.release_pr_forced.outputs.pr
+      - name: Create GitHub release
+        if: steps.version.outputs.needs_release == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_PR: ${{ steps.release_pr_native.outputs.pr || steps.release_pr_forced.outputs.pr }}
-          NEXT_TAG: v${{ steps.plan.outputs.next_version }}
         run: |
-          pr_number=$(python3 -c 'import json, os; print(json.loads(os.environ["RELEASE_PR"])["number"])')
-          pr_branch=$(gh pr view "$pr_number" --repo "${{ github.repository }}" --json headRefName --jq .headRefName)
-          git fetch origin "$pr_branch"
-          git checkout -B "$pr_branch" FETCH_HEAD
-          bash scripts/release/stub-migration.sh "$NEXT_TAG"
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add MIGRATION.md
-          git diff --cached --quiet \
-            || git commit -m "docs: stub MIGRATION.md entry for $NEXT_TAG"
-          git push origin HEAD:"$pr_branch"
-
-      - name: Merge release PR
-        id: merge_release_pr
-        if: steps.release_pr_native.outputs.pr || steps.release_pr_forced.outputs.pr
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_PR: ${{ steps.release_pr_native.outputs.pr || steps.release_pr_forced.outputs.pr }}
-        run: |
-          pr_number=$(python3 -c 'import json, os; print(json.loads(os.environ["RELEASE_PR"])["number"])')
-          merged=false
-          for attempt in 1 2 3 4 5 6; do
-            if merge_output=$(gh pr merge "$pr_number" \
-              --repo ${{ github.repository }} \
-              --squash 2>&1); then
-              echo "$merge_output"
-              merged=true
-              break
-            fi
-
-            echo "$merge_output"
-            merge_state=$(gh pr view "$pr_number" --repo ${{ github.repository }} --json mergeStateStatus --jq .mergeStateStatus || echo UNKNOWN)
-            echo "::notice::Release PR merge attempt $attempt/6 failed with mergeStateStatus=$merge_state."
-
-            case "$merge_state" in
-              DIRTY|BEHIND|BLOCKED|DRAFT)
-                break
-                ;;
-            esac
-
-            sleep 5
-          done
-
-          if [[ "$merged" == "true" ]]; then
-            exit 0
-          fi
-
-          gh pr merge "$pr_number" \
-            --repo ${{ github.repository }} \
-            --squash \
-            --auto \
-            || echo '::warning::Release PR was not immediately mergeable after retries and auto-merge was unavailable. Merge the release PR manually.'
-
-      - name: Refresh merged main for publish pass
-        id: refresh_release_main
-        if: steps.release_pr_native.outputs.pr || steps.release_pr_forced.outputs.pr
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_PR: ${{ steps.release_pr_native.outputs.pr || steps.release_pr_forced.outputs.pr }}
-        run: |
-          pr_number=$(python3 -c 'import json, os; print(json.loads(os.environ["RELEASE_PR"])["number"])')
-          merged_at=$(gh pr view "$pr_number" --repo ${{ github.repository }} --json mergedAt --jq .mergedAt)
-          if [[ "$merged_at" == "null" || -z "$merged_at" ]]; then
-            echo 'merged=false' >> "$GITHUB_OUTPUT"
-            echo '::warning::Release PR is not merged yet; skipping publish pass in this run.'
-            exit 0
-          fi
-
-          merge_commit=$(gh pr view "$pr_number" --repo ${{ github.repository }} --json mergeCommit --jq .mergeCommit.oid)
-          git fetch origin "$merge_commit"
-          git checkout --force "$merge_commit"
-          echo 'merged=true' >> "$GITHUB_OUTPUT"
-
-      - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4
-        id: release_publish
-        if: steps.release_commit.outputs.is_release_commit == 'true' || steps.refresh_release_main.outputs.merged == 'true'
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          skip-github-pull-request: true
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
+          tag="${{ steps.version.outputs.tag }}"
+          version="${{ steps.version.outputs.version }}"
+          gh release create "$tag" \
+            --title "$tag" \
+            --notes "See [CHANGELOG.md](CHANGELOG.md) and [MIGRATION.md](MIGRATION.md) for details." \
+            --target "${{ github.sha }}"

@@ -140,7 +140,7 @@ PY
 )
 
 # Emit context for the agent — JSON-escape to handle special characters
-CONTEXT="OS: ${OS_DISPLAY} | Pkg: ${PKG_MGR} | Immutable: ${OS_IMMUTABLE} | Project: ${PROJECT_NAME} v${PROJECT_VER} | Branch: ${BRANCH} (${COMMIT}) | Node: ${NODE_VER} | Python: ${PYTHON_VER} | Heartbeat: ${PULSE} | Routing: ${ROSTER}"
+CONTEXT="OS:${OS_DISPLAY}|Pkg:${PKG_MGR}|Imm:${OS_IMMUTABLE}|Proj:${PROJECT_NAME} v${PROJECT_VER}|Branch:${BRANCH}(${COMMIT})|Node:${NODE_VER}|Py:${PYTHON_VER}|HB:${PULSE}|Route:${ROSTER}"
 CONTEXT_ESC=$(json_escape "$CONTEXT")
 
 cat <<EOF

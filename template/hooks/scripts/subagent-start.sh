@@ -17,7 +17,7 @@ AGENT_NAME=$(printf '%s' "$INPUT" | python3 -c "import sys,json; d=json.load(sys
 [[ -z "$AGENT_NAME" ]] && AGENT_NAME="unknown"
 
 # Build governance context
-CONTEXT="Subagent governance: max depth 3. Inherited protocols: PDCA cycle, Tool Protocol, Skill Protocol. Agent: ${AGENT_NAME}."
+CONTEXT="Depth≤3. Protocols: PDCA, Tool, Skill. Agent: ${AGENT_NAME}."
 
 # Inject diary summary if a diary file exists for this agent
 AGENT_LOWER=$(printf '%s' "$AGENT_NAME" | tr '[:upper:]' '[:lower:]')

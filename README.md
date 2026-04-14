@@ -51,27 +51,24 @@ Agent delegation stays narrow by design. See [`AGENTS.md`](AGENTS.md) for the en
 
 ## Version
 
-Current template version: **5.12.0** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md) and [`MIGRATION.md`](MIGRATION.md).
+Current template version: **0.5.13** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md) and [`MIGRATION.md`](MIGRATION.md).
 
 For older installed versions, use [`MIGRATION.archive.md`](MIGRATION.archive.md)
 alongside [`MIGRATION.md`](MIGRATION.md).
 
 ## Release automation
 
-Pushes to `main` run the full validation workflow first. A final CI release job runs only after the validation jobs succeed, so the same workflow both validates the commit and drives release-please.
+Pushes to `main` run the full validation workflow first. A final CI release job runs only after the validation jobs succeed.
 
-Only release-driving changes produce a release. The allowlist is: `template/`, `.github/agents/`, `starter-kits/`, `SETUP.md`, `UPDATE.md`, `AGENTS.md`, and `scripts/workspace/check-workspace-drift.sh`. Workflow changes, docs-only maintainer changes, tests, and other internal maintenance do not release by themselves.
+Version bumps are done locally. Bump `VERSION.md` and all `<!-- x-release-please-version -->` markers together, then verify with `bash scripts/release/verify-version-references.sh`. When the push lands on `main` and the version in `VERSION.md` does not yet have a corresponding git tag, CI creates a GitHub release automatically.
 
-Within the release-driving set, the SemVer policy is explicit:
+SemVer policy:
 
-- Major: any commit marked as a breaking change with `!` or a `BREAKING CHANGE:` footer. Releasable headers such as `fix!:` stay native; non-releasable headers such as `refactor!:` still publish through the forced fallback path.
+- Major: breaking changes to consumer-facing surfaces.
 - Minor: `feat:` for a consumer-facing addition.
-- Patch: `fix:`, `deps:`, and release-driving `docs:`, `refactor:`, `perf:`, `build:`, `ci:`, `test:`, or `chore:` changes.
-- No release: changes outside the release-driving allowlist.
+- Patch: fixes, maintenance, wording updates, and refactors.
 
-Use `feat` only for a real consumer-facing capability. Use patch-level headers for corrections, maintenance, wording updates, and refactors. This keeps the minor digit meaningful instead of incrementing it for every release-driving change.
-
-Release-please is the only version writer. Do not bump `VERSION.md`, `.release-please-manifest.json`, or the `x-release-please-version` markers manually.
+Use `feat` only for a real consumer-facing capability. Use patch-level headers for corrections, maintenance, wording updates, and refactors. This keeps the minor digit meaningful instead of incrementing it for every change.
 
 ## Validation entrypoints
 
@@ -137,17 +134,10 @@ The current release workflow assumes a lightweight ruleset on `main`.
 
 - Block branch deletion.
 - Block non-fast-forward pushes.
-- Enable auto-merge and squash merge.
-- Enable the Actions setting that allows GitHub Actions to create and approve pull requests.
-- Keep required pull-request approvals and required status checks off `main` unless you intentionally want release PRs to pause for manual merge or you switch release PR automation to a GitHub App or PAT-backed token.
+- Enable squash merge.
 
 Audit the live repository settings with an authenticated GitHub CLI session:
 
 ```bash
 bash scripts/release/audit-release-settings.sh
 ```
-
-If you want stricter governance on `main`, choose one of these paths:
-
-1. Require pull-request approval and accept manual review and merge for release PRs.
-2. Require pull-request checks and move release PR automation to a GitHub App or PAT-backed token that can trigger those checks.

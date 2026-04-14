@@ -24,6 +24,55 @@ if printf '%s' "$_INPUT" | grep -Eq '"stop_hook_active"[[:space:]]*:[[:space:]]*
 fi
 
 # ---------------------------------------------------------------------------
+# Concurrency guard — prevent duplicate scans from overlapping Stop cycles
+# ---------------------------------------------------------------------------
+_LOCK_DIR="${SECRETS_LOG_DIR:-logs/secrets}"
+mkdir -p "$_LOCK_DIR"
+_LOCK_FILE="$_LOCK_DIR/.scan-secrets.lock"
+
+_release_lock() { rm -f "$_LOCK_FILE"; }
+
+if [[ -f "$_LOCK_FILE" ]]; then
+  _LOCK_PID=$(cat "$_LOCK_FILE" 2>/dev/null || true)
+  if [[ -n "$_LOCK_PID" ]] && kill -0 "$_LOCK_PID" 2>/dev/null; then
+    echo "Scan already in progress — check that terminal for results." >&2
+    printf '{"continue": true}'
+    exit 0
+  fi
+  # Stale lock — previous process died; clean up and continue
+  rm -f "$_LOCK_FILE"
+fi
+printf '%s' "$$" > "$_LOCK_FILE"
+trap '_release_lock' EXIT
+
+# ---------------------------------------------------------------------------
+# Debounce — skip if last scan was clean, recent, and file count unchanged
+# ---------------------------------------------------------------------------
+_DEBOUNCE_SECONDS="${SCAN_DEBOUNCE_SECONDS:-60}"
+_LOG_FILE_PATH="$_LOCK_DIR/scan.log"
+if [[ -f "$_LOG_FILE_PATH" ]] && [[ "$_DEBOUNCE_SECONDS" -gt 0 ]]; then
+  _LAST_LINE=$(tail -1 "$_LOG_FILE_PATH" 2>/dev/null || true)
+  if printf '%s' "$_LAST_LINE" | grep -q '"status":"clean"'; then
+    _LAST_TS=$(printf '%s' "$_LAST_LINE" | sed -n 's/.*"timestamp":"\([^"]*\)".*/\1/p')
+    _LAST_COUNT=$(printf '%s' "$_LAST_LINE" | sed -n 's/.*"files_scanned":\([0-9]*\).*/\1/p')
+    if [[ -n "$_LAST_TS" ]]; then
+      _LAST_EPOCH=$(date -d "$_LAST_TS" +%s 2>/dev/null || echo 0)
+      _NOW_EPOCH=$(date -u +%s)
+      _AGE=$(( _NOW_EPOCH - _LAST_EPOCH ))
+      if [[ "$_AGE" -ge 0 ]] && [[ "$_AGE" -lt "$_DEBOUNCE_SECONDS" ]]; then
+        # Quick-count current modified files to compare
+        _CUR_COUNT=$(( $(git diff --name-only --diff-filter=ACMR HEAD 2>/dev/null | wc -l) + $(git ls-files --others --exclude-standard 2>/dev/null | wc -l) ))
+        if [[ "${_LAST_COUNT:-0}" == "$_CUR_COUNT" ]]; then
+          echo "Scan skipped — clean scan ${_AGE}s ago with same file count." >&2
+          printf '{"continue": true}'
+          exit 0
+        fi
+      fi
+    fi
+  fi
+fi
+
+# ---------------------------------------------------------------------------
 # Secret detection patterns (edit this list to add or remove patterns)
 #
 # Each entry: "PATTERN_NAME|SEVERITY|REGEX"
@@ -216,7 +265,7 @@ scan_file() {
 echo "🔍 Scanning ${#FILES[@]} modified file(s) for secrets..." >&2
 
 _TMPFILES=()
-_cleanup_tmpfiles() { for f in "${_TMPFILES[@]+${_TMPFILES[@]}}"; do rm -f "$f"; done; }
+_cleanup_tmpfiles() { for f in "${_TMPFILES[@]+${_TMPFILES[@]}}"; do rm -f "$f"; done; _release_lock; }
 trap _cleanup_tmpfiles EXIT
 
 for filepath in "${FILES[@]}"; do

@@ -32,7 +32,7 @@ if ([string]::IsNullOrWhiteSpace($command)) {
         hookSpecificOutput = [PSCustomObject]@{
             hookEventName            = 'PreToolUse'
             permissionDecision       = 'ask'
-            permissionDecisionReason = 'tool_input.command is required for terminal tools. Falling back to manual confirmation.'
+            permissionDecisionReason = 'Missing tool_input.command. Manual confirmation.'
         }
     } | ConvertTo-Json -Depth 5
     exit 0
@@ -83,7 +83,7 @@ foreach ($pattern in $blockedPatterns) {
             hookSpecificOutput = [PSCustomObject]@{
                 hookEventName           = 'PreToolUse'
                 permissionDecision      = 'deny'
-                permissionDecisionReason = "Blocked by security hook: matched destructive pattern '$pattern'"
+                permissionDecisionReason = "Blocked: destructive pattern '$pattern'"
             }
         } | ConvertTo-Json -Depth 5
         exit 0
@@ -112,8 +112,8 @@ foreach ($pattern in $cautionPatterns) {
             hookSpecificOutput = [PSCustomObject]@{
                 hookEventName           = 'PreToolUse'
                 permissionDecision      = 'ask'
-                permissionDecisionReason = "Potentially destructive command detected: matches '$pattern'. Requires user confirmation."
-                additionalContext       = "The command '$preview' matched a caution pattern. Verify this is intended before proceeding."
+                permissionDecisionReason = "Caution pattern '$pattern' matched. Confirm to proceed."
+                additionalContext       = "Command: '$preview'"
             }
         } | ConvertTo-Json -Depth 5
         exit 0
@@ -157,8 +157,8 @@ if ($agentName -match '^(Audit|Review|Explore)$') {
                 hookSpecificOutput = [PSCustomObject]@{
                     hookEventName           = 'PreToolUse'
                     permissionDecision      = 'ask'
-                    permissionDecisionReason = "$agentName is a read-only agent. Mutating terminal commands require explicit user confirmation."
-                    additionalContext       = "The command '$preview' appears to mutate files or repository state. Use the Code agent for implementation tasks or confirm this one-off command."
+                    permissionDecisionReason = "$agentName is read-only. Mutations need confirmation."
+                    additionalContext       = "Command '$preview' mutates state. Use Code agent or confirm."
                 }
             } | ConvertTo-Json -Depth 5
             exit 0

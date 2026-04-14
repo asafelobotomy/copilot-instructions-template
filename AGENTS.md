@@ -93,5 +93,10 @@ invocation.
 | Plugins (list/find/test) | *"Show plugins"* / *"Find a plugin for ..."* |
 | Commit (stage/commit) | *"Commit my changes"* / *"Stage and commit"* / *"Write a commit message"* |
 | Commit (push) | *"Push my changes"* / *"Push to origin"* |
+| Commit (sync) | *"Pull and rebase"* / *"Fetch upstream"* / *"Sync my branch"* / *"Rebase on main"* / *"Merge main into my branch"* |
+| Commit (branch) | *"Create a branch"* / *"Switch branch"* / *"List branches"* / *"Delete this branch"* |
+| Commit (stash) | *"Stash my changes"* / *"Pop stash"* / *"Show stashes"* |
+| Commit (conflicts) | *"Resolve merge conflicts"* / *"Fix conflicts"* / *"Continue rebase"* |
+| Commit (PR) | *"Create a PR"* / *"Open a pull request"* / *"Update the PR"* |
 | Commit (tag/release) | *"Tag this version"* / *"Create a release"* / *"Tag as v..."* |
 | Commit style onboarding | *"Set up my commit style"* / *"Onboard commit preferences"* / *"Configure commit style"* |
