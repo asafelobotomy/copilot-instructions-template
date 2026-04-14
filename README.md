@@ -51,7 +51,7 @@ Agent delegation stays narrow by design. See [`AGENTS.md`](AGENTS.md) for the en
 
 ## Version
 
-Current template version: **5.13.0** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md) and [`MIGRATION.md`](MIGRATION.md).
+Current template version: **5.12.0** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md) and [`MIGRATION.md`](MIGRATION.md).
 
 For older installed versions, use [`MIGRATION.archive.md`](MIGRATION.archive.md)
 alongside [`MIGRATION.md`](MIGRATION.md).

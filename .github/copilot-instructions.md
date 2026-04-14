@@ -1,10 +1,10 @@
 # Developer Instructions — copilot-instructions-template
 
-> Role: AI developer for this repository. Template version: 5.13.0 <!-- x-release-please-version --> | Updated: 2026-03-29
+> Role: AI developer for this repository. Template version: 5.12.0 <!-- x-release-please-version --> | Updated: 2026-03-29
 >
 > **⚡ Critical Reminders** — every session, every task:
 >
-> 1. **Test** — use deterministic targeted suites during intermediate phases; run `bash tests/run-all.sh` once before marking a full task done end-to-end.
+> 1. **Test** — use deterministic targeted suites during intermediate phases; run `bash tests/run-all.sh` only when the selector or blast radius indicates a full-suite gate is warranted for broad or high-risk work.
 > 2. **PDCA** — Plan→Do→Check→Act for every non-trivial change.
 > 3. **Read first** — never claim or modify a file not opened this session.
 > 4. **Additive** — never delete existing rules without explicit user instruction.
@@ -32,7 +32,7 @@ This repo has two distinct layers that must never be mixed:
 
 **Invariant**: `.github/instructions/` and `.github/prompts/` must never contain `{{PLACEHOLDER}}` tokens.
 **Invariant**: `template/` files must never contain resolved project-specific values.
-**Note**: `.github/agents/` is the only verbatim-delivered artefact that lacks a `template/` mirror. This is intentional — see Architecture table above.
+**Note**: `.github/agents/` and `starter-kits/` are deliberate verbatim-delivered exceptions that lack `template/` mirrors. This is intentional — see Architecture table above.
 
 ## Key Commands
 
@@ -46,7 +46,7 @@ This repo has two distinct layers that must never be mixed:
 | Sync workspace-index | `bash scripts/workspace/sync-workspace-index.sh --check` |
 | LOC count | `find . \( -name '*.sh' -o -name '*.md' \) -not -path './node_modules/*' \| xargs wc -l \| tail -1` |
 
-Run deterministic targeted suites during intermediate phases when the repo has a reliable path-to-test mapping. Run `bash tests/run-all.sh` only once before marking a full task done end-to-end. Do not rerun the full suite between intermediate steps just to be safe.
+Run deterministic targeted suites during intermediate phases when the repo has a reliable path-to-test mapping. Run `bash tests/run-all.sh` only when the selector emits `run_full_suite_at_completion: true` or `should_run_full_suite_early: true`, or when no reliable targeted mapping exists for a broad multi-surface change. Do not rerun the full suite between intermediate steps just to be safe.
 
 **`execution_subagent` cwd**: The subagent does not inherit the current shell directory. Always embed the absolute repo path inside the command string (`cd /mnt/SteamLibrary/git/copilot-instructions-template && <cmd>`), not just in the prose description. For single final-gate commands where full output matters, use `run_in_terminal` instead.
 
@@ -74,7 +74,7 @@ Every non-trivial change:
 
 1. **Plan** — state the goal, list files, estimate LOC delta, and for non-trivial work write a brief requirements summary before coding. If that summary changes the plan, realign first.
 2. **Do** — implement; write tests alongside.
-3. **Check** — during intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites for the touched paths when available. If the blast radius includes shared helpers, broad contract surfaces, or no reliable mapping exists, broaden aggressively. Run `bash tests/run-all.sh` only once before marking the full user task complete end-to-end. Do not rerun the full suite between intermediate steps just to be safe. Fix before continuing.
+3. **Check** — during intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites for the touched paths when available. If the blast radius includes shared helpers, broad contract surfaces, or no reliable mapping exists, broaden aggressively. Run `bash tests/run-all.sh` only when the selector emits `run_full_suite_at_completion: true` or `should_run_full_suite_early: true`, or when no reliable targeted mapping exists for a broad multi-surface change. Do not rerun the full suite between intermediate steps just to be safe. Fix before continuing.
 4. **Act** — address any baseline breach; summarise.
 
 ### Test Scope Policy
@@ -83,7 +83,7 @@ Every non-trivial change:
 |------|---------|----------|
 | `PathTargeted` | Narrow deterministic checks mapped to touched paths | Default during intermediate work |
 | `AffectedSuite` | Broader checks for shared helpers or broad contract surfaces | Path-targeted coverage is too narrow |
-| `FullSuite` | Entire local test suite | Before marking the full task complete, or when the selector emits `should_run_full_suite_early` |
+| `FullSuite` | Entire local test suite | When the selector emits `run_full_suite_at_completion: true` or `should_run_full_suite_early: true`, or when no reliable targeted mapping exists for a broad multi-surface change |
 | `MergeGate` | Verified state required before merge, release, or final handoff | The change is ready to leave the working session |
 
 - **Task complete** means the full user-visible task is finished end-to-end and the required verification has passed, not that one phase of a larger plan is done and not that one item in a multi-part TODO list is done.
@@ -92,10 +92,10 @@ Every non-trivial change:
 - Keep intermediate verification under roughly 10 seconds when the targeted mapping allows; if the selected phase checks exceed that, narrow the scope or defer broader coverage to the next task boundary.
 - If multiple sub-parts are still in progress, do not treat a passing targeted subset as permission to declare the whole task complete.
 - Broaden early when changes touch shared helpers, broad policy surfaces, parity mirrors, or any area without a reliable targeted test mapping.
-- **Risk-based early escalation**: when the selector emits `should_run_full_suite_early: true`, run the full suite immediately rather than deferring to task completion. Escalation triggers include: critical-surface or security-sensitive risk classes matched, broadening across multiple top-level domains, confidence score below the configured floor, or tracked file patterns matched.
+- **Risk-based early escalation**: when the selector emits `should_run_full_suite_early: true`, run the full suite immediately rather than deferring to task completion. Escalation triggers include: critical-surface or security-sensitive risk classes matched, tracked file patterns matched, or broadening across multiple top-level domains.
 - Re-run the full suite during active work only if a targeted failure required a fix and you need to verify that the fix did not broaden the regression surface.
 - Never run the full suite repeatedly between intermediate steps just to be safe.
-- Final gate: before marking the full task complete, run the full suite with `bash tests/run-all.sh`.
+- Final gate: before marking the full task complete, run the full suite only when the selector emits `run_full_suite_at_completion: true` or `should_run_full_suite_early: true`, or when no reliable targeted mapping exists for a broad multi-surface change.
 
 ### Structured Thinking Discipline
 
@@ -123,7 +123,6 @@ Before acting on any medium-to-complex task:
 | File LOC (warn) | 250 lines |
 | File LOC (hard) | 400 lines |
 | Dependency budget | 6 runtime deps |
-| Max subagent depth | 3 |
 
 ## Critical Rules
 
@@ -144,7 +143,7 @@ Before acting on any medium-to-complex task:
 | `template/workspace/` | Consumer workspace identity stubs |
 | `template/instructions/` | Consumer path-instruction stubs (most verbatim; subset with `{{}}` tokens) |
 | `template/prompts/` | Consumer prompt stubs (most verbatim; subset with `{{}}` tokens) |
-| `.github/agents/` | Model-pinned VS Code agents (Code, Review, Fast, Audit, Setup, Researcher, Explore, Extensions) |
+| `.github/agents/` | Model-pinned VS Code agents (Setup, Code, Organise, Review, Fast, Audit, Explore, Extensions, Researcher, Commit, Debugger, Docs, Planner) |
 | `.github/skills/` | Skill library (repo-live copies, mirrors template) |
 | `.github/hooks/` | Hook scripts (repo-live copies, mirrors template) |
 | `.github/instructions/` | Developer path-instructions (resolved, no `{{}}`) |
@@ -154,7 +153,7 @@ Before acting on any medium-to-complex task:
 | `AGENTS.md` | Machine entry point (trigger phrases, fetch URLs) |
 | `MIGRATION.md` | Per-version migration registry |
 | `tests/` | Test suite — `bash tests/run-all.sh` |
-| `scripts/` | Utility scripts (sync-version, sync-workspace-index, sync-models, sync-template-parity, validate-agent-frontmatter, copilot\_audit) |
+| `scripts/` | Utility scripts (sync-workspace-index, sync-models, sync-template-parity, validate-agent-frontmatter, copilot\_audit) |
 | `starter-kits/` | VS Code agent plugin starter kits per language/stack |
 | `.copilot/workspace/` | Developer workspace files — `identity/`, `knowledge/`, `operations/`, `runtime/` (gitignored) |
 
@@ -219,14 +218,8 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 
 - **Tool Protocol**: Check `.copilot/tools/INDEX.md` before building. Follow `.github/skills/tool-protocol/SKILL.md`.
 - **Skill Protocol**: Skills loaded on demand from `.github/skills/`. Follow `.github/skills/skill-management/SKILL.md`.
-- **MCP Protocol**: Config in `.vscode/mcp.json`. Always-on: filesystem, git. Credentials-required: github, fetch.
-- **Delegation Protocol**: The top-level agent follows the same specialist-first
-  delegation rule as subagents. If a request matches a named specialist
-  workflow, hand it off rather than attempting the specialist workflow inline.
-  Do not use task size, perceived simplicity, or personal preference as a
-  reason to keep specialist work inline. Trust the selected specialist unless
-  you know the task is outside the specialist scope, allow-list, or
-  capabilities, or the specialist reports a concrete blocker.
+- **MCP Protocol**: Config in `.vscode/mcp.json`. Always-on: filesystem, git, heartbeat. Credentials-required: github, fetch.
+- **Delegation Protocol**: See **Skills and Agents** for the full specialist-first delegation policy.
 - **Subagent depth**: max 3. Stop and surface to user if reached. Subagents inherit all protocols including the Structured Thinking Discipline and anti-loop rules.
 
 *See also: `template/copilot-instructions.md` (consumer template) · `.github/agents/` · `.github/skills/` · `AGENTS.md` · `UPDATE.md` · `MIGRATION.md`*

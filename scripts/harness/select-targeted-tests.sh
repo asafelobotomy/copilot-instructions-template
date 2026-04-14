@@ -79,6 +79,7 @@ def load_rules() -> list[dict[str, object]]:
 rules = load_rules()
 
 suite_order: dict[str, int] = {}
+suite_phase: dict[str, str] = {}
 for index, suite in enumerate(suite_manifest.get("suites", [])):
     path = suite.get("path")
     if not isinstance(path, str) or not path:
@@ -86,6 +87,10 @@ for index, suite in enumerate(suite_manifest.get("suites", [])):
     if path in suite_order:
         raise SystemExit(f"duplicate suite path in suite manifest: {path}")
     suite_order[path] = index
+    phase = suite.get("phase")
+    if not isinstance(phase, str) or not phase:
+        raise SystemExit(f"invalid suite manifest phase entry: {suite}")
+    suite_phase[path] = phase
 
 if not suite_order:
     raise SystemExit(f"suite manifest has no suites: {SUITE_MANIFEST_PATH}")
@@ -217,6 +222,9 @@ tracked_file_patterns: list[str] = defaults.get("trackedFilePatterns", [])
 confidence_floor: float = float(defaults.get("confidenceFloor", 0.5))
 early_on_critical: bool = bool(defaults.get("earlyFullSuiteOnCriticalSurface", True))
 early_broaden_domain_threshold: int = int(defaults.get("earlyFullSuiteOnMultipleBroadenDomains", 2))
+completion_domain_threshold: int = int(defaults.get("runFullSuiteAtCompletionOnMultipleDomains", 2))
+completion_phase_threshold: int = int(defaults.get("runFullSuiteAtCompletionOnMultiplePhases", 3))
+completion_suite_threshold: int = int(defaults.get("runFullSuiteAtCompletionOnMultipleSuites", 3))
 
 # 1. Tracked-file-pattern check: any changed path that matches a tracked
 #    pattern forces full suite (mirrors Datadog's "tracked files" concept).
@@ -318,17 +326,38 @@ decision_log.append({
         "total_files": total_files,
     },
 })
-if low_confidence:
-    should_run_full_suite_early = True
-    early_full_suite_reasons.append(
-        f"Confidence score {confidence_score} below floor {confidence_floor} "
-        f"({mapped_files}/{total_files} files mapped)"
+ordered_selected_tests = ordered_suite_paths(selected_tests)
+selected_phases = unique([suite_phase[test] for test in ordered_selected_tests if test in suite_phase])
+
+run_full_suite_at_completion = bool(defaults.get("runFullSuiteAtCompletion", False))
+run_full_suite_at_completion_reasons: list[str] = []
+
+if current_strategy == "full-suite":
+    run_full_suite_at_completion = True
+    run_full_suite_at_completion_reasons.append(
+        "Intermediate phase strategy already requires the full suite"
+    )
+
+if should_run_full_suite_early:
+    run_full_suite_at_completion = True
+    run_full_suite_at_completion_reasons.extend(early_full_suite_reasons)
+
+completion_multi_surface = (
+    len(domains_touched) >= completion_domain_threshold
+    and len(selected_phases) >= completion_phase_threshold
+    and len(ordered_selected_tests) >= completion_suite_threshold
+)
+if completion_multi_surface:
+    run_full_suite_at_completion = True
+    run_full_suite_at_completion_reasons.append(
+        f"Change spans {len(domains_touched)} domains, {len(selected_phases)} phases, and {len(ordered_selected_tests)} targeted suites "
+        f"(thresholds: {completion_domain_threshold} domains / {completion_phase_threshold} phases / {completion_suite_threshold} suites)"
     )
 
 output = {
     "input_paths": RAW_PATHS,
     "normalized_paths": normalized_paths,
-    "selected_tests": ordered_suite_paths(selected_tests),
+    "selected_tests": ordered_selected_tests,
     "intermediate_phase_strategy": current_strategy,
     "intermediate_phase_budget_seconds": int(defaults.get("intermediatePhaseBudgetSeconds", 10)),
     "should_run_full_suite_early": should_run_full_suite_early,
@@ -336,7 +365,9 @@ output = {
     "confidence_score": confidence_score,
     "risk_classes_matched": risk_classes_matched,
     "domains_touched": domains_touched,
-    "run_full_suite_at_completion": bool(defaults.get("runFullSuiteAtCompletion", True)),
+    "selected_phases": selected_phases,
+    "run_full_suite_at_completion": run_full_suite_at_completion,
+    "run_full_suite_at_completion_reasons": unique(run_full_suite_at_completion_reasons),
     "matched_rules": matched_rules,
     "broadening_reasons": unique(broadening_reasons),
     "unmapped_paths": unmapped_paths,

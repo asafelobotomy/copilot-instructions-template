@@ -209,14 +209,26 @@
       "reason": "Contract suites are runnable directly and should self-validate when edited."
     },
     {
+      "id": "customization-contract-aggregate",
+      "matchType": "exact",
+      "pattern": "tests/contracts/test-customization-contracts.sh",
+      "phaseStrategy": "targeted",
+      "tests": [
+        "tests/contracts/test-customization-contracts-surfaces.sh",
+        "tests/contracts/test-customization-contracts-agents.sh",
+        "tests/contracts/test-customization-contracts-policies.sh"
+      ],
+      "reason": "The aggregate customization contract wrapper delegates to the three runnable customization contract sub-suites."
+    },
+    {
       "id": "customization-contract-subsuite-surfaces",
       "matchType": "exact",
       "pattern": "tests/contracts/test-customization-contracts-surfaces.sh",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh"
+        "self"
       ],
-      "reason": "Customization contract sub-suites run through the aggregate customization contract suite in the canonical manifest."
+      "reason": "Customization contract surface checks are runnable directly and should self-validate when edited."
     },
     {
       "id": "customization-contract-subsuite-agents",
@@ -224,9 +236,9 @@
       "pattern": "tests/contracts/test-customization-contracts-agents.sh",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh"
+        "self"
       ],
-      "reason": "Customization contract sub-suites run through the aggregate customization contract suite in the canonical manifest."
+      "reason": "Customization contract agent checks are runnable directly and should self-validate when edited."
     },
     {
       "id": "customization-contract-subsuite-policies",
@@ -234,9 +246,9 @@
       "pattern": "tests/contracts/test-customization-contracts-policies.sh",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh"
+        "self"
       ],
-      "reason": "Customization contract sub-suites run through the aggregate customization contract suite in the canonical manifest."
+      "reason": "Customization contract policy checks are runnable directly and should self-validate when edited."
     }
   ]
 }

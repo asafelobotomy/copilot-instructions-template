@@ -287,10 +287,22 @@
       "ciLabel": "Docs and contracts | release metadata contracts"
     },
     {
-      "id": "contract-customization",
-      "path": "tests/contracts/test-customization-contracts.sh",
+      "id": "contract-customization-surfaces",
+      "path": "tests/contracts/test-customization-contracts-surfaces.sh",
       "phase": "contracts",
-      "ciLabel": "Docs and contracts | customization file contracts"
+      "ciLabel": "Docs and contracts | customization surfaces"
+    },
+    {
+      "id": "contract-customization-agents",
+      "path": "tests/contracts/test-customization-contracts-agents.sh",
+      "phase": "contracts",
+      "ciLabel": "Docs and contracts | customization agents"
+    },
+    {
+      "id": "contract-customization-policies",
+      "path": "tests/contracts/test-customization-contracts-policies.sh",
+      "phase": "contracts",
+      "ciLabel": "Docs and contracts | customization policies"
     },
     {
       "id": "contract-template-parity",

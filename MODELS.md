@@ -146,29 +146,33 @@ VS Code extension management, profile isolation, and workspace configuration.
 ## researcher
 
 Online and offline research — fetch documentation, track URLs, and produce
-structured research output.
+structured research output. Claude Sonnet 4.6 is primary for synthesis quality;
+Gemini 2.5 Pro provides a capable mid-tier fallback before dropping to GPT-5 mini.
 
 - Claude Sonnet 4.6
 - Claude Sonnet 4.5
+- Gemini 2.5 Pro
 - GPT-5 mini
 
 ## commit
 
 Stage, commit, push, tag, and manage releases. Low-context operations; fast
-models are preferred for commit message formatting, so GPT-5.2 replaces
-retiring GPT-5.1 as the current general-purpose primary.
+models preferred. GPT-5 mini is primary (0x multiplier, sufficient for commit
+message formatting); GPT-5.2 is the capability fallback.
 
+- GPT-5 mini
 - GPT-5.2
 - Claude Sonnet 4.6
-- GPT-5 mini
 
 ## planner
 
 Read-only planning, scoping, and execution sequencing before implementation.
+GPT-5.4 is primary for deep reasoning depth suited to architectural planning
+and task decomposition; Sonnet 4.6 is the balanced fallback.
 
+- GPT-5.4
 - Claude Sonnet 4.6
 - GPT-5.2
-- GPT-5 mini
 
 ## docs
 

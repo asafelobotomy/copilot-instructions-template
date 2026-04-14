@@ -8,14 +8,15 @@
       "phaseStrategy": "broaden-aggressively",
       "riskClass": "cross-cutting",
       "tests": [
+        "tests/scripts/test-audit-release-settings.sh",
         "tests/scripts/test-release-plan.sh",
         "tests/scripts/test-verify-version-references.sh",
         "tests/scripts/test-stub-migration.sh",
+        "tests/scripts/test-run-isolated-shell.sh",
         "tests/scripts/test-sync-workspace-index.sh",
         "tests/scripts/test-sync-models.sh",
         "tests/scripts/test-validate-agent-frontmatter.sh",
-        "tests/scripts/test-sync-template-parity.sh",
-        "tests/scripts/test-permission-resilience.sh"
+        "tests/scripts/test-sync-template-parity.sh"
       ],
       "reason": "scripts/lib.sh is sourced by multiple release/sync/validate utilities."
     },

@@ -3,9 +3,9 @@ name: Planner
 description: Break down complex work into scoped execution plans, file lists, risks, and verification steps
 argument-hint: Describe what needs planning — e.g. "plan the routing rollout" or "break down the audit refactor"
 model:
+  - GPT-5.4
   - Claude Sonnet 4.6
   - GPT-5.2
-  - GPT-5 mini
 tools: [agent, codebase, search, runCommands]
 mcp-servers: [filesystem, git]
 user-invocable: false

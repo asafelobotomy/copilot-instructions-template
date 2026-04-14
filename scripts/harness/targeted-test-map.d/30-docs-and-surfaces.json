@@ -7,7 +7,7 @@
       "pattern": ".github/agents/*.agent.md",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-customization-contracts-agents.sh",
         "tests/scripts/test-copilot-audit.sh",
         "tests/scripts/test-sync-models.sh",
         "tests/scripts/test-validate-agent-frontmatter.sh"
@@ -76,7 +76,7 @@
       "pattern": ".github/instructions/",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-customization-contracts-surfaces.sh",
         "tests/contracts/test-template-parity.sh"
       ],
       "reason": "Developer instruction stubs are covered by customization contracts and parity checks."
@@ -87,7 +87,7 @@
       "pattern": ".github/prompts/",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-customization-contracts-surfaces.sh",
         "tests/contracts/test-template-parity.sh"
       ],
       "reason": "Developer prompts are covered by customization contracts and parity checks."
@@ -98,7 +98,7 @@
       "pattern": ".github/skills/",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-customization-contracts-surfaces.sh",
         "tests/contracts/test-template-parity.sh"
       ],
       "reason": "Developer skills are covered by customization contracts and parity checks."
@@ -109,7 +109,7 @@
       "pattern": "template/instructions/",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-customization-contracts-surfaces.sh",
         "tests/contracts/test-template-parity.sh"
       ],
       "reason": "Template instruction stubs are covered by customization contracts and parity checks."
@@ -120,7 +120,7 @@
       "pattern": "template/prompts/",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-customization-contracts-surfaces.sh",
         "tests/contracts/test-template-parity.sh"
       ],
       "reason": "Template prompt stubs are covered by customization contracts and parity checks."
@@ -131,7 +131,7 @@
       "pattern": "template/skills/",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-customization-contracts-surfaces.sh",
         "tests/contracts/test-template-parity.sh"
       ],
       "reason": "Template skills are covered by customization contracts and parity checks."
@@ -143,7 +143,8 @@
       "phaseStrategy": "targeted",
       "riskClass": "critical-surface",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-customization-contracts-surfaces.sh",
+        "tests/contracts/test-customization-contracts-policies.sh",
         "tests/scripts/test-copilot-audit.sh"
       ],
       "reason": "Developer instructions are covered by customization contracts and copilot audit checks."
@@ -155,7 +156,7 @@
       "phaseStrategy": "targeted",
       "riskClass": "critical-surface",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-customization-contracts-policies.sh",
         "tests/contracts/test-setup-update-contracts.sh",
         "tests/scripts/test-copilot-audit.sh"
       ],
@@ -167,7 +168,7 @@
       "pattern": "template/CLAUDE.md",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh"
+        "tests/contracts/test-customization-contracts-policies.sh"
       ],
       "reason": "template/CLAUDE.md is covered by the customization contract suite."
     },
@@ -207,7 +208,7 @@
       "pattern": "AGENTS.md",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh"
+        "tests/contracts/test-customization-contracts-policies.sh"
       ],
       "reason": "AGENTS.md drives customization policy and should run the customization contract suite."
     },
@@ -217,7 +218,7 @@
       "pattern": "CLAUDE.md",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh"
+        "tests/contracts/test-customization-contracts-policies.sh"
       ],
       "reason": "CLAUDE.md is covered by the customization policy contract suite."
     },
@@ -269,7 +270,7 @@
       "pattern": "*.vscode/settings.json",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts.sh",
+        "tests/contracts/test-customization-contracts-surfaces.sh",
         "tests/scripts/test-copilot-audit.sh"
       ],
       "reason": "VS Code settings are covered by customization contracts and the audit suite."
@@ -351,7 +352,7 @@
       "phaseStrategy": "targeted",
       "tests": [
         "tests/contracts/test-release-contracts.sh",
-        "tests/contracts/test-customization-contracts.sh"
+        "tests/contracts/test-customization-contracts-policies.sh"
       ],
       "reason": "README documents both release governance and the targeted-first validation workflow, so it should run release and customization policy contracts."
     },

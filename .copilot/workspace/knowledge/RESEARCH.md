@@ -48,6 +48,12 @@
 | URL | Summary | Date | Tags |
 |-----|---------|------|------|
 | <https://code.visualstudio.com/docs/copilot/agents/memory> | Canonical memory tool docs: scopes (user/repo/session), storage (local, GitHub Copilot Chat extension), settings (`github.copilot.chat.tools.memory.enabled`, `github.copilot.chat.copilotMemory.enabled`), no path redirect setting | 2026-04-09 | memory, agents, storage |
+| <https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/model-release-status.yml> | Canonical GA/preview/closing-down status for all Copilot models; all modes (agent/ask/edit) per model | 2026-04-14 | models, release-status |
+| <https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/model-deprecation-history.yml> | Full retirement history with dates and successor models; GPT-5.1 retires 2026-04-15 | 2026-04-14 | models, deprecation |
+| <https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/model-multipliers.yml> | Premium request multipliers per model for paid and free plans | 2026-04-14 | models, billing, multipliers |
+| <https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/model-supported-clients.yml> | Per-model client availability matrix (dotcom/CLI/VS Code/VS/Eclipse/Xcode/JetBrains) | 2026-04-14 | models, clients |
+| <https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/model-supported-plans.yml> | Per-model plan availability (Free/Student/Pro/Pro+/Business/Enterprise) | 2026-04-14 | models, plans |
+| <https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/model-comparison.yml> | Task-to-model recommendation data with task areas and model card links | 2026-04-14 | models, comparison |
 | <https://code.visualstudio.com/docs/copilot/concepts/agents#_memory> | Memory concepts section: virtual paths `/memories/`, `/memories/repo/`, `/memories/session/`; user memory first 200 lines auto-loaded per session; local vs Copilot Memory distinction | 2026-04-09 | memory, concepts, agents |
 | <https://code.visualstudio.com/docs/copilot/reference/copilot-vscode-features> | Cheat sheet for all VS Code Copilot features; confirms memory is listed under Planning; tool set reference table; `/memories` slash command for Claude agent | 2026-04-09 | reference, tools, features |
 | <https://docs.github.com/copilot/how-tos/use-copilot-agents/copilot-memory> | GitHub-hosted Copilot Memory (separate from local memory tool): cross-surface, repo-scoped, 28-day expiry, off by default | 2026-04-09 | memory, github, copilot-memory |

@@ -1,13 +1,13 @@
 # Copilot Instructions — {{PROJECT_NAME}}
 
-> **Template version**: 5.13.0 <!-- x-release-please-version --> | **Applied**: {{SETUP_DATE}}
+> **Template version**: 5.12.0 <!-- x-release-please-version --> | **Applied**: {{SETUP_DATE}}
 > Living document — self-edit rules in §8.
 >
 > **Models**: each `.github/agents/*.agent.md` pins its model. Codex models are headless-only (no interactive prompts). See [model comparison](https://docs.github.com/en/copilot/reference/ai-models/model-comparison).
 >
 > **⚡ Critical Reminders** — every session, every task:
 >
-> 1. **Test** — use deterministic targeted suites during intermediate phases when available; run `{{TEST_COMMAND}}` once before marking a full task done end-to-end (§2).
+> 1. **Test** — use deterministic targeted suites during intermediate phases when available; run `{{TEST_COMMAND}}` only when the selector or blast radius indicates a full-suite gate is warranted for broad or high-risk work (§2).
 > 2. **PDCA** — Plan→Do→Check→Act for every non-trivial change (§3).
 > 3. **Read first** — never claim or modify a file not opened this session (§4).
 > 4. **Additive** — never delete existing rules without explicit user instruction (§8).
@@ -50,7 +50,7 @@ Apply to every non-trivial change.
 
 **Plan**: State the goal. List the files that will change. Estimate LOC delta. For non-trivial tasks that span multiple files or introduce new behaviour, write a brief requirements summary before coding. Realign before proceeding if that summary changes the plan.
 **Do**: Implement. Write tests alongside code, not after.
-**Check**: During intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites for the touched paths when available. If the blast radius includes shared helpers, broad contract surfaces, or no reliable mapping exists, broaden aggressively. Run `{{TEST_COMMAND}}` only once before marking the full user task complete end-to-end. Do not rerun the full suite between intermediate steps just to be safe. Review output. Fix before proceeding.
+**Check**: During intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites for the touched paths when available. If the blast radius includes shared helpers, broad contract surfaces, or no reliable mapping exists, broaden aggressively. Run `{{TEST_COMMAND}}` only when the selector emits `run_full_suite_at_completion: true` or `should_run_full_suite_early: true`, or when no reliable targeted mapping exists for a broad multi-surface change. Do not rerun the full suite between intermediate steps just to be safe. Review output. Fix before proceeding.
 **Act**: If baseline exceeded, address it now. Summarise what changed.
 
 ### Test Scope Policy
@@ -59,7 +59,7 @@ Apply to every non-trivial change.
 |------|---------|----------|
 | `PathTargeted` | Narrow deterministic checks mapped to touched paths | Default during intermediate work |
 | `AffectedSuite` | Broader checks for shared helpers or broad contract surfaces | Path-targeted coverage is too narrow |
-| `FullSuite` | Entire local test suite | Before marking the full task complete, or when the selector emits `should_run_full_suite_early` |
+| `FullSuite` | Entire local test suite | When the selector emits `run_full_suite_at_completion: true` or `should_run_full_suite_early: true`, or when no reliable targeted mapping exists for a broad multi-surface change |
 | `MergeGate` | Verified state required before merge, release, or final handoff | The change is ready to leave the working session |
 
 - **Task complete** means the full user-visible task is finished end-to-end and the required verification has passed, not that one phase of a larger plan is done and not that one item in a multi-part TODO list is done.
@@ -68,10 +68,10 @@ Apply to every non-trivial change.
 - Keep intermediate verification under roughly 10 seconds when the targeted mapping allows; if the selected phase checks exceed that, narrow the scope or defer broader coverage to the next task boundary.
 - If multiple sub-parts are still in progress, do not treat a passing targeted subset as permission to declare the whole task complete.
 - Broaden early when changes touch shared helpers, broad policy surfaces, parity mirrors, or any area without a reliable targeted test mapping.
-- **Risk-based early escalation**: when the selector emits `should_run_full_suite_early: true`, run the full suite immediately rather than deferring to task completion. Escalation triggers include: critical-surface or security-sensitive risk classes matched, broadening across multiple top-level domains, confidence score below the configured floor, or tracked file patterns matched.
+- **Risk-based early escalation**: when the selector emits `should_run_full_suite_early: true`, run the full suite immediately rather than deferring to task completion. Escalation triggers include: critical-surface or security-sensitive risk classes matched, tracked file patterns matched, or broadening across multiple top-level domains.
 - Re-run the full suite during active work only if a targeted failure required a fix and you need to verify that the fix did not broaden the regression surface.
 - Never run the full suite repeatedly between intermediate steps just to be safe.
-- Final gate: before marking the full task complete, run the full suite with `{{TEST_COMMAND}}`.
+- Final gate: before marking the full task complete, run the full suite only when the selector emits `run_full_suite_at_completion: true` or `should_run_full_suite_early: true`, or when no reliable targeted mapping exists for a broad multi-surface change.
 
 ### Structured Thinking Discipline
 
@@ -398,7 +398,7 @@ MCP enables Copilot to invoke external servers beyond built-in capabilities. Con
 
 Key rules (always loaded):
 
-- **Sandbox stdio servers**: set `"sandboxEnabled": true` in `mcp.json` for locally-running stdio servers to restrict filesystem and network access (macOS/Linux). Sandboxed servers auto-approve tool calls.
+- **Sandbox stdio servers**: set `"sandboxEnabled": true` in `mcp.json` for locally-running `npx`-based stdio servers (macOS/Linux). Do not sandbox `uvx`-based servers (`git`, `fetch`, `heartbeat`) — the VS Code sandbox proxy intercepts PyPI network access during the launcher phase and triggers repeated domain-approval prompts. Sandboxed servers auto-approve tool calls.
 - The MCP `memory` server has been removed — VS Code's built-in memory tool (`/memories/`) provides superior persistent storage with three scopes (user, session, repository)
 - Never hardcode secrets — use `${input:}` or `${env:}` variable syntax
 - **Monorepo discovery**: enable `chat.useCustomizationsInParentRepositories` to auto-discover instructions, prompts, agents, skills, and hooks from a parent Git repository root when opening a subfolder. Requires the parent folder to be trusted.

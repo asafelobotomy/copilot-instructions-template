@@ -34,8 +34,8 @@ Sync command: `bash scripts/sync/sync-models.sh --write`.
 | `explore.agent.md` | Claude Haiku 4.5 | Low | Codebase exploration |
 | `extensions.agent.md` | Claude Sonnet 4.6 | Medium | Extension management |
 | `researcher.agent.md` | Claude Sonnet 4.6 | High | Research |
-| `commit.agent.md` | GPT-5.2 | Low | Git lifecycle |
-| `planner.agent.md` | Claude Sonnet 4.6 | High | Planning |
+| `commit.agent.md` | GPT-5 mini | Low | Git lifecycle |
+| `planner.agent.md` | GPT-5.4 | High | Planning |
 | `docs.agent.md` | Claude Sonnet 4.6 | Medium | Documentation |
 | `debugger.agent.md` | GPT-5.4 | High | Failure diagnosis |
 

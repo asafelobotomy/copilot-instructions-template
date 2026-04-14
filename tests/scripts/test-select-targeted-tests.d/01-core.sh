@@ -43,8 +43,10 @@ if payload["normalized_paths"] != ["scripts/release/verify-version-references.sh
     raise SystemExit(str(payload["normalized_paths"]))
 if payload["intermediate_phase_budget_seconds"] != 10:
     raise SystemExit(str(payload["intermediate_phase_budget_seconds"]))
-if payload["run_full_suite_at_completion"] is not True:
-    raise SystemExit("final full-suite gate missing")
+if payload["run_full_suite_at_completion"] is not False:
+    raise SystemExit(str(payload["run_full_suite_at_completion"]))
+if payload["run_full_suite_at_completion_reasons"]:
+    raise SystemExit(str(payload["run_full_suite_at_completion_reasons"]))
 if payload["terminal_safe_final_gate"] != "bash scripts/harness/run-all-captured.sh":
     raise SystemExit(payload["terminal_safe_final_gate"])
 '
@@ -57,7 +59,7 @@ assert_success "selector exits zero on agent mapping" "$status"
 SELECTOR_OUTPUT="$output" assert_python "agent files map to customization-related suites" '
 payload = json.loads(os.environ["SELECTOR_OUTPUT"])
 expected = {
-    "tests/contracts/test-customization-contracts.sh",
+    "tests/contracts/test-customization-contracts-agents.sh",
     "tests/scripts/test-copilot-audit.sh",
     "tests/scripts/test-sync-models.sh",
     "tests/scripts/test-validate-agent-frontmatter.sh",
@@ -80,18 +82,22 @@ payload = json.loads(os.environ["SELECTOR_OUTPUT"])
 if payload["intermediate_phase_strategy"] != "broaden-aggressively":
     raise SystemExit(payload["intermediate_phase_strategy"])
 required = {
+    "tests/scripts/test-audit-release-settings.sh",
     "tests/scripts/test-release-plan.sh",
     "tests/scripts/test-verify-version-references.sh",
     "tests/scripts/test-stub-migration.sh",
+    "tests/scripts/test-run-isolated-shell.sh",
     "tests/scripts/test-sync-workspace-index.sh",
     "tests/scripts/test-sync-models.sh",
     "tests/scripts/test-validate-agent-frontmatter.sh",
     "tests/scripts/test-sync-template-parity.sh",
-    "tests/scripts/test-permission-resilience.sh",
 }
 missing = sorted(required - set(payload["selected_tests"]))
 if missing:
     raise SystemExit(", ".join(missing))
+unexpected = {"tests/scripts/test-permission-resilience.sh"} & set(payload["selected_tests"])
+if unexpected:
+    raise SystemExit(f"unexpected suites: {sorted(unexpected)}")
 if not payload["broadening_reasons"]:
     raise SystemExit("missing broadening reasons")
 '
@@ -112,18 +118,25 @@ if payload["unmapped_paths"]:
 '
 echo ""
 
-echo "7. Unmapped paths force the full-suite strategy"
+echo "7. Unmapped paths broaden without forcing the full suite"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" ".gitignore")
 status=$?
 assert_success "selector exits zero on unmapped path" "$status"
-SELECTOR_OUTPUT="$output" assert_python "unmapped paths require the full-suite strategy" '
+SELECTOR_OUTPUT="$output" assert_python "unmapped paths stay advisory-only" '
 payload = json.loads(os.environ["SELECTOR_OUTPUT"])
-if payload["intermediate_phase_strategy"] != "full-suite":
+if payload["intermediate_phase_strategy"] != "broaden-aggressively":
     raise SystemExit(payload["intermediate_phase_strategy"])
 if payload["unmapped_paths"] != [".gitignore"]:
     raise SystemExit(str(payload["unmapped_paths"]))
 if payload["selected_tests"]:
     raise SystemExit(str(payload["selected_tests"]))
+if payload["should_run_full_suite_early"] is not False:
+    raise SystemExit(str(payload["should_run_full_suite_early"]))
+if payload["run_full_suite_at_completion"] is not False:
+    raise SystemExit(str(payload["run_full_suite_at_completion"]))
+rules = {entry["rule"]: entry for entry in payload["decision_log"]}
+if rules["confidence-floor"]["matched"] is not True:
+    raise SystemExit(str(payload["decision_log"]))
 '
 echo ""
 
@@ -213,6 +226,10 @@ if not isinstance(_v, list):
     raise SystemExit(f"decision_log type: {type(_v)}")
 if len(_v) < 4:
     raise SystemExit(f"expected >= 4 decision_log entries, got {len(_v)}")
+if payload["run_full_suite_at_completion"] is not False:
+    raise SystemExit(str(payload["run_full_suite_at_completion"]))
+if payload["run_full_suite_at_completion_reasons"]:
+    raise SystemExit(str(payload["run_full_suite_at_completion_reasons"]))
 '
 echo ""
 
@@ -220,8 +237,9 @@ echo "13. Critical-surface risk class triggers early full suite"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" ".github/copilot-instructions.md")
 SELECTOR_OUTPUT="$output" assert_python "critical-surface triggers should_run_full_suite_early" '
 payload = json.loads(os.environ["SELECTOR_OUTPUT"])
-if payload["should_run_full_suite_early"] is not True:
-    raise SystemExit(f"should_run_full_suite_early={payload['should_run_full_suite_early']}")
+_v = payload["should_run_full_suite_early"]
+if _v is not True:
+    raise SystemExit(f"should_run_full_suite_early={_v}")
 if "critical-surface" not in payload["risk_classes_matched"]:
     raise SystemExit(str(payload["risk_classes_matched"]))
 reasons = " ".join(payload["early_full_suite_reasons"])
@@ -237,8 +255,9 @@ echo "14. Security-sensitive risk class triggers early full suite"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/hooks/scripts/scan-secrets.sh")
 SELECTOR_OUTPUT="$output" assert_python "security-sensitive triggers should_run_full_suite_early" '
 payload = json.loads(os.environ["SELECTOR_OUTPUT"])
-if payload["should_run_full_suite_early"] is not True:
-    raise SystemExit(f"should_run_full_suite_early={payload['should_run_full_suite_early']}")
+_v = payload["should_run_full_suite_early"]
+if _v is not True:
+    raise SystemExit(f"should_run_full_suite_early={_v}")
 if "security-sensitive" not in payload["risk_classes_matched"]:
     raise SystemExit(str(payload["risk_classes_matched"]))
 '
@@ -284,5 +303,58 @@ payload = json.loads(os.environ["SELECTOR_OUTPUT"])
 domains = set(payload["domains_touched"])
 if "scripts" not in domains or "template" not in domains:
     raise SystemExit(str(payload["domains_touched"]))
+'
+echo ""
+
+echo "19. Broad docs and script changes stay below the completion full-suite threshold when they only touch two phases"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/release/verify-version-references.sh" "template/setup/manifests.md" "README.md")
+SELECTOR_OUTPUT="$output" assert_python "multi-domain but two-phase changes stay targeted-only" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if payload["should_run_full_suite_early"] is not False:
+    raise SystemExit(str(payload["should_run_full_suite_early"]))
+if len(payload["domains_touched"]) < 3:
+    raise SystemExit(str(payload["domains_touched"]))
+if set(payload["selected_phases"]) != {"scripts", "contracts"}:
+    raise SystemExit(str(payload["selected_phases"]))
+if len(payload["selected_tests"]) < 4:
+    raise SystemExit(str(payload["selected_tests"]))
+if payload["run_full_suite_at_completion"] is not False:
+    raise SystemExit(str(payload["run_full_suite_at_completion"]))
+if payload["run_full_suite_at_completion_reasons"]:
+    raise SystemExit(str(payload["run_full_suite_at_completion_reasons"]))
+'
+echo ""
+
+echo "20. Broad multi-surface changes require a completion full-suite gate"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/release/verify-version-references.sh" "template/hooks/scripts/session-start.sh" "README.md")
+SELECTOR_OUTPUT="$output" assert_python "multi-surface changes enable the completion full-suite gate" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if payload["should_run_full_suite_early"] is not False:
+    raise SystemExit(str(payload["should_run_full_suite_early"]))
+if payload["run_full_suite_at_completion"] is not True:
+    raise SystemExit(str(payload["run_full_suite_at_completion"]))
+reasons = " ".join(payload["run_full_suite_at_completion_reasons"])
+if "domains" not in reasons or "phases" not in reasons or "targeted suites" not in reasons:
+    raise SystemExit(str(payload["run_full_suite_at_completion_reasons"]))
+if len(payload["domains_touched"]) < 3:
+    raise SystemExit(str(payload["domains_touched"]))
+if not {"scripts", "hooks", "contracts"}.issubset(set(payload["selected_phases"])):
+    raise SystemExit(str(payload["selected_phases"]))
+if len(payload["selected_tests"]) < 4:
+    raise SystemExit(str(payload["selected_tests"]))
+'
+echo ""
+
+echo "21. Full-suite strategy paths keep the completion gate enabled"
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "tests/run-all.sh")
+SELECTOR_OUTPUT="$output" assert_python "explicit full-suite paths preserve the completion gate" '
+payload = json.loads(os.environ["SELECTOR_OUTPUT"])
+if payload["intermediate_phase_strategy"] != "full-suite":
+    raise SystemExit(payload["intermediate_phase_strategy"])
+if payload["run_full_suite_at_completion"] is not True:
+    raise SystemExit(str(payload["run_full_suite_at_completion"]))
+reasons = " ".join(payload["run_full_suite_at_completion_reasons"])
+if "Intermediate phase strategy already requires the full suite" not in reasons:
+    raise SystemExit(str(payload["run_full_suite_at_completion_reasons"]))
 '
 echo ""

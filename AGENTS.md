@@ -20,10 +20,6 @@ Use the upstream manifests inventory at
 as the canonical supporting-source inventory instead of restating fetch lists
 here.
 
-Canonical source for inventory:
-
-- `.copilot/workspace/operations/workspace-index.json` — canonical machine-readable metadata index
-
 ## Delegation policy
 
 Keep subagent delegation narrow.

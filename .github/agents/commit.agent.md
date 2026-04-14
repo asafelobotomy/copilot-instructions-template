@@ -3,9 +3,9 @@ name: Commit
 description: Stage, preflight, commit, push, tag, and manage releases — applying the consumer's commit-style preferences from .copilot/workspace/operations/commit-style.md
 argument-hint: "Say 'commit my changes', 'stage and commit', 'push changes', 'tag this version', or 'create a release'"
 model:
+  - GPT-5 mini
   - GPT-5.2
   - Claude Sonnet 4.6
-  - GPT-5 mini
 tools: [agent, editFiles, runCommands, codebase, githubRepo, askQuestions]
 mcp-servers: [filesystem, git, github]
 user-invocable: true

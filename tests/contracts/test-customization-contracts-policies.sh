@@ -198,9 +198,9 @@ echo "6. Task completion and testing policy distinguish targeted vs full-suite g
 assert_python "instruction files define phase testing vs final completion semantics" '
 required_by_file = {
     ".github/copilot-instructions.md": [
-        "use deterministic targeted suites during intermediate phases; run `bash tests/run-all.sh` once before marking a full task done end-to-end",
+        "use deterministic targeted suites during intermediate phases; run `bash tests/run-all.sh` only when the selector or blast radius indicates a full-suite gate is warranted for broad or high-risk work",
         "During intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites",
-        "Run `bash tests/run-all.sh` only once before marking the full user task complete end-to-end",
+        "Run `bash tests/run-all.sh` only when the selector emits `run_full_suite_at_completion: true` or `should_run_full_suite_early: true`",
         "### Test Scope Policy",
         "**Task complete** means the full user-visible task is finished end-to-end",
         "During intermediate phases, prefer deterministic path-based targeted suites",
@@ -209,15 +209,15 @@ required_by_file = {
         "Keep intermediate verification under roughly 10 seconds when the targeted mapping allows",
         "Re-run the full suite during active work only if a targeted failure required a fix",
         "Never run the full suite repeatedly between intermediate steps just to be safe",
-        "Final gate: before marking the full task complete, run the full suite with `bash tests/run-all.sh`",
+        "Final gate: before marking the full task complete, run the full suite only when the selector emits `run_full_suite_at_completion: true` or `should_run_full_suite_early: true`",
         "**Risk-based early escalation**: when the selector emits `should_run_full_suite_early: true`, run the full suite immediately",
     ],
     "template/copilot-instructions.md": [
-        "use deterministic targeted suites during intermediate phases when available; run `{{TEST_COMMAND}}` once before marking a full task done end-to-end",
+        "use deterministic targeted suites during intermediate phases when available; run `{{TEST_COMMAND}}` only when the selector or blast radius indicates a full-suite gate is warranted for broad or high-risk work",
         "Three-check ritual before marking a full task complete end-to-end",
         "Must pass before the full task is done",
         "During intermediate phases or multi-part tasks, run the narrowest deterministic targeted suites",
-        "Run `{{TEST_COMMAND}}` only once before marking the full user task complete end-to-end",
+        "Run `{{TEST_COMMAND}}` only when the selector emits `run_full_suite_at_completion: true` or `should_run_full_suite_early: true`",
         "### Test Scope Policy",
         "**Task complete** means the full user-visible task is finished end-to-end",
         "During intermediate phases, prefer deterministic path-based targeted suites",
@@ -227,7 +227,7 @@ required_by_file = {
         "Keep intermediate verification under roughly 10 seconds when the targeted mapping allows",
         "Re-run the full suite during active work only if a targeted failure required a fix",
         "Never run the full suite repeatedly between intermediate steps just to be safe",
-        "Final gate: before marking the full task complete, run the full suite with `{{TEST_COMMAND}}`",
+        "Final gate: before marking the full task complete, run the full suite only when the selector emits `run_full_suite_at_completion: true` or `should_run_full_suite_early: true`",
         "**Risk-based early escalation**: when the selector emits `should_run_full_suite_early: true`, run the full suite immediately",
     ],
 }
@@ -398,7 +398,7 @@ if "rejected.ation" in text:
 
 counts = {
     "Agent-scoped hooks: individual agents can define a `hooks:` section in their `.agent.md` YAML frontmatter.": 1,
-    "- **Sandbox stdio servers**: set `\"sandboxEnabled\": true` in `mcp.json` for locally-running stdio servers to restrict filesystem and network access (macOS/Linux). Sandboxed servers auto-approve tool calls.": 1,
+    "- **Sandbox stdio servers**: set `\"sandboxEnabled\": true` in `mcp.json` for locally-running `npx`-based stdio servers (macOS/Linux). Do not sandbox `uvx`-based servers (`git`, `fetch`, `heartbeat`) — the VS Code sandbox proxy intercepts PyPI network access during the launcher phase and triggers repeated domain-approval prompts. Sandboxed servers auto-approve tool calls.": 1,
     "- The MCP `memory` server has been removed — VS Code\x27s built-in memory tool (`/memories/`) provides superior persistent storage with three scopes (user, session, repository)": 1,
     "- Never hardcode secrets — use `${input:}` or `${env:}` variable syntax": 1,
     "- **Monorepo discovery**: enable `chat.useCustomizationsInParentRepositories` to auto-discover instructions, prompts, agents, skills, and hooks from a parent Git repository root when opening a subfolder. Requires the parent folder to be trusted.": 1,

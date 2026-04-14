@@ -45,6 +45,7 @@ required_files=(
   "template/instructions/api-routes.instructions.md"
   "template/instructions/config.instructions.md"
   "template/instructions/docs.instructions.md"
+  "template/instructions/terminal.instructions.md"
   "template/instructions/tests.instructions.md"
   "template/prompts/refactor.prompt.md"
   "template/prompts/test-gen.prompt.md"
@@ -66,7 +67,10 @@ required_files=(
   "template/workspace/operations/workspace-index.json"
   "template/workspace/identity/BOOTSTRAP.md"
   "template/workspace/operations/HEARTBEAT.md"
+  "template/workspace/knowledge/MEMORY-GUIDE.md"
   "template/workspace/knowledge/RESEARCH.md"
+  "template/workspace/knowledge/diaries/README.md"
+  "template/workspace/operations/ledger.md"
 )
 
 if [[ -f "$WORKSPACE_INDEX_PATH" ]]; then

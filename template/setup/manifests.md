@@ -139,10 +139,7 @@ fi
 {
   "sandbox": {
     "filesystem": {
-      "allowWrite": ["${userHome}/.npm", "${userHome}/.cache/uv", "${userHome}/.local/share/uv"]
-    },
-    "network": {
-      "allowedDomains": ["pypi.org", "files.pythonhosted.org"]
+      "allowWrite": ["${userHome}/.npm"]
     }
   },
   "servers": {
@@ -152,6 +149,9 @@ fi
       "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"],
       "sandboxEnabled": true,
       "sandbox": {
+        "network": {
+          "allowedDomains": ["registry.npmjs.org", "npmjs.org"]
+        },
         "filesystem": {
           "allowWrite": ["${workspaceFolder}", "${userHome}/.npm"],
           "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
@@ -161,14 +161,7 @@ fi
     "git": {
       "type": "stdio",
       "command": "uvx",
-      "args": ["mcp-server-git", "--repository", "${workspaceFolder}"],
-      "sandboxEnabled": true,
-      "sandbox": {
-        "filesystem": {
-          "allowWrite": ["${workspaceFolder}"],
-          "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
-        }
-      }
+      "args": ["mcp-server-git", "--repository", "${workspaceFolder}"]
     },
     "github": {
       "type": "http",
@@ -183,13 +176,7 @@ fi
         "TMPDIR": "${userHome}/.cache/uv"
       },
       "args": ["--with", "httpx[socks]>=0.28", "mcp-server-fetch"],
-      "disabled": true,
-      "sandboxEnabled": true,
-      "sandbox": {
-        "filesystem": {
-          "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
-        }
-      }
+      "disabled": true
     },
     "context7": {
       "type": "http",
@@ -233,14 +220,7 @@ fi
         "--from", "mcp[cli]",
         "mcp", "run",
         "${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py"
-      ],
-      "sandboxEnabled": true,
-      "sandbox": {
-        "filesystem": {
-          "allowWrite": ["${workspaceFolder}"],
-          "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
-        }
-      }
+      ]
     }
   }
 }

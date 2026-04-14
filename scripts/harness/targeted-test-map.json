@@ -2,11 +2,14 @@
   "schemaVersion": "2.0",
   "description": "Deterministic path-to-targeted-test mapping with risk-based escalation for intermediate-phase verification in copilot-instructions-template.",
   "defaults": {
-    "unmappedPhaseStrategy": "full-suite",
-    "runFullSuiteAtCompletion": true,
+    "unmappedPhaseStrategy": "broaden-aggressively",
+    "runFullSuiteAtCompletion": false,
+    "runFullSuiteAtCompletionOnMultipleDomains": 3,
+    "runFullSuiteAtCompletionOnMultiplePhases": 3,
+    "runFullSuiteAtCompletionOnMultipleSuites": 4,
     "intermediatePhaseBudgetSeconds": 10,
     "earlyFullSuiteOnCriticalSurface": true,
-    "earlyFullSuiteOnMultipleBroadenDomains": 2,
+    "earlyFullSuiteOnMultipleBroadenDomains": 3,
     "confidenceFloor": 0.5,
     "trackedFilePatterns": [
       "Makefile",

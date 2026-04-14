@@ -7,14 +7,6 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 > **Consumer projects**: your own `CHANGELOG.md` records your project's changes, not this file.
 
-## [5.13.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.12.0...v5.13.0) (2026-04-13)
-
-
-### Features
-
-* **harness:** add risk-based escalation to targeted selector ([e574a90](https://github.com/asafelobotomy/copilot-instructions-template/commit/e574a905c652e53d223b16a05c75782b7257172d))
-* **network:** add allowed domains for npm and PyPI in sandbox configuration ([3524235](https://github.com/asafelobotomy/copilot-instructions-template/commit/35242357462bcccbe1638de747353c8b00e76736))
-
 ## [Unreleased]
 
 ### Changed

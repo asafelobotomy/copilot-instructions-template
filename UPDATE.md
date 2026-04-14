@@ -6,7 +6,7 @@
 >
 > **For the human**: Say one of the trigger phrases below in a Copilot chat.
 >
-> **ask_questions convention**: Use `ask_questions` for ALL user-facing decisions. Each block must have `header:`, `question:`, `options:` with `- label:` entries. If `ask_questions` is unavailable, present options in chat instead — this applies to every decision block below.
+> **ask_questions convention**: Use `ask_questions` for ALL user-facing decisions. Each block must have `header:`, `question:`, `options:` with `- label:` entries. If `ask_questions` is unavailable, present options as a numbered list in chat instead.
 
 ---
 

@@ -4,21 +4,20 @@
 from __future__ import annotations
 
 import json
-import hashlib
 import os
-import pwd
 import sys
-import tempfile
 import time
 from pathlib import Path
 from typing import Dict, List, Sequence
 
+from pulse_artifacts import (
+    fallback_artifact_path,
+    heartbeat_artifact_paths,
+    iso_utc,
+)
+
 
 MAX_SUMMARY_LENGTH = 400
-
-
-def iso_utc(epoch: int) -> str:
-    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(int(epoch)))
 
 
 def format_duration(seconds: int) -> str:
@@ -40,89 +39,6 @@ def load_json_object(path: Path) -> Dict[str, object]:
     except Exception:
         return {}
     return loaded if isinstance(loaded, dict) else {}
-
-
-def fallback_artifact_roots() -> List[Path]:
-    roots: List[Path] = []
-    seen: set[str] = set()
-
-    def add(candidate: Path | None) -> None:
-        if candidate is None:
-            return
-        key = str(candidate)
-        if key in seen:
-            return
-        seen.add(key)
-        roots.append(candidate)
-
-    claude_tmp = os.environ.get("CLAUDE_TMPDIR")
-    if claude_tmp:
-        add(Path(claude_tmp))
-    env_tmp = os.environ.get("TMPDIR")
-    if env_tmp:
-        add(Path(env_tmp))
-    add(Path(tempfile.gettempdir()))
-    xdg_cache_home = os.environ.get("XDG_CACHE_HOME")
-    if xdg_cache_home:
-        add(Path(xdg_cache_home) / "uv")
-    try:
-        passwd_home = Path(pwd.getpwuid(os.getuid()).pw_dir)
-    except Exception:
-        passwd_home = None
-    if passwd_home is not None:
-        add(passwd_home / ".cache" / "uv" / ".copilot-tmp")
-        add(passwd_home / ".cache" / "uv")
-        add(passwd_home / ".local" / "share" / "uv")
-    home = Path.home()
-    add(home / ".cache" / "uv" / ".copilot-tmp")
-    add(home / ".cache" / "uv")
-    add(home / ".local" / "share" / "uv")
-    return roots
-
-
-def _copilot_repo_root(workspace_resolved: Path) -> Path:
-    """Return the repo root (= parent of the .copilot directory) from a resolved path."""
-    if workspace_resolved.name == ".copilot":
-        return workspace_resolved.parent
-    for candidate in workspace_resolved.parents:
-        if candidate.name == ".copilot":
-            return candidate.parent
-    # Fallback: handle direct .copilot/workspace/ children
-    if workspace_resolved.name == "workspace" and workspace_resolved.parent.name == ".copilot":
-        return workspace_resolved.parent.parent
-    return workspace_resolved.parent
-
-
-def fallback_artifact_path(path: Path) -> Path:
-    workspace = path.parent
-    try:
-        workspace_resolved = workspace.resolve()
-    except Exception:
-        workspace_resolved = workspace
-    root = _copilot_repo_root(workspace_resolved)
-    roots = fallback_artifact_roots()
-    tmp_root = roots[0] if roots else Path(tempfile.gettempdir())
-    repo_key = hashlib.sha256(str(root).encode("utf-8")).hexdigest()[:12]
-    return tmp_root / "copilot-heartbeat" / repo_key / path.name
-
-
-def fallback_artifact_paths(path: Path) -> List[Path]:
-    workspace = path.parent
-    try:
-        workspace_resolved = workspace.resolve()
-    except Exception:
-        workspace_resolved = workspace
-    root = _copilot_repo_root(workspace_resolved)
-    repo_key = hashlib.sha256(str(root).encode("utf-8")).hexdigest()[:12]
-    return [root_path / "copilot-heartbeat" / repo_key / path.name for root_path in fallback_artifact_roots()]
-
-
-def heartbeat_artifact_paths(path: Path) -> List[Path]:
-    candidates = [path]
-    for fallback in fallback_artifact_paths(path):
-        if fallback != path and fallback not in candidates:
-            candidates.append(fallback)
-    return candidates
 
 
 def iter_completed_events(path: Path) -> List[Dict[str, object]]:

@@ -117,6 +117,12 @@ def check_m4_mcp_stdio_sandbox(root: pathlib.Path | AuditContext) -> CheckResult
             continue
         if srv_cfg.get("disabled", False):
             continue
+        # uvx-based servers are exempt: the VS Code sandbox proxy intercepts
+        # PyPI network access during the uvx launcher phase and triggers
+        # repeated domain-approval prompts that cannot be reliably suppressed
+        # via per-server allowedDomains.  Only npx-based servers are sandboxed.
+        if srv_cfg.get("command") == "uvx":
+            continue
         if not srv_cfg.get("sandboxEnabled", False):
             result.findings.append(Finding("M4", rel, WARN,
                                            f"Server '{srv_name}': stdio server without "
