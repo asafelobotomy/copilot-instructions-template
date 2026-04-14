@@ -350,7 +350,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tag="${{ steps.version.outputs.tag }}"
-          version="${{ steps.version.outputs.version }}"
           gh release create "$tag" \
             --title "$tag" \
             --notes "See [CHANGELOG.md](CHANGELOG.md) and [MIGRATION.md](MIGRATION.md) for details." \

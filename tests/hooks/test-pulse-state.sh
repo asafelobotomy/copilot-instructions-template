@@ -9,7 +9,8 @@ source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
 MODULE_PATH="$REPO_ROOT/template/hooks/scripts/pulse_state.py"
 export MODULE_PATH
-export PYTHONPATH="$(dirname "$MODULE_PATH")${PYTHONPATH:+:$PYTHONPATH}"
+PYTHONPATH="$(dirname "$MODULE_PATH")${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH
 trap cleanup_dirs EXIT
 
 echo "=== pulse_state.py ==="
@@ -34,7 +35,8 @@ assert state["touched_files_sample"] == []
 echo ""
 
 echo "2. load_state falls back to defaults when the state file is missing"
-TMP_MISSING=$(mktemp -d); CLEANUP_DIRS+=("$TMP_MISSING")
+TMP_MISSING=$(mktemp -d)
+CLEANUP_DIRS+=("$TMP_MISSING")
 assert_python_in_root "missing state file returns defaults" "$TMP_MISSING" '
 import importlib.util
 
