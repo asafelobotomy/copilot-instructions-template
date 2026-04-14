@@ -127,6 +127,7 @@ for needle in [
 assert_python "verbatim-delivered agents use workspace-neutral identity wording" '
 expected = {
     "coding.agent.md": "You are the Coding agent for the current project.",
+    "cleaner.agent.md": "You are the Cleaner agent for the current project.",
     "review.agent.md": "You are the Review agent for the current project.",
     "fast.agent.md": "You are the Fast agent for the current project.",
     "extensions.agent.md": "You are the Extensions agent for the current project.",
@@ -161,7 +162,6 @@ expected_hidden = {
     "extensions.agent.md": ["name: Extensions", "user-invocable: false"],
     "organise.agent.md": ["name: Organise", "user-invocable: false"],
     "planner.agent.md": ["name: Planner", "user-invocable: false"],
-    "docs.agent.md": ["name: Docs", "user-invocable: false"],
     "debugger.agent.md": ["name: Debugger", "user-invocable: false"],
 }
 
@@ -195,11 +195,36 @@ if "Explore" not in agents_line:
     raise SystemExit("organise.agent.md must allow Explore for nested read-only inventory work")
 '
 
+assert_python "Docs and Cleaner stay publicly invocable" '
+expected_public = {
+    "docs.agent.md": ["name: Docs", "user-invocable: true"],
+    "cleaner.agent.md": ["name: Cleaner", "user-invocable: true"],
+}
+
+for filename, needles in expected_public.items():
+    path = root / ".github/agents" / filename
+    text = path.read_text(encoding="utf-8")
+    end = text.find("\n---\n", 4)
+    if end == -1:
+        raise SystemExit("unterminated frontmatter in " + filename)
+    fm = text[4:end]
+    for needle in needles:
+        if needle not in fm:
+            raise SystemExit(filename + " missing: " + needle)
+'
+
 assert_python "coordinator allow-lists include Organise" '
 for agent_name in ("coding", "setup", "audit", "review", "extensions"):
     text = (root / ".github/agents" / f"{agent_name}.agent.md").read_text(encoding="utf-8")
     if "Organise" not in text:
         raise SystemExit(f"{agent_name}.agent.md missing Organise allow-list entry")
+'
+
+assert_python "cleanup-capable coordinators include Cleaner" '
+for agent_name in ("coding", "audit", "review", "commit"):
+    text = (root / ".github/agents" / f"{agent_name}.agent.md").read_text(encoding="utf-8")
+    if "Cleaner" not in text:
+        raise SystemExit(f"{agent_name}.agent.md missing Cleaner allow-list entry")
 '
 echo ""
 
@@ -302,6 +327,7 @@ active = {
 }
 expected_active = {
     "Audit",
+    "Cleaner",
     "Commit",
     "Code",
     "Debugger",
@@ -317,6 +343,15 @@ expected_active = {
 }
 if active != expected_active:
     raise SystemExit(f"unexpected Stage 4 active routes: {sorted(active)}")
+
+public_visible = {
+    entry.get("name")
+    for entry in entries
+    if isinstance(entry, dict) and entry.get("visibility") == "picker-visible"
+}
+for required in {"Docs", "Cleaner"}:
+    if required not in public_visible:
+        raise SystemExit(f"routing manifest must expose {required} in the picker")
 '
 echo ""
 

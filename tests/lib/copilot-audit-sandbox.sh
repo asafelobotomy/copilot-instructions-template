@@ -28,7 +28,7 @@ Main/default agent delegation: when the request matches a named specialist workf
 delegate instead of absorbing the workflow inline.
 Do not keep specialist work inline because it seems small, quick, or manageable.
 Trust the selected specialist to complete the task unless you know it is outside the specialist scope, allow-list, or capabilities, or it reports a concrete blocker.
-Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for current external docs, `Review` for formal code review or architectural critique, `Audit` for health, security, or residual-risk checks, `Extensions` for VS Code extension, profile, or workspace recommendation work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for template bootstrap, instruction update, backup restore, or factory restore work, and `Organise` for file moves, path repair, or repository reshaping.
+Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for current external docs, `Review` for formal code review or architectural critique, `Audit` for health, security, or residual-risk checks, `Docs` for documentation and migration-note work, `Extensions` for VS Code extension, profile, or workspace recommendation work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for template bootstrap, instruction update, backup restore, or factory restore work, `Organise` for file moves, path repair, or repository reshaping, and `Cleaner` for stale artefact, archive, and cache cleanup.
 MD
 
   # Consumer template — must have ≥ 3 {{PLACEHOLDER}} tokens
@@ -38,7 +38,7 @@ MD
 The parent/default agent follows this protocol too: if a request matches a named specialist workflow, delegate to the matching agent instead of absorbing the specialist workflow inline.
 Do not keep specialist work inline because it seems small, quick, or manageable.
 Trust the selected specialist to complete the task unless you know it is outside the specialist scope, allow-list, or capabilities, or the specialist reports a concrete blocker.
-Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for current external docs, `Review` for formal code review or architectural critique, `Audit` for health, security, or residual-risk checks, `Extensions` for VS Code extension, profile, or workspace recommendation work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for template bootstrap, instruction update, backup restore, or factory restore work, and `Organise` for file moves, path repair, or repository reshaping.
+Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for current external docs, `Review` for formal code review or architectural critique, `Audit` for health, security, or residual-risk checks, `Docs` for documentation and migration-note work, `Extensions` for VS Code extension, profile, or workspace recommendation work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for template bootstrap, instruction update, backup restore, or factory restore work, `Organise` for file moves, path repair, or repository reshaping, and `Cleaner` for stale artefact, archive, and cache cleanup.
 MD
 
   # Valid agent
@@ -49,7 +49,7 @@ description: Coding agent
 model:
   - Claude Sonnet 4.6
 tools: [agent, codebase]
-agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Commit', 'Organise', 'Planner', 'Docs', 'Debugger']
+agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Commit', 'Organise', 'Planner', 'Docs', 'Debugger', 'Cleaner']
 ---
 # Code Agent
 AGENT

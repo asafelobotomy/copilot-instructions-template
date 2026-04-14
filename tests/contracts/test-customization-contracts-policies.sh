@@ -425,9 +425,10 @@ def parse_tools_or_agents(frontmatter, field):
     }
 
 expected = {
-    "audit.agent.md": {"Code", "Setup", "Researcher", "Extensions", "Organise", "Planner"},
-    "coding.agent.md": {"Review", "Audit", "Researcher", "Explore", "Commit", "Organise", "Planner", "Docs", "Debugger"},
-    "commit.agent.md": {"Code", "Review", "Audit", "Debugger", "Organise"},
+    "audit.agent.md": {"Code", "Setup", "Researcher", "Extensions", "Organise", "Planner", "Cleaner"},
+    "cleaner.agent.md": {"Code", "Audit", "Organise", "Docs", "Commit"},
+    "coding.agent.md": {"Review", "Audit", "Researcher", "Explore", "Commit", "Organise", "Planner", "Docs", "Debugger", "Cleaner"},
+    "commit.agent.md": {"Code", "Review", "Audit", "Debugger", "Organise", "Cleaner"},
     "debugger.agent.md": {"Code", "Researcher", "Audit", "Planner"},
     "docs.agent.md": {"Code", "Researcher", "Review", "Explore"},
     "explore.agent.md": {"Researcher"},
@@ -436,7 +437,7 @@ expected = {
     "organise.agent.md": {"Code", "Explore", "Docs"},
     "planner.agent.md": {"Code", "Explore", "Researcher", "Debugger", "Docs"},
     "researcher.agent.md": {"Code", "Audit", "Explore", "Docs", "Planner"},
-    "review.agent.md": {"Code", "Audit", "Organise", "Docs", "Debugger"},
+    "review.agent.md": {"Code", "Audit", "Organise", "Docs", "Debugger", "Cleaner"},
     "setup.agent.md": {"Audit", "Extensions", "Organise", "Researcher"},
 }
 
@@ -454,18 +455,29 @@ for name, expected_agents in expected.items():
         raise SystemExit(f"{name} expected agents={sorted(expected_agents)} found={sorted(found_agents)}")
 
 checks = {
-    "audit.agent.md": ["Use `Extensions` when a finding is specifically about VS Code extension"],
+    "audit.agent.md": [
+        "Use `Cleaner` when the remediation path is mainly stale artefact removal,",
+        "Use `Extensions` when a finding is specifically about VS Code extension",
+    ],
+    "cleaner.agent.md": [
+        "Start with a dry-run inventory.",
+        "Tracked deletions always need explicit user approval.",
+        "Use `Audit` when the candidate cleanup touches security-sensitive files,",
+        "Use `Organise` when cleanup turns into file moves, path updates, or",
+    ],
     "coding.agent.md": [
         "Use `Planner` when the request is large, ambiguous, or needs a scoped execution plan before implementation.",
         "Use `Debugger` when the main task is to diagnose a failure, regression, or unclear root cause before editing.",
         "Use `Docs` when the work is primarily documentation, migration guidance, or user-facing technical explanation rather than product behavior.",
         "Use `Explore` for read-only codebase inventory across multiple files",
         "Use `Researcher` when a task depends on current external documentation",
+        "Use `Cleaner` when the task is primarily repo hygiene",
     ],
     "commit.agent.md": [
         "Use `Code` when preflight or review finds implementation work",
         "Use `Audit` when the user requests a deeper security or health check",
         "Use `Organise` when branch cleanup or file restructuring is needed",
+        "Use `Cleaner` when stale caches, generated artefacts, archive debris,",
     ],
     "debugger.agent.md": [
         "Focus on reproduction, symptom isolation, root cause, and the smallest credible fix path.",
@@ -494,6 +506,7 @@ checks = {
         "Use `Explore` when you need a broader read-only inventory of local callers,",
     ],
     "review.agent.md": [
+        "Prefer `Cleaner` over general `Code` when a finding is mainly stale artefact,",
         "Use `Debugger` when a finding cannot be substantiated without isolating the underlying root cause first.",
         "Use `Docs` when the review outcome is primarily missing documentation, migration guidance, or user-facing explanation.",
     ],

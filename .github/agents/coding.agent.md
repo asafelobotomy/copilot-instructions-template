@@ -9,10 +9,10 @@ model:
   - Claude Sonnet 4.6
   - GPT-5 mini
 tools: [agent, editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
-mcp-servers: [filesystem, git, github, fetch, context7, playwright]
+mcp-servers: [filesystem, git, github, fetch, context7, playwright, heartbeat]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Commit', 'Organise', 'Planner', 'Docs', 'Debugger']
+agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Commit', 'Organise', 'Planner', 'Docs', 'Debugger', 'Cleaner']
 handoffs:
   - label: Review changes
     agent: Review
@@ -63,8 +63,16 @@ Guidelines:
   API behavior.
 - Delegate to `Organise` when the task is primarily about moving files,
   fixing path references, or reshaping directory structure.
+- Use `Cleaner` when the task is primarily repo hygiene — pruning stale
+  artefacts, caches, dead files, or archive clutter — rather than implementation.
+- Use `mcp_heartbeat_spatial_status` when session context, workspace navigation,
+  or prior agent diary notes would help you narrow scope before editing.
+- When you discover a durable implementation insight worth sharing across
+  sessions, follow `.copilot/workspace/knowledge/diaries/README.md` and append a
+  concise note to `.copilot/workspace/knowledge/diaries/code.md` if it is not
+  already recorded.
 
 ## Skill activation map
 
 - Primary: `tool-protocol`, `skill-management`, `mcp-management`
-- Contextual: `webapp-testing`, `test-coverage-review`, `fix-ci-failure`, `conventional-commit`, `create-adr`, `agentic-workflows`
+- Contextual: `webapp-testing`, `test-coverage-review`, `fix-ci-failure`, `conventional-commit`, `create-adr`, `agentic-workflows`, `mcp-builder`, `skill-creator`, `compress-prose`

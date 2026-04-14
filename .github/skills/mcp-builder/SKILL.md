@@ -152,7 +152,7 @@ Add the server to the project's MCP configuration:
 
 ### 8. Document
 
-- Add the server to the §13 Available servers table in `.github/copilot-instructions.md`
+- Add the server to the **Available servers** table in the `mcp-management` skill (`.github/skills/mcp-management/SKILL.md`)
 - If the server is reusable across projects, consider publishing to an MCP registry
 
 ### 9. Distribute via plugin (optional)

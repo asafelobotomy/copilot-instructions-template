@@ -143,7 +143,7 @@ Before acting on any medium-to-complex task:
 | `template/workspace/` | Consumer workspace identity stubs |
 | `template/instructions/` | Consumer path-instruction stubs (most verbatim; subset with `{{}}` tokens) |
 | `template/prompts/` | Consumer prompt stubs (most verbatim; subset with `{{}}` tokens) |
-| `.github/agents/` | Model-pinned VS Code agents (Setup, Code, Organise, Review, Fast, Audit, Explore, Extensions, Researcher, Commit, Debugger, Docs, Planner) |
+| `.github/agents/` | Model-pinned VS Code agents (Setup, Code, Organise, Review, Fast, Audit, Explore, Extensions, Researcher, Commit, Debugger, Docs, Planner, Cleaner) |
 | `.github/skills/` | Skill library (repo-live copies, mirrors template) |
 | `.github/hooks/` | Hook scripts (repo-live copies, mirrors template) |
 | `.github/instructions/` | Developer path-instructions (resolved, no `{{}}`) |
@@ -183,12 +183,13 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
   reports a concrete blocker.
 - Preferred specialist map: `Explore` for read-only repo scans, `Researcher`
   for current external docs, `Review` for formal code review or architectural
-  critique, `Audit` for health, security, or residual-risk checks,
-  `Extensions` for VS Code extension, profile, or workspace recommendation
-  work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for
-  template bootstrap, instruction update, backup restore, or factory restore
-  work, and
-  `Organise` for file moves, path repair, or repository reshaping.
+  critique, `Audit` for health, security, or residual-risk checks, `Docs` for
+  documentation and migration-note work, `Extensions` for VS Code extension,
+  profile, or workspace recommendation work, `Commit` for staging, commits,
+  pushes, tags, or releases, `Setup` for template bootstrap, instruction
+  update, backup restore, or factory restore work, `Organise` for file moves,
+  path repair, or repository reshaping, and `Cleaner` for stale artefact,
+  archive, and cache cleanup.
 - Tool Protocol: activate `.github/skills/tool-protocol/SKILL.md` before building any script.
 - Heartbeat: `.copilot/workspace/operations/HEARTBEAT.md` — run at session start. Health digest emits on meaningful phase transitions and overlay changes, not a fixed tool-call cadence. On significant sessions (8+ files or 30+ active minutes), the Stop hook instructs the model to call the `session_reflect` MCP tool autonomously. Silent when healthy.
 

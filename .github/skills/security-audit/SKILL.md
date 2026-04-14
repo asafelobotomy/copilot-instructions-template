@@ -1,9 +1,12 @@
 ---
 name: security-audit
 description: Security audit checks (S1–S10) — OWASP Top 10, secret detection, injection patterns, supply chain, shell hardening, deserialization, CVE scan
+compatibility: ">=2.0"
 ---
 
 # Security Audit Checks
+
+> Skill metadata: version "1.0"; license MIT; tags [security, owasp, audit, secrets, vulnerabilities, cve]; compatibility ">=2.0"; recommended tools [codebase, runCommands, fetch, webSearch].
 
 Extracted from the Audit agent for on-demand activation. Load this skill when
 the audit mode includes security checks.

@@ -7,8 +7,8 @@ model:
   - GPT-5.2
   - GPT-5 mini
 tools: [agent, editFiles, codebase, search, runCommands]
-mcp-servers: [filesystem, git, fetch, context7, playwright]
-user-invocable: false
+mcp-servers: [filesystem, git, fetch, context7, playwright, heartbeat]
+user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Researcher', 'Review', 'Explore']
 handoffs:
@@ -45,8 +45,13 @@ Guidelines:
 - Use `Code` when the requested documentation cannot be made truthful without implementation changes.
 - Do not silently change runtime behavior while doing docs-only work.
 - When examples depend on commands or file inventories, verify them against the repo before writing.
+- Use `mcp_heartbeat_spatial_status` when session context or recent diary notes
+  help you avoid duplicating documentation work.
+- When you discover a durable docs-specific insight worth preserving, follow
+  `.copilot/workspace/knowledge/diaries/README.md` and append a concise note to
+  `.copilot/workspace/knowledge/diaries/docs.md` if it is not already recorded.
 
 ## Skill activation map
 
 - Primary: `skill-management`
-- Contextual: `create-adr`
+- Contextual: `create-adr`, `skill-creator`, `compress-prose`

@@ -26,7 +26,7 @@ A single plugin can bundle any combination of:
 | Slash commands | Additional `/` commands in chat |
 | Skills | Agent skills with instructions, scripts, and resources |
 | Agents | Custom agents with specialized personas and tool configurations |
-| Hooks | Shell commands at agent lifecycle points (hook config in `hooks/hooks.json` or `hooks.json`) |
+| Hooks | Shell commands at agent lifecycle points (hook config in `hooks/hooks.json` (Claude format) or `copilot-hooks.json` (Copilot format), or declared in `plugin.json` hooks component) |
 | MCP servers | External tool integrations (config in `.mcp.json` at plugin root, uses `mcpServers` key) |
 
 ## Discovery
@@ -87,7 +87,7 @@ Use the **Agent Debug Panel** (`Developer: Open Agent Debug Panel`) to see exact
 
 Plugins can include hooks that fire at lifecycle events (`SessionStart`, `PreToolUse`, `PostToolUse`, `PreCompact`, `SubagentStart`, `SubagentStop`, `Stop`).
 
-- Hook config location depends on format: `hooks/hooks.json` (Claude format) or `hooks.json` (Copilot format)
+- Hook config location depends on format: `hooks/hooks.json` (Claude format) or `copilot-hooks.json` (Copilot workspace format); for plugins, hooks are declared as a component type in `plugin.json`
 - Use `${CLAUDE_PLUGIN_ROOT}` in hook commands to reference scripts within the plugin directory
 - Plugin hooks are implicitly trusted on install — review before enabling
 - Disabling a plugin also disables its hooks

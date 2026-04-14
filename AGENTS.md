@@ -34,7 +34,7 @@ Keep subagent delegation narrow.
   reports a concrete blocker.
 - Treat each `.github/agents/*.agent.md` `agents:` list as a hard boundary.
 - Add a delegate only when the agent body defines a concrete handoff for it.
-- Prefer the lightest valid handoff: `Explore` for read-only repo scans, `Researcher` for current external docs, `Audit` for residual-risk checks, and `Organise` for structural moves or path fixes.
+- Prefer the lightest valid handoff: `Explore` for read-only repo scans, `Researcher` for current external docs, `Audit` for residual-risk checks, `Docs` for documentation work, `Cleaner` for repo-hygiene cleanup, and `Organise` for structural moves or path fixes.
 
 ## Start specialist requests with scope
 
@@ -86,6 +86,8 @@ invocation.
 | Retrospective | *"Run retrospective"* |
 | Show/build/save tools | *"Show me the toolbox"* / *"Build a tool for ..."* |
 | Skills (create/list/search) | *"Create a skill"* / *"Show my skills"* / *"Find a skill for ..."* |
+| Documentation | *"Write docs"* / *"Update the README"* / *"Draft migration notes"* |
+| Cleanup | *"Clean up repo clutter"* / *"Remove stale files"* / *"Prune caches and archives"* |
 | Test coverage review | *"Review my tests"* / *"Check test coverage"* |
 | MCP (configure/add/list) | *"Configure MCP servers"* / *"Add an MCP server"* |
 | Hooks (configure/list/add) | *"Configure hooks"* / *"Show hooks"* |

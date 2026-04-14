@@ -271,12 +271,13 @@ When spawning subagents:
 - Keep allow-lists narrow. Add a subagent only when the agent body defines a concrete workflow for using it. Do not keep speculative delegates "just in case".
 - Preferred specialist map: `Explore` for read-only repo scans, `Researcher`
   for current external docs, `Review` for formal code review or architectural
-  critique, `Audit` for health, security, or residual-risk checks,
-  `Extensions` for VS Code extension, profile, or workspace recommendation
-  work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for
-  template bootstrap, instruction update, backup restore, or factory restore
-  work, and
-  `Organise` for file moves, path repair, or repository reshaping.
+  critique, `Audit` for health, security, or residual-risk checks, `Docs` for
+  documentation and migration-note work, `Extensions` for VS Code extension,
+  profile, or workspace recommendation work, `Commit` for staging, commits,
+  pushes, tags, or releases, `Setup` for template bootstrap, instruction
+  update, backup restore, or factory restore work, `Organise` for file moves,
+  path repair, or repository reshaping, and `Cleaner` for stale artefact,
+  archive, and cache cleanup.
 - Pass the full contents of this file as system context.
 - Set `max_depth = {{SUBAGENT_MAX_DEPTH}}`. Stop and surface to user if reached.
 - Subagent output must include: files changed, LOC delta, test result, any baseline breaches.

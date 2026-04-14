@@ -8,10 +8,10 @@ model:
   - Claude Sonnet 4.6
   - GPT-5.2
 tools: [agent, codebase, runCommands, githubRepo, fetch, search, webSearch]
-mcp-servers: [filesystem, git, github, fetch, playwright]
+mcp-servers: [filesystem, git, github, fetch, playwright, heartbeat]
 user-invocable: false
 disable-model-invocation: false
-agents: ['Code', 'Setup', 'Researcher', 'Extensions', 'Organise', 'Planner']
+agents: ['Code', 'Setup', 'Researcher', 'Extensions', 'Organise', 'Planner', 'Cleaner']
 handoffs:
   - label: Apply fixes
     agent: Code
@@ -38,10 +38,14 @@ Do not modify any files — diagnosis only. Surface findings and use handoffs fo
 
 - Use `Organise` when the remediation path is mainly directory cleanup, file moves,
   or path repair rather than general implementation.
+- Use `Cleaner` when the remediation path is mainly stale artefact removal,
+  archive pruning, or repo-hygiene cleanup rather than semantic implementation.
 - Use `Extensions` when a finding is specifically about VS Code extension,
   recommendation, or profile configuration rather than general code changes.
 - Use `Planner` when audit findings require a phased, multi-step remediation plan
   before implementation begins.
+- Use `mcp_heartbeat_spatial_status` when the current session state or diary
+  trail would help you understand recent workspace activity before auditing it.
 
 - Apply the Structured Thinking Discipline (§3): run each check sequentially.
   If a check requires data from a prior check, reuse it — do not re-read or

@@ -41,6 +41,7 @@ Recommended effort levels per agent:
 |-------|--------|-----------|
 | coding | High | Complex multi-step implementation needs full reasoning depth |
 | organise | Medium | Structural moves and path repair need planning, but not the full depth of architectural review |
+| cleaner | Medium | Hygiene cleanup needs cautious classification and approval gating without the full depth of implementation work |
 | audit | High | Health checks + vulnerability analysis require thorough reasoning |
 | fast | Low | Speed is the goal; minimal thinking overhead |
 | review | High | Deep architectural analysis requires maximum reasoning |
@@ -79,6 +80,18 @@ Structural cleanup, directory reorganisation, file moves, and path repair.
 
 GPT-5.3-Codex is primary because this role is explicitly agentic and benefits
 from the Copilot base + LTS coding model.
+
+- GPT-5.3-Codex
+- GPT-5.2-Codex
+- Claude Sonnet 4.6
+- GPT-5 mini
+
+## cleaner
+
+Repository hygiene, stale artefact removal, cache and archive pruning, and
+dead-file cleanup. GPT-5.3-Codex is primary because the role is agentic,
+approval-gated, and benefits from strong file reasoning without taking on the
+full breadth of general implementation.
 
 - GPT-5.3-Codex
 - GPT-5.2-Codex

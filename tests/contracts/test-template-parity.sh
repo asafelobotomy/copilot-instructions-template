@@ -56,6 +56,7 @@ echo "2. Mirrorable skills stay in exact sync with their template copies"
 assert_python "skill mirrors remain exact" '
 expected = {
     ".github/skills/commit-preflight/SKILL.md": "template/skills/commit-preflight/SKILL.md",
+    ".github/skills/compress-prose/SKILL.md": "template/skills/compress-prose/SKILL.md",
     ".github/skills/conventional-commit/SKILL.md": "template/skills/conventional-commit/SKILL.md",
     ".github/skills/create-adr/SKILL.md": "template/skills/create-adr/SKILL.md",
     ".github/skills/agentic-workflows/SKILL.md": "template/skills/agentic-workflows/SKILL.md",

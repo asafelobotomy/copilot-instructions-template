@@ -7,6 +7,7 @@ model:
   - GPT-5 mini
   - GPT-4.1
 tools: [agent, codebase, editFiles, runCommands, search]
+mcp-servers: [filesystem, git]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Explore', 'Commit']
@@ -36,6 +37,8 @@ Guidelines:
   handoff button.
 - Do not run the full PDCA cycle for simple edits — just make the change and
   summarise in one line.
+- Use MCP filesystem and git surfaces for low-risk structured lookups when they
+  are cheaper than a shell command, but keep the scope tiny.
 - Use `runCommands` for quick lookups (`wc -l`, `grep`, `ls`) before opening files.
 - Use `search` for fast exact-match or regex lookups when a terminal grep would
   add unnecessary noise.
@@ -43,4 +46,4 @@ Guidelines:
 ## Skill activation map
 
 - Primary: none by default (keep latency minimal)
-- Contextual: `conventional-commit`, `tool-protocol`, `skill-management`
+- Contextual: `conventional-commit`, `tool-protocol`, `skill-management`, `compress-prose`

@@ -28,6 +28,7 @@ Sync command: `bash scripts/sync/sync-models.sh --write`.
 | `setup.agent.md` | Claude Sonnet 4.6 | Medium | Template lifecycle |
 | `coding.agent.md` | GPT-5.3-Codex | High | Implementation |
 | `organise.agent.md` | GPT-5.3-Codex | Medium | Structural cleanup |
+| `cleaner.agent.md` | GPT-5.3-Codex | Medium | Repository hygiene |
 | `review.agent.md` | GPT-5.4 | High | Deep review |
 | `fast.agent.md` | Claude Haiku 4.5 | Low | Quick lookups |
 | `audit.agent.md` | GPT-5.4 | High | Health and security audit |
@@ -61,8 +62,8 @@ Canonical script inventory: `.copilot/workspace/operations/workspace-index.json`
 ## Subagent orchestration
 
 Allow-lists live in `.github/agents/*.agent.md` frontmatter (`agents:` field).
-Max subagent depth: 3. Surfaced coordinators: Setup, Code, Review, Fast, Explore, Commit.
-Hidden specialists: Planner, Docs, Debugger, Audit, Researcher, Extensions, Organise.
+Max subagent depth: 3. Surfaced coordinators: Setup, Code, Review, Fast, Explore, Commit, Docs, Cleaner.
+Hidden specialists: Planner, Debugger, Audit, Researcher, Extensions, Organise.
 
 ## Cross-tool compatibility
 

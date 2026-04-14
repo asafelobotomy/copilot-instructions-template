@@ -8,7 +8,7 @@ model:
   - Gemini 2.5 Pro
   - GPT-5 mini
 tools: [agent, fetch, webSearch, codebase, search, editFiles, runCommands]
-mcp-servers: [fetch, context7, filesystem, github, playwright]
+mcp-servers: [fetch, context7, filesystem, github, playwright, heartbeat]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Audit', 'Explore', 'Docs', 'Planner']
@@ -117,6 +117,11 @@ One-paragraph executive summary.
   rather than a standalone research report.
 - Use `Planner` when research output reveals a complex implementation that
   benefits from a scoped execution plan before handing off to Code.
+- Use `mcp_heartbeat_spatial_status` when recent session activity or diary notes
+  would help you avoid duplicating research already gathered in this workspace.
+- When you discover a durable research insight worth preserving, follow
+  `.copilot/workspace/knowledge/diaries/README.md` and append a concise note to
+  `.copilot/workspace/knowledge/diaries/researcher.md` if it is not already recorded.
 
 ---
 
@@ -133,4 +138,4 @@ One-paragraph executive summary.
 
 - Primary: `skill-management`
 - Contextual: `create-adr`
-- Contextual: `mcp-management`, `plugin-management`, `agentic-workflows`
+- Contextual: `mcp-management`, `plugin-management`, `agentic-workflows`, `mcp-builder`

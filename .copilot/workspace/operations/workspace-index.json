@@ -4,10 +4,10 @@
   "updated": "2026-04-14",
   "purpose": "Canonical machine-readable inventory for repository metadata.",
   "counts": {
-    "agents": 13,
+    "agents": 14,
     "agentSupportFiles": 1,
-    "skillsRepo": 17,
-    "skillsTemplate": 17,
+    "skillsRepo": 18,
+    "skillsTemplate": 18,
     "hookScriptsShell": 11,
     "hookScriptsPowerShell": 12,
     "hookScriptsPython": 8,
@@ -26,7 +26,8 @@
     "commit.agent.md",
     "debugger.agent.md",
     "docs.agent.md",
-    "planner.agent.md"
+    "planner.agent.md",
+    "cleaner.agent.md"
   ],
   "agentSupportFiles": [
     "routing-manifest.json"
@@ -49,7 +50,8 @@
       "extension-review",
       "test-coverage-review",
       "commit-preflight",
-      "security-audit"
+      "security-audit",
+      "compress-prose"
     ],
     "template": [
       "skill-creator",
@@ -68,7 +70,8 @@
       "extension-review",
       "test-coverage-review",
       "commit-preflight",
-      "security-audit"
+      "security-audit",
+      "compress-prose"
     ]
   },
   "prompts": [

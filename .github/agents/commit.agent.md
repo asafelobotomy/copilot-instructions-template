@@ -10,7 +10,7 @@ tools: [agent, editFiles, runCommands, codebase, githubRepo, askQuestions]
 mcp-servers: [filesystem, git, gitkraken, github]
 user-invocable: true
 disable-model-invocation: false
-agents: ['Code', 'Review', 'Audit', 'Debugger', 'Organise']
+agents: ['Code', 'Review', 'Audit', 'Debugger', 'Organise', 'Cleaner']
 handoffs:
   - label: Review before committing
     agent: Review
@@ -75,6 +75,8 @@ to widen the fix scope beyond the proposed commit.
 10. Use `Organise` when branch cleanup or file restructuring is needed before
     committing — for example, renaming files, moving directories, or fixing
     broken paths that block a clean commit.
+11. Use `Cleaner` when stale caches, generated artefacts, archive debris, or
+    dead files should be removed before the commit scope is clean.
 
 Before entering the commit or push workflow, confirm the change has a task brief.
 Use the user's request, approved file scope, or `/memories/session/plan.md` when

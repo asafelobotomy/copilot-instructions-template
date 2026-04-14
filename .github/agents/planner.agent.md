@@ -7,7 +7,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5.2
 tools: [agent, codebase, search, runCommands]
-mcp-servers: [filesystem, git]
+mcp-servers: [filesystem, git, heartbeat]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Explore', 'Researcher', 'Debugger', 'Docs']
@@ -49,6 +49,8 @@ Guidelines:
 - Use `Debugger` when the planning surface reveals existing failures that must be diagnosed before the plan can be reliable.
 - Use `Docs` when the plan output should be persisted as a structured guide or ADR.
 - Use `Code` only after the plan is concrete enough to implement without widening scope.
+- Use `mcp_heartbeat_spatial_status` when recent session state or diary context
+  would sharpen the plan or reduce duplicated work.
 - Do not pad the plan with generic best practices. Keep it executable.
 
 ## Skill activation map

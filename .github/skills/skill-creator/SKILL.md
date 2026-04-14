@@ -30,9 +30,7 @@ Create a new agent skill that follows the [Agent Skills](https://agentskills.io)
    ---
    name: <kebab-name>
    description: <one precise sentence - this is how the agent discovers the skill>
-   metadata:
-     author: <org or user>
-     version: "1.0"
+   compatibility: ">=<current template version>"
    ---
    ```
 

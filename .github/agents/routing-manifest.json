@@ -330,7 +330,7 @@
       "name": "Docs",
       "summary": "Documentation specialist",
       "route": "active",
-      "visibility": "internal",
+      "visibility": "picker-visible",
       "min_prompt_confidence": 0.76,
       "min_behavior_confidence": 0.76,
       "min_behavior_events": 1,
@@ -353,6 +353,38 @@
         ],
         "path_patterns": [
           "\\.md$"
+        ]
+      }
+    },
+    {
+      "name": "Cleaner",
+      "summary": "Repository hygiene and artefact-cleanup specialist",
+      "route": "active",
+      "visibility": "picker-visible",
+      "min_prompt_confidence": 0.78,
+      "min_behavior_confidence": 0.78,
+      "min_behavior_events": 1,
+      "cooldown_seconds": 1200,
+      "hint": "Routing hint: Cleaner specialist fits this repo-hygiene, cache-pruning, or stale-artefact cleanup workflow.",
+      "prompt_patterns": [
+        "\\bclean up (?:repo|repository|workspace)\\b",
+        "\\bremove stale files?\\b",
+        "\\bprune (?:caches?|archives?)\\b",
+        "\\brepo hygiene\\b",
+        "\\bdelete old (?:files?|artifacts?)\\b",
+        "\\btidy old artefacts?\\b"
+      ],
+      "suppress_patterns": [
+        "\\b(implement|feature|bugfix|refactor|write tests?|review|audit|docs?|documentation|readme|plan|root cause|debug(?:ger)?|stage(?: and)? commit|push(?: my changes| to origin)?)\\b"
+      ],
+      "behavior": {
+        "tool_names": [
+          "run_in_terminal",
+          "runCommands",
+          "editFiles"
+        ],
+        "command_patterns": [
+          "\\b(?:git\\s+clean|rm\\s+-rf|find\\s+[^\\n]+-delete)\\b"
         ]
       }
     },

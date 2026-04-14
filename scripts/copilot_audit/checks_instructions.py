@@ -18,10 +18,12 @@ DEVELOPER_DELEGATION_POLICY_SNIPPETS = (
     "`Researcher` for current external docs",
     "`Review` for formal code review or architectural critique",
     "`Audit` for health, security, or residual-risk checks",
+    "`Docs` for documentation and migration-note work",
     "`Extensions` for VS Code extension, profile, or workspace recommendation",
     "`Commit` for staging, commits, pushes, tags, or releases",
     "`Setup` for template bootstrap, instruction update, backup restore, or factory restore",
     "`Organise` for file moves, path repair, or repository reshaping",
+    "`Cleaner` for stale artefact, archive, and cache cleanup",
 )
 
 CONSUMER_DELEGATION_POLICY_SNIPPETS = (
@@ -34,10 +36,12 @@ CONSUMER_DELEGATION_POLICY_SNIPPETS = (
     "`Researcher` for current external docs",
     "`Review` for formal code review or architectural critique",
     "`Audit` for health, security, or residual-risk checks",
+    "`Docs` for documentation and migration-note work",
     "`Extensions` for VS Code extension, profile, or workspace recommendation",
     "`Commit` for staging, commits, pushes, tags, or releases",
     "`Setup` for template bootstrap, instruction update, backup restore, or factory restore",
     "`Organise` for file moves, path repair, or repository reshaping",
+    "`Cleaner` for stale artefact, archive, and cache cleanup",
 )
 
 

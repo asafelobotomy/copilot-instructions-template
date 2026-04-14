@@ -76,7 +76,7 @@ MD
 
 mutate_i1_backtick_placeholder() {
   append_sandbox_file ".github/copilot-instructions.md" <<'MD'
-Contains \`{{PLACEHOLDER}}\` tokens — purely descriptive.
+Contains `{{PLACEHOLDER}}` tokens — purely descriptive.
 MD
 }
 
@@ -140,7 +140,7 @@ Sandbox Owner Sandbox Python
 The parent/default agent follows this protocol too: if a request matches a named specialist workflow, delegate to the matching agent instead of absorbing the specialist workflow inline.
 Do not keep specialist work inline because it seems small, quick, or manageable.
 Trust the selected specialist to complete the task unless you know it is outside the specialist scope, allow-list, or capabilities, or the specialist reports a concrete blocker.
-Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for current external docs, `Review` for formal code review or architectural critique, `Audit` for health, security, or residual-risk checks, `Extensions` for VS Code extension, profile, or workspace recommendation work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for template bootstrap, instruction update, backup restore, or factory restore work, and `Organise` for file moves, path repair, or repository reshaping.
+Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for current external docs, `Review` for formal code review or architectural critique, `Audit` for health, security, or residual-risk checks, `Docs` for documentation and migration-note work, `Extensions` for VS Code extension, profile, or workspace recommendation work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for template bootstrap, instruction update, backup restore, or factory restore work, `Organise` for file moves, path repair, or repository reshaping, and `Cleaner` for stale artefact, archive, and cache cleanup.
 MD
 
   mkdir -p "$SANDBOX/.github/workflows"
@@ -630,7 +630,7 @@ echo "6. A4: missing required delegate triggers HIGH"
 run_audit_case json mutate_a4_missing_delegate
 assert_failure "exits non-zero" "$CASE_STATUS"
 assert_contains "A4 HIGH" "$CASE_OUTPUT" '"check_id": "A4"'
-assert_contains "A4 missing delegate" "$CASE_OUTPUT" 'Missing required delegate(s): Commit'
+assert_contains "A4 missing delegate" "$CASE_OUTPUT" 'Missing required delegate(s): Cleaner, Commit'
 echo ""
 
 # ── 7. I1 — developer file has placeholder ───────────────────────────────────
@@ -733,6 +733,7 @@ echo ""
 echo "19. H2: missing PowerShell hook script triggers WARN"
 run_audit_case json mutate_h2_missing_powershell_script
 assert_success "exits 0 on WARN-only H2" "$CASE_STATUS"
+assert_contains "H2 WARN-only is DEGRADED" "$CASE_OUTPUT" '"status": "DEGRADED"'
 assert_contains "H2 reports missing PowerShell script" "$CASE_OUTPUT" 'missing-session-start.ps1'
 echo ""
 
@@ -757,6 +758,7 @@ echo ""
 echo "20. VS1: invalid customization paths in settings.json trigger WARN"
 run_audit_case json mutate_vs1_invalid_settings_paths
 assert_success "VS1 WARN-only still exits 0" "$CASE_STATUS"
+assert_contains "VS1 WARN-only is DEGRADED" "$CASE_OUTPUT" '"status": "DEGRADED"'
 assert_contains "VS1 reports missing plugin path" "$CASE_OUTPUT" 'chat.pluginLocations entry not found'
 assert_contains "VS1 reports missing instructions path" "$CASE_OUTPUT" 'chat.instructionsFilesLocations entry not found'
 echo ""

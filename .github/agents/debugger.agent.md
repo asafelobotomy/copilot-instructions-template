@@ -7,7 +7,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5.2
 tools: [agent, codebase, search, runCommands]
-mcp-servers: [filesystem, git, fetch, context7, playwright]
+mcp-servers: [filesystem, git, fetch, context7, playwright, heartbeat]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Researcher', 'Audit', 'Planner']
@@ -39,6 +39,8 @@ Guidelines:
 - Use `Audit` when the likely cause involves security posture, secrets, shell hardening, or unsafe configuration.
 - Use `Code` only after the diagnosis is specific enough to implement without guessing.
 - Use `Planner` when the diagnosis reveals a multi-component fix that benefits from a scoped execution plan before implementation begins.
+- Use `mcp_heartbeat_spatial_status` when recent session state or diary context
+  would help narrow the failing slice before reproduction.
 - Do not mix diagnosis with broad refactoring.
 
 ## Skill activation map
