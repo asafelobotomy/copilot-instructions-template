@@ -13,7 +13,7 @@
 # defense-in-depth.
 set -euo pipefail
 
-# shellcheck source=.github/hooks/scripts/lib-hooks.sh
+# shellcheck source=hooks/scripts/lib-hooks.sh
 source "$(dirname "$0")/lib-hooks.sh"
 
 INPUT=$(cat)
@@ -24,6 +24,15 @@ if [[ "$TOOL_NAME" != *"terminal"* && "$TOOL_NAME" != *"command"* && "$TOOL_NAME
   echo '{"continue": true}'
   exit 0
 fi
+
+# Read-only terminal observation tools — never execute commands, always allow
+# get_terminal_output / getTerminalOutput only reads stdout from an existing session
+case "${TOOL_NAME,,}" in
+  *get_terminal_output*|*getterminaloutput*|*terminal_last_command*|*terminalselection*)
+    echo '{"continue": true}'
+    exit 0
+    ;;
+esac
 
 # python3 is required to parse tool_input JSON reliably.
 # Without it, TOOL_INPUT would be empty and all patterns would pass unchecked.

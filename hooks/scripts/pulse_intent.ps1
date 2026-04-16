@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 $phaseOrder = @('quiet', 'orienting', 'focused', 'widening', 'consolidating', 'reflective')
 $sensitiveFamilies = @('manifest', 'config', 'hook', 'agent', 'memory', 'ci_release')
 $verificationFamilies = @('runtime', 'hook', 'config', 'manifest', 'ci_release')

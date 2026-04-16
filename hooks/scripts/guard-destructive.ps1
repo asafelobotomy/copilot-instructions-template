@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 # purpose:  Block dangerous terminal commands before execution
 # when:     PreToolUse hook — fires before the agent invokes any tool
 # inputs:   JSON via stdin with tool_name and tool_input
@@ -5,7 +6,8 @@
 # risk:     safe
 # ESCALATION: ask
 
-$ErrorActionPreference = 'SilentlyContinue'
+Set-StrictMode -Version 1
+$ErrorActionPreference = 'Continue'
 $input_json = $input | Out-String
 
 try {
@@ -20,7 +22,11 @@ $toolName = $data.tool_name ?? ''
 if ($toolName -notmatch 'terminal|command|bash|shell') {
     '{"continue": true}'; exit 0
 }
-
+# Read-only terminal observation tools — never execute commands, always allow
+# get_terminal_output / getTerminalOutput only reads stdout from an existing session
+if ($toolName -imatch 'get_terminal_output|getterminaloutput|terminal_last_command|terminalselection') {
+    '{"continue": true}'; exit 0
+}
 $ti = $data.tool_input
 $command = ''
 if ($null -ne $ti -and $ti.command -is [string]) {

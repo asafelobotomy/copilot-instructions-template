@@ -40,6 +40,7 @@ fi
 
 # Resolve workspace root for boundary checks
 WORKSPACE_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
+LINT_NOTES=""
 
 while IFS= read -r filepath; do
   [[ -z "$filepath" ]] && continue
@@ -53,30 +54,35 @@ while IFS= read -r filepath; do
   esac
 
   EXT="${filepath##*.}"
+  _fmt_err=""
   case "$EXT" in
     js|jsx|ts|tsx|mjs|cjs)
       if command -v npx &>/dev/null && [[ -f node_modules/.bin/prettier ]]; then
-        npx prettier --write "$filepath" 2>/dev/null || true
+        _fmt_err=$(npx prettier --write "$filepath" 2>&1) || LINT_NOTES+="[prettier:${filepath}] ${_fmt_err} "
       fi
       ;;
     py)
       if command -v black &>/dev/null; then
-        black --quiet "$filepath" 2>/dev/null || true
+        _fmt_err=$(black --quiet "$filepath" 2>&1) || LINT_NOTES+="[black:${filepath}] ${_fmt_err} "
       elif command -v ruff &>/dev/null; then
-        ruff format "$filepath" 2>/dev/null || true
+        _fmt_err=$(ruff format "$filepath" 2>&1) || LINT_NOTES+="[ruff:${filepath}] ${_fmt_err} "
       fi
       ;;
     rs)
       if command -v rustfmt &>/dev/null; then
-        rustfmt "$filepath" 2>/dev/null || true
+        _fmt_err=$(rustfmt "$filepath" 2>&1) || LINT_NOTES+="[rustfmt:${filepath}] ${_fmt_err} "
       fi
       ;;
     go)
       if command -v gofmt &>/dev/null; then
-        gofmt -w "$filepath" 2>/dev/null || true
+        _fmt_err=$(gofmt -w "$filepath" 2>&1) || LINT_NOTES+="[gofmt:${filepath}] ${_fmt_err} "
       fi
       ;;
   esac
 done <<< "$FILES"
 
-echo '{"continue": true}'
+if [[ -n "$LINT_NOTES" ]]; then
+  python3 -c "import sys,json; print(json.dumps({'continue':True,'additionalContext':sys.argv[1]}))" "$LINT_NOTES"
+else
+  echo '{"continue": true}'
+fi

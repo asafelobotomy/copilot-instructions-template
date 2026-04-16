@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 # purpose:  Inject project context into every new agent session
 # when:     SessionStart hook — fires when a new agent session begins
 # inputs:   JSON via stdin (common hook fields)
@@ -5,7 +6,11 @@
 # risk:     safe
 # ESCALATION: none
 
-$ErrorActionPreference = 'SilentlyContinue'
+Set-StrictMode -Version 1
+$ErrorActionPreference = 'Continue'
+
+# Consume stdin per hook stdio protocol (SessionStart payload, not used but must be drained)
+$input_json = $input | Out-String
 
 # Detect operating system
 if ($IsLinux) {
@@ -85,9 +90,14 @@ if (Test-Path '.copilot/workspace/operations/HEARTBEAT.md') {
 }
 
 $routingRoster = 'specialists: Code, Review, Fast, Audit, Commit, Explore | internal: Organise, Extensions, Researcher, Planner, Docs, Debugger | guarded: Setup'
-if (Test-Path '.github/agents/routing-manifest.json') {
+$_manifestPath = if (Test-Path 'agents/routing-manifest.json') {
+  'agents/routing-manifest.json'
+} elseif (Test-Path '.github/agents/routing-manifest.json') {
+  '.github/agents/routing-manifest.json'
+} else { $null }
+if ($null -ne $_manifestPath) {
     try {
-        $manifest = Get-Content '.github/agents/routing-manifest.json' -Raw | ConvertFrom-Json -AsHashtable
+        $manifest = Get-Content $_manifestPath -Raw | ConvertFrom-Json -AsHashtable
         $direct = New-Object System.Collections.Generic.List[string]
         $internal = New-Object System.Collections.Generic.List[string]
         $guarded = New-Object System.Collections.Generic.List[string]

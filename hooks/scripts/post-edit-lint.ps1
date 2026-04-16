@@ -1,10 +1,12 @@
+#!/usr/bin/env pwsh
 # purpose:  Auto-format files after agent edits them
 # when:     PostToolUse hook — fires after a tool completes successfully
 # inputs:   JSON via stdin with tool_name and tool_input
 # outputs:  JSON with additionalContext if lint errors found
 # risk:     safe
 
-$ErrorActionPreference = 'SilentlyContinue'
+Set-StrictMode -Version 1
+$ErrorActionPreference = 'Continue'
 $input_json = $input | Out-String
 
 try {
@@ -35,6 +37,8 @@ if ($files.Count -eq 0) {
     '{"continue": true}'; exit 0
 }
 
+$lintNotes = ''
+
 foreach ($filepath in $files) {
     if (-not $filepath -or -not (Test-Path $filepath)) { continue }
 
@@ -50,27 +54,37 @@ foreach ($filepath in $files) {
     switch ($ext) {
         { $_ -in 'js','jsx','ts','tsx','mjs','cjs' } {
             if ((Get-Command npx -ErrorAction SilentlyContinue) -and (Test-Path 'node_modules/.bin/prettier')) {
-                npx prettier --write $filepath 2>$null | Out-Null
+                $fmtOut = npx prettier --write $filepath 2>&1
+                if ($LASTEXITCODE -ne 0) { $lintNotes += "[prettier:${filepath}] $($fmtOut -join ' ') " }
             }
         }
         'py' {
             if (Get-Command black -ErrorAction SilentlyContinue) {
-                black --quiet $filepath 2>$null | Out-Null
+                $fmtOut = black --quiet $filepath 2>&1
+                if ($LASTEXITCODE -ne 0) { $lintNotes += "[black:${filepath}] $($fmtOut -join ' ') " }
             } elseif (Get-Command ruff -ErrorAction SilentlyContinue) {
-                ruff format $filepath 2>$null | Out-Null
+                $fmtOut = ruff format $filepath 2>&1
+                if ($LASTEXITCODE -ne 0) { $lintNotes += "[ruff:${filepath}] $($fmtOut -join ' ') " }
             }
         }
         'rs' {
             if (Get-Command rustfmt -ErrorAction SilentlyContinue) {
-                rustfmt $filepath 2>$null | Out-Null
+                $fmtOut = rustfmt $filepath 2>&1
+                if ($LASTEXITCODE -ne 0) { $lintNotes += "[rustfmt:${filepath}] $($fmtOut -join ' ') " }
             }
         }
         'go' {
             if (Get-Command gofmt -ErrorAction SilentlyContinue) {
-                gofmt -w $filepath 2>$null | Out-Null
+                $fmtOut = gofmt -w $filepath 2>&1
+                if ($LASTEXITCODE -ne 0) { $lintNotes += "[gofmt:${filepath}] $($fmtOut -join ' ') " }
             }
         }
     }
 }
 
-'{"continue": true}'
+if ($lintNotes) {
+    $escaped = $lintNotes.Trim() -replace '\\', '\\' -replace '"', '\"'
+    "{`"continue`": true, `"additionalContext`": `"$escaped`"}"
+} else {
+    '{"continue": true}'
+}

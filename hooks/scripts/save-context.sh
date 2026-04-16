@@ -7,7 +7,7 @@
 # ESCALATION: none
 set -euo pipefail
 
-# shellcheck source=.github/hooks/scripts/lib-hooks.sh
+# shellcheck source=hooks/scripts/lib-hooks.sh
 source "$(dirname "$0")/lib-hooks.sh"
 
 INPUT_JSON=$(cat 2>/dev/null || echo "")

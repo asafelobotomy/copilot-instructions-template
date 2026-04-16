@@ -8,17 +8,9 @@ This file is read by AI agents (GitHub Copilot and compatible agents) to underst
 
 ### Setup and update
 
-Use the setup and update entries from the canonical trigger table below.
+The Setup agent handles first-time setup, updates, backup restore, and factory restore as a unified interactive wizard.
 
-...the Setup agent handles both first-time setup and updates. It auto-detects
-which mode to use based on whether `.github/copilot-instructions.md` exists.
-
-For first-time setup, follow [SETUP.md](SETUP.md) exactly.
-For updates, backup restore, or factory restore, follow [UPDATE.md](UPDATE.md) exactly.
-Use the upstream manifests inventory at
-[template/setup/manifests.md](https://github.com/asafelobotomy/copilot-instructions-template/blob/main/template/setup/manifests.md#protocol-sources)
-as the canonical supporting-source inventory instead of restating fetch lists
-here.
+Use the canonical trigger phrases below. The Setup agent runs inside VS Code and uses interactive ask_questions blocks to guide users through personalization. It does not fetch external files — the plugin delivers all necessary template assets at installation time.
 
 ## Delegation policy
 
@@ -51,18 +43,23 @@ trigger design is wrong.
 
 ## Canonical protocol sources
 
-- First-time setup behaviour: [SETUP.md](SETUP.md)
-- Update, backup restore, and factory restore behaviour: [UPDATE.md](UPDATE.md)
-- Supporting upstream source inventory: [template/setup/manifests.md](https://github.com/asafelobotomy/copilot-instructions-template/blob/main/template/setup/manifests.md#protocol-sources)
-- Canonical inventory and counts: `.copilot/workspace/operations/workspace-index.json`
+- **Plugin installation**: The template is installed as a VS Code Agent Plugin via `Chat: Install Plugin` or by searching "copilot-instructions-template" in Extensions → Plugin Marketplace.
+- **Setup wizard**: The Setup agent (`agents/setup.agent.md`) runs the personalization flow after plugin installation.
+- **Agent source location**: `${CLAUDE_PLUGIN_ROOT}/agents/` (plugin-scoped; downloaded at install time).
+- **Consumer installation location**: `${workspaceFolder}/.github/agents/` (personalised agents copied by Setup wizard).
+- **Canonical inventory**: `.copilot/workspace/operations/workspace-index.json` (developer workspace) or `template/workspace/operations/workspace-index.json` (template baseline).
 
 ## Consumer-Only Files
 
-These files are created in the consumer project during setup, not in this template repo:
+These files are created in the consumer project during the Setup wizard personalization, not in this template repo. Paths marked *(all-local only)* are skipped when the corresponding surface is plugin-managed.
 
 | Path | Role |
 |------|------|
-| `.github/copilot-version.md` | Installed template version number (semver) + per-section fingerprints |
+| `.github/copilot-instructions.md` | Installed developer instructions (from `agents/setup.agent.md` template with project-specific values) |
+| `.github/agents/` | Personalised model-pinned agents *(all-local only)* |
+| `.github/skills/` | Personalised skills *(all-local only)* |
+| `.github/hooks/` | Personalised hook scripts and config *(all-local only)* |
+| `.github/copilot-version.md` | Installed template version number (semver) + per-section fingerprints + ownership mode |
 | `.copilot/tools/INDEX.md` | Toolbox catalogue (created on first tool save) |
 | `.github/starter-kits/<kit>/` | Stack-specific starter-kit plugin (installed during setup if stack matches) |
 
@@ -77,7 +74,7 @@ invocation.
 
 | Action | Trigger phrase |
 |--------|----------------|
-| First-time setup | *"Setup from asafelobotomy/copilot-instructions-template"* |
+| First-time setup | *"Setup from asafelobotomy/copilot-instructions-template"* or *"Install the copilot-instructions-template plugin"* or *"Set up this project"* |
 | Update instructions | *"Update your instructions"* / *"Check for instruction updates"* / *"Update from copilot-instructions-template"* / *"Sync instructions with the template"* / *"Check the template for updates"* |
 | Force update check | *"Force check instruction updates"* |
 | Restore backup | *"Restore instructions from backup"* |

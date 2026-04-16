@@ -7,7 +7,10 @@
 # ESCALATION: none
 set -euo pipefail
 
-# shellcheck source=.github/hooks/scripts/lib-hooks.sh
+# Consume stdin per hook stdio protocol (SessionStart payload, not used but must be drained)
+INPUT=$(cat)
+
+# shellcheck source=hooks/scripts/lib-hooks.sh
 source "$(dirname "$0")/lib-hooks.sh"
 
 # Detect operating system and distro
@@ -107,7 +110,9 @@ default = {
   ]
 }
 
-manifest_path = Path('.github/agents/routing-manifest.json')
+manifest_path = Path('agents/routing-manifest.json')
+if not manifest_path.exists():
+  manifest_path = Path('.github/agents/routing-manifest.json')
 try:
   data = json.loads(manifest_path.read_text(encoding='utf-8')) if manifest_path.exists() else default
 except Exception:

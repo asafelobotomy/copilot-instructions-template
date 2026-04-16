@@ -1,0 +1,15 @@
+{
+  "name": "copilot-instructions-template",
+  "description": "Lean/Kaizen GitHub Copilot instruction template — model-pinned agents, reusable skills, lifecycle hooks, MCP configuration, and a post-install Setup wizard for workspace personalisation.",
+  "version": "0.6.0",
+  "author": {
+    "name": "asafelobotomy"
+  },
+  "license": "MIT",
+  "keywords": ["copilot", "agents", "skills", "lean", "kaizen", "productivity", "workflow"],
+  "category": "productivity",
+  "agents": "agents",
+  "skills": "skills",
+  "hooks": "hooks/hooks.json",
+  "mcpServers": ".mcp.json"
+}

@@ -1,0 +1,98 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/session-start.sh",
+        "windows": "powershell -File ${CLAUDE_PLUGIN_ROOT}\\hooks\\scripts\\session-start.ps1",
+        "timeout": 10
+      },
+      {
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pulse.sh --trigger session_start",
+        "windows": "powershell -File ${CLAUDE_PLUGIN_ROOT}\\hooks\\scripts\\pulse.ps1 -Trigger session_start",
+        "timeout": 5
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pulse.sh --trigger user_prompt",
+        "windows": "powershell -File ${CLAUDE_PLUGIN_ROOT}\\hooks\\scripts\\pulse.ps1 -Trigger user_prompt",
+        "timeout": 3
+      }
+    ],
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-destructive.sh",
+        "windows": "powershell -File ${CLAUDE_PLUGIN_ROOT}\\hooks\\scripts\\guard-destructive.ps1",
+        "timeout": 5
+      },
+      {
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pulse.sh --trigger pre_tool",
+        "windows": "powershell -File ${CLAUDE_PLUGIN_ROOT}\\hooks\\scripts\\pulse.ps1 -Trigger pre_tool",
+        "timeout": 4
+      }
+    ],
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/post-edit-lint.sh",
+        "windows": "powershell -File ${CLAUDE_PLUGIN_ROOT}\\hooks\\scripts\\post-edit-lint.ps1",
+        "timeout": 30
+      },
+      {
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pulse.sh --trigger soft_post_tool",
+        "windows": "powershell -File ${CLAUDE_PLUGIN_ROOT}\\hooks\\scripts\\pulse.ps1 -Trigger soft_post_tool",
+        "timeout": 5
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pulse.sh --trigger stop",
+        "windows": "powershell -File ${CLAUDE_PLUGIN_ROOT}\\hooks\\scripts\\pulse.ps1 -Trigger stop",
+        "timeout": 5
+      },
+      {
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/scan-secrets.sh",
+        "windows": "powershell -File ${CLAUDE_PLUGIN_ROOT}\\hooks\\scripts\\scan-secrets.ps1",
+        "timeout": 30
+      }
+    ],
+    "PreCompact": [
+      {
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/save-context.sh",
+        "windows": "powershell -File ${CLAUDE_PLUGIN_ROOT}\\hooks\\scripts\\save-context.ps1",
+        "timeout": 10
+      },
+      {
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/pulse.sh --trigger compaction",
+        "windows": "powershell -File ${CLAUDE_PLUGIN_ROOT}\\hooks\\scripts\\pulse.ps1 -Trigger compaction",
+        "timeout": 5
+      }
+    ],
+    "SubagentStart": [
+      {
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/subagent-start.sh",
+        "windows": "powershell -File ${CLAUDE_PLUGIN_ROOT}\\hooks\\scripts\\subagent-start.ps1",
+        "timeout": 5
+      }
+    ],
+    "SubagentStop": [
+      {
+        "type": "command",
+        "command": "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/subagent-stop.sh",
+        "windows": "powershell -File ${CLAUDE_PLUGIN_ROOT}\\hooks\\scripts\\subagent-stop.ps1",
+        "timeout": 5
+      }
+    ]
+  }
+}

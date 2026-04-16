@@ -248,7 +248,7 @@ def route_roster_text(manifest: dict) -> str:
             internal.append(name)
     parts = []
     if direct:
-        parts.append("specialists: " + ", ".join(direct))
+        parts.append(", ".join(direct))
     if internal:
         parts.append("internal: " + ", ".join(internal))
     if guarded:

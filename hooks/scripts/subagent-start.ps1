@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 # purpose:  Inject subagent governance context and diary summary when a subagent is spawned
 # when:     SubagentStart hook — fires before a subagent begins work
 # inputs:   JSON via stdin with subagent details

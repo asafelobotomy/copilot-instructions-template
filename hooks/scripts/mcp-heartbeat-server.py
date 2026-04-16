@@ -12,6 +12,7 @@ Transport: stdio  |  Run: uvx --from "mcp[cli]" mcp run <this-file>
 """
 from __future__ import annotations
 
+import datetime
 import json
 import os
 import pwd
@@ -33,7 +34,17 @@ except ImportError:  # pragma: no cover - Windows does not provide fcntl.
 
 
 def _find_workspace_root() -> Path:
-    """Detect the git repository root (works regardless of cwd)."""
+    """Detect the git repository root.
+
+    Resolution order:
+    1. HEARTBEAT_WORKSPACE env var (set by MCP config for deterministic cwd-independent launch)
+    2. ``git rev-parse --show-toplevel`` from cwd
+    3. Walk up cwd looking for ``.copilot/workspace``
+    4. cwd fallback
+    """
+    explicit = os.environ.get("HEARTBEAT_WORKSPACE")
+    if explicit:
+        return Path(explicit)
     try:
         result = subprocess.run(
             ["git", "rev-parse", "--show-toplevel"],
@@ -45,6 +56,14 @@ def _find_workspace_root() -> Path:
             return Path(result.stdout.strip())
     except Exception:
         pass
+    # Walk upward from cwd looking for the workspace marker directory
+    anchor = Path.cwd()
+    for _ in range(8):
+        if (anchor / ".copilot" / "workspace").exists():
+            return anchor
+        if anchor.parent == anchor:
+            break
+        anchor = anchor.parent
     return Path.cwd()
 
 
@@ -53,6 +72,7 @@ WORKSPACE = ROOT / ".copilot" / "workspace"
 STATE_PATH = WORKSPACE / "runtime/state.json"
 EVENTS_PATH = WORKSPACE / "runtime/.heartbeat-events.jsonl"
 SENTINEL_PATH = WORKSPACE / "runtime/.heartbeat-session"
+HEARTBEAT_MD_PATH = WORKSPACE / "operations/HEARTBEAT.md"
 
 
 def _fallback_artifact_roots() -> list[Path]:
@@ -426,6 +446,8 @@ def session_reflect() -> dict:
     _append_event("session_reflect", "complete", session_id=str(session_id))
     _set_sentinel_complete(session_id)
 
+    today = datetime.date.today().isoformat()
+    short_id = str(session_id)[:16]
     return {
         "magnitude": magnitude,
         "metrics": {
@@ -438,6 +460,11 @@ def session_reflect() -> dict:
         "reflection_prompts": prompts,
         "memory_protocol": "See §14 Alignment Protocol.",
         "workspace_state": ws,
+        "heartbeat_record": {
+            "file": str(HEARTBEAT_MD_PATH),
+            "instruction": "Append to ## History (keep last 5); set Result (PASS/WARN/FAIL) and Actions taken.",
+            "row_template": f"| {today} | {short_id} | session_reflect | PASS | <actions taken> |",
+        },
     }
 
 

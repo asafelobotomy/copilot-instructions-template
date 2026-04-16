@@ -14,9 +14,10 @@
       "cooldown_seconds": 3600,
       "require_prompt_and_behavior": true,
       "block_in_template_repo": true,
-      "hint": "Routing hint: Setup specialist fits this lifecycle-only setup/update/restore flow.",
+      "hint": "Routing hint: Setup specialist — lifecycle setup/update/restore.",
       "prompt_patterns": [
         "setup from asafelobotomy/copilot-instructions-template",
+        "\\bset up this project\\b",
         "\\bupdate your instructions\\b",
         "\\bcheck for instruction updates\\b",
         "\\brestore instructions from backup\\b",
@@ -50,7 +51,7 @@
       "min_behavior_events": 1,
       "cooldown_seconds": 1200,
       "require_prompt_and_behavior": true,
-      "hint": "Routing hint: Code specialist fits this multi-step implementation or refactor workflow.",
+      "hint": "Routing hint: Code specialist — implementation or refactor.",
       "prompt_patterns": [
         "\\bimplement\\b",
         "\\brefactor\\b",
@@ -81,7 +82,7 @@
       "min_behavior_confidence": 0.78,
       "min_behavior_events": 1,
       "cooldown_seconds": 1200,
-      "hint": "Routing hint: Organise specialist fits this file-move, path-fix, or repository-reshape workflow.",
+      "hint": "Routing hint: Organise specialist — file-move, path-fix, or repo-reshape.",
       "prompt_patterns": [
         "\\b(?:organize|organise|reorganize|reorganise)\\b",
         "\\bmove files?\\b",
@@ -109,7 +110,7 @@
       "min_behavior_confidence": 0.78,
       "min_behavior_events": 1,
       "cooldown_seconds": 1200,
-      "hint": "Routing hint: Review specialist fits this formal code-review or architecture-critique workflow.",
+      "hint": "Routing hint: Review specialist — code review or architecture critique.",
       "prompt_patterns": [
         "\\breview\\b",
         "\\bcode review\\b",
@@ -134,7 +135,7 @@
       "min_behavior_events": 1,
       "cooldown_seconds": 900,
       "require_prompt_and_behavior": true,
-      "hint": "Routing hint: Fast specialist fits this quick-question or lightweight single-file workflow.",
+      "hint": "Routing hint: Fast specialist — quick question or single-file edit.",
       "prompt_patterns": [
         "\\bquick question\\b",
         "\\bsyntax lookup\\b",
@@ -163,7 +164,7 @@
       "min_behavior_confidence": 0.8,
       "min_behavior_events": 1,
       "cooldown_seconds": 1800,
-      "hint": "Routing hint: Audit specialist fits this health-check, security, or residual-risk assessment flow.",
+      "hint": "Routing hint: Audit specialist — health check, security, or residual-risk.",
       "prompt_patterns": [
         "\\baudit\\b",
         "\\bhealth check\\b",
@@ -192,7 +193,7 @@
       "min_behavior_confidence": 0.72,
       "min_behavior_events": 2,
       "cooldown_seconds": 1200,
-      "hint": "Routing hint: Explore specialist fits this read-only inventory/search workflow.",
+      "hint": "Routing hint: Explore specialist — read-only inventory or search.",
       "prompt_patterns": [
         "\\bexplore\\b",
         "\\bread-only\\b",
@@ -221,7 +222,7 @@
       "min_behavior_confidence": 0.78,
       "min_behavior_events": 1,
       "cooldown_seconds": 1200,
-      "hint": "Routing hint: Extensions specialist fits this VS Code extension or profile-management workflow.",
+      "hint": "Routing hint: Extensions specialist — VS Code extension or profile management.",
       "prompt_patterns": [
         "\\bextensions?\\b",
         "\\bvs code extensions?\\b",
@@ -251,7 +252,7 @@
       "min_behavior_confidence": 0.78,
       "min_behavior_events": 1,
       "cooldown_seconds": 1800,
-      "hint": "Routing hint: Researcher specialist fits this external-docs and version-check request.",
+      "hint": "Routing hint: Researcher specialist — external docs or version check.",
       "prompt_patterns": [
         "\\bresearch\\b",
         "\\blatest docs?\\b",
@@ -278,7 +279,7 @@
       "min_behavior_confidence": 0.75,
       "min_behavior_events": 1,
       "cooldown_seconds": 900,
-      "hint": "Routing hint: Commit specialist fits this git lifecycle flow (stage/commit/push/tag).",
+      "hint": "Routing hint: Commit specialist — git lifecycle (stage/commit/push/tag).",
       "prompt_patterns": [
         "\\bstage(?: and)? commit\\b",
         "\\bcommit(?: message| my changes)?\\b",
@@ -307,7 +308,7 @@
       "min_behavior_confidence": 0.76,
       "min_behavior_events": 1,
       "cooldown_seconds": 1200,
-      "hint": "Routing hint: Planner specialist fits this scoped execution-planning workflow.",
+      "hint": "Routing hint: Planner specialist — scoped execution planning.",
       "prompt_patterns": [
         "\\bplan\\b",
         "\\bbreak down\\b",
@@ -335,7 +336,7 @@
       "min_behavior_confidence": 0.76,
       "min_behavior_events": 1,
       "cooldown_seconds": 1200,
-      "hint": "Routing hint: Docs specialist fits this documentation or migration-note workflow.",
+      "hint": "Routing hint: Docs specialist — documentation or migration notes.",
       "prompt_patterns": [
         "\\bdocument(?:ation)?\\b",
         "\\bupdate (?:the )?(?:readme|docs?)\\b",
@@ -365,7 +366,7 @@
       "min_behavior_confidence": 0.78,
       "min_behavior_events": 1,
       "cooldown_seconds": 1200,
-      "hint": "Routing hint: Cleaner specialist fits this repo-hygiene, cache-pruning, or stale-artefact cleanup workflow.",
+      "hint": "Routing hint: Cleaner specialist — repo hygiene, cache pruning, or stale artefacts.",
       "prompt_patterns": [
         "\\bclean up (?:repo|repository|workspace)\\b",
         "\\bremove stale files?\\b",
@@ -397,7 +398,7 @@
       "min_behavior_confidence": 0.8,
       "min_behavior_events": 1,
       "cooldown_seconds": 1200,
-      "hint": "Routing hint: Debugger specialist fits this root-cause and regression-diagnosis workflow.",
+      "hint": "Routing hint: Debugger specialist — root-cause and regression diagnosis.",
       "prompt_patterns": [
         "\\bdebug(?:ger)?\\b",
         "\\broot cause\\b",

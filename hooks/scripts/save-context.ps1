@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 # purpose:  Save critical workspace context before conversation compaction
 # when:     PreCompact hook — fires when context is about to be truncated
 # inputs:   JSON via stdin with trigger field
@@ -5,7 +6,8 @@
 # risk:     safe
 # ESCALATION: none
 
-$ErrorActionPreference = 'SilentlyContinue'
+Set-StrictMode -Version 1
+$ErrorActionPreference = 'Continue'
 $inputJson = $input | Out-String
 $summaryLines = @()
 

@@ -49,7 +49,7 @@ SENTINEL_PATH = WORKSPACE / "runtime/.heartbeat-session"
 EVENTS_PATH = WORKSPACE / "runtime/.heartbeat-events.jsonl"
 HEARTBEAT_PATH = WORKSPACE / "operations/HEARTBEAT.md"
 POLICY_PATH = SCRIPT_DIR / "heartbeat-policy.json"
-ROUTING_MANIFEST_PATH = Path(".github/agents/routing-manifest.json")
+ROUTING_MANIFEST_PATH = Path("agents/routing-manifest.json")
 
 
 def parse_input(raw: str) -> dict:
@@ -98,6 +98,10 @@ STOP_REFLECT_INSTRUCTION = str(
 ACCEPTED_REASON = str(
     RETRO_MESSAGES.get("accepted_reason")
     or DEFAULT_POLICY["retrospective"]["messages"]["accepted_reason"]
+)
+POST_TOOL_REFLECT_INSTRUCTION = str(
+    RETRO_MESSAGES.get("post_tool_reflect_instruction")
+    or DEFAULT_POLICY["retrospective"]["messages"]["post_tool_reflect_instruction"]
 )
 def build_recommendation(state: dict) -> tuple[bool, str]:
     return recommend_retrospective(state, RETRO_MODIFIED_THRESHOLDS, RETRO_ELAPSED_THRESHOLDS)
@@ -149,6 +153,7 @@ if TRIGGER == "session_start":
     state["signal_cross_cutting"] = False
     state["signal_scope_widening"] = False
     state["signal_reflection_likely"] = False
+    state["reflect_instruction_emitted"] = False
     state["route_candidate"] = ""
     state["route_reason"] = ""
     state["route_confidence"] = 0.0
@@ -166,9 +171,8 @@ if TRIGGER == "session_start":
     prune_events(EVENTS_PATH)
     save_state(state, WORKSPACE, STATE_PATH)
     ctx_parts = [
-        f"Session started at {iso_utc(NOW)}.",
         *([compute_session_medians(EVENTS_PATH)] if compute_session_medians(EVENTS_PATH) else []),
-        f"Routing roster: {route_roster_text(ROUTING_MANIFEST)}.",
+        f"Route: {route_roster_text(ROUTING_MANIFEST)}.",
         SESSION_START_GUIDANCE,
     ]
     print_json({
@@ -287,13 +291,29 @@ if TRIGGER == "soft_post_tool":
         build_recommendation,
         emit=True,
     )
+
+    # VS Code-first retrospective: emit reflect instruction via PostToolUse
+    # when thresholds are met, since VS Code does not fire the Stop hook.
+    # The Stop handler remains as fallback for Claude Code / CLI.
+    reflect_instruction = ""
+    if (
+        bool(state.get("signal_reflection_likely"))
+        and not bool(state.get("reflect_instruction_emitted"))
+        and retrospective_state(state) not in ("complete", "accepted")
+    ):
+        state["reflect_instruction_emitted"] = True
+        state["retrospective_state"] = "suggested"
+        reflect_instruction = POST_TOOL_REFLECT_INSTRUCTION
+        append_event(EVENTS_PATH, WORKSPACE, NOW, "post_tool_reflect", "reflect-needed", session_id=session_id)
+
     save_state(state, WORKSPACE, STATE_PATH)
-    if digest:
+    context_parts = [p for p in (digest, reflect_instruction) if p]
+    if context_parts:
         print_json({
             "continue": True,
             "hookSpecificOutput": {
                 "hookEventName": "PostToolUse",
-                "additionalContext": digest,
+                "additionalContext": " ".join(context_parts),
             },
         })
     else:
@@ -375,6 +395,8 @@ if TRIGGER in ("user_prompt", "explicit"):
         print_json({"continue": True})
     raise SystemExit(0)
 
+# Claude Code / CLI fallback: the Stop hook event is not fired by VS Code
+# Copilot Chat.  The primary retrospective path is PostToolUse above.
 if TRIGGER == "stop":
     if bool(payload.get("stop_hook_active", False)):
         print_json({"continue": True})

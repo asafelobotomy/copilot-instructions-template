@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 $manifestFiles = @(
     'package.json',
     'package-lock.json',
@@ -87,15 +88,14 @@ function Get-PathFamily([string]$PathText) {
 
     $filename = [System.IO.Path]::GetFileName($pathText)
     if ($pathText -like '.copilot/workspace/*') { return 'memory' }
-    if ($pathText -like '.github/hooks/*' -or $pathText -like 'template/hooks/*') { return 'hook' }
+    if ($pathText -like 'hooks/*' -or $pathText -like '.github/hooks/*') { return 'hook' }
     if (
+        $pathText -like 'agents/*' -or
         $pathText -like '.github/agents/*' -or
+        $pathText -like 'skills/*' -or
+        $pathText -like '.github/skills/*' -or
         $pathText -like '.github/prompts/*' -or
         $pathText -like '.github/instructions/*' -or
-        $pathText -like '.github/skills/*' -or
-        $pathText -like 'template/prompts/*' -or
-        $pathText -like 'template/instructions/*' -or
-        $pathText -like 'template/skills/*' -or
         @('AGENTS.md', '.github/copilot-instructions.md', 'template/copilot-instructions.md') -contains $pathText
     ) {
         return 'agent'
@@ -126,7 +126,7 @@ function Get-PathFamily([string]$PathText) {
     }
     if (
         $pathText.EndsWith('.md') -or
-        @('README.md', 'CHANGELOG.md', 'MIGRATION.md', 'SETUP.md', 'UPDATE.md', 'VERSION.md', 'CLAUDE.md', 'llms.txt') -contains $filename
+        @('README.md', 'CHANGELOG.md', 'VERSION.md', 'CLAUDE.md', 'llms.txt') -contains $filename
     ) {
         return 'docs'
     }
@@ -143,14 +143,12 @@ function Test-PathRequiresParity([string]$PathText) {
     $pathText = Normalize-PathText $PathText
     if (-not $pathText) { return $false }
     return (
+        $pathText -like 'hooks/*' -or
         $pathText -like '.github/hooks/*' -or
-        $pathText -like 'template/hooks/*' -or
+        $pathText -like 'skills/*' -or
         $pathText -like '.github/skills/*' -or
-        $pathText -like 'template/skills/*' -or
         $pathText -like '.github/instructions/*' -or
-        $pathText -like 'template/instructions/*' -or
         $pathText -like '.github/prompts/*' -or
-        $pathText -like 'template/prompts/*' -or
         @('.copilot/workspace/operations/workspace-index.json', 'template/workspace/operations/workspace-index.json') -contains $pathText
     )
 }

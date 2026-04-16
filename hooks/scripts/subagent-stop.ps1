@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 # purpose:  Log subagent completion and write diary entry if durable findings exist
 # when:     SubagentStop hook — fires after a subagent finishes
 # inputs:   JSON via stdin with subagent result details

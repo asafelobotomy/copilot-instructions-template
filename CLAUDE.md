@@ -18,5 +18,5 @@
 ## See also
 
 - `.github/copilot-instructions.md` — full Lean/Kaizen instructions
-- `.github/agents/` — model-pinned agent definitions
-- `.github/skills/` — domain-specific skill library
+- `agents/` — model-pinned agent definitions
+- `skills/` — domain-specific skill library

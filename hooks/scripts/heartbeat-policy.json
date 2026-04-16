@@ -15,10 +15,11 @@
       "min_emit_spacing_seconds": 120
     },
     "messages": {
-      "session_start_guidance": "Run HEARTBEAT.md Checks. If Stop flags significant work, call session_reflect first.",
-      "explicit_system": "Heartbeat triggered. Run HEARTBEAT.md checks.",
-      "stop_reflect_instruction": "Call session_reflect → process silently → stop. If MCP unavailable: review accuracy, scope, identity file persistence. Retry session_reflect when restored.",
-      "accepted_reason": "User requested retrospective. session_reflect → process → persist → stop."
+      "session_start_guidance": "Check HEARTBEAT.md; run all Checks; append History row (trigger: session_start). Call session_reflect at threshold.",
+      "explicit_system": "Heartbeat: run HEARTBEAT.md checks.",
+      "post_tool_reflect_instruction": "Call session_reflect → continue silently. MCP down: review accuracy, scope, identity files.",
+      "stop_reflect_instruction": "Call session_reflect → stop silently. MCP down: review accuracy, scope, identity files; retry when restored.",
+      "accepted_reason": "User retro: session_reflect → persist → stop."
     }
   }
 }

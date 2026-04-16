@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 function Get-DefaultPolicy {
     [ordered]@{
         retrospective = [ordered]@{
@@ -16,8 +17,9 @@ function Get-DefaultPolicy {
                 min_emit_spacing_seconds = 120
             }
             messages = [ordered]@{
-                session_start_guidance = 'Run HEARTBEAT.md Checks. If Stop flags significant work, call session_reflect first.'
+                session_start_guidance = 'Run HEARTBEAT.md Checks. When thresholds are met, call session_reflect before the session ends.'
                 explicit_system = 'Heartbeat triggered. Run HEARTBEAT.md checks.'
+                post_tool_reflect_instruction = 'Significant session detected. Call session_reflect now → process silently → continue. If MCP unavailable: review accuracy, scope, identity file persistence.'
                 stop_reflect_instruction = 'Call session_reflect → process silently → stop. If MCP unavailable: review accuracy, scope, identity file persistence. Retry session_reflect when restored.'
                 accepted_reason = 'User requested retrospective. session_reflect → process → persist → stop.'
             }
@@ -76,6 +78,7 @@ function Get-DefaultState {
         signal_cross_cutting = $false
         signal_scope_widening = $false
         signal_reflection_likely = $false
+        reflect_instruction_emitted = $false
         route_candidate = ''
         route_reason = ''
         route_confidence = 0.0
@@ -97,27 +100,61 @@ function Get-DefaultState {
     }
 }
 
+function Get-HeartbeatArtifactPaths([string]$Path) {
+    $candidates = [System.Collections.Generic.List[string]]::new()
+    $candidates.Add($Path)
+    try {
+        $repoRoot = (Get-Item $workspace -ErrorAction SilentlyContinue)?.Parent?.Parent?.FullName
+        if (-not $repoRoot) { $repoRoot = (Get-Location).Path }
+        $sha = [System.Security.Cryptography.SHA256]::Create()
+        $bytes = [System.Text.Encoding]::UTF8.GetBytes($repoRoot)
+        $hash = [BitConverter]::ToString($sha.ComputeHash($bytes)).Replace('-', '').Substring(0, 12).ToLower()
+        $name = [System.IO.Path]::GetFileName($Path)
+        $roots = [System.Collections.Generic.List[string]]::new()
+        $claudeTmp = $env:CLAUDE_TMPDIR
+        if ($claudeTmp) { $roots.Add($claudeTmp) }
+        $envTmp = $env:TMPDIR
+        if ($envTmp) { $roots.Add($envTmp) }
+        $sysTmp = [System.IO.Path]::GetTempPath().TrimEnd([char][System.IO.Path]::DirectorySeparatorChar)
+        if ($sysTmp -and $sysTmp -notin $roots) { $roots.Add($sysTmp) }
+        foreach ($root in $roots) {
+            $candidate = [System.IO.Path]::Combine($root, 'copilot-heartbeat', $hash, $name)
+            if ($candidate -notin $candidates) { $candidates.Add($candidate) }
+        }
+    } catch {}
+    return $candidates
+}
+
 function Get-State {
     $state = Get-DefaultState
-    if (Test-Path $statePath) {
+    foreach ($candidate in (Get-HeartbeatArtifactPaths $statePath)) {
+        if (-not (Test-Path $candidate)) { continue }
         try {
-            $loaded = Get-Content $statePath -Raw | ConvertFrom-Json
+            $loaded = Get-Content $candidate -Raw | ConvertFrom-Json
             foreach ($key in @($state.Keys)) {
                 $property = $loaded.PSObject.Properties[$key]
                 if ($null -ne $property) {
                     $state[$key] = $property.Value
                 }
             }
+            return $state
         } catch {}
     }
     return $state
 }
 
 function Save-State([hashtable]$State) {
-    if (-not (Test-Path $workspace)) { return }
-    $tmp = "$statePath.tmp"
-    ($State | ConvertTo-Json -Depth 8) + "`n" | Set-Content $tmp -Encoding utf8 -NoNewline
-    Move-Item -Force $tmp $statePath
+    $text = ($State | ConvertTo-Json -Depth 8) + "`n"
+    foreach ($candidate in (Get-HeartbeatArtifactPaths $statePath)) {
+        try {
+            $dir = Split-Path $candidate
+            if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+            $tmp = "$candidate.tmp"
+            $text | Set-Content $tmp -Encoding utf8 -NoNewline
+            Move-Item -Force $tmp $candidate
+            return
+        } catch {}
+    }
 }
 
 function Convert-EpochToUtcString([int64]$Epoch) {
@@ -125,12 +162,19 @@ function Convert-EpochToUtcString([int64]$Epoch) {
 }
 
 function Add-HeartbeatEvent([string]$Name, [string]$Detail = '', [nullable[int]]$DurationS = $null) {
-    if (-not (Test-Path $workspace)) { return }
     $eventRecord = [ordered]@{ ts = $now; ts_utc = (Convert-EpochToUtcString $now); trigger = $Name }
     if ($Detail) { $eventRecord.detail = $Detail }
     if ($null -ne $DurationS) { $eventRecord.duration_s = $DurationS }
     if ($sessionId) { $eventRecord.session_id = [string]$sessionId }
-    ($eventRecord | ConvertTo-Json -Depth 4 -Compress) + "`n" | Add-Content $eventsPath -Encoding utf8
+    $line = ($eventRecord | ConvertTo-Json -Depth 4 -Compress) + "`n"
+    foreach ($candidate in (Get-HeartbeatArtifactPaths $eventsPath)) {
+        try {
+            $dir = Split-Path $candidate
+            if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+            $line | Add-Content $candidate -Encoding utf8
+            return
+        } catch {}
+    }
 }
 
 function Get-SessionMedians {
@@ -178,24 +222,31 @@ function Invoke-PruneEvents([int]$Keep = 100) {
 }
 
 function Set-Sentinel([string]$SessionId, [string]$Status) {
-    if (-not (Test-Path $workspace)) { return }
     $ts = Convert-EpochToUtcString $now
-    "$SessionId|$ts|$Status" | Set-Content $sentinelPath -Encoding utf8 -NoNewline
+    $content = "$SessionId|$ts|$Status"
+    foreach ($candidate in (Get-HeartbeatArtifactPaths $sentinelPath)) {
+        try {
+            $dir = Split-Path $candidate
+            if (-not (Test-Path $dir)) { New-Item -ItemType Directory -Path $dir -Force | Out-Null }
+            $content | Set-Content $candidate -Encoding utf8 -NoNewline
+            return
+        } catch {}
+    }
 }
 
 function Test-SentinelComplete([string]$SessionId = '') {
-    if (-not (Test-Path $sentinelPath)) { return $false }
-    try {
-        $line = (Get-Content $sentinelPath -Raw).Trim()
-        $parts = $line -split '\|'
-        if ($parts.Count -ge 3 -and $parts[2] -eq 'complete') {
-            if ($SessionId -and $parts[0] -ne $SessionId) { return $false }
-            return $true
-        }
-        return $false
-    } catch {
-        return $false
+    foreach ($candidate in (Get-HeartbeatArtifactPaths $sentinelPath)) {
+        if (-not (Test-Path $candidate)) { continue }
+        try {
+            $line = (Get-Content $candidate -Raw).Trim()
+            $parts = $line -split '\|'
+            if ($parts.Count -ge 3 -and $parts[2] -eq 'complete') {
+                if ($SessionId -and $parts[0] -ne $SessionId) { continue }
+                return $true
+            }
+        } catch {}
     }
+    return $false
 }
 
 function Test-ReflectionComplete([string]$SessionId, [int64]$SessionStartEpoch) {

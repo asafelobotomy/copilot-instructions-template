@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 # purpose:  Dispatch PowerShell heartbeat trigger state and retrospective gating.
 # when:     Invoked by pulse.ps1 after reading stdin.
 # inputs:   -Trigger <session_start|soft_post_tool|compaction|stop|user_prompt|explicit> and raw JSON payload.
@@ -10,7 +11,8 @@ param(
     [string]$InputJson = ''
 )
 
-$ErrorActionPreference = 'SilentlyContinue'
+Set-StrictMode -Version 1
+$ErrorActionPreference = 'Continue'
 
 if (-not $Trigger) {
     '{"continue": true}'
@@ -33,7 +35,24 @@ $sentinelPath = Join-Path $workspace 'runtime' '.heartbeat-session'
 $eventsPath = Join-Path $workspace 'runtime' '.heartbeat-events.jsonl'
 $heartbeatPath = Join-Path $workspace 'operations' 'HEARTBEAT.md'
 $policyPath = Join-Path $PSScriptRoot 'heartbeat-policy.json'
-$routingManifestPath = '.github/agents/routing-manifest.json'
+# Resolve routing manifest: CWD-relative first, then walk up from PSScriptRoot
+# (mirrors Python find_routing_manifest which walks up from SCRIPT_DIR)
+$routingManifestPath = $null
+if (Test-Path 'agents/routing-manifest.json') {
+  $routingManifestPath = (Resolve-Path 'agents/routing-manifest.json').Path
+} elseif (Test-Path '.github/agents/routing-manifest.json') {
+  $routingManifestPath = (Resolve-Path '.github/agents/routing-manifest.json').Path
+} else {
+  $anchor = $PSScriptRoot
+  for ($__i = 0; $__i -lt 6; $__i++) {
+    $__candidate = Join-Path $anchor 'agents/routing-manifest.json'
+    if (Test-Path $__candidate) { $routingManifestPath = $__candidate; break }
+    $__parent = Split-Path $anchor -Parent
+    if ($__parent -eq $anchor) { break }
+    $anchor = $__parent
+  }
+  Remove-Variable -Name __i, __candidate, __parent, anchor -ErrorAction SilentlyContinue
+}
 $now = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
 
 . (Join-Path $PSScriptRoot 'pulse_state.ps1')
@@ -255,7 +274,7 @@ function Get-DefaultRoutingManifest {
 }
 
 function Get-RoutingManifest {
-    if (Test-Path $routingManifestPath) {
+    if ($null -ne $routingManifestPath -and (Test-Path $routingManifestPath)) {
         try {
             $loaded = Get-Content $routingManifestPath -Raw | ConvertFrom-Json -AsHashtable
             if ($loaded -and $loaded['agents']) {
@@ -263,7 +282,9 @@ function Get-RoutingManifest {
             }
         } catch {}
     }
-    return Get-DefaultRoutingManifest
+    # Fail-closed: return empty manifest (no routing) when file is missing or invalid.
+    # Mirrors Python load_routing_manifest which returns _EMPTY_MANIFEST = {"version":1,"agents":[]}.
+    return [ordered]@{ version = 1; agents = @() }
 }
 
 function Get-RoutingIndex([hashtable]$Manifest) {
@@ -455,10 +476,10 @@ function Get-RoutingRosterText([hashtable]$Manifest) {
         }
     }
     $parts = New-Object System.Collections.Generic.List[string]
-    if ($direct.Count -gt 0) { $parts.Add('specialists: ' + ($direct -join ', ')) }
+    if ($direct.Count -gt 0) { $parts.Add($direct -join ', ') }
     if ($internal.Count -gt 0) { $parts.Add('internal: ' + ($internal -join ', ')) }
     if ($guarded.Count -gt 0) { $parts.Add('guarded: ' + ($guarded -join ', ')) }
-    if ($parts.Count -eq 0) { return 'specialists: Commit, Review, Audit, Explore | internal: Organise, Extensions, Planner, Docs, Debugger, Researcher | guarded: Setup' }
+    if ($parts.Count -eq 0) { return 'Commit, Review, Audit, Explore | internal: Organise, Extensions, Planner, Docs, Debugger, Researcher | guarded: Setup' }
     return ($parts -join ' | ')
 }
 
@@ -478,6 +499,7 @@ $sessionStartGuidance = [string]($retroMessages['session_start_guidance'] ?? $de
 $explicitSystemMessage = [string]($retroMessages['explicit_system'] ?? $defaultPolicy['retrospective']['messages']['explicit_system'])
 $stopReflectInstruction = [string]($retroMessages['stop_reflect_instruction'] ?? $defaultPolicy['retrospective']['messages']['stop_reflect_instruction'])
 $acceptedReason = [string]($retroMessages['accepted_reason'] ?? $defaultPolicy['retrospective']['messages']['accepted_reason'])
+$postToolReflectInstruction = [string]($retroMessages['post_tool_reflect_instruction'] ?? $defaultPolicy['retrospective']['messages']['post_tool_reflect_instruction'])
 
 $state = Get-State
 $providedId = if ($payload.sessionId) { [string]$payload.sessionId } else { '' }
@@ -524,6 +546,7 @@ if ($Trigger -eq 'session_start') {
     $state.signal_cross_cutting = $false
     $state.signal_scope_widening = $false
     $state.signal_reflection_likely = $false
+    $state.reflect_instruction_emitted = $false
     $state.route_candidate = ''
     $state.route_reason = ''
     $state.route_confidence = 0.0
@@ -545,9 +568,9 @@ if ($Trigger -eq 'session_start') {
     Save-State $state
     $dtStr = Convert-EpochToUtcString $now
     $timingHint = Get-SessionMedians
-    $ctxParts = @("Session started at $dtStr.")
+    $ctxParts = @()
     if ($timingHint) { $ctxParts += $timingHint }
-    $ctxParts += "Routing roster: $(Get-RoutingRosterText $routingManifest)."
+    $ctxParts += "Route: $(Get-RoutingRosterText $routingManifest)."
     $ctxParts += $sessionStartGuidance
     $additionalCtx = $ctxParts -join ' '
     Write-JsonOutput @{ continue = $true; hookSpecificOutput = @{ hookEventName = 'SessionStart'; additionalContext = $additionalCtx } }
@@ -669,10 +692,26 @@ if ($Trigger -eq 'soft_post_tool') {
     $intentUpdate = Update-IntentEngine $state $payload $true
     $state = $intentUpdate['state']
     $digest = [string]($intentUpdate['digest'] ?? '')
+
+    # VS Code-first retrospective: emit reflect instruction via PostToolUse
+    # when thresholds are met, since VS Code does not fire the Stop hook.
+    $reflectInstruction = ''
+    $retroState = [string]($state['retrospective_state'] ?? 'idle')
+    if ([bool]($state['signal_reflection_likely'] ?? $false) -and
+        -not [bool]($state['reflect_instruction_emitted'] ?? $false) -and
+        $retroState -notin @('complete', 'accepted')) {
+        $state.reflect_instruction_emitted = $true
+        $state.retrospective_state = 'suggested'
+        $reflectInstruction = $postToolReflectInstruction
+        Add-HeartbeatEvent 'post_tool_reflect' 'reflect-needed'
+    }
+
     Save-State $state
 
-    if ($digest) {
-        Write-JsonOutput @{ continue = $true; hookSpecificOutput = @{ hookEventName = 'PostToolUse'; additionalContext = $digest } }
+    $contextParts = @($digest, $reflectInstruction) | Where-Object { $_ }
+    if ($contextParts.Count -gt 0) {
+        $combined = $contextParts -join ' '
+        Write-JsonOutput @{ continue = $true; hookSpecificOutput = @{ hookEventName = 'PostToolUse'; additionalContext = $combined } }
     } else {
         Write-JsonOutput @{ continue = $true }
     }

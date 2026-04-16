@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 # purpose:  Orchestrate heartbeat trigger state and retrospective gating.
 # when:     Invoked by lifecycle hooks (SessionStart/PostToolUse/PreCompact/Stop/UserPromptSubmit).
 # inputs:   JSON on stdin + -Trigger <session_start|pre_tool|soft_post_tool|compaction|stop|user_prompt|explicit>.
@@ -12,7 +13,8 @@ param(
     [string]$Trigger = ''
 )
 
-$ErrorActionPreference = 'SilentlyContinue'
+Set-StrictMode -Version 1
+$ErrorActionPreference = 'Continue'
 
 if (-not $Trigger) {
     '{"continue": true}'

@@ -126,28 +126,28 @@ def scope_evidence_text(signals: dict) -> str:
 
 def build_digest_intent(phase: str, overlays: dict, signals: dict) -> tuple[str, str]:
     if overlays["overlay_retro_requested"]:
-        return ("retrospective requested", "Prepare reflective closure before stopping")
+        return ("retrospective requested", "Prepare closure before stop")
     if phase == "reflective":
         return (
             "reflection likely at stop",
-            f"Significant session signals are active ({scope_evidence_text(signals)})",
+            f"Significant session active ({scope_evidence_text(signals)})",
         )
     if overlays["overlay_parity_required"]:
-        return ("preserve parity", "Mirrored surfaces are now active")
+        return ("preserve parity", "Parity surfaces active")
     if overlays["overlay_verification_expected"]:
-        return ("tests and validation likely next", "Validation-sensitive work is accumulating")
+        return ("tests and validation likely next", "Validation work queuing")
     if overlays["overlay_decision_capture_needed"]:
-        return ("capture decisions before loss", "Context compaction or broad work increases loss risk")
+        return ("capture decisions before loss", "Compaction or broad scope risks context loss")
     if overlays["overlay_sensitive_surface"]:
-        return ("verify baseline soon", "Sensitive behavior or policy surfaces changed")
+        return ("verify baseline soon", "Sensitive surfaces changed")
     if phase == "consolidating":
-        return ("verify baseline soon", f"Broader work is accumulating ({scope_evidence_text(signals)})")
+        return ("verify baseline soon", f"Broad work accumulating ({scope_evidence_text(signals)})")
     if phase == "widening":
-        return ("capture decision", "Scope widened across multiple surfaces")
+        return ("capture decision", "Scope widened")
     if phase == "focused":
-        return ("keep scope tight", "Narrow implementation work started")
+        return ("keep scope tight", "Narrow work started")
     if phase == "orienting":
-        return ("stay deliberate", "Session context is forming; no meaningful file changes yet")
+        return ("stay deliberate", "Context forming; no changes yet")
     return ("", "")
 
 

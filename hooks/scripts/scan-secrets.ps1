@@ -1,3 +1,4 @@
+#!/usr/bin/env pwsh
 # purpose:  Scan modified files for leaked secrets at session end
 # when:     Stop hook — fires when the agent session ends
 # inputs:   JSON via stdin
@@ -6,7 +7,8 @@
 # ESCALATION: block
 # STOP LOOP: if stop_hook_active is true in the Stop payload, do not re-enter blocking Stop logic.
 
-$ErrorActionPreference = 'SilentlyContinue'
+Set-StrictMode -Version 1
+$ErrorActionPreference = 'Continue'
 $inputJson = $input | Out-String
 
 $stopHookActive = $false
