@@ -28,6 +28,7 @@ types:
   - build
   - ci
   - chore
+  - revert
 ```
 
 ## Body
@@ -62,5 +63,7 @@ squash-fixups: false
 - Scopes are typically directory names: `template`, `hooks`, `skills`, `agents`, `tests`, `scripts`, `docs`.
 - Do not use the root package name as a scope.
 - Breaking changes must include a `BREAKING CHANGE:` footer.
-- For release-driving changes, use `feat` only for a real consumer-facing addition. Use `fix`, `deps`, `docs`, `refactor`, `perf`, `build`, `ci`, `test`, or `chore` for patch-level work.
+- For release-driving changes, use `feat` only for a real consumer-facing addition. Use `fix`, `docs`, `refactor`, `perf`, `build`, `ci`, `test`, or `chore` for patch-level work.
+- Dependency updates use `chore(deps)` (scope-qualified chore), not a standalone `deps` type.
 - Release commits follow `release-please` format and should not be hand-authored.
+- Revert commits: use `revert: <original subject>` or `revert(<scope>): <original subject>` and include `This reverts commit <hash>.` in the body.

@@ -96,8 +96,12 @@ If any field is required but unclear, use `askQuestions` before proceeding.
 2. If nothing is staged, run `git diff --stat` to see unstaged changes. Ask the user which files to stage, or stage all if they say "all" or "everything".
 3. Run the preflight workflow above for the candidate commit scope.
 4. Apply the message format from `commit-style.md`. If that file specifies Conventional Commits, load the `conventional-commit` skill.
-5. Present the commit message to the user before executing `git commit -m "..."`. Proceed only if they approve or explicitly say "just do it".
-6. After a successful commit, print the short hash and subject: `[<hash>] <subject>`.
+5. Present the commit message to the user before committing. Proceed only if they approve or explicitly say "just do it".
+6. Execute the commit:
+   - **Subject only** (no body): `git commit -m "<subject>"` or `mcp_git_git_commit`.
+   - **Subject + body**: Prefer `mcp_git_git_commit` (handles newlines safely). When using the terminal, write the message to a temp file and use `git commit -F <tmpfile>`, then remove the file. Do NOT use `git commit -m "subject\n\nbody"` — shell newline escaping is unreliable across platforms and the blank-line separator between subject and body may not render correctly.
+   - **Fixup/squash**: When `squash-fixups: true` is set in `commit-style.md` and the user is authoring an amendment to a previous commit, offer `git commit --fixup=<hash>` (absorbs silently) or `git commit --squash=<hash>` (prompts at rebase). These work with `git rebase -i --autosquash`.
+7. After a successful commit, print the short hash and subject: `[<hash>] <subject>`.
 
 ## Push workflow
 
@@ -107,6 +111,7 @@ Only execute when the user requests a push. Steps:
 2. Run the preflight workflow above for the unpushed diff.
 3. Confirm the target branch and remote.
 4. Execute `git push` (or `git push --set-upstream origin <branch>` for new branches).
+   - For force-push scenarios (after rebase or amend): use `git push --force-with-lease` by default. Only use `git push --force` if the user explicitly requests it after being warned that `--force-with-lease` is the safer option.
 5. Report the result.
 
 ## Tag / Release workflow
@@ -172,7 +177,7 @@ Only execute when the user requests PR creation or update.
 
 1. **Create**: confirm the source branch, target branch, title, and body. Use MCP `github_create_pull_request` or `gh pr create`.
    - Auto-fill the title from the most recent commit subject if not specified.
-   - Auto-fill the body from the commit log between the target and source branches.
+   - Check for `.github/pull_request_template.md` (or `.github/PULL_REQUEST_TEMPLATE/`) first. If a template exists, use it as the body skeleton and fill in the sections from the commit log. If no template exists, auto-fill the body from the commit log between the target and source branches.
    - Ask whether to create as draft or ready for review.
 2. **Update**: use MCP `github_update_pull_request` to change title, body, reviewers, or draft status.
 3. **Sync branch**: use MCP `github_update_pull_request_branch` to update the PR branch with the latest base branch changes.
@@ -186,7 +191,9 @@ When the user has a large set of changes and asks to "split into multiple commit
 
 - Do NOT push, tag, or create releases as a side-effect of a commit request.
 - Do NOT install dependencies silently. Ask first and record any skipped checks.
-- Do NOT `git push --force` without explicit user authorisation and a warning that history will be rewritten.
+- Prefer `git push --force-with-lease` over `git push --force`. `--force-with-lease` aborts if the remote ref has been updated since the last fetch, preventing accidental overwrite of collaborators' commits. Use bare `--force` only when the user explicitly requests it and understands the difference.
+- Do NOT `git push --force` or `--force-with-lease` without explicit user authorisation and a warning that history will be rewritten.
+- Do NOT use `git commit --no-verify` or `git push --no-verify` (hook bypass) without explicit user instruction and a clear warning that safety checks will be skipped.
 - Do NOT amend the last commit if it has already been pushed.
 - Do NOT widen fix scope beyond the proposed commit or push without explicit approval.
 - Do NOT rebase a shared branch without explicit confirmation and a warning about history rewriting.

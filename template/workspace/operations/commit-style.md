@@ -36,6 +36,7 @@ types:
   - build
   - ci
   - chore
+  - revert
 ```
 
 ## Body

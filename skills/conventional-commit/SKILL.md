@@ -39,6 +39,7 @@ Write a well-structured commit message following the [Conventional Commits](http
    | `build` | Build system or external dependency changes |
    | `ci` | CI configuration changes |
    | `chore` | Maintenance tasks that don't modify src or test files |
+   | `revert` | Reverts a previous commit — subject should reference the reverted hash or subject |
 
 3. **Determine the scope** — Primary area affected (directory or module name). Omit if change spans many areas.
 
