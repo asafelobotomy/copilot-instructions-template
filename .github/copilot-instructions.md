@@ -1,6 +1,6 @@
 # Developer Instructions — copilot-instructions-template
 
-> Role: AI developer for this repository. Template version: 0.5.13 <!-- x-release-please-version --> | Updated: 2026-04-14
+> Role: AI developer for this repository. Template version: 0.6.0 <!-- x-release-please-version --> | Updated: 2026-04-14
 >
 > **⚡ Critical Reminders** — every session, every task:
 >
@@ -26,13 +26,14 @@ This repo has two distinct layers that must never be mixed:
 | **Consumer prompt stubs** | `template/prompts/` | Slash command prompts; most are delivered verbatim, a subset contain `{{}}` tokens resolved during consumer setup. |
 | **Developer instruction files** | `.github/instructions/` | Resolved path-stubs for this repo — no `{{}}` tokens. |
 | **Developer prompts** | `.github/prompts/` | Resolved prompts for this repo — no `{{}}` tokens. |
-| **Template artefacts** | `template/skills/`, `template/hooks/`, `template/workspace/` | Delivered verbatim; must stay in parity with `.github/skills/`, `.github/hooks/`. |
-| **Model-pinned agents** | `.github/agents/` | Fetched directly by `SETUP.md` §2.5. No `template/agents/` mirror exists — deliberate exception. Agents contain no `{{}}` tokens and change rarely; maintaining a separate mirror would add CI overhead with no practical benefit. |
+| **Template artefacts** | `template/workspace/` | Delivered verbatim by Setup agent. Skills and hooks are now plugin components delivered in `skills/` and `hooks/` at repo root. |
+| **Plugin root** | `agents/`, `skills/`, `hooks/` | VS Code Agent Plugin components discovered at repo root. Delivered to consumers via plugin install. |
 | **Starter kits** | `starter-kits/` | VS Code agent plugin bundles per language/stack. Installed to consumer's `.github/starter-kits/` during setup based on detected stack. No `{{}}` tokens — delivered verbatim like agents. |
 
 **Invariant**: `.github/instructions/` and `.github/prompts/` must never contain `{{PLACEHOLDER}}` tokens.
 **Invariant**: `template/` files must never contain resolved project-specific values.
-**Note**: `.github/agents/` and `starter-kits/` are deliberate verbatim-delivered exceptions that lack `template/` mirrors. This is intentional — see Architecture table above.
+**Note**: `starter-kits/` are deliberate verbatim-delivered exceptions that lack `template/` mirrors. This is intentional — see Architecture table above.
+**Note**: Developer workspace discovers repo-root `agents/` via `chat.agentFilesLocations` and repo-root `skills/` via both `chat.skillsLocations` and legacy `chat.agentSkillsLocations` in `.vscode/settings.json`. Hooks still come from `.github/hooks/`. No `.github/agents/` or `.github/skills/` directories are needed in this repo.
 
 ## Key Commands
 
@@ -129,7 +130,7 @@ Before acting on any medium-to-complex task:
 - `template/copilot-instructions.md` must contain §1–§14 and ≤ 800 lines (CI enforced).
 - `template/copilot-instructions.md` must contain ≥ 3 `{{PLACEHOLDER}}` tokens (CI enforced).
 - `.github/copilot-instructions.md` *(this file)* must contain **zero** `{{}}` tokens (CI enforced).
-- Parity: `.github/skills/` must mirror `template/skills/`. `.github/hooks/` must mirror `template/hooks/` exactly. CI enforces.
+- Parity: `.github/instructions/` and `.github/prompts/` must stay in sync with `template/instructions/` and `template/prompts/`. CI enforces.
 - Version source of truth: `VERSION.md`. Version bumps are done locally. Bump `VERSION.md` and all `x-release-please-version` markers together, then verify with `bash scripts/release/verify-version-references.sh`. CI creates a GitHub release when `VERSION.md` changes.
 - `workspace-index.json` must stay in sync: `bash scripts/workspace/sync-workspace-index.sh --write` then commit.
 
@@ -138,22 +139,19 @@ Before acting on any medium-to-complex task:
 | Path | Role |
 |------|------|
 | `template/copilot-instructions.md` | Consumer instructions template (placeholder version) |
-| `template/skills/` | Consumer skill stubs |
-| `template/hooks/` | Consumer hook scripts |
 | `template/workspace/` | Consumer workspace identity stubs |
 | `template/instructions/` | Consumer path-instruction stubs (most verbatim; subset with `{{}}` tokens) |
 | `template/prompts/` | Consumer prompt stubs (most verbatim; subset with `{{}}` tokens) |
-| `.github/agents/` | Model-pinned VS Code agents (Setup, Code, Organise, Review, Fast, Audit, Explore, Extensions, Researcher, Commit, Debugger, Docs, Planner, Cleaner) |
-| `.github/skills/` | Skill library (repo-live copies, mirrors template) |
-| `.github/hooks/` | Hook scripts (repo-live copies, mirrors template) |
+| `agents/` | Model-pinned VS Code agents (Setup, Code, Organise, Review, Fast, Audit, Explore, Extensions, Researcher, Commit, Debugger, Docs, Planner, Cleaner) |
+| `skills/` | Skill library — plugin component, auto-discovered by VS Code |
+| `hooks/hooks.json` | Plugin-level hook config (Copilot format, `${CLAUDE_PLUGIN_ROOT}` paths) |
+| `hooks/scripts/` | Hook scripts delivered via plugin |
 | `.github/instructions/` | Developer path-instructions (resolved, no `{{}}`) |
 | `.github/prompts/` | Developer prompts (resolved, no `{{}}`) |
-| `SETUP.md` | Consumer bootstrap protocol |
-| `UPDATE.md` | Consumer update protocol |
 | `AGENTS.md` | Machine entry point (trigger phrases, fetch URLs) |
-| `MIGRATION.md` | Per-version migration registry |
+| `CHANGELOG.md` | Version history and migration notes |
 | `tests/` | Test suite — `bash tests/run-all.sh` |
-| `scripts/` | Utility scripts (sync-workspace-index, sync-models, sync-template-parity, validate-agent-frontmatter, copilot\_audit) |
+| `scripts/` | Utility scripts (sync-workspace-index, sync-models, validate-agent-frontmatter, copilot\_audit) |
 | `starter-kits/` | VS Code agent plugin starter kits per language/stack |
 | `.copilot/workspace/` | Developer workspace files — `identity/`, `knowledge/`, `operations/`, `runtime/` (gitignored) |
 
@@ -172,8 +170,8 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 
 ## Skills and Agents
 
-- Skills: `.github/skills/` — loaded on demand. Read `SKILL.md` when description matches task.
-- Agents: `.github/agents/` — each pins a model.
+- Skills: `skills/` — loaded on demand. Read `SKILL.md` when description matches task.
+- Agents: `agents/` — each pins a model.
 - Main/default agent delegation: when the request matches a named specialist
   workflow, delegate instead of absorbing the workflow inline.
 - Do not keep specialist work inline because it seems small, quick, or
@@ -190,8 +188,8 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
   update, backup restore, or factory restore work, `Organise` for file moves,
   path repair, or repository reshaping, and `Cleaner` for stale artefact,
   archive, and cache cleanup.
-- Tool Protocol: activate `.github/skills/tool-protocol/SKILL.md` before building any script.
-- Heartbeat: `.copilot/workspace/operations/HEARTBEAT.md` — run at session start. Health digest emits on meaningful phase transitions and overlay changes, not a fixed tool-call cadence. On significant sessions (8+ files or 30+ active minutes), the Stop hook instructs the model to call the `session_reflect` MCP tool autonomously. Silent when healthy.
+- Tool Protocol: activate `skills/tool-protocol/SKILL.md` before building any script.
+- Heartbeat: `.copilot/workspace/operations/HEARTBEAT.md` — run at session start. Health digest emits on meaningful phase transitions and overlay changes, not a fixed tool-call cadence. On significant sessions (8+ files or 30+ active minutes), the PostToolUse hook instructs the model to call the `session_reflect` MCP tool autonomously. The Stop hook provides a blocking fallback on clients that support it (Claude Code / CLI). Silent when healthy.
 
 ## User Preferences
 
@@ -217,10 +215,10 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 
 ## Protocols
 
-- **Tool Protocol**: Check `.copilot/tools/INDEX.md` before building. Follow `.github/skills/tool-protocol/SKILL.md`.
-- **Skill Protocol**: Skills loaded on demand from `.github/skills/`. Follow `.github/skills/skill-management/SKILL.md`.
+- **Tool Protocol**: Check `.copilot/tools/INDEX.md` before building. Follow `skills/tool-protocol/SKILL.md`.
+- **Skill Protocol**: Skills loaded on demand from `skills/`. Follow `skills/skill-management/SKILL.md`.
 - **MCP Protocol**: Config in `.vscode/mcp.json`. Always-on: filesystem, git, heartbeat. Credentials-required: github, fetch.
 - **Delegation Protocol**: See **Skills and Agents** for the full specialist-first delegation policy.
 - **Subagent depth**: max 3. Stop and surface to user if reached. Subagents inherit all protocols including the Structured Thinking Discipline and anti-loop rules.
 
-*See also: `template/copilot-instructions.md` (consumer template) · `.github/agents/` · `.github/skills/` · `AGENTS.md` · `UPDATE.md` · `MIGRATION.md`*
+*See also: `template/copilot-instructions.md` (consumer template) · `agents/` · `skills/` · `AGENTS.md` · `CHANGELOG.md`*

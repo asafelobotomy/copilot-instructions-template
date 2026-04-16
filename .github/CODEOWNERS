@@ -3,14 +3,15 @@
 
 # CI and workflow files require explicit review
 .github/workflows/ @asafelobotomy
-.github/hooks/ @asafelobotomy
+hooks/ @asafelobotomy
+agents/ @asafelobotomy
+skills/ @asafelobotomy
 
 # Template files delivered to consumers
 template/ @asafelobotomy
 
 # Security-sensitive hook scripts
-.github/hooks/scripts/scan-secrets.sh @asafelobotomy
-template/hooks/scripts/scan-secrets.sh @asafelobotomy
+hooks/scripts/scan-secrets.sh @asafelobotomy
 
 # Core instruction files
 .github/copilot-instructions.md @asafelobotomy

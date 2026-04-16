@@ -45,9 +45,6 @@ jobs:
       - name: All required template files present
         run: bash scripts/ci/validate-required-files.sh
 
-      - name: Template copies in sync with working copies
-        run: bash scripts/ci/validate-template-sync.sh
-
       - name: workspace-index.json is in sync
         run: bash scripts/workspace/sync-workspace-index.sh --check
 
@@ -97,10 +94,10 @@ jobs:
           [[ $failed -eq 0 ]] || exit 1
           echo "\u2705 Developer instruction and prompt stubs are placeholder-free"
 
-      - name: Template skills have valid SKILL.md
+      - name: Skills have valid SKILL.md
         run: |
           failed=0
-          for skill_dir in template/skills/*/; do
+          for skill_dir in skills/*/; do
             skill="$skill_dir/SKILL.md"
             if [[ ! -f "$skill" ]]; then
               echo "❌ Missing SKILL.md in $skill_dir"; failed=1; continue
@@ -111,12 +108,12 @@ jobs:
               || { echo "❌ $skill missing 'description' field"; failed=1; }
           done
           [[ $failed -eq 0 ]] || exit 1
-          echo "✅ All template skills valid"
+          echo "✅ All skills valid"
 
-      - name: Template skills document metadata note (advisory)
+      - name: Skills document metadata note (advisory)
         run: |
           warned=0
-          for skill_dir in template/skills/*/; do
+          for skill_dir in skills/*/; do
             skill="$skill_dir/SKILL.md"
             [[ -f "$skill" ]] || continue
             grep -q '^> Skill metadata:' "$skill" \
@@ -153,7 +150,7 @@ jobs:
         run: |
           failed=0
           for f in \
-            template/hooks/copilot-hooks.json \
+            hooks/hooks.json \
             template/vscode/mcp.json \
             template/vscode/extensions.json \
             template/vscode/settings.json \
@@ -176,7 +173,7 @@ jobs:
       - name: Agent files have required 'model' field
         run: |
           failed=0
-          for f in .github/agents/*.agent.md; do
+          for f in agents/*.agent.md; do
             [[ -f "$f" ]] || continue
             grep -q '^model:' "$f" \
               || { echo "❌ $f missing 'model:' frontmatter field"; failed=1; }
@@ -352,5 +349,5 @@ jobs:
           tag="${{ steps.version.outputs.tag }}"
           gh release create "$tag" \
             --title "$tag" \
-            --notes "See [CHANGELOG.md](CHANGELOG.md) and [MIGRATION.md](MIGRATION.md) for details." \
+            --notes "See [CHANGELOG.md](CHANGELOG.md) for details." \
             --target "${{ github.sha }}"
