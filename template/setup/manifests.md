@@ -365,8 +365,8 @@ Compute section fingerprints and file manifest hashes. When ownership mode is
 When ownership mode is `all-local`, hash all surfaces as before.
 
 ```bash
-# Section fingerprints
-for i in $(seq 1 9); do
+# Section fingerprints (§10 is user-modified; included for drift visibility)
+for i in $(seq 1 14); do
   fp=$(awk "/^## §${i} —/{found=1; next} /^## §/{if(found) exit} found{print}" \
     .github/copilot-instructions.md | sha256sum | cut -c1-12)
   echo "§${i}=${fp}"
@@ -392,10 +392,10 @@ If `sha256sum` is unavailable, use this Python fallback instead:
 ```python
 import hashlib, pathlib, glob
 
-# Section fingerprints
+# Section fingerprints (§10 is user-modified; included for drift visibility)
 text = pathlib.Path('.github/copilot-instructions.md').read_text(encoding='utf-8')
 import re
-for i in range(1, 10):
+for i in range(1, 15):
     match = re.search(rf'(?m)^## §{i} —.*?(?=^## §|\Z)', text, re.DOTALL)
     body = match.group(0) if match else ''
     fp = hashlib.sha256(body.encode()).hexdigest()[:12]

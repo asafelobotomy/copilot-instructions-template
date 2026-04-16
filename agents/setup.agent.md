@@ -181,6 +181,10 @@ version, date, ownership mode, fingerprints, manifest, and setup-answers.
 `${CLAUDE_PLUGIN_ROOT}/template/CLAUDE.md` to project root, replacing all
 `{{PLACEHOLDER}}` tokens.
 
+**§ 2.15 — Companion extension**: Install the Copilot Profile Tools extension
+via `code --install-extension asafelobotomy.copilot-profile-tools`. If the CLI
+fails (e.g. `code` not on PATH), note it for the user and continue.
+
 **§ 3 — Workspace scaffold**: Create `.copilot/workspace/` directories
 (`identity/`, `knowledge/`, `operations/`, `runtime/`). Copy from
 `${CLAUDE_PLUGIN_ROOT}/template/workspace/`. Replace `{{PLACEHOLDER}}` tokens,
