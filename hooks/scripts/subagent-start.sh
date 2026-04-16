@@ -16,8 +16,8 @@ INPUT=$(cat)
 AGENT_NAME=$(printf '%s' "$INPUT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('agent_type','unknown'))" 2>/dev/null) || AGENT_NAME="unknown"
 [[ -z "$AGENT_NAME" ]] && AGENT_NAME="unknown"
 
-# Build governance context; diary access is explicit — call spatial_status or read_diaries
-CONTEXT="Depth≤3. Protocols: PDCA, Tool, Skill. Agent: ${AGENT_NAME}. Call spatial_status or read_diaries to access your diary."
+# Build governance context; diary access is explicit — call asafelobotomy_spatial_status or read_diaries
+CONTEXT="Depth≤3. Protocols: PDCA, Tool, Skill. Agent: ${AGENT_NAME}. Call asafelobotomy_spatial_status (deferred extension tool) or read_diaries (MCP tool) to access your diary."
 
 # JSON-escape the context
 CONTEXT_ESC=$(json_escape "$CONTEXT")

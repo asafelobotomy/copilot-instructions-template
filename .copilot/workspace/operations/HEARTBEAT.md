@@ -43,7 +43,7 @@ Run each check; prepend `[!]` to Pulse if any fails:
 
 ## Retrospective
 
-Retrospective runs autonomously via the `session_reflect` MCP tool. Do not prompt the user.
+Retrospective runs autonomously via the `asafelobotomy_session_reflect` extension tool (deferred LM tool — use tool_search to load it if not yet loaded). Do not prompt the user.
 
 The PostToolUse hook instructs you to call `session_reflect` when a significant task is detected (one strong signal: 8+ modified files or 30+ minutes active; or two supporting signals: 5+ modified files, 15+ minutes, context compaction). On clients that fire the Stop hook (Claude Code / CLI), the Stop handler provides a blocking fallback for the same check.
 
@@ -57,7 +57,7 @@ When `session_reflect` returns, process its output silently:
 
 When a lesson first lands in built-in repo memory, decide during heartbeat whether it should stay repo-local or be promoted into MEMORY.md for team-wide durability.
 
-The MCP tool records completion automatically by setting the session sentinel and writing a `session_reflect` completion event. No manual sentinel management is needed.
+The extension tool records completion automatically by setting the session sentinel and writing a `session_reflect` completion event. No manual sentinel management is needed.
 
 If the `session_reflect` extension tool is unavailable, briefly self-review: execution accuracy, scope completeness, and anything worth persisting to identity files, then rerun `session_reflect` once the extension is available.
 
@@ -80,8 +80,8 @@ If the `session_reflect` extension tool is unavailable, briefly self-review: exe
 
 | Date | Session ID | Trigger | Result | Actions taken |
 |------|------------|---------|--------|---------------|
+| 2026-04-16 | local-dadf28a1 | session_reflect — Diary system + commit agent | PASS | 2 commits: commit-agent 7 fixes; diary system separation (agent_type field, remove hook auto-write, add write_diary+read_diaries MCP tools, 7 new tests). 45/45 suites green. MEMORY test baseline updated (222→284). SOUL diary-explicit lesson added. |
 | 2026-04-16 | local-f54c1675 | session_reflect — Review+debug today's 23 commits | PASS | Fixed 5 review findings: pulse.sh python3/python fallback+existence guard (HIGH); template SPATIAL_VOCAB MD055/MD056 disable; RESEARCH.md MD028+MD034; HEARTBEAT.md template MD028; manifests.md §9→§14 fingerprint. 44/44 suites green. |
 | 2026-04-16 | ps-sess-1 | session_reflect — Refactor #1 heartbeat canonicalization | PASS | Canonicalized heartbeat/routing to Python-only; deleted 4 PS1 files (-1,835 LOC); pulse.ps1 now thin Python proxy; 44/44 suites green. Repo memory updated. |
 | 2026-04-15 | local-c7172897 | Task completion — identity file + runtime file review | PASS | Identity files updated (IDENTITY, SOUL, USER, MEMORY, TOOLS); stale git-tracked root runtime files removed (migrated to runtime/); HEARTBEAT.md History updated. |
 | 2026-04-03 | 18fc61af-8a85-4bdd-aff7-33d0236884cf | Session start | PASS | Inventory and selector cleanup verified; durable details live in source files and test logs. |
-| 2026-04-02 | local-a0d837a3 | Retrospective — heartbeat/button investigation | PASS | Retrospective completed; insights persisted to SOUL.md, MEMORY.md, USER.md, and repo memory. |

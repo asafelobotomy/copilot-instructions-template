@@ -44,7 +44,7 @@ Run each check; prepend `[!]` to Pulse if any fails:
 
 ## Retrospective
 
-Retrospective runs autonomously via the `session_reflect` MCP tool. Do not prompt the user.
+Retrospective runs autonomously via the `asafelobotomy_session_reflect` extension tool (deferred LM tool — use tool_search to load it if not yet loaded). Do not prompt the user.
 
 The PostToolUse hook instructs you to call `session_reflect` when a significant task is detected (one strong signal: 8+ modified files or 30+ minutes active; or two supporting signals: 5+ modified files, 15+ minutes, context compaction). On clients that fire the Stop hook (Claude Code / CLI), the Stop handler provides a blocking fallback for the same check.
 
@@ -58,7 +58,7 @@ When `session_reflect` returns, process its output silently:
 
 When a lesson first lands in built-in repo memory, decide during heartbeat whether it should stay repo-local or be promoted into MEMORY.md for team-wide durability.
 
-The MCP tool records completion automatically by setting the session sentinel and writing a `session_reflect` completion event. No manual sentinel management is needed.
+The extension tool records completion automatically by setting the session sentinel and writing a `session_reflect` completion event. No manual sentinel management is needed.
 
 If the `session_reflect` extension tool is unavailable, briefly self-review: execution accuracy, scope completeness, and anything worth persisting to identity files, then rerun `session_reflect` once the extension is available.
 

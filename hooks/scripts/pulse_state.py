@@ -32,8 +32,8 @@ DEFAULT_POLICY = {
         "messages": {
             "session_start_guidance": "Run HEARTBEAT.md Checks. When thresholds are met, call session_reflect before the session ends.",
             "explicit_system": "Heartbeat triggered. Run HEARTBEAT.md checks.",
-            "post_tool_reflect_instruction": "Significant session detected. Call session_reflect now → process silently → continue. If extension unavailable: review accuracy, scope, identity file persistence.",
-            "stop_reflect_instruction": "Call session_reflect → process silently → stop. If extension unavailable: review accuracy, scope, identity file persistence. Retry session_reflect when available.",
+            "post_tool_reflect_instruction": "Significant session detected. Call asafelobotomy_session_reflect (deferred extension tool — load via tool_search first if needed) → process silently → continue. Only if the call fails: review accuracy, scope, identity file persistence.",
+            "stop_reflect_instruction": "Call asafelobotomy_session_reflect (deferred extension tool — load via tool_search first if needed) → process silently → stop. Only if the call fails: review accuracy, scope, identity file persistence; retry when available.",
             "accepted_reason": "User requested retrospective. session_reflect → process → persist → stop.",
         },
     }

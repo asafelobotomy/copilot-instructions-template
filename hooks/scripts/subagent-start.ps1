@@ -20,8 +20,8 @@ catch {
   $payload = $null
 }
 
-# Diary access is explicit — agents call spatial_status or read_diaries
-$context = "Depth<=3. Protocols: PDCA, Tool, Skill. Agent: ${agentName}. Call spatial_status or read_diaries to access your diary."
+# Diary access is explicit — agents call asafelobotomy_spatial_status or read_diaries
+$context = "Depth<=3. Protocols: PDCA, Tool, Skill. Agent: ${agentName}. Call asafelobotomy_spatial_status (deferred extension tool) or read_diaries (MCP tool) to access your diary."
 
 $output = [ordered]@{
   hookSpecificOutput = [ordered]@{
