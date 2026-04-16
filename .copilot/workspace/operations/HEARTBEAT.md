@@ -45,7 +45,7 @@ Run each check; prepend `[!]` to Pulse if any fails:
 
 Retrospective runs autonomously via the `session_reflect` MCP tool. Do not prompt the user.
 
-The Stop hook blocks the session and instructs you to call `session_reflect` when a significant task is detected (one strong signal: 8+ modified files or 30+ minutes active; or two supporting signals: 5+ modified files, 15+ minutes, context compaction).
+The PostToolUse hook instructs you to call `session_reflect` when a significant task is detected (one strong signal: 8+ modified files or 30+ minutes active; or two supporting signals: 5+ modified files, 15+ minutes, context compaction). On clients that fire the Stop hook (Claude Code / CLI), the Stop handler provides a blocking fallback for the same check.
 
 When `session_reflect` returns, process its output silently:
 
@@ -80,8 +80,8 @@ If the `session_reflect` MCP tool is unavailable, briefly self-review: execution
 
 | Date | Session ID | Trigger | Result | Actions taken |
 |------|------------|---------|--------|---------------|
+| 2026-04-15 | local-c7172897 | Task completion — identity file + runtime file review | PASS | Identity files updated (IDENTITY, SOUL, USER, MEMORY, TOOLS); stale git-tracked root runtime files removed (migrated to runtime/); HEARTBEAT.md History updated. |
 | 2026-04-03 | 18fc61af-8a85-4bdd-aff7-33d0236884cf | Session start | PASS | Inventory and selector cleanup verified; durable details live in source files and test logs. |
 | 2026-04-02 | local-a0d837a3 | Retrospective — heartbeat/button investigation | PASS | Retrospective completed; insights persisted to SOUL.md, MEMORY.md, USER.md, and repo memory. |
 | 2026-04-02 | 1bfe8821-3b7b-4b8a-89eb-65472a1368cd | Session start + CI resolution | PASS | CI fix verified; shell-quoting note persisted to repo memory. |
 | 2026-03-19 | n/a | Task completion + explicit debug | WARN→PASS | Metrics freshness updated in MEMORY.md. |
-| 2026-03-19 | n/a | Task completion (Researcher + Explore agents) | PASS | Agent and research surfaces updated; durable details live in source files. |

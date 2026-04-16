@@ -11,8 +11,8 @@
 |--------|--------------|---------|----------|--------|-------|
 | Test count baseline | 2026-03-19 | 2026-06-19 | P1 | `tests/run-all.sh` | 222 tests, 0 failures |
 | Starter-kit count | 2026-03-19 | 2026-06-19 | P2 | `starter-kits/REGISTRY.json` | 8 kits in REGISTRY.json |
-| Skill count | 2026-04-02 | 2026-07-02 | P2 | `.github/skills/` | 16 in .github/skills/, 15 in template/skills/ |
-| Agent count | 2026-04-02 | 2026-07-02 | P2 | `.github/agents/` | 10 agents in .github/agents/ |
+| Skill count | 2026-04-15 | 2026-07-15 | P2 | `skills/` | 18 in skills/ (repo-root plugin dir); consumer path is `.github/skills/` (not present in this repo) |
+| Agent count | 2026-04-15 | 2026-07-15 | P2 | `agents/` | 14 in agents/ (repo-root plugin dir); consumer path is `.github/agents/` (not present in this repo) |
 
 > **Priority**: P1 = critical baseline, P2 = important inventory, P3 = informational.
 > **Expires**: review-by date; heartbeat flags rows past expiry. Default: 3 months from last review.
