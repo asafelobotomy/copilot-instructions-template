@@ -4,26 +4,14 @@ A versioned, self-updating GitHub Copilot instruction template that keeps AI dev
 
 ## Repository map
 
-- [`AGENTS.md`](AGENTS.md): machine entry point and trigger phrases.
-- [`SETUP.md`](SETUP.md): first-time setup protocol for consumer projects.
-- [`UPDATE.md`](UPDATE.md): update, backup restore, and factory restore protocol.
-- [`MODELS.md`](MODELS.md): source of truth for agent model assignments.
-- [`MIGRATION.md`](MIGRATION.md): active migration registry for `v3.4.0+`.
-- [`MIGRATION.archive.md`](MIGRATION.archive.md): legacy migration registry for versions earlier than `v3.4.0`.
-- [`template/copilot-instructions.md`](template/copilot-instructions.md): consumer instruction template delivered by setup.
-- [`.github/research/README.md`](.github/research/README.md): research-note layout and archive rules.
-
-Archive naming stays explicit by design. The migration archive remains a single
-top-level file because the update flow fetches it directly, while research notes
-archive by month under `.github/research/archive/`.
-
 ## Set up in your project
 
-Tell Copilot:
+1. Install the plugin: open VS Code → `Chat: Install Plugin` → search **copilot-instructions-template**.
+2. Tell Copilot:
 
-> *"Setup from asafelobotomy/copilot-instructions-template"*
+> *"Set up this project"*
 
-Copilot fetches [`SETUP.md`](SETUP.md) and bootstraps your project automatically. No manual file copying required.
+The Setup agent runs a personalisation wizard using the locally-installed plugin. No manual file copying or URL fetching required.
 
 ## Update an existing installation
 
@@ -31,7 +19,7 @@ Tell Copilot:
 
 > *"Update your instructions"*
 
-Copilot fetches [`UPDATE.md`](UPDATE.md) and performs a version-aware three-way merge.
+The Setup agent compares your installed version against the plugin version and applies a selective update.
 
 ## Recover a broken installation
 
@@ -39,7 +27,7 @@ Tell Copilot:
 
 > *"Factory restore instructions"*
 
-Copilot bypasses the normal update pre-flight, backs up every template-managed surface, removes those files from the working tree, and reruns the latest setup flow from scratch.
+The Setup agent backs up every template-managed surface, removes those files from the working tree, and reruns the full setup from scratch.
 
 ## All trigger phrases
 
@@ -51,10 +39,7 @@ Agent delegation stays narrow by design. See [`AGENTS.md`](AGENTS.md) for the en
 
 ## Version
 
-Current template version: **0.5.13** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md) and [`MIGRATION.md`](MIGRATION.md).
-
-For older installed versions, use [`MIGRATION.archive.md`](MIGRATION.archive.md)
-alongside [`MIGRATION.md`](MIGRATION.md).
+Current template version: **0.6.0** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Release automation
 

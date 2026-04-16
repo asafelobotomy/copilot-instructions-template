@@ -13,7 +13,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 * N/A
 
-## [0.5.13](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.12.0...v0.5.13) (2026-04-14)
+## [0.6.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.12.0...v0.6.0) (2026-04-14)
 
 
 ### Changed
