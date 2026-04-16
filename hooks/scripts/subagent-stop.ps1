@@ -1,57 +1,23 @@
 #!/usr/bin/env pwsh
-# purpose:  Log subagent completion and write diary entry if durable findings exist
+# purpose:  Signal subagent completion; diary writes are explicit agent actions via write_diary
 # when:     SubagentStop hook — fires after a subagent finishes
-# inputs:   JSON via stdin with subagent result details
+# inputs:   JSON via stdin with subagent details (agent_type, agent_id, stop_hook_active)
 # outputs:  JSON with additionalContext summarising outcome
-# risk:     safe — creates/appends diary files only
+# risk:     safe
 # ESCALATION: none
 
 $ErrorActionPreference = 'Stop'
 
 $input_json = [Console]::In.ReadToEnd()
 $agentName = 'unknown'
-$result = ''
 try {
   $payload = $input_json | ConvertFrom-Json -ErrorAction Stop
-  if ($null -ne $payload.agentName -and [string]::IsNullOrWhiteSpace([string]$payload.agentName) -eq $false) {
-    $agentName = [string]$payload.agentName
-  }
-  if ($null -ne $payload.result) {
-    $result = ([string]$payload.result)
-    if ($result.Length -gt 200) {
-      $result = $result.Substring(0, 200)
-    }
+  if ($null -ne $payload.agent_type -and [string]::IsNullOrWhiteSpace([string]$payload.agent_type) -eq $false) {
+    $agentName = [string]$payload.agent_type
   }
 }
 catch {
   $payload = $null
-}
-
-$agentLower = $agentName.ToLowerInvariant()
-$diaryDir = '.copilot/workspace/knowledge/diaries'
-$diaryFile = Join-Path $diaryDir "${agentLower}.md"
-
-if ([string]::IsNullOrWhiteSpace($result) -eq $false) {
-  $shouldWrite = $true
-  if (Test-Path $diaryFile) {
-    $shouldWrite = -not (Select-String -Path $diaryFile -SimpleMatch -Quiet -Pattern $result)
-  }
-
-  if ($shouldWrite) {
-    New-Item -ItemType Directory -Path $diaryDir -Force | Out-Null
-    if (-not (Test-Path $diaryFile)) {
-      [System.IO.File]::WriteAllText((Resolve-Path -LiteralPath $diaryDir).Path + [System.IO.Path]::DirectorySeparatorChar + "${agentLower}.md", "# ${agentName} Diary`n`n")
-    }
-
-    $timestamp = [DateTime]::UtcNow.ToString('yyyy-MM-ddTHH:mm:ssZ')
-    Add-Content -Path $diaryFile -Value "- ${timestamp} ${result}"
-
-    $lines = Get-Content $diaryFile
-    if ($lines.Count -gt 30) {
-      $keptLines = @($lines[0], $lines[1]) + @($lines | Select-Object -Last 28)
-      Set-Content -Path $diaryFile -Value $keptLines
-    }
-  }
 }
 
 $context = "${agentName} done. Review before continuing."

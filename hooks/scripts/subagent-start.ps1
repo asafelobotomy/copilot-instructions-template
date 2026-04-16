@@ -1,8 +1,8 @@
 #!/usr/bin/env pwsh
-# purpose:  Inject subagent governance context and diary summary when a subagent is spawned
+# purpose:  Inject subagent governance context when a subagent is spawned
 # when:     SubagentStart hook — fires before a subagent begins work
-# inputs:   JSON via stdin with subagent details
-# outputs:  JSON with additionalContext including governance + diary summary
+# inputs:   JSON via stdin with subagent details (agent_type, agent_id)
+# outputs:  JSON with additionalContext including governance hint
 # risk:     safe
 # ESCALATION: none
 
@@ -12,24 +12,16 @@ $input_json = [Console]::In.ReadToEnd()
 $agentName = 'unknown'
 try {
   $payload = $input_json | ConvertFrom-Json -ErrorAction Stop
-  if ($null -ne $payload.agentName -and [string]::IsNullOrWhiteSpace([string]$payload.agentName) -eq $false) {
-    $agentName = [string]$payload.agentName
+  if ($null -ne $payload.agent_type -and [string]::IsNullOrWhiteSpace([string]$payload.agent_type) -eq $false) {
+    $agentName = [string]$payload.agent_type
   }
 }
 catch {
   $payload = $null
 }
 
-$context = "Depth<=3. Protocols: PDCA, Tool, Skill. Agent: ${agentName}."
-
-$agentLower = $agentName.ToLowerInvariant()
-$diaryFile = Join-Path '.copilot/workspace/knowledge/diaries' "${agentLower}.md"
-if (Test-Path $diaryFile) {
-  $diaryTail = Get-Content $diaryFile | Where-Object { $_.Trim() -ne '' } | Select-Object -Last 5
-  if ($null -ne $diaryTail -and $diaryTail.Count -gt 0) {
-    $context = "${context} Recent diary entries: $($diaryTail -join ' ')"
-  }
-}
+# Diary access is explicit — agents call spatial_status or read_diaries
+$context = "Depth<=3. Protocols: PDCA, Tool, Skill. Agent: ${agentName}. Call spatial_status or read_diaries to access your diary."
 
 $output = [ordered]@{
   hookSpecificOutput = [ordered]@{

@@ -248,8 +248,8 @@ Hook configuration lives in `.github/hooks/copilot-hooks.json` (all-local mode) 
 | `PostToolUse` | `post-edit-lint.sh`, `pulse.sh --trigger soft_post_tool` | Auto-format edited files and debounce heartbeat soft triggers |
 | `Stop` | `scan-secrets.sh`, `pulse.sh --trigger stop` | Run secret scan and recommend retrospective only for medium/large completed tasks |
 | `PreCompact` | `save-context.sh`, `pulse.sh --trigger compaction` | Preserve workspace state before context compaction |
-| `SubagentStart` | `subagent-start.sh` | Inject governance context and diary summary when a subagent spawns |
-| `SubagentStop` | `subagent-stop.sh` | Log subagent completion and write diary entry if durable findings exist |
+| `SubagentStart` | `subagent-start.sh` | Inject governance context when a subagent spawns; hint to call `spatial_status` or `read_diaries` |
+| `SubagentStop` | `subagent-stop.sh` | Signal subagent completion; diary writes are explicit agent actions via `write_diary` |
 
 Agent-scoped hooks: individual agents can define a `hooks:` section in their `.agent.md` YAML frontmatter. Agent-scoped hooks run only when that agent is active and supplement (not replace) global hooks. Enable via `chat.useCustomAgentHooks` setting.
 
@@ -429,11 +429,12 @@ A shared mental model gives human and agent a common vocabulary for talking abou
 
 ### Per-Agent Diaries
 
-Each specialist agent may record significant findings in a diary file under `.copilot/workspace/knowledge/diaries/`. Diaries are L2 (loaded on demand via SubagentStart hook, not always-loaded). Cap each diary at 30 lines; archive older entries.
+Each specialist agent may record significant findings in a diary file under `.copilot/workspace/knowledge/diaries/`. Diaries are independent of the spatial environment — `spatial_status` includes them, but diaries exist and operate on their own.
 
 - Diary files: `.copilot/workspace/knowledge/diaries/{agent-name}.md`
-- Write trigger: agent discovers a durable insight worth sharing across sessions.
-- Dedup: grep the diary for the finding text before writing — skip if already present.
+- Write trigger: call `write_diary(agent_name, finding)` explicitly when you discover a durable insight worth sharing across sessions. The MCP tool handles dedup, timestamping, and a 30-line cap.
+- Read: call `read_diaries(agent_name)` for one agent or `read_diaries()` for all. `spatial_status` also surfaces a recent summary.
+- The `write_diary` and `read_diaries` tools are provided by the heartbeat MCP server (consumer fallback) and will be available as extension LM tools in a future extension release.
 
 ---
 

@@ -89,6 +89,12 @@
       "ciLabel": "Hook behavior | spatial_status tool"
     },
     {
+      "id": "hook-mcp-write-diary",
+      "path": "tests/hooks/test-mcp-write-diary.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | write_diary + read_diaries tools"
+    },
+    {
       "id": "hook-guard-destructive",
       "path": "tests/hooks/test-guard-destructive.sh",
       "phase": "hooks",

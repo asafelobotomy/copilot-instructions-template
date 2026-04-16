@@ -129,7 +129,11 @@ When the push lands on `main` and the version in `VERSION.md` does not yet have 
 
 **SemVer policy**: Major for breaking consumer-facing changes · Minor (`feat:`) for consumer-facing additions · Patch for fixes, maintenance, and refactors.
 
+Minor: `feat:` for a consumer-facing addition. Use `feat` only for a real consumer-facing capability.
+
 ### Validation
+
+During iterative work, prefer `bash scripts/harness/select-targeted-tests.sh <paths...>` over running the full suite. Reserve `bash tests/run-all.sh` as the single end-of-task full-suite gate. If a targeted failure forces broader re-verification, run the full suite and fix before continuing.
 
 ```bash
 # Full suite (use as final gate only)
@@ -146,10 +150,10 @@ bash scripts/workspace/sync-workspace-index.sh --check
 bash scripts/sync/sync-models.sh --check
 ```
 
-### Recommended GitHub repository settings
+## Recommended GitHub settings
 
 - Block branch deletion and non-fast-forward pushes on `main`
-- Enable squash merge
+- Enable squash merge.
 
 Audit live settings with an authenticated GitHub CLI session:
 
@@ -179,4 +183,10 @@ snippet
 EOF
 ```
 
-Use `get_terminal_output`, `send_to_terminal`, and `kill_terminal` only with the exact opaque terminal ID returned by `run_in_terminal` async mode. Do not pass terminal labels, shell names, or integer IDs.
+For the async terminal tool family, use the exact terminal ID returned by `run_in_terminal` async mode with `get_terminal_output`, `send_to_terminal`, and `kill_terminal`. Treat those tools as valid only when `run_in_terminal` returned a live terminal ID, usually from async mode or from a sync command that outlived its timeout.
+
+- Use `terminal_last_command` and `terminal_selection` only for the currently active editor terminal.
+- When a command is non-blocking, prefer `execution_subagent` or a synchronous terminal run over creating a background terminal just to poll it.
+- call `kill_terminal` when the session is no longer needed.
+- Do not add `sleep` loops or blind polling around background terminals.
+- For persistent task workflows, prefer repo scripts or `create_and_run_task` instead of a persistent interactive shell.

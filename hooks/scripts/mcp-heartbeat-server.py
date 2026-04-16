@@ -536,5 +536,88 @@ def spatial_status() -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# Tool: write_diary — record a durable finding in an agent's diary
+# ---------------------------------------------------------------------------
+
+
+@mcp.tool()
+def write_diary(agent_name: str, finding: str) -> dict:
+    """Record a durable finding in an agent's diary file.
+
+    Call when you discover a workspace insight worth sharing across sessions.
+    The entry is timestamped, deduplicated, and the file is capped at 30 lines.
+    Diary files live at .copilot/workspace/knowledge/diaries/{agent_name}.md.
+
+    Args:
+        agent_name: The calling agent's name (e.g. "Explore", "Audit").
+        finding:    A single-sentence insight to persist (truncated to 200 chars).
+    """
+    if not agent_name or not finding:
+        return {"error": "agent_name and finding are required"}
+    finding = finding[:200].strip()
+    if not finding:
+        return {"error": "finding is empty after trimming"}
+
+    agent_lower = agent_name.lower()
+    diary_file = DIARIES_DIR / f"{agent_lower}.md"
+
+    # Dedup: skip if the finding text is already present
+    if diary_file.exists():
+        existing = diary_file.read_text(encoding="utf-8")
+        if finding in existing:
+            return {"status": "skipped", "reason": "duplicate", "agent": agent_name}
+
+    # Create directory and header if needed
+    DIARIES_DIR.mkdir(parents=True, exist_ok=True)
+    if not diary_file.exists():
+        diary_file.write_text(f"# {agent_name} Diary\n\n", encoding="utf-8")
+
+    # Append timestamped entry
+    timestamp = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    entry = f"- {timestamp} {finding}"
+    with diary_file.open("a", encoding="utf-8") as fh:
+        fh.write(entry + "\n")
+
+    # Enforce 30-line cap (keep first 2 header lines + last 28 entries)
+    lines = diary_file.read_text(encoding="utf-8").splitlines()
+    if len(lines) > 30:
+        kept = lines[:2] + lines[-28:]
+        diary_file.write_text("\n".join(kept) + "\n", encoding="utf-8")
+
+    return {"status": "written", "agent": agent_name, "entry": entry}
+
+
+# ---------------------------------------------------------------------------
+# Tool: read_diaries — read diary entries for one agent or all agents
+# ---------------------------------------------------------------------------
+
+
+@mcp.tool()
+def read_diaries(agent_name: str = "") -> dict:
+    """Read diary entries for one agent or all agents.
+
+    Diaries are per-agent files under .copilot/workspace/knowledge/diaries/.
+    They record durable insights written explicitly via write_diary.
+
+    Args:
+        agent_name: Agent name to read (e.g. "Explore"). Omit to read all
+                    agents (last 3 entries each).
+    """
+    if agent_name:
+        agent_lower = agent_name.lower()
+        diary_file = DIARIES_DIR / f"{agent_lower}.md"
+        if not diary_file.exists():
+            return {"agent": agent_name, "entries": [], "note": "no diary yet"}
+        lines = [
+            l.strip()
+            for l in diary_file.read_text(encoding="utf-8").splitlines()
+            if l.strip().startswith("- ")
+        ]
+        return {"agent": agent_name, "entries": lines}
+
+    return {"diaries": _read_diary_summaries(max_entries=3)}
+
+
 if __name__ == "__main__":
     mcp.run()

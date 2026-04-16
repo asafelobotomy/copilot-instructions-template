@@ -180,7 +180,8 @@
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-mcp-heartbeat-server.sh",
-        "tests/hooks/test-mcp-spatial-status.sh"
+        "tests/hooks/test-mcp-spatial-status.sh",
+        "tests/hooks/test-mcp-write-diary.sh"
       ],
       "reason": "The heartbeat MCP server has a dedicated unit suite."
     },
@@ -191,7 +192,8 @@
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-mcp-heartbeat-server.sh",
-        "tests/hooks/test-mcp-spatial-status.sh"
+        "tests/hooks/test-mcp-spatial-status.sh",
+        "tests/hooks/test-mcp-write-diary.sh"
       ],
       "reason": "The repo-live heartbeat MCP server has a dedicated unit suite."
     },
