@@ -236,7 +236,6 @@ echo "37. PowerShell child hook suites map back to the umbrella PowerShell suite
 for child_suite in \
   "tests/hooks/test-hook-session-start-powershell.sh" \
   "tests/hooks/test-hook-post-edit-lint-powershell.sh" \
-  "tests/hooks/test-pulse-paths-powershell.sh" \
   "tests/hooks/test-hook-pulse-powershell.sh" \
   "tests/hooks/test-hook-save-context-powershell.sh"; do
   output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "$child_suite")

@@ -31,4 +31,4 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 INPUT=$(cat)
 
-TRIGGER="$TRIGGER" HOOK_INPUT="$INPUT" python3 "$SCRIPT_DIR/pulse_runtime.py"
+printf '%s' "$INPUT" | python3 "$SCRIPT_DIR/pulse_runtime.py" "$TRIGGER"

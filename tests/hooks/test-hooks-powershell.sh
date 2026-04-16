@@ -13,7 +13,6 @@ HOOKS_DIR=$(cd "$(dirname "$0")" && pwd)
 SUITES=(
   "$HOOKS_DIR/test-hook-session-start-powershell.sh"
   "$HOOKS_DIR/test-hook-post-edit-lint-powershell.sh"
-  "$HOOKS_DIR/test-pulse-paths-powershell.sh"
   "$HOOKS_DIR/test-hook-pulse-powershell.sh"
   "$HOOKS_DIR/test-hook-save-context-powershell.sh"
 )

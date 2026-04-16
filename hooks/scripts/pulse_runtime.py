@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 import time
 from pathlib import Path
 
@@ -38,8 +39,24 @@ from pulse_state import (
 )
 
 
-TRIGGER = os.environ.get("TRIGGER", "")
-RAW_INPUT = os.environ.get("HOOK_INPUT", "")
+def resolve_trigger(argv: list[str]) -> str:
+    if len(argv) > 1 and argv[1]:
+        return argv[1]
+    return os.environ.get("TRIGGER", "")
+
+
+def resolve_raw_input(argv: list[str]) -> str:
+    # Prefer stdin when a positional trigger arg is supplied.
+    if len(argv) > 1:
+        try:
+            return sys.stdin.read()
+        except Exception:
+            return ""
+    return os.environ.get("HOOK_INPUT", "")
+
+
+TRIGGER = resolve_trigger(sys.argv)
+RAW_INPUT = resolve_raw_input(sys.argv)
 NOW = int(time.time())
 SCRIPT_DIR = Path(__file__).resolve().parent
 

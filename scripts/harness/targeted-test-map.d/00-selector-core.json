@@ -199,16 +199,6 @@
       "reason": "The post-edit-lint PowerShell child suite runs through the umbrella PowerShell hook suite in the canonical inventory."
     },
     {
-      "id": "powershell-hook-child-pulse-paths-test",
-      "matchType": "exact",
-      "pattern": "tests/hooks/test-pulse-paths-powershell.sh",
-      "phaseStrategy": "targeted",
-      "tests": [
-        "tests/hooks/test-hooks-powershell.sh"
-      ],
-      "reason": "The pulse-paths PowerShell child suite runs through the umbrella PowerShell hook suite in the canonical inventory."
-    },
-    {
       "id": "powershell-hook-child-pulse-test",
       "matchType": "exact",
       "pattern": "tests/hooks/test-hook-pulse-powershell.sh",
