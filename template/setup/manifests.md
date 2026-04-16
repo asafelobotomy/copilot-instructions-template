@@ -441,7 +441,7 @@ HEARTBEAT_MCP=plugin|local
 -->
 
 <!-- section-fingerprints
-§1=<fp> ... §9=<fp>
+§1=<fp> ... §14=<fp>
 -->
 
 <!-- file-manifest
