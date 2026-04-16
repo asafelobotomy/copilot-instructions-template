@@ -14,6 +14,8 @@ Scan the entire codebase. Prioritise: source code → config files → CI workfl
 
 ---
 
+## Checks
+
 ### S1 — Secret Detection
 
 Scan all files for leaked secrets.
