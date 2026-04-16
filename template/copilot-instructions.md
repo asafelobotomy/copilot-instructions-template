@@ -399,7 +399,7 @@ MCP enables Copilot to invoke external servers beyond built-in capabilities. Con
 
 Key rules (always loaded):
 
-- **Sandbox stdio servers**: set `"sandboxEnabled": true` in `mcp.json` for locally-running `npx`-based stdio servers (macOS/Linux). Do not sandbox `uvx`-based servers (`git`, `fetch`, `heartbeat`) — the VS Code sandbox proxy intercepts PyPI network access during the launcher phase and triggers repeated domain-approval prompts. Sandboxed servers auto-approve tool calls.
+- **Sandbox stdio servers**: set `"sandboxEnabled": true` in `mcp.json` for locally-running `npx`-based stdio servers (macOS/Linux). Do not sandbox `uvx`-based servers — the VS Code sandbox proxy intercepts PyPI network access during the launcher phase and triggers repeated domain-approval prompts. The M4 audit check enforces this by exempting `command == "uvx"` servers automatically. Sandboxed servers auto-approve tool calls.
 - The MCP `memory` server has been removed — VS Code's built-in memory tool (`/memories/`) provides superior persistent storage with three scopes (user, session, repository)
 - Never hardcode secrets — use `${input:}` or `${env:}` variable syntax
 - **Monorepo discovery**: enable `chat.useCustomizationsInParentRepositories` to auto-discover instructions, prompts, agents, skills, and hooks from a parent Git repository root when opening a subfolder. Requires the parent folder to be trusted.
