@@ -102,6 +102,7 @@ table (§ 10). Write to `.github/copilot-instructions.md`. Validate no `{{.*}}`
 tokens remain; if any, batch-ask the user (max 4 per call).
 
 **§ 2.5 — Agent files** (S6 mode-conditional):
+
 - **Plugin-backed** (S6 = Plugin-backed, or S6 = Ask per surface and user chose
   plugin for agents): Skip. Agents are delivered by the plugin. Do not create
   `.github/agents/`.
@@ -110,6 +111,7 @@ tokens remain; if any, batch-ask the user (max 4 per call).
   `.github/agents/`. Follow manifests.md § Agent files for the asset list.
 
 **§ 2.6 — Skill library** (S6 mode-conditional):
+
 - **Plugin-backed**: Skip. Skills are delivered by the plugin. Do not create
   `.github/skills/`.
 - **All-local**: Copy all files from `${CLAUDE_PLUGIN_ROOT}/skills/` to
@@ -131,6 +133,7 @@ unused runtime sections.
 **§ 2.10 — MCP config** (E22 only, S6 mode-conditional): Read and write
 `${CLAUDE_PLUGIN_ROOT}/template/vscode/mcp.json` to `.vscode/mcp.json`. Enable
 optional servers per E22a. Run sandbox detection on Linux first.
+
 - **Plugin-backed** (S6 = Plugin-backed, or S6 = Ask per surface and user chose
   plugin for MCP): Omit the `heartbeat` server entry from `.vscode/mcp.json` —
   the plugin delivers it via `.mcp.json`. Write only filesystem, git, and any
@@ -154,6 +157,7 @@ kits from `${CLAUDE_PLUGIN_ROOT}/starter-kits/<kit-name>/` to
 
 **§ 2.12 — Hook scripts** (A16 conditional, S6 mode-conditional): Hook scripts
 are already active via the plugin's `hooks/hooks.json` registration.
+
 - **Plugin-backed** (S6 = Plugin-backed, or S6 = Ask per surface and user chose
   plugin for hooks): Skip local hook installation. Hooks run from the plugin.
   Do not create `.github/hooks/`.

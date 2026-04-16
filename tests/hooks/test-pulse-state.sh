@@ -106,11 +106,11 @@ state["session_id"] = "sess-save"
 module.save_state(state, workspace, state_path)
 assert state_path.exists(), f"save_state should write to primary path (got nothing at {state_path})"
 saved = json.loads(state_path.read_text(encoding="utf-8"))
-assert saved["session_id"] == "sess-save", f"expected sess-save, got {saved.get('session_id')}"
-assert saved["schema_version"] == 1, f"expected schema_version 1, got {saved.get('schema_version')}"
+assert saved["session_id"] == "sess-save", "expected sess-save, got %s" % saved.get("session_id")
+assert saved["schema_version"] == 1, "expected schema_version 1, got %s" % saved.get("schema_version")
 # load_state round-trips correctly
 loaded = module.load_state(state_path)
-assert loaded["session_id"] == "sess-save", f"load_state expected sess-save, got {loaded.get('session_id')}"
+assert loaded["session_id"] == "sess-save", "load_state expected sess-save, got %s" % loaded.get("session_id")
 '
 echo ""
 

@@ -8,7 +8,7 @@
 set -euo pipefail
 
 # Consume stdin per hook stdio protocol (SessionStart payload, not used but must be drained)
-INPUT=$(cat)
+cat > /dev/null
 
 # shellcheck source=hooks/scripts/lib-hooks.sh
 source "$(dirname "$0")/lib-hooks.sh"

@@ -3,7 +3,7 @@
 <!-- workspace-layer: L1 | budget: ≤200 tokens | trigger: always -->
 > **Domain**: Preferences — observed user behaviours, communication style, and project-scoped interaction patterns.
 > **Boundary**: No project facts, agent reasoning, or cross-project preferences (use built-in `/memories/`).
-
+>
 > **Coexistence note**: VS Code's built-in user memory (`/memories/`) stores personal preferences that persist across all workspaces. This file is different — it captures **project-scoped** observations about how the user works within *this specific project*. Use built-in memory for cross-project preferences; use this file for project-specific interaction patterns that help the agent tailor its behaviour to this codebase.
 
 | Attribute | Observed value |
