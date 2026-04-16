@@ -24,7 +24,8 @@ if ($toolName -notmatch 'terminal|command|bash|shell') {
 }
 # Read-only terminal observation tools — never execute commands, always allow
 # get_terminal_output / getTerminalOutput only reads stdout from an existing session
-if ($toolName -imatch 'get_terminal_output|getterminaloutput|terminal_last_command|terminalselection') {
+# run_vscode_command / vscode_run_command invokes VS Code UI commands, not shell commands
+if ($toolName -imatch 'get_terminal_output|getterminaloutput|terminal_last_command|terminalselection|run_vscode_command|vscode_run_command') {
     '{"continue": true}'; exit 0
 }
 $ti = $data.tool_input

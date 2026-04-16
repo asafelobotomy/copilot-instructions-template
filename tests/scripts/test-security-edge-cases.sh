@@ -87,6 +87,19 @@ assert_guard_continue "rg search for rm guard regex continues" "$(make_guard_inp
 assert_guard_continue "grep search for chmod guard regex continues" "$(make_guard_input 'bash' "grep -n 'chmod -R 777 /([^a-zA-Z0-9._-]|$)' hooks/scripts/guard-destructive.sh")"
 echo ""
 
+# ── 5b. VS Code command tools pass through without asking ────────────────────
+# run_vscode_command matches the *"command"* name filter but is not a shell tool.
+# Its payload uses tool_input.command_id, not tool_input.command, so it would
+# previously fall through to the "Missing tool_input.command" ask path.
+echo "5b. VS Code command runner tools are not guarded (not shell tools)"
+assert_guard_continue "run_vscode_command continues" \
+  '{"tool_name":"run_vscode_command","tool_input":{"command_id":"github.copilot.chat.mcp.startAllServers"}}'
+assert_guard_continue "vscode_run_command continues" \
+  '{"tool_name":"vscode_run_command","tool_input":{"command_id":"workbench.action.reloadWindow"}}'
+assert_guard_continue "run_vscode_command with no tool_input continues" \
+  '{"tool_name":"run_vscode_command"}'
+echo ""
+
 # ── 6. verify-version-references.sh read-only stability ──────────────────────
 # Running verify-version-references.sh twice should leave the managed files unchanged.
 echo "6. verify-version-references.sh read-only stability"

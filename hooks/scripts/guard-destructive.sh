@@ -27,8 +27,10 @@ fi
 
 # Read-only terminal observation tools — never execute commands, always allow
 # get_terminal_output / getTerminalOutput only reads stdout from an existing session
+# run_vscode_command / vscode_run_command invokes VS Code UI commands, not shell commands
 case "${TOOL_NAME,,}" in
-  *get_terminal_output*|*getterminaloutput*|*terminal_last_command*|*terminalselection*)
+  *get_terminal_output*|*getterminaloutput*|*terminal_last_command*|*terminalselection*|\
+  *run_vscode_command*|*vscode_run_command*)
     echo '{"continue": true}'
     exit 0
     ;;
