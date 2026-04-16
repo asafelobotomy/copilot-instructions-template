@@ -99,18 +99,13 @@ set -euo pipefail
 echo '{}'
 SH
 
-  # Valid mcp.json — includes heartbeat to satisfy M5 (all-local default)
+  # Valid mcp.json
   cat > "$SANDBOX/.vscode/mcp.json" <<'JSON'
 {
   "servers": {
     "git": {
       "command": "uvx",
       "args": ["mcp-server-git"]
-    },
-    "heartbeat": {
-      "type": "stdio",
-      "command": "uvx",
-      "args": ["mcp-heartbeat"]
     }
   }
 }

@@ -8,7 +8,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5 mini
 tools: [agent, editFiles, runCommands, codebase, search]
-mcp-servers: [filesystem, git, heartbeat]
+mcp-servers: [filesystem, git]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Explore', 'Docs']
@@ -48,7 +48,7 @@ Guidelines:
 - Use `Code` when the task expands from structural cleanup into semantic
   implementation or non-structural refactoring.
 - Use `Docs` when file moves require updating documentation, migration guides, or user-facing references beyond inline path fixes.
-- Use `mcp_heartbeat_spatial_status` when the current session map or diary trail
+- Use `asafelobotomy_spatial_status` when the current session map or diary trail
   helps you understand how workspace structure is being used before moving it.
 - When you discover a durable structural insight worth preserving, follow
   `.copilot/workspace/knowledge/diaries/README.md` and append a concise note to

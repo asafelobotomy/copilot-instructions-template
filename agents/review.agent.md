@@ -8,7 +8,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5.2
 tools: [agent, codebase, githubRepo, runCommands, search]
-mcp-servers: [filesystem, git, github, fetch, context7, heartbeat]
+mcp-servers: [filesystem, git, github, fetch, context7]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Audit', 'Organise', 'Docs', 'Debugger', 'Cleaner']
@@ -45,7 +45,7 @@ Guidelines:
   repository structure, file placement, or broken pathing after moves.
 - Use `Debugger` when a finding cannot be substantiated without isolating the underlying root cause first.
 - Use `Docs` when the review outcome is primarily missing documentation, migration guidance, or user-facing explanation.
-- Use `mcp_heartbeat_spatial_status` when session state or diary context would
+- Use `asafelobotomy_spatial_status` when session state or diary context would
   help explain why a review surface changed recently.
 - Tag every finding with a waste category from §6 (Muda).
 - Reference specific file paths and line numbers for every finding.

@@ -131,18 +131,6 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
 
 ## MCP server configs (§ 2.10)
 
-### Heartbeat delivery (S6 mode-conditional)
-
-- **Plugin-backed**: The heartbeat MCP server is delivered by the plugin via
-  `.mcp.json` at the plugin root. Omit the `heartbeat` entry from
-  `.vscode/mcp.json` entirely.
-- **All-local**: Include the `heartbeat` entry in `.vscode/mcp.json` pointing to
-  `${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py`.
-
-**Invariant**: Exactly one heartbeat server must be active — never zero, never
-both. Plugin-backed mode relies on the plugin's `.mcp.json`; all-local relies on
-the workspace's `.vscode/mcp.json`.
-
 ### Sandbox detection (Linux only)
 
 ```bash
@@ -231,19 +219,6 @@ fi
           ]
         }
       }
-    },
-    "heartbeat": {
-      "type": "stdio",
-      "command": "uvx",
-      "env": {
-        "CLAUDE_TMPDIR": "${userHome}/.cache/uv/.copilot-tmp",
-        "TMPDIR": "${userHome}/.cache/uv/.copilot-tmp"
-      },
-      "args": [
-        "--from", "mcp[cli]",
-        "mcp", "run",
-        "${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py"
-      ]
     }
   }
 }
@@ -294,19 +269,6 @@ fi
         "--browser=chromium"
       ],
       "disabled": true
-    },
-    "heartbeat": {
-      "type": "stdio",
-      "command": "uvx",
-      "env": {
-        "CLAUDE_TMPDIR": "${userHome}/.cache/uv/.copilot-tmp",
-        "TMPDIR": "${userHome}/.cache/uv/.copilot-tmp"
-      },
-      "args": [
-        "--from", "mcp[cli]",
-        "mcp", "run",
-        "${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py"
-      ]
     }
   }
 }
@@ -437,7 +399,6 @@ OWNERSHIP_MODE=plugin-backed|all-local
 AGENTS=plugin|local
 SKILLS=plugin|local
 HOOKS=plugin|local
-HEARTBEAT_MCP=plugin|local
 -->
 
 <!-- section-fingerprints

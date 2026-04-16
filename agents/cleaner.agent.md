@@ -8,7 +8,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5 mini
 tools: [agent, editFiles, runCommands, codebase, search, askQuestions]
-mcp-servers: [filesystem, git, heartbeat]
+mcp-servers: [filesystem, git]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Audit', 'Organise', 'Docs', 'Commit']
@@ -56,7 +56,7 @@ Guidelines:
 - Start with a dry-run inventory. Classify findings as cache, generated output,
   archive, stale draft, or dead file before changing anything.
 - Split tracked and untracked candidates early. Tracked deletions always need explicit user approval.
-- Use `mcp_heartbeat_spatial_status` when session context or diary notes help
+- Use `asafelobotomy_spatial_status` when session context or diary notes help
   you understand which surfaces are still active.
 - When you discover a durable hygiene insight worth preserving, follow
   `.copilot/workspace/knowledge/diaries/README.md` and append a concise note to

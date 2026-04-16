@@ -158,22 +158,8 @@ echo "9. Absolute path normalization — skip (SETUP.md deleted)"
 # Placeholder for future path normalization test
 echo ""
 
-echo "10. Heartbeat MCP server maps to its dedicated hook suite"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "hooks/scripts/mcp-heartbeat-server.py")
-status=$?
-assert_success "selector exits zero on heartbeat MCP server" "$status"
-SELECTOR_OUTPUT="$output" assert_python "heartbeat MCP server maps to its dedicated suite" '
-payload = json.loads(os.environ["SELECTOR_OUTPUT"])
-selected = set(payload["selected_tests"])
-required = {
-    "tests/hooks/test-mcp-heartbeat-server.sh",
-}
-missing = sorted(required - selected)
-if missing:
-    raise SystemExit(str(payload["selected_tests"]))
-if payload["intermediate_phase_strategy"] != "targeted":
-    raise SystemExit(payload["intermediate_phase_strategy"])
-'
+echo "10. Heartbeat MCP server — skip (heartbeat MCP server deleted)"
+# The heartbeat MCP server has been removed; heartbeat is now extension-only.
 echo ""
 
 echo "11. Setup manifests — skip (setup/update contracts deleted)"

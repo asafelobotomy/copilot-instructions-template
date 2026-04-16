@@ -94,18 +94,11 @@ for field, expected in (("agents", "agents"), ("skills", "skills"), ("hooks", "h
 '
 echo ""
 
-echo "4c. Plugin .mcp.json declares heartbeat server"
-assert_python "plugin mcp.json has heartbeat" '
+echo "4c. Plugin .mcp.json is empty (heartbeat MCP server removed)"
+assert_python "plugin mcp.json is empty object" '
 mcp = json.loads((root / ".mcp.json").read_text(encoding="utf-8"))
-servers = mcp.get("mcpServers", {})
-if "heartbeat" not in servers:
-    raise SystemExit(".mcp.json missing heartbeat server")
-hb = servers["heartbeat"]
-if hb.get("type") != "stdio":
-    raise SystemExit("heartbeat server must be stdio type")
-cmd = hb.get("command", "")
-if "uvx" not in cmd and "python" not in cmd:
-    raise SystemExit("heartbeat command should use uvx or python, got: " + cmd)
+if mcp != {}:
+    raise SystemExit(".mcp.json should be empty object, got: " + json.dumps(mcp))
 '
 echo ""
 

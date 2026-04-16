@@ -54,7 +54,6 @@ make_fixture() {
   : > "$root/hooks/scripts/save-context.ps1"
   : > "$root/hooks/scripts/heartbeat-policy.json"
   : > "$root/hooks/scripts/heartbeat_clock_summary.py"
-  : > "$root/hooks/scripts/mcp-heartbeat-server.py"
   : > "$root/hooks/scripts/pulse_runtime.py"
 
   cat > "$root/template/workspace/operations/workspace-index.json" <<'EOF'
@@ -115,8 +114,7 @@ make_fixture() {
       "save-context.ps1"
     ],
     "python": [
-      "heartbeat_clock_summary.py",
-      "mcp-heartbeat-server.py"
+      "heartbeat_clock_summary.py"
     ],
     "json": [
       "heartbeat-policy.json"
@@ -174,7 +172,7 @@ for rel in ('.copilot/workspace/operations/workspace-index.json', 'template/work
   assert data['counts']['skillsTemplate'] == 0
   assert data['counts']['hookScriptsShell'] == 3
   assert data['counts']['hookScriptsPowerShell'] == 3
-  assert data['counts']['hookScriptsPython'] == 3
+  assert data['counts']['hookScriptsPython'] == 2
   assert data['counts']['hookScriptsJson'] == 1
 "
 assert_python_in_root "baseline order is preserved and extras sort after it" "$TMP_WRITE" "
@@ -190,7 +188,7 @@ for rel in ('.copilot/workspace/operations/workspace-index.json', 'template/work
   assert data['workflowFiles'] == ['copilot-setup-steps.yml']
   assert data['hookScripts']['shell'] == ['session-start.sh', 'guard-destructive.sh', 'save-context.sh']
   assert data['hookScripts']['powershell'] == ['session-start.ps1', 'guard-destructive.ps1', 'save-context.ps1']
-  assert data['hookScripts']['python'] == ['heartbeat_clock_summary.py', 'mcp-heartbeat-server.py', 'pulse_runtime.py']
+  assert data['hookScripts']['python'] == ['heartbeat_clock_summary.py', 'pulse_runtime.py']
   assert data['hookScripts']['json'] == ['heartbeat-policy.json']
 "
 assert_python_in_root "repo and template indices match exactly" "$TMP_WRITE" "

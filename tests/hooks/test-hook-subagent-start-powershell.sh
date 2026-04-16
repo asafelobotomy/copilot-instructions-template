@@ -54,7 +54,7 @@ status=$?
 assert_success "hint-check exits zero" "$status"
 assert_valid_json "hint-check emits valid JSON" "$output"
 assert_contains "context includes spatial_status hint" "$output" 'spatial_status'
-assert_contains "context includes read_diaries hint" "$output" 'read_diaries'
+assert_contains "context includes spatial_status hint" "$output" 'asafelobotomy_spatial_status'
 echo ""
 
 finish_tests

@@ -601,80 +601,6 @@ mutate_k2_missing_registry_file() {
 JSON
 }
 
-mutate_m5_plugin_backed_with_workspace_heartbeat() {
-  # HEARTBEAT_MCP=plugin but workspace mcp.json still has a heartbeat server → M5 HIGH
-  write_sandbox_file ".github/copilot-version.md" <<'MD'
-<!-- markdownlint-disable-file MD041 -->
-5.0.0
-Applied: 2026-01-01
-<!-- ownership-mode
-OWNERSHIP_MODE=plugin-backed
-AGENTS=plugin
-SKILLS=plugin
-HOOKS=plugin
-HEARTBEAT_MCP=plugin
--->
-MD
-  # Sandbox mcp.json already has a heartbeat entry (added during setup_sandbox)
-}
-
-mutate_m5_all_local_missing_workspace_heartbeat() {
-  # HEARTBEAT_MCP=local but workspace mcp.json lacks heartbeat → M5 HIGH
-  write_sandbox_file ".github/copilot-version.md" <<'MD'
-<!-- markdownlint-disable-file MD041 -->
-5.0.0
-Applied: 2026-01-01
-<!-- ownership-mode
-OWNERSHIP_MODE=all-local
-AGENTS=local
-SKILLS=local
-HOOKS=local
-HEARTBEAT_MCP=local
--->
-MD
-  # Overwrite mcp.json without a heartbeat entry
-  cat > "$SANDBOX/.vscode/mcp.json" <<'JSON'
-{
-  "servers": {
-    "git": {
-      "command": "uvx",
-      "args": ["mcp-server-git"]
-    }
-  }
-}
-JSON
-}
-
-mutate_m5_plugin_backed_missing_plugin_mcp() {
-  # HEARTBEAT_MCP=plugin and workspace mcp.json has no heartbeat (correct) but
-  # .mcp.json is absent → M5 HIGH (missing plugin-side declaration)
-  write_sandbox_file ".github/copilot-version.md" <<'MD'
-<!-- markdownlint-disable-file MD041 -->
-5.0.0
-Applied: 2026-01-01
-<!-- ownership-mode
-OWNERSHIP_MODE=plugin-backed
-AGENTS=plugin
-SKILLS=plugin
-HOOKS=plugin
-HEARTBEAT_MCP=plugin
--->
-MD
-  # Workspace mcp.json has no heartbeat (correct for plugin-backed)
-  cat > "$SANDBOX/.vscode/mcp.json" <<'JSON'
-{
-  "servers": {
-    "git": {
-      "command": "uvx",
-      "args": ["mcp-server-git"]
-    }
-  }
-}
-JSON
-  # Remove the plugin .mcp.json so M5 has nothing to validate against
-  rm -f "$SANDBOX/.mcp.json"
-}
-
 mutate_v1_invalid_ownership_mode() {
   mutate_consumer_layout
   # Overwrite with a version file that has an invalid OWNERSHIP_MODE
@@ -723,7 +649,6 @@ SETUP_DATE=2026-04-04
 -->
 <!-- ownership-mode
 OWNERSHIP_MODE=invalid-value
-HEARTBEAT_MCP=local
 -->
 MD
 }

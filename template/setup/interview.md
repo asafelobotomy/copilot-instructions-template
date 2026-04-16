@@ -106,8 +106,7 @@
 
 - **E22a — Optional MCP servers**: Which optional MCP servers should I enable?
   Options: GitHub | Fetch | Context7 | Playwright | None
-  Ask only when E22 = B. Multi-select allowed. Default: None (keep core only: filesystem, git, heartbeat).
-  Note: when S6 = Plugin-backed, the heartbeat MCP server is delivered by the plugin and omitted from `.vscode/mcp.json`. When S6 = All-local, heartbeat is written to `.vscode/mcp.json` pointing to `.github/hooks/scripts/mcp-heartbeat-server.py`.
+  Ask only when E22 = B. Multi-select allowed. Default: None (keep core only: filesystem, git).
 
 - **E23 — Claude compatibility**: Should I generate a `CLAUDE.md` file for Claude Code compatibility?
   Options: Yes | No

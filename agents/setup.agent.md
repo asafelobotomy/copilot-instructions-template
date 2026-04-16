@@ -8,7 +8,7 @@ model:
   - GPT-5.2
   - GPT-5 mini
 tools: [agent, editFiles, fetch, githubRepo, codebase, askQuestions, runCommands, search]
-mcp-servers: [filesystem, git, github, context7, heartbeat]
+mcp-servers: [filesystem, git, github, context7]
 user-invocable: true
 disable-model-invocation: true
 agents: ['Audit', 'Extensions', 'Organise', 'Researcher']
@@ -130,17 +130,9 @@ Validate no `{{PLACEHOLDER}}` tokens remain after token replacement.
 `.github/workflows/copilot-setup-steps.yml`. Populate runtime tokens and remove
 unused runtime sections.
 
-**§ 2.10 — MCP config** (E22 only, S6 mode-conditional): Read and write
+**§ 2.10 — MCP config** (E22 only): Read and write
 `${CLAUDE_PLUGIN_ROOT}/template/vscode/mcp.json` to `.vscode/mcp.json`. Enable
 optional servers per E22a. Run sandbox detection on Linux first.
-
-- **Plugin-backed** (S6 = Plugin-backed, or S6 = Ask per surface and user chose
-  plugin for MCP): Omit the `heartbeat` server entry from `.vscode/mcp.json` —
-  the plugin delivers it via `.mcp.json`. Write only filesystem, git, and any
-  optional servers the user selected.
-- **All-local** (S6 = All-local, or S6 = Ask per surface and user chose local
-  for MCP): Include the `heartbeat` server entry in `.vscode/mcp.json` pointing
-  to `${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py`.
 
 **§ 2.11 — VS Code settings** (E18 only): Merge keys from
 `${CLAUDE_PLUGIN_ROOT}/template/vscode/settings.json` into `.vscode/settings.json`

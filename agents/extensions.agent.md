@@ -7,7 +7,7 @@ model:
   - Claude Opus 4.6
   - GPT-5.2
 tools: [agent, codebase, runCommands, fetch, editFiles, askQuestions, get_active_profile, list_profiles, get_workspace_profile_association, ensure_repo_profile, get_installed_extensions, install_extension, uninstall_extension, sync_extensions_with_recommendations]
-mcp-servers: [filesystem, git, context7, heartbeat]
+mcp-servers: [filesystem, git, context7]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Audit', 'Organise', 'Researcher']

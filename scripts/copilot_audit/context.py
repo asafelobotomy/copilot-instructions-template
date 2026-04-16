@@ -163,9 +163,8 @@ class AuditContext:
     def consumer_ownership_mode(self) -> dict[str, str]:
         """Parse the ownership-mode block from .github/copilot-version.md.
 
-        Returns a dict with keys like OWNERSHIP_MODE, AGENTS, SKILLS, HOOKS,
-        HEARTBEAT_MCP.  Falls back to all-local for legacy installs that lack
-        the block.
+        Returns a dict with keys like OWNERSHIP_MODE, AGENTS, SKILLS, HOOKS.
+        Falls back to all-local for legacy installs that lack the block.
         """
         version_path = self.root / ".github" / "copilot-version.md"
         if not version_path.is_file():

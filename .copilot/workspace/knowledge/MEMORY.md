@@ -9,7 +9,7 @@
 
 | Metric | Last reviewed | Expires | Priority | Source | Notes |
 |--------|--------------|---------|----------|--------|-------|
-| Test count baseline | 2026-03-19 | 2026-06-19 | P1 | `tests/run-all.sh` | 222 tests, 0 failures |
+| Test count baseline | 2026-04-16 | 2026-07-16 | P1 | `tests/run-all.sh` | 284 tests, 45 suites, 0 failures (up from 222/44 — diary + subagent hook tests added) |
 | Starter-kit count | 2026-03-19 | 2026-06-19 | P2 | `starter-kits/REGISTRY.json` | 8 kits in REGISTRY.json |
 | Skill count | 2026-04-15 | 2026-07-15 | P2 | `skills/` | 18 in skills/ (repo-root plugin dir); consumer path is `.github/skills/` (not present in this repo) |
 | Agent count | 2026-04-15 | 2026-07-15 | P2 | `agents/` | 14 in agents/ (repo-root plugin dir); consumer path is `.github/agents/` (not present in this repo) |

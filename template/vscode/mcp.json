@@ -71,19 +71,5 @@
         }
       }
     },
-    "heartbeat": {
-      "type": "stdio",
-      "command": "uvx",
-      "env": {
-        "CLAUDE_TMPDIR": "${userHome}/.cache/uv/.copilot-tmp",
-        "TMPDIR": "${userHome}/.cache/uv/.copilot-tmp",
-        "HEARTBEAT_WORKSPACE": "${workspaceFolder}"
-      },
-      "args": [
-        "--from", "mcp[cli]",
-        "mcp", "run",
-        "${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py"
-      ]
-    }
   }
 }

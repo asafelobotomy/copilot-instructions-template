@@ -212,7 +212,7 @@ def check_v1_copilot_version_metadata(root: pathlib.Path | AuditContext) -> Chec
         if mode and mode not in ("plugin-backed", "all-local"):
             result.findings.append(Finding("V1", rel, HIGH,
                                            f"OWNERSHIP_MODE must be 'plugin-backed' or 'all-local', got '{mode}'"))
-        for surface_key in ("AGENTS", "SKILLS", "HOOKS", "HEARTBEAT_MCP"):
+        for surface_key in ("AGENTS", "SKILLS", "HOOKS"):
             val = ownership.get(surface_key, "")
             if val and val not in ("plugin", "local"):
                 result.findings.append(Finding("V1", rel, HIGH,

@@ -8,7 +8,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5.2
 tools: [agent, codebase, runCommands, githubRepo, fetch, search, webSearch]
-mcp-servers: [filesystem, git, github, fetch, playwright, heartbeat]
+mcp-servers: [filesystem, git, github, fetch, playwright]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Setup', 'Researcher', 'Extensions', 'Organise', 'Planner', 'Cleaner']
@@ -44,7 +44,7 @@ Do not modify any files — diagnosis only. Surface findings and use handoffs fo
   recommendation, or profile configuration rather than general code changes.
 - Use `Planner` when audit findings require a phased, multi-step remediation plan
   before implementation begins.
-- Use `mcp_heartbeat_spatial_status` when the current session state or diary
+- Use `asafelobotomy_spatial_status` when the current session state or diary
   trail would help you understand recent workspace activity before auditing it.
 
 - Apply the Structured Thinking Discipline (§3): run each check sequentially.

@@ -9,7 +9,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5 mini
 tools: [agent, editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
-mcp-servers: [filesystem, git, github, fetch, context7, playwright, heartbeat]
+mcp-servers: [filesystem, git, github, fetch, context7, playwright]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Commit', 'Organise', 'Planner', 'Docs', 'Debugger', 'Cleaner']
@@ -65,7 +65,7 @@ Guidelines:
   fixing path references, or reshaping directory structure.
 - Use `Cleaner` when the task is primarily repo hygiene — pruning stale
   artefacts, caches, dead files, or archive clutter — rather than implementation.
-- Use `mcp_heartbeat_spatial_status` when session context, workspace navigation,
+- Use `asafelobotomy_spatial_status` when session context, workspace navigation,
   or prior agent diary notes would help you narrow scope before editing.
 - When you discover a durable implementation insight worth sharing across
   sessions, follow `.copilot/workspace/knowledge/diaries/README.md` and append a

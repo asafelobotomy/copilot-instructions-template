@@ -174,30 +174,6 @@
       "reason": "Repo-live Python pulse helpers are exercised by the pulse hook suite."
     },
     {
-      "id": "hook-mcp-heartbeat-server",
-      "matchType": "exact",
-      "pattern": "hooks/scripts/mcp-heartbeat-server.py",
-      "phaseStrategy": "targeted",
-      "tests": [
-        "tests/hooks/test-mcp-heartbeat-server.sh",
-        "tests/hooks/test-mcp-spatial-status.sh",
-        "tests/hooks/test-mcp-write-diary.sh"
-      ],
-      "reason": "The heartbeat MCP server has a dedicated unit suite."
-    },
-    {
-      "id": "hook-mcp-heartbeat-server-github",
-      "matchType": "exact",
-      "pattern": "hooks/scripts/mcp-heartbeat-server.py",
-      "phaseStrategy": "targeted",
-      "tests": [
-        "tests/hooks/test-mcp-heartbeat-server.sh",
-        "tests/hooks/test-mcp-spatial-status.sh",
-        "tests/hooks/test-mcp-write-diary.sh"
-      ],
-      "reason": "The repo-live heartbeat MCP server has a dedicated unit suite."
-    },
-    {
       "id": "hook-lib-hooks",
       "matchType": "exact",
       "pattern": "hooks/scripts/lib-hooks.sh",

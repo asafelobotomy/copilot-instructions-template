@@ -292,22 +292,6 @@ assert_failure "consumer profile fails on missing core setup answer" "$CASE_STAT
 assert_contains "consumer profile flags missing TEST_COMMAND" "$CASE_OUTPUT" 'setup-answers missing required key: TEST_COMMAND'
 echo ""
 
-# ── 32. M5 — plugin-backed: heartbeat in workspace mcp.json is duplicate ─────
-echo "32. M5: plugin-backed ownership with workspace heartbeat triggers HIGH"
-run_audit_case json mutate_m5_plugin_backed_with_workspace_heartbeat
-assert_failure "exits non-zero when heartbeat duplicated in workspace mcp.json" "$CASE_STATUS"
-assert_contains "M5 flags duplicate heartbeat" "$CASE_OUTPUT" '"check_id": "M5"'
-assert_contains "M5 severity is HIGH" "$CASE_OUTPUT" '"severity": "HIGH"'
-echo ""
-
-# ── 33. M5 — all-local: heartbeat absent from workspace mcp.json ─────────────
-echo "33. M5: all-local ownership with missing workspace heartbeat triggers HIGH"
-run_audit_case json mutate_m5_all_local_missing_workspace_heartbeat
-assert_failure "exits non-zero when heartbeat missing from workspace mcp.json" "$CASE_STATUS"
-assert_contains "M5 flags missing heartbeat" "$CASE_OUTPUT" '"check_id": "M5"'
-assert_contains "M5 severity is HIGH" "$CASE_OUTPUT" '"severity": "HIGH"'
-echo ""
-
 # ── 34. V1 — invalid OWNERSHIP_MODE value ─────────────────────────────────────
 echo "34. V1: invalid OWNERSHIP_MODE value triggers HIGH"
 run_audit_case json mutate_v1_invalid_ownership_mode consumer
@@ -315,13 +299,6 @@ assert_failure "exits non-zero on invalid OWNERSHIP_MODE" "$CASE_STATUS"
 assert_contains "V1 flags invalid OWNERSHIP_MODE" "$CASE_OUTPUT" '"check_id": "V1"'
 assert_contains "V1 reports OWNERSHIP_MODE error" "$CASE_OUTPUT" "OWNERSHIP_MODE must be 'plugin-backed' or 'all-local'"
 echo ""
-
-# ── 35. M5 — plugin-backed: .mcp.json absent or missing heartbeat ─────────────
-echo "35. M5: plugin-backed ownership with missing .mcp.json heartbeat triggers HIGH"
-run_audit_case json mutate_m5_plugin_backed_missing_plugin_mcp
-assert_failure "exits non-zero when .mcp.json lacks heartbeat in plugin mode" "$CASE_STATUS"
-assert_contains "M5 flags missing plugin-side heartbeat" "$CASE_OUTPUT" '"check_id": "M5"'
-assert_contains "M5 severity is HIGH for missing .mcp.json" "$CASE_OUTPUT" '"severity": "HIGH"'
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 finish_tests

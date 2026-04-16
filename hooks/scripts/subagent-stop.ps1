@@ -1,5 +1,5 @@
 #!/usr/bin/env pwsh
-# purpose:  Signal subagent completion; diary writes are explicit agent actions via write_diary
+# purpose:  Signal subagent completion; diary writes are explicit agent actions via asafelobotomy_write_diary
 # when:     SubagentStop hook — fires after a subagent finishes
 # inputs:   JSON via stdin with subagent details (agent_type, agent_id, stop_hook_active)
 # outputs:  JSON with additionalContext summarising outcome
