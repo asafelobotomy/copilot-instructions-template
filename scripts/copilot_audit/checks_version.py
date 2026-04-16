@@ -198,6 +198,26 @@ def check_v1_copilot_version_metadata(root: pathlib.Path | AuditContext) -> Chec
             result.findings.append(Finding("V1", rel, WARN,
                                            "SETUP_DATE does not match Applied: date"))
 
+    ownership_payload = _comment_block_payload(text, "<!-- ownership-mode")
+    if ownership_payload:
+        ownership = _parse_mapping_block(
+            ownership_payload,
+            check_id="V1",
+            rel=rel,
+            result=result,
+            block_name="ownership-mode",
+            key_pattern=SETUP_ANSWER_RE,
+        )
+        mode = ownership.get("OWNERSHIP_MODE", "")
+        if mode and mode not in ("plugin-backed", "all-local"):
+            result.findings.append(Finding("V1", rel, HIGH,
+                                           f"OWNERSHIP_MODE must be 'plugin-backed' or 'all-local', got '{mode}'"))
+        for surface_key in ("AGENTS", "SKILLS", "HOOKS", "HEARTBEAT_MCP"):
+            val = ownership.get(surface_key, "")
+            if val and val not in ("plugin", "local"):
+                result.findings.append(Finding("V1", rel, HIGH,
+                                               f"{surface_key} must be 'plugin' or 'local', got '{val}'"))
+
         for rel_path, required_keys in CONDITIONAL_SETUP_ANSWER_KEYS.items():
             if not (ctx.root / rel_path).exists():
                 continue

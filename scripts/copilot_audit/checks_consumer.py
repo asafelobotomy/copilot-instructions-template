@@ -117,27 +117,35 @@ def check_c1_consumer_companion_inventory(root: pathlib.Path | AuditContext) -> 
     inventory = inventory_from_workspace_index(data, ctx)
     _check_counts(result, rel, data, inventory)
 
-    _check_expected_rel_paths(
-        ctx,
-        result,
-        tuple(str(pathlib.Path(".github/agents") / filename) for filename in inventory["agents"]),
-        HIGH,
-        "agent from workspace-index inventory",
-    )
-    _check_expected_rel_paths(
-        ctx,
-        result,
-        tuple(str(pathlib.Path(".github/agents") / filename) for filename in inventory["agent_support_files"]),
-        HIGH,
-        "agent support file from workspace-index inventory",
-    )
-    _check_expected_rel_paths(
-        ctx,
-        result,
-        tuple(str(pathlib.Path(".github/skills") / dirname / "SKILL.md") for dirname in inventory["skills"]),
-        WARN,
-        "skill from workspace-index inventory",
-    )
+    ownership = ctx.consumer_ownership_mode
+    mode = ownership.get("OWNERSHIP_MODE", "all-local")
+    agents_local = ownership.get("AGENTS", "local") == "local" or mode == "all-local"
+    skills_local = ownership.get("SKILLS", "local") == "local" or mode == "all-local"
+    hooks_local = ownership.get("HOOKS", "local") == "local" or mode == "all-local"
+
+    if agents_local:
+        _check_expected_rel_paths(
+            ctx,
+            result,
+            tuple(str(pathlib.Path(".github/agents") / filename) for filename in inventory["agents"]),
+            HIGH,
+            "agent from workspace-index inventory",
+        )
+        _check_expected_rel_paths(
+            ctx,
+            result,
+            tuple(str(pathlib.Path(".github/agents") / filename) for filename in inventory["agent_support_files"]),
+            HIGH,
+            "agent support file from workspace-index inventory",
+        )
+    if skills_local:
+        _check_expected_rel_paths(
+            ctx,
+            result,
+            tuple(str(pathlib.Path(".github/skills") / dirname / "SKILL.md") for dirname in inventory["skills"]),
+            WARN,
+            "skill from workspace-index inventory",
+        )
     _check_expected_rel_paths(
         ctx,
         result,
@@ -152,34 +160,35 @@ def check_c1_consumer_companion_inventory(root: pathlib.Path | AuditContext) -> 
         WARN,
         "instruction from workspace-index inventory",
     )
-    _check_expected_rel_paths(
-        ctx,
-        result,
-        tuple(str(pathlib.Path(".github/hooks/scripts") / filename) for filename in inventory["hook_shell"]),
-        HIGH,
-        "shell hook from workspace-index inventory",
-    )
-    _check_expected_rel_paths(
-        ctx,
-        result,
-        tuple(str(pathlib.Path(".github/hooks/scripts") / filename) for filename in inventory["hook_powershell"]),
-        WARN,
-        "PowerShell hook from workspace-index inventory",
-    )
-    _check_expected_rel_paths(
-        ctx,
-        result,
-        tuple(str(pathlib.Path(".github/hooks/scripts") / filename) for filename in inventory["hook_python"]),
-        HIGH,
-        "Python hook helper from workspace-index inventory",
-    )
-    _check_expected_rel_paths(
-        ctx,
-        result,
-        tuple(str(pathlib.Path(".github/hooks/scripts") / filename) for filename in inventory["hook_json"]),
-        HIGH,
-        "JSON hook helper from workspace-index inventory",
-    )
+    if hooks_local:
+        _check_expected_rel_paths(
+            ctx,
+            result,
+            tuple(str(pathlib.Path(".github/hooks/scripts") / filename) for filename in inventory["hook_shell"]),
+            HIGH,
+            "shell hook from workspace-index inventory",
+        )
+        _check_expected_rel_paths(
+            ctx,
+            result,
+            tuple(str(pathlib.Path(".github/hooks/scripts") / filename) for filename in inventory["hook_powershell"]),
+            WARN,
+            "PowerShell hook from workspace-index inventory",
+        )
+        _check_expected_rel_paths(
+            ctx,
+            result,
+            tuple(str(pathlib.Path(".github/hooks/scripts") / filename) for filename in inventory["hook_python"]),
+            HIGH,
+            "Python hook helper from workspace-index inventory",
+        )
+        _check_expected_rel_paths(
+            ctx,
+            result,
+            tuple(str(pathlib.Path(".github/hooks/scripts") / filename) for filename in inventory["hook_json"]),
+            HIGH,
+            "JSON hook helper from workspace-index inventory",
+        )
     _check_expected_rel_paths(
         ctx,
         result,
@@ -195,7 +204,7 @@ def check_c1_consumer_companion_inventory(root: pathlib.Path | AuditContext) -> 
         "core workspace file from workspace-index inventory",
     )
 
-    if not (ctx.root / HOOK_CONFIG_REL).is_file():
+    if hooks_local and not (ctx.root / HOOK_CONFIG_REL).is_file():
         result.findings.append(Finding("C1", HOOK_CONFIG_REL, HIGH,
                                        "Missing hooks config from consumer inventory"))
 

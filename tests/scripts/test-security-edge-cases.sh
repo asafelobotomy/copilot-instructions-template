@@ -16,7 +16,7 @@ set -uo pipefail
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
-GUARD_SCRIPT="$REPO_ROOT/template/hooks/scripts/guard-destructive.sh"
+GUARD_SCRIPT="$REPO_ROOT/hooks/scripts/guard-destructive.sh"
 VERIFY_SCRIPT="$REPO_ROOT/scripts/release/verify-version-references.sh"
 trap cleanup_dirs EXIT
 
@@ -83,8 +83,8 @@ echo ""
 
 # ── 5a. Guard-pattern searches stay read-only ────────────────────────────────
 echo "5a. Read-only searches for blocked pattern text continue"
-assert_guard_continue "rg search for rm guard regex continues" "$(make_guard_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh")"
-assert_guard_continue "grep search for chmod guard regex continues" "$(make_guard_input 'bash' "grep -n 'chmod -R 777 /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh")"
+assert_guard_continue "rg search for rm guard regex continues" "$(make_guard_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' hooks/scripts/guard-destructive.sh")"
+assert_guard_continue "grep search for chmod guard regex continues" "$(make_guard_input 'bash' "grep -n 'chmod -R 777 /([^a-zA-Z0-9._-]|$)' hooks/scripts/guard-destructive.sh")"
 echo ""
 
 # ── 6. verify-version-references.sh read-only stability ──────────────────────

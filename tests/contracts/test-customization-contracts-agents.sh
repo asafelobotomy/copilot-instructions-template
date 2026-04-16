@@ -14,9 +14,9 @@ echo ""
 echo "1. Researcher and Explore agent files are well-formed"
 assert_python "researcher and explore agents have required frontmatter and tools" '
 for agent_name, required_tool in (("researcher", "fetch"), ("explore", "codebase")):
-    path = root / ".github/agents" / (agent_name + ".agent.md")
+    path = root / "agents" / (agent_name + ".agent.md")
     if not path.is_file():
-        raise SystemExit("missing agent file: .github/agents/" + agent_name + ".agent.md")
+        raise SystemExit("missing agent file: agents/" + agent_name + ".agent.md")
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---\n"):
         raise SystemExit("missing frontmatter in " + agent_name + ".agent.md")
@@ -29,7 +29,7 @@ for agent_name, required_tool in (("researcher", "fetch"), ("explore", "codebase
     if required_tool not in fm:
         raise SystemExit("missing tool " + required_tool + " in " + agent_name + ".agent.md")
 
-researcher_text = (root / ".github/agents/researcher.agent.md").read_text(encoding="utf-8")
+researcher_text = (root / "agents/researcher.agent.md").read_text(encoding="utf-8")
 if "RESEARCH.md" not in researcher_text:
     raise SystemExit("researcher.agent.md body must reference RESEARCH.md")
 '
@@ -37,7 +37,7 @@ echo ""
 
 echo "2. Audit agent defines D11-D13 upstream baseline checks"
 assert_python "audit has D11 upstream version check" '
-text = (root / ".github/agents/audit.agent.md").read_text(encoding="utf-8")
+text = (root / "agents/audit.agent.md").read_text(encoding="utf-8")
 if "### D11" not in text:
     raise SystemExit("audit.agent.md missing D11 check definition")
 if "VERSION.md" not in text:
@@ -47,7 +47,7 @@ if "raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/V
 '
 
 assert_python "audit has D12 fingerprint integrity check" '
-text = (root / ".github/agents/audit.agent.md").read_text(encoding="utf-8")
+text = (root / "agents/audit.agent.md").read_text(encoding="utf-8")
 if "### D12" not in text:
     raise SystemExit("audit.agent.md missing D12 check definition")
 if "section-fingerprints" not in text:
@@ -57,7 +57,7 @@ if "sha256sum" not in text:
 '
 
 assert_python "audit has D13 companion file completeness check" '
-text = (root / ".github/agents/audit.agent.md").read_text(encoding="utf-8")
+text = (root / "agents/audit.agent.md").read_text(encoding="utf-8")
 if "### D13" not in text:
     raise SystemExit("audit.agent.md missing D13 check definition")
 if "workspace-index.json" not in text:
@@ -76,13 +76,13 @@ for needle in [
 '
 
 assert_python "audit report format covers D1-D14" '
-text = (root / ".github/agents/audit.agent.md").read_text(encoding="utf-8")
+text = (root / "agents/audit.agent.md").read_text(encoding="utf-8")
 if "D1\u2013D14" not in text and "D1-D14" not in text:
     raise SystemExit("report format section must reference D1-D14 range")
 '
 
 assert_python "audit detects repo shape before health checks" '
-text = (root / ".github/agents/audit.agent.md").read_text(encoding="utf-8")
+text = (root / "agents/audit.agent.md").read_text(encoding="utf-8")
 required = [
     "## Repo shape detection",
     "Developer template repo",
@@ -95,7 +95,7 @@ for needle in required:
 '
 
 assert_python "audit D4 and D14 mention delegation matrix enforcement" '
-text = " ".join((root / ".github/agents/audit.agent.md").read_text(encoding="utf-8").split())
+text = " ".join((root / "agents/audit.agent.md").read_text(encoding="utf-8").split())
 required = [
     "### D4 — Agent file validity and delegation policy",
     "specialist delegation allow-lists match the repo policy",
@@ -114,7 +114,7 @@ for needle in required:
 '
 
 assert_python "audit D6 and D9 cover version metadata and pluginLocations" '
-text = (root / ".github/agents/audit.agent.md").read_text(encoding="utf-8")
+text = (root / "agents/audit.agent.md").read_text(encoding="utf-8")
 for needle in [
     "file-manifest",
     "setup-answers",
@@ -138,7 +138,7 @@ expected = {
     "debugger.agent.md": "You are the Debugger agent for the current project.",
 }
 for filename, needle in expected.items():
-    text = (root / ".github/agents" / filename).read_text(encoding="utf-8")
+    text = (root / "agents" / filename).read_text(encoding="utf-8")
     if needle not in text:
         raise SystemExit(filename + " missing workspace-neutral identity wording")
     if "for copilot-instructions-template." in text:
@@ -146,7 +146,7 @@ for filename, needle in expected.items():
 '
 
 assert_python "audit has fetch tool for upstream checks" '
-text = (root / ".github/agents/audit.agent.md").read_text(encoding="utf-8")
+text = (root / "agents/audit.agent.md").read_text(encoding="utf-8")
 end = text.find("\n---\n", 4)
 fm = text[4:end]
 if "fetch" not in fm:
@@ -166,7 +166,7 @@ expected_hidden = {
 }
 
 for filename, needles in expected_hidden.items():
-    path = root / ".github/agents" / filename
+    path = root / "agents" / filename
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---\n"):
         raise SystemExit("missing frontmatter in " + filename)
@@ -178,7 +178,7 @@ for filename, needles in expected_hidden.items():
         if needle not in fm:
             raise SystemExit(filename + " missing: " + needle)
 
-organise_text = (root / ".github/agents/organise.agent.md").read_text(encoding="utf-8")
+organise_text = (root / "agents/organise.agent.md").read_text(encoding="utf-8")
 end = organise_text.find("\n---\n", 4)
 fm = organise_text[4:end]
 required = [
@@ -202,7 +202,7 @@ expected_public = {
 }
 
 for filename, needles in expected_public.items():
-    path = root / ".github/agents" / filename
+    path = root / "agents" / filename
     text = path.read_text(encoding="utf-8")
     end = text.find("\n---\n", 4)
     if end == -1:
@@ -215,14 +215,14 @@ for filename, needles in expected_public.items():
 
 assert_python "coordinator allow-lists include Organise" '
 for agent_name in ("coding", "setup", "audit", "review", "extensions"):
-    text = (root / ".github/agents" / f"{agent_name}.agent.md").read_text(encoding="utf-8")
+    text = (root / "agents" / f"{agent_name}.agent.md").read_text(encoding="utf-8")
     if "Organise" not in text:
         raise SystemExit(f"{agent_name}.agent.md missing Organise allow-list entry")
 '
 
 assert_python "cleanup-capable coordinators include Cleaner" '
 for agent_name in ("coding", "audit", "review", "commit"):
-    text = (root / ".github/agents" / f"{agent_name}.agent.md").read_text(encoding="utf-8")
+    text = (root / "agents" / f"{agent_name}.agent.md").read_text(encoding="utf-8")
     if "Cleaner" not in text:
         raise SystemExit(f"{agent_name}.agent.md missing Cleaner allow-list entry")
 '
@@ -233,7 +233,7 @@ assert_python "agents allow-list implies agent tool" '
 def normalize_items(raw):
     return [item.strip().replace(chr(39), "").replace(chr(34), "") for item in raw.split(",") if item.strip()]
 
-for path in sorted((root / ".github/agents").glob("*.agent.md")):
+for path in sorted((root / "agents").glob("*.agent.md")):
     text = path.read_text(encoding="utf-8")
     end = text.find("\n---\n", 4)
     if end == -1:
@@ -259,7 +259,7 @@ assert_python "extensions agent tools match profile workflow" '
 def normalize_items(raw):
     return {item.strip().replace(chr(39), "").replace(chr(34), "") for item in raw.split(",") if item.strip()}
 
-path = root / ".github/agents/extensions.agent.md"
+path = root / "agents/extensions.agent.md"
 text = path.read_text(encoding="utf-8")
 end = text.find("\n---\n", 4)
 if end == -1:
@@ -296,7 +296,7 @@ echo ""
 
 echo "7. Routing manifest covers all agents with Stage 4 active scope"
 assert_python "routing manifest includes all agents and only Stage 4 routes are active" '
-manifest_path = root / ".github/agents/routing-manifest.json"
+manifest_path = root / "agents/routing-manifest.json"
 manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 entries = manifest.get("agents")
 if not isinstance(entries, list) or not entries:
@@ -304,7 +304,7 @@ if not isinstance(entries, list) or not entries:
 
 names_from_manifest = {entry.get("name") for entry in entries if isinstance(entry, dict)}
 names_from_files = set()
-for path in sorted((root / ".github/agents").glob("*.agent.md")):
+for path in sorted((root / "agents").glob("*.agent.md")):
     text = path.read_text(encoding="utf-8")
     end = text.find("\n---\n", 4)
     if end == -1:

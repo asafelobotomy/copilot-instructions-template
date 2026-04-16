@@ -4,7 +4,7 @@
     {
       "id": "agent-files",
       "matchType": "glob",
-      "pattern": ".github/agents/*.agent.md",
+      "pattern": "agents/*.agent.md",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/contracts/test-customization-contracts-agents.sh",
@@ -17,7 +17,7 @@
     {
       "id": "routing-manifest",
       "matchType": "exact",
-      "pattern": ".github/agents/routing-manifest.json",
+      "pattern": "agents/routing-manifest.json",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-session-start.sh",
@@ -86,8 +86,7 @@
       "pattern": ".github/instructions/",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts-surfaces.sh",
-        "tests/contracts/test-template-parity.sh"
+        "tests/contracts/test-customization-contracts-surfaces.sh"
       ],
       "reason": "Developer instruction stubs are covered by customization contracts and parity checks."
     },
@@ -97,19 +96,17 @@
       "pattern": ".github/prompts/",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts-surfaces.sh",
-        "tests/contracts/test-template-parity.sh"
+        "tests/contracts/test-customization-contracts-surfaces.sh"
       ],
       "reason": "Developer prompts are covered by customization contracts and parity checks."
     },
     {
       "id": "customization-skills",
       "matchType": "prefix",
-      "pattern": ".github/skills/",
+      "pattern": "skills/",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts-surfaces.sh",
-        "tests/contracts/test-template-parity.sh"
+        "tests/contracts/test-customization-contracts-surfaces.sh"
       ],
       "reason": "Developer skills are covered by customization contracts and parity checks."
     },
@@ -119,8 +116,7 @@
       "pattern": "template/instructions/",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts-surfaces.sh",
-        "tests/contracts/test-template-parity.sh"
+        "tests/contracts/test-customization-contracts-surfaces.sh"
       ],
       "reason": "Template instruction stubs are covered by customization contracts and parity checks."
     },
@@ -130,19 +126,17 @@
       "pattern": "template/prompts/",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts-surfaces.sh",
-        "tests/contracts/test-template-parity.sh"
+        "tests/contracts/test-customization-contracts-surfaces.sh"
       ],
       "reason": "Template prompt stubs are covered by customization contracts and parity checks."
     },
     {
       "id": "template-skills",
       "matchType": "prefix",
-      "pattern": "template/skills/",
+      "pattern": "skills/",
       "phaseStrategy": "targeted",
       "tests": [
-        "tests/contracts/test-customization-contracts-surfaces.sh",
-        "tests/contracts/test-template-parity.sh"
+        "tests/contracts/test-customization-contracts-surfaces.sh"
       ],
       "reason": "Template skills are covered by customization contracts and parity checks."
     },
@@ -167,10 +161,9 @@
       "riskClass": "critical-surface",
       "tests": [
         "tests/contracts/test-customization-contracts-policies.sh",
-        "tests/contracts/test-setup-update-contracts.sh",
         "tests/scripts/test-copilot-audit.sh"
       ],
-      "reason": "Template instructions participate in customization contracts, setup/update contracts, and copilot audit checks."
+      "reason": "Template instructions participate in customization contracts and copilot audit checks."
     },
     {
       "id": "template-claude-surface",
@@ -182,36 +175,9 @@
       ],
       "reason": "template/CLAUDE.md is covered by the customization contract suite."
     },
-    {
-      "id": "template-vscode-settings-surface",
-      "matchType": "exact",
-      "pattern": "template/vscode/settings.json",
-      "phaseStrategy": "targeted",
-      "tests": [
-        "tests/contracts/test-setup-update-contracts.sh"
-      ],
-      "reason": "Template VS Code settings participate in setup/update contract coverage."
-    },
-    {
-      "id": "template-vscode-extensions-surface",
-      "matchType": "exact",
-      "pattern": "template/vscode/extensions.json",
-      "phaseStrategy": "targeted",
-      "tests": [
-        "tests/contracts/test-setup-update-contracts.sh"
-      ],
-      "reason": "Template VS Code extension recommendations participate in setup/update contract coverage."
-    },
-    {
-      "id": "template-vscode-mcp-surface",
-      "matchType": "exact",
-      "pattern": "template/vscode/mcp.json",
-      "phaseStrategy": "targeted",
-      "tests": [
-        "tests/contracts/test-setup-update-contracts.sh"
-      ],
-      "reason": "Template MCP config parity is guarded by the setup/update contract suite."
-    },
+
+
+
     {
       "id": "agents-doc",
       "matchType": "exact",
@@ -232,36 +198,9 @@
       ],
       "reason": "CLAUDE.md is covered by the customization policy contract suite."
     },
-    {
-      "id": "setup-update-docs",
-      "matchType": "exact",
-      "pattern": "SETUP.md",
-      "phaseStrategy": "targeted",
-      "tests": [
-        "tests/contracts/test-setup-update-contracts.sh"
-      ],
-      "reason": "SETUP.md is validated by the setup/update contract suite."
-    },
-    {
-      "id": "setup-manifests-docs",
-      "matchType": "exact",
-      "pattern": "template/setup/manifests.md",
-      "phaseStrategy": "targeted",
-      "tests": [
-        "tests/contracts/test-setup-update-contracts.sh"
-      ],
-      "reason": "Setup companion manifests are validated by the setup/update contract suite."
-    },
-    {
-      "id": "update-protocol-docs",
-      "matchType": "exact",
-      "pattern": "UPDATE.md",
-      "phaseStrategy": "targeted",
-      "tests": [
-        "tests/contracts/test-setup-update-contracts.sh"
-      ],
-      "reason": "UPDATE.md is validated by the setup/update contract suite."
-    },
+
+
+
     {
       "id": "mcp-config",
       "matchType": "exact",
@@ -351,10 +290,8 @@
       "matchType": "prefix",
       "pattern": "template/workspace/",
       "phaseStrategy": "targeted",
-      "tests": [
-        "tests/contracts/test-setup-update-contracts.sh"
-      ],
-      "reason": "Workspace template stubs are companion files delivered via setup/update; setup-update contracts validate delivery."
+      "tests": [],
+      "reason": "Workspace template stubs are now delivered via plugin; no specific contract test coverage."
     }
   ]
 }

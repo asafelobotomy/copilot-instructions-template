@@ -12,7 +12,7 @@ trap cleanup_dirs EXIT
 
 make_agent() {
   local dir="$1" name="$2"
-  local file="$dir/.github/agents/${name}.agent.md"
+  local file="$dir/agents/${name}.agent.md"
   mkdir -p "$(dirname "$file")"
   cat > "$file" <<EOF
 ---
@@ -42,8 +42,8 @@ echo ""
 
 echo "2. Missing name field is detected"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-mkdir -p "$TMP/.github/agents"
-cat > "$TMP/.github/agents/bad.agent.md" <<'EOF'
+mkdir -p "$TMP/agents"
+cat > "$TMP/agents/bad.agent.md" <<'EOF'
 ---
 description: test
 model:
@@ -58,8 +58,8 @@ echo ""
 
 echo "3. Missing model field is detected"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-mkdir -p "$TMP/.github/agents"
-cat > "$TMP/.github/agents/bad.agent.md" <<'EOF'
+mkdir -p "$TMP/agents"
+cat > "$TMP/agents/bad.agent.md" <<'EOF'
 ---
 name: bad
 description: test
@@ -73,8 +73,8 @@ echo ""
 
 echo "4. Empty model list is detected"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-mkdir -p "$TMP/.github/agents"
-cat > "$TMP/.github/agents/bad.agent.md" <<'EOF'
+mkdir -p "$TMP/agents"
+cat > "$TMP/agents/bad.agent.md" <<'EOF'
 ---
 name: bad
 description: test
@@ -89,8 +89,8 @@ echo ""
 
 echo "5. Missing user-invocable field is detected"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-mkdir -p "$TMP/.github/agents"
-cat > "$TMP/.github/agents/bad.agent.md" <<'EOF'
+mkdir -p "$TMP/agents"
+cat > "$TMP/agents/bad.agent.md" <<'EOF'
 ---
 name: bad
 description: test
@@ -106,8 +106,8 @@ echo ""
 
 echo "6. Invalid user-invocable value is detected"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-mkdir -p "$TMP/.github/agents"
-cat > "$TMP/.github/agents/bad.agent.md" <<'EOF'
+mkdir -p "$TMP/agents"
+cat > "$TMP/agents/bad.agent.md" <<'EOF'
 ---
 name: bad
 description: test
@@ -124,15 +124,15 @@ echo ""
 
 echo "7. Missing opening --- is detected"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-mkdir -p "$TMP/.github/agents"
-echo "no frontmatter here" > "$TMP/.github/agents/bad.agent.md"
+mkdir -p "$TMP/agents"
+echo "no frontmatter here" > "$TMP/agents/bad.agent.md"
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" 2>&1) || true
 assert_contains "missing opening dashes" "$output" "missing opening ---"
 echo ""
 
 echo "8. No agent files at all is an error"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-mkdir -p "$TMP/.github/agents"
+mkdir -p "$TMP/agents"
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" 2>&1) || true
 assert_contains "no agents found" "$output" "no *.agent.md files found"
 echo ""
@@ -141,7 +141,7 @@ echo "9. Real repo agents pass validation"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" 2>&1)
 status=$?
 assert_success "real repo exits zero" "$status"
-expected_count=$(find "$REPO_ROOT/.github/agents" -name '*.agent.md' | wc -l | tr -d ' ')
+expected_count=$(find "$REPO_ROOT/agents" -name '*.agent.md' | wc -l | tr -d ' ')
 assert_contains "real repo all valid" "$output" "$expected_count agent files"
 echo ""
 

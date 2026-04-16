@@ -10,7 +10,7 @@ init_powershell_hook_test_context "$0"
 ensure_pwsh_available
 
 TEMPLATE_PULSE_PATHS="$SCRIPTS_DIR/pulse_paths.ps1"
-REPO_PULSE_PATHS="$REPO_ROOT/.github/hooks/scripts/pulse_paths.ps1"
+REPO_PULSE_PATHS="$REPO_ROOT/hooks/scripts/pulse_paths.ps1"
 
 echo "=== pulse_paths.ps1 (PowerShell) unit tests ==="
 echo ""

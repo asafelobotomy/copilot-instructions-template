@@ -17,7 +17,7 @@ import sys
 import pathlib
 
 root = pathlib.Path(sys.argv[1])
-agents_dir = root / ".github" / "agents"
+agents_dir = root / "agents"
 
 REQUIRED_FIELDS = ["name", "description", "model", "tools", "user-invocable"]
 
@@ -71,7 +71,7 @@ for agent_file in sorted(agents_dir.glob("*.agent.md")):
             errors.append(f"{agent_file.name}: agents allow-list requires 'agent' in tools")
 
 if count == 0:
-    errors.append("no *.agent.md files found in .github/agents/")
+    errors.append("no *.agent.md files found in agents/")
 
 if errors:
     for e in errors:

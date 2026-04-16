@@ -8,17 +8,21 @@
 setup_sandbox() {
   SANDBOX=$(mktemp -d)
   # Minimal valid structure — all checks pass
-  mkdir -p "$SANDBOX/.github/agents"
+  mkdir -p "$SANDBOX/agents"
   mkdir -p "$SANDBOX/.github/instructions"
   mkdir -p "$SANDBOX/.github/prompts"
-  mkdir -p "$SANDBOX/.github/skills/my-skill"
-  mkdir -p "$SANDBOX/.github/hooks/scripts"
-  mkdir -p "$SANDBOX/template/hooks/scripts"
+  mkdir -p "$SANDBOX/.github/hooks"
+  mkdir -p "$SANDBOX/skills/my-skill"
+  mkdir -p "$SANDBOX/hooks/scripts"
   mkdir -p "$SANDBOX/template/instructions"
   mkdir -p "$SANDBOX/template/prompts"
-  mkdir -p "$SANDBOX/template/skills/my-skill"
   mkdir -p "$SANDBOX/.vscode"
   mkdir -p "$SANDBOX/starter-kits/python"
+
+  # plugin manifest — needed for repo_shape developer detection
+  cat > "$SANDBOX/plugin.json" <<'JSON'
+{"name": "copilot-instructions-template", "description": "sandbox", "version": "0.0.1"}
+JSON
 
   # Developer instructions — must have zero {{PLACEHOLDER}} tokens
   cat > "$SANDBOX/.github/copilot-instructions.md" <<'MD'
@@ -42,7 +46,7 @@ Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for c
 MD
 
   # Valid agent
-  cat > "$SANDBOX/.github/agents/code.agent.md" <<'AGENT'
+  cat > "$SANDBOX/agents/code.agent.md" <<'AGENT'
 ---
 name: Code
 description: Coding agent
@@ -55,14 +59,7 @@ agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Commit', 'Organise', 'Plan
 AGENT
 
   # Valid skill (name matches dir)
-  cat > "$SANDBOX/.github/skills/my-skill/SKILL.md" <<'SKILL'
----
-name: my-skill
-description: Does something useful in exactly one workflow
----
-# My Skill
-SKILL
-  cat > "$SANDBOX/template/skills/my-skill/SKILL.md" <<'SKILL'
+  cat > "$SANDBOX/skills/my-skill/SKILL.md" <<'SKILL'
 ---
 name: my-skill
 description: Does something useful in exactly one workflow
@@ -87,30 +84,33 @@ agent: agent
 Write a commit message.
 PROMPT
 
-  # Valid hook config
-  cat > "$SANDBOX/template/hooks/copilot-hooks.json" <<'JSON'
+  # Valid hook configs
+  cat > "$SANDBOX/hooks/hooks.json" <<'JSON'
+{"hooks": []}
+JSON
+  cat > "$SANDBOX/.github/hooks/copilot-hooks.json" <<'JSON'
 {"hooks": []}
 JSON
 
-  # Valid hook script (template)
-  cat > "$SANDBOX/template/hooks/scripts/session-start.sh" <<'SH'
+  # Valid hook script
+  cat > "$SANDBOX/hooks/scripts/session-start.sh" <<'SH'
 #!/usr/bin/env bash
 set -euo pipefail
 echo '{}'
 SH
 
-  # Valid hook script (.github mirror)
-  mkdir -p "$SANDBOX/.github/hooks"
-  cp "$SANDBOX/template/hooks/copilot-hooks.json" "$SANDBOX/.github/hooks/copilot-hooks.json"
-  cp "$SANDBOX/template/hooks/scripts/session-start.sh" "$SANDBOX/.github/hooks/scripts/session-start.sh"
-
-  # Valid mcp.json
+  # Valid mcp.json — includes heartbeat to satisfy M5 (all-local default)
   cat > "$SANDBOX/.vscode/mcp.json" <<'JSON'
 {
   "servers": {
     "git": {
       "command": "uvx",
       "args": ["mcp-server-git"]
+    },
+    "heartbeat": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-heartbeat"]
     }
   }
 }

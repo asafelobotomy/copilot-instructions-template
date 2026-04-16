@@ -74,7 +74,7 @@ class AuditContext:
 
     @cached_property
     def agents_dir(self) -> pathlib.Path:
-        return self.root / ".github" / "agents"
+        return self.root / "agents"
 
     @cached_property
     def agent_files(self) -> tuple[pathlib.Path, ...]:
@@ -140,8 +140,7 @@ class AuditContext:
     def repo_shape(self) -> str:
         has_template_repo_markers = (
             (self.root / "template" / "copilot-instructions.md").is_file()
-            and (self.root / "SETUP.md").is_file()
-            and (self.root / "UPDATE.md").is_file()
+            and (self.root / "plugin.json").is_file()
         )
         has_consumer_markers = (
             (self.root / ".github" / "copilot-version.md").is_file()
@@ -156,9 +155,38 @@ class AuditContext:
     @cached_property
     def hook_config_files(self) -> tuple[pathlib.Path, pathlib.Path]:
         return (
-            self.root / "template" / "hooks" / "copilot-hooks.json",
+            self.root / "hooks" / "hooks.json",
             self.root / ".github" / "hooks" / "copilot-hooks.json",
         )
+
+    @cached_property
+    def consumer_ownership_mode(self) -> dict[str, str]:
+        """Parse the ownership-mode block from .github/copilot-version.md.
+
+        Returns a dict with keys like OWNERSHIP_MODE, AGENTS, SKILLS, HOOKS,
+        HEARTBEAT_MCP.  Falls back to all-local for legacy installs that lack
+        the block.
+        """
+        version_path = self.root / ".github" / "copilot-version.md"
+        if not version_path.is_file():
+            return {"OWNERSHIP_MODE": "all-local"}
+        text = self.read_text(version_path)
+        start = text.find("<!-- ownership-mode")
+        if start == -1:
+            return {"OWNERSHIP_MODE": "all-local"}
+        end = text.find("-->", start)
+        if end == -1:
+            return {"OWNERSHIP_MODE": "all-local"}
+        block = text[start:end]
+        result: dict[str, str] = {}
+        for line in block.splitlines()[1:]:
+            line = line.strip()
+            if "=" in line:
+                key, _, value = line.partition("=")
+                result[key.strip()] = value.strip()
+        if "OWNERSHIP_MODE" not in result:
+            result["OWNERSHIP_MODE"] = "all-local"
+        return result
 
     @cached_property
     def workspace_index_file(self) -> pathlib.Path:

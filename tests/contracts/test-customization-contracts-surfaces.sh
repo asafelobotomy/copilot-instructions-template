@@ -98,28 +98,26 @@ echo ""
 echo "5. Skill files have no unresolved placeholder tokens"
 # shellcheck disable=SC2016
 assert_python "no unresolved {{PLACEHOLDER}} tokens in repo or template skills" '
-for rel in (".github/skills", "template/skills"):
-    for path in sorted((root / rel).rglob("SKILL.md")):
-        text = path.read_text(encoding="utf-8")
-        match = re.search(r"(?<!\$)\{\{[A-Z_]+\}\}", text)
-        if match:
-            raise SystemExit(
-                f"unresolved placeholder {match.group()} in {path.relative_to(root).as_posix()}"
-            )
+for path in sorted((root / "skills").rglob("SKILL.md")):
+    text = path.read_text(encoding="utf-8")
+    match = re.search(r"(?<!\$)\{\{[A-Z_]+\}\}", text)
+    if match:
+        raise SystemExit(
+            f"unresolved placeholder {match.group()} in {path.relative_to(root).as_posix()}"
+        )
 '
 echo ""
 
 echo "6. Repo and template skills avoid unsupported stacks frontmatter"
 assert_python "repo and template skills do not declare stacks frontmatter" '
-for rel in (".github/skills", "template/skills"):
-    for path in sorted((root / rel).rglob("SKILL.md")):
-        text = path.read_text(encoding="utf-8")
-        end = text.find("\n---\n", 4)
-        if end == -1:
-            raise SystemExit("unterminated frontmatter in " + path.relative_to(root).as_posix())
-        frontmatter = text[4:end]
-        if re.search(r"^stacks:\s*", frontmatter, re.M):
-            raise SystemExit("unsupported stacks frontmatter in " + path.relative_to(root).as_posix())
+for path in sorted((root / "skills").rglob("SKILL.md")):
+    text = path.read_text(encoding="utf-8")
+    end = text.find("\n---\n", 4)
+    if end == -1:
+        raise SystemExit("unterminated frontmatter in " + path.relative_to(root).as_posix())
+    frontmatter = text[4:end]
+    if re.search(r"^stacks:\s*", frontmatter, re.M):
+        raise SystemExit("unsupported stacks frontmatter in " + path.relative_to(root).as_posix())
 '
 echo ""
 
@@ -127,10 +125,8 @@ echo "7. Key skills avoid stale hardcoded tool identifiers"
 # shellcheck disable=SC2016
 assert_python "tool and extension skills avoid stale tool-name guidance" '
 checks = {
-    ".github/skills/tool-protocol/SKILL.md": ["list_code_usages"],
-    "template/skills/tool-protocol/SKILL.md": ["list_code_usages"],
-    ".github/skills/extension-review/SKILL.md": ["`get_active_profile` Language Model Tool"],
-    "template/skills/extension-review/SKILL.md": ["`get_active_profile` Language Model Tool"],
+    "skills/tool-protocol/SKILL.md": ["list_code_usages"],
+    "skills/extension-review/SKILL.md": ["`get_active_profile` Language Model Tool"],
 }
 for rel, forbidden in checks.items():
     text = (root / rel).read_text(encoding="utf-8")
@@ -143,8 +139,7 @@ echo ""
 echo "8. Lean PR review skill points to current section numbers"
 assert_python "lean-pr-review skill tracks current review/baseline sections" '
 required = [
-    (".github/skills/lean-pr-review/SKILL.md", "§5 Review Mode", "§2 baselines"),
-    ("template/skills/lean-pr-review/SKILL.md", "§5 Review Mode", "§2 baselines"),
+    ("skills/lean-pr-review/SKILL.md", "§5 Review Mode", "§2 baselines"),
 ]
 for rel, review_ref, baseline_ref in required:
     text = (root / rel).read_text(encoding="utf-8")

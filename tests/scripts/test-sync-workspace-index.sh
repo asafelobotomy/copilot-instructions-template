@@ -17,32 +17,25 @@ make_fixture() {
     "$root/.copilot/workspace/knowledge/diaries" \
     "$root/.copilot/workspace/operations" \
     "$root/.copilot/workspace/runtime" \
-    "$root/.github/agents" \
-    "$root/.github/skills/skill-creator" \
-    "$root/.github/skills/extension-review" \
-    "$root/.github/skills/zzz-extra" \
+    "$root/agents" \
+    "$root/skills/skill-creator" \
+    "$root/skills/extension-review" \
+    "$root/skills/zzz-extra" \
     "$root/template/instructions" \
     "$root/template/prompts" \
-    "$root/template/skills/skill-creator" \
-    "$root/template/skills/test-coverage-review" \
-    "$root/template/skills/aaa-extra" \
     "$root/template/workspace/identity" \
     "$root/template/workspace/knowledge/diaries" \
     "$root/template/workspace/operations" \
-    "$root/template/hooks/scripts"
+    "$root/hooks/scripts"
 
-  : > "$root/.github/agents/setup.agent.md"
-  : > "$root/.github/agents/review.agent.md"
-  : > "$root/.github/agents/z-last.agent.md"
-  : > "$root/.github/agents/routing-manifest.json"
+  : > "$root/agents/setup.agent.md"
+  : > "$root/agents/review.agent.md"
+  : > "$root/agents/z-last.agent.md"
+  : > "$root/agents/routing-manifest.json"
 
-  printf 'name: skill-creator\ndescription: test\n' > "$root/.github/skills/skill-creator/SKILL.md"
-  printf 'name: extension-review\ndescription: test\n' > "$root/.github/skills/extension-review/SKILL.md"
-  printf 'name: zzz-extra\ndescription: test\n' > "$root/.github/skills/zzz-extra/SKILL.md"
-
-  printf 'name: skill-creator\ndescription: test\n' > "$root/template/skills/skill-creator/SKILL.md"
-  printf 'name: test-coverage-review\ndescription: test\n' > "$root/template/skills/test-coverage-review/SKILL.md"
-  printf 'name: aaa-extra\ndescription: test\n' > "$root/template/skills/aaa-extra/SKILL.md"
+  printf 'name: skill-creator\ndescription: test\n' > "$root/skills/skill-creator/SKILL.md"
+  printf 'name: extension-review\ndescription: test\n' > "$root/skills/extension-review/SKILL.md"
+  printf 'name: zzz-extra\ndescription: test\n' > "$root/skills/zzz-extra/SKILL.md"
 
   : > "$root/template/instructions/api-routes.instructions.md"
   : > "$root/template/instructions/tests.instructions.md"
@@ -53,16 +46,16 @@ make_fixture() {
   : > "$root/template/workspace/knowledge/diaries/README.md"
   : > "$root/template/copilot-setup-steps.yml"
 
-  : > "$root/template/hooks/scripts/session-start.sh"
-  : > "$root/template/hooks/scripts/guard-destructive.sh"
-  : > "$root/template/hooks/scripts/save-context.sh"
-  : > "$root/template/hooks/scripts/session-start.ps1"
-  : > "$root/template/hooks/scripts/guard-destructive.ps1"
-  : > "$root/template/hooks/scripts/save-context.ps1"
-  : > "$root/template/hooks/scripts/heartbeat-policy.json"
-  : > "$root/template/hooks/scripts/heartbeat_clock_summary.py"
-  : > "$root/template/hooks/scripts/mcp-heartbeat-server.py"
-  : > "$root/template/hooks/scripts/pulse_runtime.py"
+  : > "$root/hooks/scripts/session-start.sh"
+  : > "$root/hooks/scripts/guard-destructive.sh"
+  : > "$root/hooks/scripts/save-context.sh"
+  : > "$root/hooks/scripts/session-start.ps1"
+  : > "$root/hooks/scripts/guard-destructive.ps1"
+  : > "$root/hooks/scripts/save-context.ps1"
+  : > "$root/hooks/scripts/heartbeat-policy.json"
+  : > "$root/hooks/scripts/heartbeat_clock_summary.py"
+  : > "$root/hooks/scripts/mcp-heartbeat-server.py"
+  : > "$root/hooks/scripts/pulse_runtime.py"
 
   cat > "$root/template/workspace/operations/workspace-index.json" <<'EOF'
 {
@@ -74,7 +67,7 @@ make_fixture() {
     "agents": 2,
     "agentSupportFiles": 1,
     "skillsRepo": 2,
-    "skillsTemplate": 2,
+    "skillsTemplate": 0,
     "hookScriptsShell": 3,
     "hookScriptsPowerShell": 3,
     "hookScriptsPython": 2,
@@ -92,10 +85,7 @@ make_fixture() {
       "skill-creator",
       "extension-review"
     ],
-    "template": [
-      "skill-creator",
-      "test-coverage-review"
-    ]
+    "template": []
   },
   "prompts": [
     "commit-msg.prompt.md",
@@ -181,7 +171,7 @@ for rel in ('.copilot/workspace/operations/workspace-index.json', 'template/work
   assert data['counts']['agents'] == 3
   assert data['counts']['agentSupportFiles'] == 1
   assert data['counts']['skillsRepo'] == 3
-  assert data['counts']['skillsTemplate'] == 3
+  assert data['counts']['skillsTemplate'] == 0
   assert data['counts']['hookScriptsShell'] == 3
   assert data['counts']['hookScriptsPowerShell'] == 3
   assert data['counts']['hookScriptsPython'] == 3
@@ -193,7 +183,7 @@ for rel in ('.copilot/workspace/operations/workspace-index.json', 'template/work
   assert data['agents'] == ['setup.agent.md', 'review.agent.md', 'z-last.agent.md']
   assert data['agentSupportFiles'] == ['routing-manifest.json']
   assert data['skills']['repo'] == ['skill-creator', 'extension-review', 'zzz-extra']
-  assert data['skills']['template'] == ['skill-creator', 'test-coverage-review', 'aaa-extra']
+  assert data['skills']['template'] == []
   assert data['prompts'] == ['commit-msg.prompt.md', 'review-file.prompt.md']
   assert data['instructions'] == ['api-routes.instructions.md', 'tests.instructions.md']
   assert data['workspaceFiles'] == ['identity/BOOTSTRAP.md', 'knowledge/TOOLS.md', 'operations/workspace-index.json', 'knowledge/diaries/README.md']

@@ -13,7 +13,7 @@ echo ""
 
 echo "1. Commit agent integrates preflight and install confirmation"
 assert_python "commit agent has preflight workflow and askQuestions support" '
-path = root / ".github/agents/commit.agent.md"
+path = root / "agents/commit.agent.md"
 text = path.read_text(encoding="utf-8")
 if not text.startswith("---\n"):
     raise SystemExit("missing frontmatter in commit.agent.md")
@@ -49,7 +49,7 @@ echo ""
 
 echo "2. Fast agent keeps exact-match search for quick lookups"
 assert_python "fast agent includes search tool and research escalation" '
-path = root / ".github/agents/fast.agent.md"
+path = root / "agents/fast.agent.md"
 text = path.read_text(encoding="utf-8")
 if not text.startswith("---\n"):
     raise SystemExit("missing frontmatter in fast.agent.md")
@@ -84,8 +84,6 @@ if repo_data != template_data:
     raise SystemExit("repo and template workspace-index.json diverged")
 if "commit-preflight" not in repo_data["skills"]["repo"]:
     raise SystemExit("workspace-index repo skills missing commit-preflight")
-if "commit-preflight" not in template_data["skills"]["template"]:
-    raise SystemExit("workspace-index template skills missing commit-preflight")
 '
 echo ""
 
@@ -142,16 +140,14 @@ assert_python "setup and agent entry files point to the canonical protocol docs"
 checks = {
     "AGENTS.md": [
         "## Canonical protocol sources",
-        "[SETUP.md](SETUP.md)",
-        "[UPDATE.md](UPDATE.md)",
-        "https://github.com/asafelobotomy/copilot-instructions-template/blob/main/template/setup/manifests.md#protocol-sources",
+        "${CLAUDE_PLUGIN_ROOT}/agents/",
+        "VS Code Agent Plugin",
+        "Chat: Install Plugin",
     ],
-    ".github/agents/setup.agent.md": [
-        "## Canonical protocol sources",
-        "[SETUP.md](SETUP.md)",
-        "[UPDATE.md](UPDATE.md)",
-        "https://github.com/asafelobotomy/copilot-instructions-template/blob/main/template/setup/manifests.md#protocol-sources",
-        "[AGENTS.md](AGENTS.md)",
+    "agents/setup.agent.md": [
+        "${CLAUDE_PLUGIN_ROOT}",
+        "template/setup/manifests.md",
+        "ask_questions",
     ],
     "template/setup/manifests.md": [
         "## Protocol sources",
@@ -181,12 +177,12 @@ for phrase in [
     if agents_text.count(phrase) != 1:
         raise SystemExit("AGENTS.md duplicates trigger phrase: " + phrase)
 
-setup_agent_text = (root / ".github/agents/setup.agent.md").read_text(encoding="utf-8")
+setup_agent_text = (root / "agents/setup.agent.md").read_text(encoding="utf-8")
 if "### Pre-flight URLs" in setup_agent_text:
     raise SystemExit("setup.agent.md still duplicates the pre-flight URL list")
 if "### Trigger phrases (update mode)" in setup_agent_text:
     raise SystemExit("setup.agent.md still duplicates the update trigger phrase list")
-for rel in ("AGENTS.md", ".github/agents/setup.agent.md"):
+for rel in ("AGENTS.md", "agents/setup.agent.md"):
     text = (root / rel).read_text(encoding="utf-8")
     if "[template/setup/manifests.md](template/setup/manifests.md#protocol-sources)" in text:
         raise SystemExit(rel + " still points consumers at a non-installed local manifests path")
@@ -347,7 +343,7 @@ for rel in (".github/copilot-instructions.md", "template/copilot-instructions.md
 # Agent/prompt/instruction files must not suggest zsh strict-mode mutation
 # (terminal instruction files are excluded — they warn AGAINST it)
 search_roots = [
-    root / ".github/agents",
+    root / "agents",
     root / ".github/prompts",
     root / "template/prompts",
 ]
@@ -370,7 +366,7 @@ echo ""
 echo "9. Agent and prompt surfaces avoid top-level zsh strict-mode mutation guidance"
 assert_python "prompt and agent surfaces avoid raw zsh strict-mode mutation" '
 search_roots = [
-    root / ".github/agents",
+    root / "agents",
     root / ".github/prompts",
     root / "template/prompts",
 ]
@@ -442,7 +438,7 @@ expected = {
 }
 
 for name, expected_agents in expected.items():
-    path = root / ".github/agents" / name
+    path = root / "agents" / name
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---\n"):
         raise SystemExit("missing frontmatter in " + name)
@@ -515,7 +511,7 @@ checks = {
     ],
 }
 for name, needles in checks.items():
-    text = (root / ".github/agents" / name).read_text(encoding="utf-8")
+    text = (root / "agents" / name).read_text(encoding="utf-8")
     for needle in needles:
         if needle not in text:
             raise SystemExit(name + " missing workflow guidance: " + needle)
@@ -623,7 +619,7 @@ checks = {
         "Run `{{TEST_COMMAND}}` once only if the generated tests finish the full task",
         "targeted failure required broader re-verification",
     ],
-    ".github/agents/organise.agent.md": [
+    "agents/organise.agent.md": [
         "Run the repo test suite once before task completion",
         "targeted failure required a fix and broader re-verification is warranted",
     ],

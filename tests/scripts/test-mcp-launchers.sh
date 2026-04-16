@@ -9,8 +9,8 @@ source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
 trap cleanup_dirs EXIT
 
-NPX_SCRIPT="$REPO_ROOT/template/hooks/scripts/mcp-npx.sh"
-UVX_SCRIPT="$REPO_ROOT/template/hooks/scripts/mcp-uvx.sh"
+NPX_SCRIPT="$REPO_ROOT/hooks/scripts/mcp-npx.sh"
+UVX_SCRIPT="$REPO_ROOT/hooks/scripts/mcp-uvx.sh"
 
 echo "=== MCP launcher wrapper tests ==="
 echo ""
@@ -66,10 +66,10 @@ assert_file_contains "uvx install URL in source" "$UVX_SCRIPT" "astral.sh"
 echo ""
 
 echo "11. .github parity copies match template"
-assert_file_exists ".github mcp-npx.sh exists" "$REPO_ROOT/.github/hooks/scripts/mcp-npx.sh"
-assert_file_exists ".github mcp-uvx.sh exists" "$REPO_ROOT/.github/hooks/scripts/mcp-uvx.sh"
-if diff -q "$NPX_SCRIPT" "$REPO_ROOT/.github/hooks/scripts/mcp-npx.sh" >/dev/null; then pass_note "mcp-npx.sh parity"; else fail_note "mcp-npx.sh parity" "files differ"; fi
-if diff -q "$UVX_SCRIPT" "$REPO_ROOT/.github/hooks/scripts/mcp-uvx.sh" >/dev/null; then pass_note "mcp-uvx.sh parity"; else fail_note "mcp-uvx.sh parity" "files differ"; fi
+assert_file_exists ".github mcp-npx.sh exists" "$REPO_ROOT/hooks/scripts/mcp-npx.sh"
+assert_file_exists ".github mcp-uvx.sh exists" "$REPO_ROOT/hooks/scripts/mcp-uvx.sh"
+if diff -q "$NPX_SCRIPT" "$REPO_ROOT/hooks/scripts/mcp-npx.sh" >/dev/null; then pass_note "mcp-npx.sh parity"; else fail_note "mcp-npx.sh parity" "files differ"; fi
+if diff -q "$UVX_SCRIPT" "$REPO_ROOT/hooks/scripts/mcp-uvx.sh" >/dev/null; then pass_note "mcp-uvx.sh parity"; else fail_note "mcp-uvx.sh parity" "files differ"; fi
 echo ""
 
 echo "12. dev repo mcp.json uses portable direct commands"

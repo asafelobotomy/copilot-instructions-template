@@ -19,20 +19,10 @@ write_sections() {
   done
 }
 
-write_questions() {
-  local file="$1" max_question="$2"
-  : > "$file"
-  local question
-  for question in $(seq 16 "$max_question"); do
-    printf '## E%s — Question %s\n\nPrompt text.\n\n' "$question" "$question" >> "$file"
-  done
-}
-
 make_fixture() {
   local dir="$1"
   mkdir -p "$dir/template"
   write_sections "$dir/template/copilot-instructions.md" 14
-  write_questions "$dir/SETUP.md" 24
 }
 
 echo "=== validate-cross-references.sh ==="
@@ -75,21 +65,7 @@ assert_contains "stale numbered prose is reported" "$output" "Stale prose"
 assert_contains "stale numbered prose path is reported" "$output" "README.md"
 echo ""
 
-echo "4. Stale expert-question range is detected"
-TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
-make_fixture "$TMP"
-printf 'Expert mode covers E16-E23.\n' > "$TMP/README.md"
-if output=$(ROOT_DIR="$TMP" bash "$SCRIPT" 2>&1); then
-  status=0
-else
-  status=$?
-fi
-assert_failure "stale question range exits non-zero" "$status"
-assert_contains "stale question range is reported" "$output" "Stale question range"
-assert_contains "stale question path is reported" "$output" "README.md"
-echo ""
-
-echo "5. Real repo passes integration"
+echo "4. Real repo passes integration"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" 2>&1)
 status=$?
 assert_success "real repo exits zero" "$status"

@@ -45,19 +45,6 @@ if payload["intermediate_phase_strategy"] != "broaden-aggressively":
 '
 echo ""
 
-echo "15. validate-template-sync maps to its dedicated suite"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/ci/validate-template-sync.sh")
-status=$?
-assert_success "selector exits zero on validate-template-sync" "$status"
-SELECTOR_OUTPUT="$output" assert_python "validate-template-sync maps to its dedicated suite" '
-payload = json.loads(os.environ["SELECTOR_OUTPUT"])
-if payload["selected_tests"] != ["tests/scripts/test-validate-template-sync.sh"]:
-    raise SystemExit(str(payload["selected_tests"]))
-if payload["intermediate_phase_strategy"] != "targeted":
-    raise SystemExit(payload["intermediate_phase_strategy"])
-'
-echo ""
-
 echo "16. run-all-captured maps to its dedicated suite"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/harness/run-all-captured.sh")
 status=$?
@@ -190,17 +177,8 @@ if payload["intermediate_phase_strategy"] != "targeted":
 '
 echo ""
 
-echo "26. template/workspace/ stub files map to the setup-update contract suite"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/workspace/knowledge/MEMORY-GUIDE.md")
-status=$?
-assert_success "selector exits zero on template/workspace/ stub" "$status"
-SELECTOR_OUTPUT="$output" assert_python "template/workspace/ stubs map to setup-update contracts" '
-payload = json.loads(os.environ["SELECTOR_OUTPUT"])
-if "tests/contracts/test-setup-update-contracts.sh" not in payload["selected_tests"]:
-    raise SystemExit(str(payload["selected_tests"]))
-if payload["intermediate_phase_strategy"] != "targeted":
-    raise SystemExit(payload["intermediate_phase_strategy"])
-'
+echo "26. template/workspace/ stub files — skip (setup-update contracts deleted)"
+# Placeholder for future workspace stubs test
 echo ""
 
 echo "37. .copilot/workspace/operations/HEARTBEAT.md maps to drift check suite"
@@ -220,7 +198,7 @@ if payload.get("unmapped_paths"):
 echo ""
 
 echo "38. mirror-domain collapsing reduces domain count for parity-mirror changes"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" ".github/hooks/scripts/pulse_state.py" "template/hooks/scripts/pulse_state.py")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "hooks/scripts/pulse_state.py" "hooks/scripts/pulse_state.py")
 status=$?
 assert_success "selector exits zero on parity mirror pair" "$status"
 SELECTOR_OUTPUT="$output" assert_python "parity mirror pair collapses to a single domain" '

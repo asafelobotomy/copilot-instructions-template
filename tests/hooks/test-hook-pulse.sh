@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/hooks/test-hook-pulse.sh -- unit tests for template/hooks/scripts/pulse.sh
+# tests/hooks/test-hook-pulse.sh -- unit tests for hooks/scripts/pulse.sh
 # Run: bash tests/hooks/test-hook-pulse.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
@@ -7,7 +7,7 @@ set -uo pipefail
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
-SCRIPT="$REPO_ROOT/template/hooks/scripts/pulse.sh"
+SCRIPT="$REPO_ROOT/hooks/scripts/pulse.sh"
 trap cleanup_dirs EXIT
 
 run_pulse() {
@@ -27,7 +27,7 @@ mkdir -p "$TMPDIR_START/.copilot/workspace/identity" "$TMPDIR_START/.copilot/wor
 output=$(run_pulse "$TMPDIR_START" session_start '{"sessionId":"sess-1"}')
 assert_valid_json "session_start output is valid JSON" "$output"
 assert_matches "session_start continues" "$output" '"continue": true'
-assert_matches "session_start includes UTC timestamp" "$output" 'Session started at [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z'
+assert_matches "session_start includes routing roster" "$output" 'Route:'
 assert_matches "sentinel contains session id" "$(cat "$TMPDIR_START/.copilot/workspace/runtime/.heartbeat-session" 2>/dev/null)" 'sess-1'
 assert_matches "sentinel starts pending" "$(cat "$TMPDIR_START/.copilot/workspace/runtime/.heartbeat-session" 2>/dev/null)" 'pending'
 assert_python_in_root "state written with pending session" "$TMPDIR_START" '
@@ -220,7 +220,7 @@ echo "12. user_prompt heartbeat keyword emits system message"
 TMPDIR_PROMPT=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_PROMPT")
 mkdir -p "$TMPDIR_PROMPT/.copilot/workspace/identity" "$TMPDIR_PROMPT/.copilot/workspace/knowledge/diaries" "$TMPDIR_PROMPT/.copilot/workspace/operations" "$TMPDIR_PROMPT/.copilot/workspace/runtime"
 output=$(run_pulse "$TMPDIR_PROMPT" user_prompt '{"prompt":"Can you check your heartbeat now?"}')
-assert_matches "keyword prompt includes guidance" "$output" 'Heartbeat triggered'
+assert_matches "keyword prompt includes guidance" "$output" 'Heartbeat: run HEARTBEAT'
 echo ""
 
 echo "13. policy discussion prompts do not arm heartbeat or retrospective"
@@ -659,5 +659,86 @@ assert '$agent' in state['route_emitted_agents']
 assert state['route_source'] == 'prompt+behavior'
 "
 done
+
+echo ""
+echo "32. PostToolUse emits reflect instruction once when signal_reflection_likely is set"
+TMPDIR_REFLECT=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_REFLECT")
+mkdir -p "$TMPDIR_REFLECT/.copilot/workspace/identity" "$TMPDIR_REFLECT/.copilot/workspace/knowledge/diaries" "$TMPDIR_REFLECT/.copilot/workspace/operations" "$TMPDIR_REFLECT/.copilot/workspace/runtime"
+run_pulse "$TMPDIR_REFLECT" session_start '{"sessionId":"sess-32"}' >/dev/null
+python3 - <<PY
+import json
+from pathlib import Path
+p = Path("$TMPDIR_REFLECT/.copilot/workspace/runtime/state.json")
+state = json.loads(p.read_text(encoding="utf-8"))
+# Set copilot_edit_count high enough to trigger strong signal (threshold=8)
+# since sandbox has no real git changes, recommend_retrospective falls back to edit count
+state["copilot_edit_count"] = 10
+state["reflect_instruction_emitted"] = False
+state["retrospective_state"] = "idle"
+state["last_soft_trigger_epoch"] = 0
+p.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
+PY
+output=$(run_pulse "$TMPDIR_REFLECT" soft_post_tool '{"tool_name":"run_in_terminal"}')
+assert_valid_json "reflect instruction output is valid JSON" "$output"
+assert_matches "reflect instruction appears in additionalContext" "$output" 'session_reflect'
+assert_python_in_root "reflect_instruction_emitted is persisted" "$TMPDIR_REFLECT" '
+state = json.loads((root / ".copilot/workspace/runtime/state.json").read_text(encoding="utf-8"))
+assert state["reflect_instruction_emitted"] is True, "expected True got %s" % state["reflect_instruction_emitted"]
+assert state["retrospective_state"] == "suggested", "expected suggested got %s" % state["retrospective_state"]
+'
+echo ""
+
+echo "33. PostToolUse does not re-emit reflect instruction after first emission"
+output2=$(run_pulse "$TMPDIR_REFLECT" soft_post_tool '{"tool_name":"run_in_terminal"}')
+assert_valid_json "second soft_post_tool output is valid JSON" "$output2"
+if echo "$output2" | grep -q 'session_reflect'; then
+  fail_note "second call must not re-emit reflect instruction" "     unexpected session_reflect in output: $output2"
+else
+  pass_note "second call must not re-emit reflect instruction"
+fi
+
+echo ""
+echo "34. session_start writes state to fallback path when workspace is read-only"
+TMPDIR_RDONLY=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_RDONLY")
+mkdir -p "$TMPDIR_RDONLY/.copilot/workspace/identity" "$TMPDIR_RDONLY/.copilot/workspace/knowledge/diaries" "$TMPDIR_RDONLY/.copilot/workspace/operations" "$TMPDIR_RDONLY/.copilot/workspace/runtime"
+chmod 0555 "$TMPDIR_RDONLY/.copilot/workspace/runtime"
+output=$(CLAUDE_TMPDIR="$TMPDIR_RDONLY/.hb-tmp" TMPDIR="$TMPDIR_RDONLY/.hb-tmp" run_pulse "$TMPDIR_RDONLY" session_start '{"sessionId":"sess-34"}')
+chmod 0755 "$TMPDIR_RDONLY/.copilot/workspace/runtime"  # restore so cleanup works
+assert_valid_json "read-only workspace session_start returns valid JSON" "$output"
+assert_matches "read-only workspace session_start continues" "$output" '"continue": true'
+# Primary state.json must NOT have been written (dir was 0555)
+if [ -f "$TMPDIR_RDONLY/.copilot/workspace/runtime/state.json" ]; then
+  fail_note "state.json was NOT written to read-only primary path" "     file exists at primary path"
+else
+  pass_note "state.json was NOT written to read-only primary path"
+fi
+# Fallback state.json MUST have been written somewhere under CLAUDE_TMPDIR
+hb_tmp="$TMPDIR_RDONLY/.hb-tmp"
+fallback_count=$(find "$hb_tmp" -name 'state.json' 2>/dev/null | wc -l)
+if [ "$fallback_count" -ge 1 ]; then
+  pass_note "state.json written to fallback path"
+else
+  fail_note "state.json written to fallback path" "     no state.json found under $hb_tmp"
+fi
+
+echo ""
+echo "35. routing manifest absent: session_start succeeds and routing is disabled"
+TMPDIR_NOROUTE=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_NOROUTE")
+mkdir -p "$TMPDIR_NOROUTE/.copilot/workspace/identity" "$TMPDIR_NOROUTE/.copilot/workspace/knowledge/diaries" "$TMPDIR_NOROUTE/.copilot/workspace/operations" "$TMPDIR_NOROUTE/.copilot/workspace/runtime"
+# Create an empty routing manifest (zero agents) in the workspace so the CWD-relative
+# lookup wins over the walk-up fallback.  This is the canonical "no routing configured"
+# state that consumers can ship during early setup.
+mkdir -p "$TMPDIR_NOROUTE/agents"
+echo '{"version":1,"agents":[]}' > "$TMPDIR_NOROUTE/agents/routing-manifest.json"
+# No agents/routing-manifest.json — should fail-closed (no routing)
+output=$(run_pulse "$TMPDIR_NOROUTE" session_start '{"sessionId":"sess-35"}')
+assert_valid_json "no-manifest session_start returns valid JSON" "$output"
+assert_matches "no-manifest session_start continues" "$output" '"continue": true'
+output=$(run_pulse "$TMPDIR_NOROUTE" user_prompt '{"prompt":"Please stage and commit my changes"}')
+assert_valid_json "no-manifest user_prompt returns valid JSON" "$output"
+assert_python_in_root "no-manifest: routing candidate is empty (fail-closed)" "$TMPDIR_NOROUTE" '
+state = json.loads((root / ".copilot/workspace/runtime/state.json").read_text(encoding="utf-8"))
+assert state["route_candidate"] == "", "expected empty candidate, got %s" % state["route_candidate"]
+'
 
 finish_tests

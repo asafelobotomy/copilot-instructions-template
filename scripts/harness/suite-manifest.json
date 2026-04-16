@@ -233,18 +233,6 @@
       "ciLabel": "Script behavior | validate-attention-budget.sh"
     },
     {
-      "id": "script-sync-template-parity",
-      "path": "tests/scripts/test-sync-template-parity.sh",
-      "phase": "scripts",
-      "ciLabel": "Script behavior | sync-template-parity.sh"
-    },
-    {
-      "id": "script-validate-template-sync",
-      "path": "tests/scripts/test-validate-template-sync.sh",
-      "phase": "scripts",
-      "ciLabel": "Script behavior | validate-template-sync.sh"
-    },
-    {
       "id": "script-security-edge-cases",
       "path": "tests/scripts/test-security-edge-cases.sh",
       "phase": "scripts",
@@ -299,22 +287,10 @@
       "ciLabel": "Docs and contracts | customization policies"
     },
     {
-      "id": "contract-template-parity",
-      "path": "tests/contracts/test-template-parity.sh",
-      "phase": "contracts",
-      "ciLabel": "Docs and contracts | template parity"
-    },
-    {
       "id": "contract-starter-kits",
       "path": "tests/contracts/test-starter-kits.sh",
       "phase": "contracts",
       "ciLabel": "Docs and contracts | starter-kits"
-    },
-    {
-      "id": "contract-setup-update",
-      "path": "tests/contracts/test-setup-update-contracts.sh",
-      "phase": "contracts",
-      "ciLabel": "Docs and contracts | setup and update contracts"
     }
   ]
 }

@@ -11,10 +11,7 @@ fi
 
 required_files=(
   ".github/copilot-instructions.md"
-  "SETUP.md"
-  "UPDATE.md"
-  "MIGRATION.md"
-  "MIGRATION.archive.md"
+  "plugin.json"
   "AGENTS.md"
   "VERSION.md"
   "CHANGELOG.md"
@@ -27,7 +24,6 @@ required_files=(
   "scripts/workspace/sync-workspace-index.sh"
   "scripts/sync/sync-models.sh"
   "scripts/sync/sync_models.py"
-  "scripts/sync/sync-template-parity.sh"
   "scripts/ci/validate-agent-frontmatter.sh"
   "scripts/lib.sh"
   "MODELS.md"
@@ -56,7 +52,6 @@ required_files=(
   "template/vscode/mcp.json"
   "template/vscode/settings.json"
   "template/vscode/extensions.json"
-  "template/hooks/copilot-hooks.json"
   "template/workspace/identity/IDENTITY.md"
   "template/workspace/identity/SOUL.md"
   "template/workspace/knowledge/USER.md"
@@ -90,17 +85,14 @@ with open(sys.argv[1], encoding="utf-8") as handle:
     payload = json.load(handle)
 
 for name in payload.get("agents", []):
-    print(f".github/agents/{name}")
+    print(f"agents/{name}")
 
 for name in payload.get("skills", {}).get("repo", []):
-    print(f".github/skills/{name}/SKILL.md")
-
-for name in payload.get("skills", {}).get("template", []):
-    print(f"template/skills/{name}/SKILL.md")
+    print(f"skills/{name}/SKILL.md")
 
 for names in payload.get("hookScripts", {}).values():
     for name in names:
-        print(f"template/hooks/scripts/{name}")
+        print(f"hooks/scripts/{name}")
 PY
   )
 fi

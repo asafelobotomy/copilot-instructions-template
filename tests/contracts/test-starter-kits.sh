@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/contracts/test-starter-kits.sh -- validate starter-kit plugin structure and contracts.
+# tests/contracts/test-starter-kits.sh -- validate plugin manifests and starter-kit contracts.
 # Run: bash tests/contracts/test-starter-kits.sh
 # Exit 0: all checks passed. Exit 1: one or more checks failed.
 set -uo pipefail
@@ -67,6 +67,45 @@ for kit in registry["kits"]:
             raise SystemExit(".claude-plugin/plugin.json in " + kit["name"] + " missing field: " + field)
     if "displayName" in pj:
         raise SystemExit(".claude-plugin/plugin.json in " + kit["name"] + " has unsupported displayName field")
+    author = pj.get("author")
+    if author is not None:
+        if not isinstance(author, dict):
+            raise SystemExit(".claude-plugin/plugin.json in " + kit["name"] + " has non-object author field")
+        if not isinstance(author.get("name"), str) or not author["name"]:
+            raise SystemExit(".claude-plugin/plugin.json in " + kit["name"] + " has invalid author.name field")
+'
+echo ""
+
+echo "4b. Root plugin.json uses explicit component paths and supported metadata"
+assert_python "root plugin manifest is valid" '
+pj = json.loads((root / "plugin.json").read_text(encoding="utf-8"))
+for field in ("name", "description", "version"):
+    if not isinstance(pj.get(field), str) or not pj[field]:
+        raise SystemExit("root plugin.json missing or invalid field: " + field)
+author = pj.get("author")
+if author is not None:
+    if not isinstance(author, dict):
+        raise SystemExit("root plugin.json has non-object author field")
+    if not isinstance(author.get("name"), str) or not author["name"]:
+        raise SystemExit("root plugin.json has invalid author.name field")
+for field, expected in (("agents", "agents"), ("skills", "skills"), ("hooks", "hooks/hooks.json"), ("mcpServers", ".mcp.json")):
+    if pj.get(field) != expected:
+        raise SystemExit("root plugin.json has unexpected " + field + " path")
+'
+echo ""
+
+echo "4c. Plugin .mcp.json declares heartbeat server"
+assert_python "plugin mcp.json has heartbeat" '
+mcp = json.loads((root / ".mcp.json").read_text(encoding="utf-8"))
+servers = mcp.get("mcpServers", {})
+if "heartbeat" not in servers:
+    raise SystemExit(".mcp.json missing heartbeat server")
+hb = servers["heartbeat"]
+if hb.get("type") != "stdio":
+    raise SystemExit("heartbeat server must be stdio type")
+cmd = hb.get("command", "")
+if "uvx" not in cmd and "python" not in cmd:
+    raise SystemExit("heartbeat command should use uvx or python, got: " + cmd)
 '
 echo ""
 

@@ -44,7 +44,7 @@ def check_a1_agent_frontmatter(root: pathlib.Path | AuditContext) -> CheckResult
     ctx = ensure_context(root)
     result = CheckResult("A1", "Agent frontmatter completeness")
     if not ctx.agents_dir.is_dir():
-        result.findings.append(Finding("A1", ".github/agents/", INFO,
+        result.findings.append(Finding("A1", "agents/", INFO,
                                        "No agents directory — skip"))
         return result
     for agent_file in ctx.agent_files:

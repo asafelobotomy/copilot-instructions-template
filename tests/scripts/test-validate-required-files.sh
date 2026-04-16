@@ -54,40 +54,40 @@ echo ""
 echo "3. Missing workspace-index hook script is detected"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_repo_copy "$TMP/repo"
-rm "$TMP/repo/template/hooks/scripts/pulse_runtime.py"
+rm "$TMP/repo/hooks/scripts/pulse_runtime.py"
 if output=$(ROOT_DIR="$TMP/repo" bash "$SCRIPT" 2>&1); then
   status=0
 else
   status=$?
 fi
 assert_failure "missing hook script exits non-zero" "$status"
-assert_contains "missing hook script is reported" "$output" "template/hooks/scripts/pulse_runtime.py"
+assert_contains "missing hook script is reported" "$output" "hooks/scripts/pulse_runtime.py"
 echo ""
 
 echo "4. Missing workspace-index skill file is detected"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_repo_copy "$TMP/repo"
-rm "$TMP/repo/template/skills/commit-preflight/SKILL.md"
+rm "$TMP/repo/skills/commit-preflight/SKILL.md"
 if output=$(ROOT_DIR="$TMP/repo" bash "$SCRIPT" 2>&1); then
   status=0
 else
   status=$?
 fi
 assert_failure "missing skill exits non-zero" "$status"
-assert_contains "missing skill is reported" "$output" "template/skills/commit-preflight/SKILL.md"
+assert_contains "missing skill is reported" "$output" "skills/commit-preflight/SKILL.md"
 echo ""
 
 echo "5. Missing workspace-index agent file is detected"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_repo_copy "$TMP/repo"
-rm "$TMP/repo/.github/agents/commit.agent.md"
+rm "$TMP/repo/agents/commit.agent.md"
 if output=$(ROOT_DIR="$TMP/repo" bash "$SCRIPT" 2>&1); then
   status=0
 else
   status=$?
 fi
 assert_failure "missing agent exits non-zero" "$status"
-assert_contains "missing agent is reported" "$output" ".github/agents/commit.agent.md"
+assert_contains "missing agent is reported" "$output" "agents/commit.agent.md"
 echo ""
 
 finish_tests

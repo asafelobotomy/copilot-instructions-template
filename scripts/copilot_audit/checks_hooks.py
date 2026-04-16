@@ -41,8 +41,8 @@ def check_h1_hooks_valid_json(root: pathlib.Path | AuditContext) -> CheckResult:
             result.findings.append(Finding("H1", rel, CRITICAL,
                                            f"Invalid JSON: {error}"))
     if not checked:
-        result.findings.append(Finding("H1", ".github/hooks/copilot-hooks.json",
-                                       HIGH, "hooks config not found — hooks will not run"))
+        result.findings.append(Finding("H1", "hooks/hooks.json",
+                                       HIGH, "hooks config not found"))
     return result
 
 
@@ -59,13 +59,17 @@ def check_h2_hooks_scripts_exist(root: pathlib.Path | AuditContext) -> CheckResu
             continue  # H1 already flagged this
         raw = json.dumps(data)
         for script_path in re.findall(r'"([^"]+\.sh)"', raw):
+            if "${CLAUDE_PLUGIN_ROOT}" in script_path or "${workspaceFolder}" in script_path:
+                continue  # plugin-runtime token — cannot resolve locally
             candidate = ctx.root / script_path.lstrip("/")
             if not candidate.exists():
                 result.findings.append(Finding(
                     "H2", rel, HIGH,
                     f"Referenced script not found: {script_path}",
                 ))
-        for ps_path in re.findall(r'"[^"]*?([./A-Za-z0-9_\\\\/-]+\.ps1)"', raw):
+        for ps_path in re.findall(r'"[^"]*?([./A-Za-z0-9_\\\\\/\\/-]+\.ps1)"', raw):
+            if "${CLAUDE_PLUGIN_ROOT}" in ps_path or "${workspaceFolder}" in ps_path:
+                continue  # plugin-runtime token — cannot resolve locally
             norm = ps_path.replace("\\", "/")
             rel_path = norm.lstrip("/")
             if rel_path.startswith("./"):
@@ -92,7 +96,7 @@ def check_sh1_shebang(root: pathlib.Path | AuditContext) -> CheckResult:
             result.findings.append(Finding("SH1", rel, HIGH,
                                            "Missing shebang line"))
     if not found:
-        result.findings.append(Finding("SH1", ".github/hooks/scripts/", INFO,
+        result.findings.append(Finding("SH1", "hooks/scripts/", INFO,
                                        "No shell hook scripts found"))
     return result
 

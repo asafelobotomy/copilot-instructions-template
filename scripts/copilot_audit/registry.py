@@ -31,6 +31,7 @@ from .checks_mcp import (
     check_m2_mcp_no_npm_antipatterns,
     check_m3_mcp_no_secrets,
     check_m4_mcp_stdio_sandbox,
+    check_m5_heartbeat_exactly_one,
 )
 from .checks_prompts import check_p1_prompt_mode
 from .checks_skills import (
@@ -59,6 +60,7 @@ DEVELOPER_CHECKS = (
     check_m2_mcp_no_npm_antipatterns,
     check_m3_mcp_no_secrets,
     check_m4_mcp_stdio_sandbox,
+    check_m5_heartbeat_exactly_one,
     check_h1_hooks_valid_json,
     check_h2_hooks_scripts_exist,
     check_sh1_shebang,
@@ -84,6 +86,7 @@ CONSUMER_CHECKS = (
     check_m2_mcp_no_npm_antipatterns,
     check_m3_mcp_no_secrets,
     check_m4_mcp_stdio_sandbox,
+    check_m5_heartbeat_exactly_one,
     check_h1_hooks_valid_json,
     check_h2_hooks_scripts_exist,
     check_sh1_shebang,

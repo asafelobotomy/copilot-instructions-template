@@ -33,10 +33,10 @@ def parse_thinking_effort(content: str) -> dict[str, str]:
 
 
 def discover_agents(root: pathlib.Path) -> list[str]:
-    """Return dynamically discovered agent names from .github/agents/*.agent.md."""
+    """Return dynamically discovered agent names from agents/*.agent.md."""
     return sorted(
         path.stem.replace(".agent", "")
-        for path in (root / ".github" / "agents").glob("*.agent.md")
+        for path in (root / "agents").glob("*.agent.md")
     )
 
 
@@ -135,7 +135,7 @@ def sync_models(root: pathlib.Path, models_md: pathlib.Path, mode: str) -> int:
 
     for agent in agents:
         models = registry[agent]
-        agent_file = root / ".github" / "agents" / f"{agent}.agent.md"
+        agent_file = root / "agents" / f"{agent}.agent.md"
 
         if not agent_file.exists():
             print(f"❌ Agent file not found: {agent_file}")

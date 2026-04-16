@@ -7,7 +7,7 @@ set -uo pipefail
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
-MODULE_PATH="$REPO_ROOT/template/hooks/scripts/pulse_paths.py"
+MODULE_PATH="$REPO_ROOT/hooks/scripts/pulse_paths.py"
 
 load_module_code='import importlib.util
 spec = importlib.util.spec_from_file_location("pulse_paths", os.environ["MODULE_PATH"])
@@ -22,7 +22,7 @@ echo ""
 echo "1. normalize_path canonicalizes dotted and absolute paths"
 MODULE_PATH="$MODULE_PATH" assert_python "normalize_path canonicalizes dotted and absolute paths" "$load_module_code
 absolute = str(root / 'README.md')
-assert module.normalize_path('./template/hooks/scripts/pulse.sh') == 'template/hooks/scripts/pulse.sh'
+assert module.normalize_path('./hooks/scripts/pulse.sh') == 'hooks/scripts/pulse.sh'
 assert module.normalize_path(absolute) == 'README.md'
 assert module.normalize_path('') == ''
 "
@@ -34,13 +34,13 @@ payload = {
     'tool_input': {
         'filePath': './README.md',
         'files': [
-            'template/hooks/scripts/pulse.sh',
+            'hooks/scripts/pulse.sh',
             {'path': str(root / 'SETUP.md')},
-            {'filePath': 'template/hooks/scripts/pulse.sh'},
+            {'filePath': 'hooks/scripts/pulse.sh'},
         ],
     }
 }
-assert module.extract_tool_paths(payload) == ['README.md', 'template/hooks/scripts/pulse.sh', 'SETUP.md']
+assert module.extract_tool_paths(payload) == ['README.md', 'hooks/scripts/pulse.sh', 'SETUP.md']
 "
 echo ""
 
@@ -48,8 +48,8 @@ echo "3. classify_path_family recognizes the main repository surface types"
 MODULE_PATH="$MODULE_PATH" assert_python "classify_path_family recognizes the main repository surface types" "$load_module_code
 expected = {
     '.copilot/workspace/knowledge/MEMORY.md': 'memory',
-    'template/hooks/scripts/pulse.sh': 'hook',
-    '.github/agents/code.agent.md': 'agent',
+    'hooks/scripts/pulse.sh': 'hook',
+    'agents/code.agent.md': 'agent',
     'tests/hooks/test-hook-pulse.sh': 'tests',
     'scripts/release/verify-version-references.sh': 'ci_release',
     'release-please-config.json': 'manifest',
@@ -65,7 +65,7 @@ echo ""
 
 echo "4. path_requires_parity identifies mirrored customization surfaces"
 MODULE_PATH="$MODULE_PATH" assert_python "path_requires_parity identifies mirrored customization surfaces" "$load_module_code
-assert module.path_requires_parity('template/hooks/scripts/pulse.sh')
+assert module.path_requires_parity('hooks/scripts/pulse.sh')
 assert module.path_requires_parity('.github/prompts/context-map.prompt.md')
 assert module.path_requires_parity('template/workspace/operations/workspace-index.json')
 assert not module.path_requires_parity('scripts/release/verify-version-references.sh')
@@ -81,11 +81,11 @@ state = {
 }
 updated = module.update_touched_files(
     state,
-    ['scripts/copilot_audit.py', '.github/hooks/scripts/pulse.sh', '.copilot/workspace/knowledge/MEMORY.md'],
+    ['scripts/copilot_audit.py', 'hooks/scripts/pulse.sh', '.copilot/workspace/knowledge/MEMORY.md'],
 )
 assert updated['touched_files_sample'] == [
     'scripts/copilot_audit.py',
-    '.github/hooks/scripts/pulse.sh',
+    'hooks/scripts/pulse.sh',
     '.copilot/workspace/knowledge/MEMORY.md',
 ]
 assert updated['unique_touched_file_count'] == 3

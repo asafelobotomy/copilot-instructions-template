@@ -11,7 +11,7 @@ resolve_powershell_bin() {
 init_powershell_hook_test_context() {
   local script_path="$1"
   init_test_context "$script_path"
-  SCRIPTS_DIR="$REPO_ROOT/template/hooks/scripts"
+  SCRIPTS_DIR="$REPO_ROOT/hooks/scripts"
   # shellcheck disable=SC2034
   SESSION_START="$SCRIPTS_DIR/session-start.ps1"
   # shellcheck disable=SC2034

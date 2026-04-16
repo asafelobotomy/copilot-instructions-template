@@ -129,3 +129,66 @@ def check_m4_mcp_stdio_sandbox(root: pathlib.Path | AuditContext) -> CheckResult
                                            "'sandboxEnabled: true' — consider sandboxing "
                                            "to restrict filesystem/network access"))
     return result
+
+
+def check_m5_heartbeat_exactly_one(root: pathlib.Path | AuditContext) -> CheckResult:
+    """M5 — heartbeat server present in exactly one location.
+
+    For plugin-backed installs the plugin delivers the heartbeat server via its
+    .mcp.json; the workspace .vscode/mcp.json must NOT duplicate it.
+    For all-local installs the heartbeat server must be declared in the
+    workspace .vscode/mcp.json.
+    """
+    ctx = ensure_context(root)
+    result = CheckResult("M5", "MCP config: heartbeat in exactly one location")
+
+    mode = ctx.consumer_ownership_mode
+    heartbeat_surface = mode.get("HEARTBEAT_MCP")
+    if heartbeat_surface is None:
+        # No explicit HEARTBEAT_MCP declaration (legacy or no ownership-mode block)
+        return result  # skip enforcement; cannot infer intent
+
+    ws_mcp = ctx.root / ".vscode" / "mcp.json"
+    ws_has_heartbeat = False
+    if ws_mcp.exists():
+        data, error = ctx.load_jsonc(ws_mcp)
+        if error is None:
+            servers = data.get("servers", {})
+            if isinstance(servers, dict):
+                ws_has_heartbeat = "heartbeat" in servers
+
+    if heartbeat_surface == "plugin":
+        if ws_has_heartbeat:
+            result.findings.append(Finding(
+                "M5", ctx.rel(ws_mcp), HIGH,
+                "Heartbeat server declared in workspace .vscode/mcp.json but ownership "
+                "mode is plugin-backed — remove it to avoid duplicate server registration",
+            ))
+        # Also verify the plugin .mcp.json actually declares the heartbeat server
+        plugin_mcp = ctx.root / ".mcp.json"
+        plugin_has_heartbeat = False
+        if plugin_mcp.exists():
+            data, error = ctx.load_jsonc(plugin_mcp)
+            if error is None:
+                for key in ("mcpServers", "servers"):
+                    servers = data.get(key, {})
+                    if isinstance(servers, dict) and "heartbeat" in servers:
+                        plugin_has_heartbeat = True
+                        break
+        if not plugin_has_heartbeat:
+            rel = ctx.rel(plugin_mcp) if plugin_mcp.exists() else ".mcp.json"
+            result.findings.append(Finding(
+                "M5", rel, HIGH,
+                "Ownership mode is plugin-backed but .mcp.json does not declare a "
+                "'heartbeat' MCP server — add it or change HEARTBEAT_MCP to 'local'",
+            ))
+    else:
+        # all-local: heartbeat must be in workspace mcp.json
+        if not ws_has_heartbeat:
+            rel = ctx.rel(ws_mcp) if ws_mcp.exists() else ".vscode/mcp.json"
+            result.findings.append(Finding(
+                "M5", rel, HIGH,
+                "Heartbeat server missing from .vscode/mcp.json — add the heartbeat "
+                "MCP server or set HEARTBEAT_MCP=plugin in copilot-version.md",
+            ))
+    return result

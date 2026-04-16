@@ -27,7 +27,7 @@ TMP_SENT_START=$(mktemp -d); CLEANUP_DIRS+=("$TMP_SENT_START")
 mkdir -p "$TMP_SENT_START/.copilot/workspace/identity" "$TMP_SENT_START/.copilot/workspace/knowledge/diaries" "$TMP_SENT_START/.copilot/workspace/operations" "$TMP_SENT_START/.copilot/workspace/runtime"
 output=$(run_pulse_in_dir "$TMP_SENT_START" '{"sessionId":"ps-sess-1"}' -Trigger session_start)
 assert_contains "pulse session_start continues" "$output" '"continue":true'
-assert_matches "pulse session_start includes UTC timestamp" "$output" 'Session started at [0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z'
+assert_matches "pulse session_start includes routing roster" "$output" 'Route:'
 sentinel=$(cat "$TMP_SENT_START/.copilot/workspace/runtime/.heartbeat-session" 2>/dev/null)
 assert_contains "powershell sentinel contains session id" "$sentinel" "ps-sess-1"
 assert_contains "powershell sentinel starts pending" "$sentinel" "pending"
@@ -191,7 +191,7 @@ echo "11. user_prompt heartbeat keyword emits system message"
 TMP_PROMPT_PULSE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_PROMPT_PULSE")
 mkdir -p "$TMP_PROMPT_PULSE/.copilot/workspace/identity" "$TMP_PROMPT_PULSE/.copilot/workspace/knowledge/diaries" "$TMP_PROMPT_PULSE/.copilot/workspace/operations" "$TMP_PROMPT_PULSE/.copilot/workspace/runtime"
 output=$(run_pulse_in_dir "$TMP_PROMPT_PULSE" '{"prompt":"Can you check your heartbeat now?"}' -Trigger user_prompt)
-assert_contains "powershell keyword prompt includes guidance" "$output" 'Heartbeat triggered'
+assert_contains "powershell keyword prompt includes guidance" "$output" 'Heartbeat: run HEARTBEAT'
 echo ""
 
 echo "12. discussion-only prompt does not arm heartbeat or retrospective"
@@ -616,6 +616,43 @@ assert '$agent' in state['route_emitted_agents']
 assert state['route_source'] == 'prompt+behavior'
 "
 done
+echo ""
+
+# ── 31. PostToolUse emits reflect instruction once when signal_reflection_likely is set ──
+echo "31. powershell PostToolUse emits reflect instruction once when signal_reflection_likely is set"
+TMP_REFLECT_PS=$(mktemp -d); CLEANUP_DIRS+=("$TMP_REFLECT_PS")
+mkdir -p "$TMP_REFLECT_PS/.copilot/workspace/identity" "$TMP_REFLECT_PS/.copilot/workspace/knowledge/diaries" "$TMP_REFLECT_PS/.copilot/workspace/operations" "$TMP_REFLECT_PS/.copilot/workspace/runtime"
+run_pulse_in_dir "$TMP_REFLECT_PS" '{"sessionId":"ps-sess-reflect"}' -Trigger session_start >/dev/null
+python3 - <<PY
+import json
+from pathlib import Path
+p = Path("$TMP_REFLECT_PS/.copilot/workspace/runtime/state.json")
+state = json.loads(p.read_text(encoding="utf-8"))
+state["copilot_edit_count"] = 10
+state["reflect_instruction_emitted"] = False
+state["retrospective_state"] = "idle"
+state["last_soft_trigger_epoch"] = 0
+p.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
+PY
+output=$(run_pulse_in_dir "$TMP_REFLECT_PS" '{"tool_name":"run_in_terminal"}' -Trigger soft_post_tool)
+assert_valid_json "powershell reflect instruction output is valid JSON" "$output"
+assert_contains "powershell reflect instruction appears in additionalContext" "$output" 'session_reflect'
+assert_python_in_root "powershell reflect_instruction_emitted is persisted" "$TMP_REFLECT_PS" '
+state = json.loads((root / ".copilot/workspace/runtime/state.json").read_text(encoding="utf-8"))
+assert state["reflect_instruction_emitted"] is True, "expected True got %s" % state["reflect_instruction_emitted"]
+assert state["retrospective_state"] == "suggested", "expected suggested got %s" % state["retrospective_state"]
+'
+echo ""
+
+# ── 32. PostToolUse does not re-emit reflect instruction after first emission ─
+echo "32. powershell PostToolUse does not re-emit reflect instruction after first emission"
+output2=$(run_pulse_in_dir "$TMP_REFLECT_PS" '{"tool_name":"run_in_terminal"}' -Trigger soft_post_tool)
+assert_valid_json "powershell second soft_post_tool output is valid JSON" "$output2"
+if echo "$output2" | grep -q 'session_reflect'; then
+  fail_note "powershell second call must not re-emit reflect instruction" "     unexpected session_reflect in output: $output2"
+else
+  pass_note "powershell second call must not re-emit reflect instruction"
+fi
 echo ""
 
 finish_tests

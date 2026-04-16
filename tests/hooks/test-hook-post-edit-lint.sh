@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/hooks/test-hook-post-edit-lint.sh -- unit tests for template/hooks/scripts/post-edit-lint.sh
+# tests/hooks/test-hook-post-edit-lint.sh -- unit tests for hooks/scripts/post-edit-lint.sh
 # Run: bash tests/hooks/test-hook-post-edit-lint.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
@@ -7,7 +7,7 @@ set -uo pipefail
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
-SCRIPT="$REPO_ROOT/template/hooks/scripts/post-edit-lint.sh"
+SCRIPT="$REPO_ROOT/hooks/scripts/post-edit-lint.sh"
 TMPDIR_LINT=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_LINT")
 trap cleanup_dirs EXIT
 

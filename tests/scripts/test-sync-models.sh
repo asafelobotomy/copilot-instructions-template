@@ -41,7 +41,7 @@ make_agent() {
   local dir="$1" agent="$2"
   shift 2
   local models=("$@")
-  local file="$dir/.github/agents/${agent}.agent.md"
+  local file="$dir/agents/${agent}.agent.md"
   mkdir -p "$(dirname "$file")"
   {
     echo "---"
@@ -135,7 +135,7 @@ assert_success "--write exits zero" "$status"
 assert_contains "--write reports updated file" "$output" "coding.agent.md"
 # Verify the file now starts with ModelA
 assert_file_contains "agent file now has correct primary model" \
-  "$TMP/.github/agents/coding.agent.md" "  - ModelA"
+  "$TMP/agents/coding.agent.md" "  - ModelA"
 # Verify --check passes after write
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --check 2>&1)
 status=$?

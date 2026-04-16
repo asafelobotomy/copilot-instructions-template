@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "25. scan-secrets.ps1 maps to its dedicated PowerShell suite"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/hooks/scripts/scan-secrets.ps1")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "hooks/scripts/scan-secrets.ps1")
 status=$?
 assert_success "selector exits zero on scan-secrets.ps1" "$status"
 SELECTOR_OUTPUT="$output" assert_python "scan-secrets.ps1 includes direct PowerShell coverage and parity" '
@@ -9,7 +9,6 @@ payload = json.loads(os.environ["SELECTOR_OUTPUT"])
 selected = set(payload["selected_tests"])
 required = {
     "tests/hooks/test-hook-scan-secrets-powershell.sh",
-    "tests/contracts/test-template-parity.sh",
 }
 missing = sorted(required - selected)
 if missing:
@@ -20,7 +19,7 @@ if payload["intermediate_phase_strategy"] != "targeted":
 echo ""
 
 echo "26. subagent-start.sh maps to its dedicated shell suite"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/hooks/scripts/subagent-start.sh")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "hooks/scripts/subagent-start.sh")
 status=$?
 assert_success "selector exits zero on subagent-start.sh" "$status"
 SELECTOR_OUTPUT="$output" assert_python "subagent-start.sh includes direct shell coverage and parity" '
@@ -28,7 +27,6 @@ payload = json.loads(os.environ["SELECTOR_OUTPUT"])
 selected = set(payload["selected_tests"])
 required = {
     "tests/hooks/test-hook-subagent-start.sh",
-    "tests/contracts/test-template-parity.sh",
     "tests/scripts/test-permission-resilience.sh",
 }
 missing = sorted(required - selected)
@@ -40,7 +38,7 @@ if payload["intermediate_phase_strategy"] != "targeted":
 echo ""
 
 echo "27. subagent-start.ps1 maps to its dedicated PowerShell suite"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/hooks/scripts/subagent-start.ps1")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "hooks/scripts/subagent-start.ps1")
 status=$?
 assert_success "selector exits zero on subagent-start.ps1" "$status"
 SELECTOR_OUTPUT="$output" assert_python "subagent-start.ps1 includes direct PowerShell coverage and parity" '
@@ -48,7 +46,6 @@ payload = json.loads(os.environ["SELECTOR_OUTPUT"])
 selected = set(payload["selected_tests"])
 required = {
     "tests/hooks/test-hook-subagent-start-powershell.sh",
-    "tests/contracts/test-template-parity.sh",
     "tests/hooks/test-hooks-powershell.sh",
 }
 missing = sorted(required - selected)
@@ -60,7 +57,7 @@ if payload["intermediate_phase_strategy"] != "targeted":
 echo ""
 
 echo "28. heartbeat_clock_summary.py maps to direct and integration suites"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/hooks/scripts/heartbeat_clock_summary.py")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "hooks/scripts/heartbeat_clock_summary.py")
 status=$?
 assert_success "selector exits zero on heartbeat_clock_summary.py" "$status"
 SELECTOR_OUTPUT="$output" assert_python "heartbeat_clock_summary.py includes direct and integration coverage" '
@@ -69,7 +66,6 @@ selected = set(payload["selected_tests"])
 required = {
     "tests/hooks/test-heartbeat-clock-summary.sh",
     "tests/hooks/test-hook-save-context.sh",
-    "tests/contracts/test-template-parity.sh",
 }
 missing = sorted(required - selected)
 if missing:
@@ -80,7 +76,7 @@ if payload["intermediate_phase_strategy"] != "targeted":
 echo ""
 
 echo "29. pulse_paths.py maps to direct and pulse integration suites"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/hooks/scripts/pulse_paths.py")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "hooks/scripts/pulse_paths.py")
 status=$?
 assert_success "selector exits zero on pulse_paths.py" "$status"
 SELECTOR_OUTPUT="$output" assert_python "pulse_paths.py includes direct and pulse coverage" '
@@ -89,7 +85,6 @@ selected = set(payload["selected_tests"])
 required = {
     "tests/hooks/test-pulse-paths.sh",
     "tests/hooks/test-hook-pulse.sh",
-    "tests/contracts/test-template-parity.sh",
 }
 missing = sorted(required - selected)
 if missing:
@@ -144,7 +139,7 @@ if payload["intermediate_phase_strategy"] != "broaden-aggressively":
 echo ""
 
 echo "32. pulse_state.py maps to direct and integration suites"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/hooks/scripts/pulse_state.py")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "hooks/scripts/pulse_state.py")
 status=$?
 assert_success "selector exits zero on pulse_state.py" "$status"
 SELECTOR_OUTPUT="$output" assert_python "pulse_state.py includes direct and pulse coverage" '
@@ -153,7 +148,6 @@ selected = set(payload["selected_tests"])
 required = {
     "tests/hooks/test-pulse-state.sh",
     "tests/hooks/test-hook-pulse.sh",
-    "tests/contracts/test-template-parity.sh",
 }
 missing = sorted(required - selected)
 if missing:
@@ -164,7 +158,7 @@ if payload["intermediate_phase_strategy"] != "targeted":
 echo ""
 
 echo "33. lib-hooks.sh maps to direct and resilience suites"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/hooks/scripts/lib-hooks.sh")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "hooks/scripts/lib-hooks.sh")
 status=$?
 assert_success "selector exits zero on lib-hooks.sh" "$status"
 SELECTOR_OUTPUT="$output" assert_python "lib-hooks.sh includes direct and resilience coverage" '
@@ -173,7 +167,6 @@ selected = set(payload["selected_tests"])
 required = {
     "tests/hooks/test-lib-hooks.sh",
     "tests/scripts/test-permission-resilience.sh",
-    "tests/contracts/test-template-parity.sh",
 }
 missing = sorted(required - selected)
 if missing:
@@ -184,7 +177,7 @@ if payload["intermediate_phase_strategy"] != "targeted":
 echo ""
 
 echo "34. routing-manifest.json maps to routing hook and inventory suites"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" ".github/agents/routing-manifest.json")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "agents/routing-manifest.json")
 status=$?
 assert_success "selector exits zero on routing-manifest.json" "$status"
 SELECTOR_OUTPUT="$output" assert_python "routing-manifest.json maps to routing hook and inventory suites" '
@@ -227,12 +220,11 @@ echo "36. template workspace-index maps to sync, audit, and setup-update suites"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/workspace/operations/workspace-index.json")
 status=$?
 assert_success "selector exits zero on template workspace-index" "$status"
-SELECTOR_OUTPUT="$output" assert_python "template workspace-index maps to sync, audit, and setup-update suites" '
+SELECTOR_OUTPUT="$output" assert_python "template workspace-index maps to sync and audit suites" '
 payload = json.loads(os.environ["SELECTOR_OUTPUT"])
 if set(payload["selected_tests"]) != {
     "tests/scripts/test-copilot-audit.sh",
     "tests/scripts/test-sync-workspace-index.sh",
-    "tests/contracts/test-setup-update-contracts.sh",
 }:
     raise SystemExit(str(payload["selected_tests"]))
 if payload["intermediate_phase_strategy"] != "targeted":

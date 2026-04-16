@@ -15,7 +15,7 @@ source "$(dirname "$0")/../lib/copilot-audit-sandbox.sh"
 trap 'teardown_sandbox' EXIT
 
 mutate_a1_missing_name() {
-  write_sandbox_file ".github/agents/bad.agent.md" <<'AGENT'
+  write_sandbox_file "agents/bad.agent.md" <<'AGENT'
 ---
 description: no name here
 model:
@@ -26,7 +26,7 @@ AGENT
 }
 
 mutate_a2_broken_handoff() {
-  append_sandbox_file ".github/agents/code.agent.md" <<'EXTRA'
+  append_sandbox_file "agents/code.agent.md" <<'EXTRA'
 
 handoffs:
   - label: Go to ghost
@@ -37,7 +37,7 @@ EXTRA
 }
 
 mutate_a3_unresolved_agent() {
-  write_sandbox_file ".github/agents/unresolved.agent.md" <<'AGENT'
+  write_sandbox_file "agents/unresolved.agent.md" <<'AGENT'
 ---
 name: Unresolved
 description: Still has {{REPO_NAME}} token
@@ -48,7 +48,7 @@ AGENT
 }
 
 mutate_a4_missing_delegate() {
-  write_sandbox_file ".github/agents/code.agent.md" <<'AGENT'
+  write_sandbox_file "agents/code.agent.md" <<'AGENT'
 ---
 name: Code
 description: Coding agent
@@ -88,7 +88,7 @@ MD
 }
 
 mutate_s1_wrong_skill_name() {
-  write_sandbox_file ".github/skills/my-skill/SKILL.md" <<'SKILL'
+  write_sandbox_file "skills/my-skill/SKILL.md" <<'SKILL'
 ---
 name: wrong-name
 description: Name does not match directory
@@ -148,12 +148,31 @@ MD
   mkdir -p "$SANDBOX/.copilot/workspace/knowledge/diaries"
   mkdir -p "$SANDBOX/.copilot/workspace/operations"
   mkdir -p "$SANDBOX/.copilot/workspace/runtime"
+  write_sandbox_file ".github/agents/code.agent.md" <<'AGENT'
+---
+name: Code
+description: Consumer coding agent
+---
+# Code Agent
+AGENT
   write_sandbox_file ".github/agents/routing-manifest.json" <<'JSON'
 {
   "version": "1.0",
   "routes": []
 }
 JSON
+  write_sandbox_file ".github/skills/my-skill/SKILL.md" <<'SKILL'
+---
+name: my-skill
+description: Consumer skill
+---
+# My Skill
+SKILL
+  write_sandbox_file ".github/hooks/scripts/session-start.sh" <<'SH'
+#!/usr/bin/env bash
+set -euo pipefail
+echo '{}'
+SH
   write_sandbox_file ".github/workflows/copilot-setup-steps.yml" <<'YAML'
 name: Copilot Setup Steps
 YAML
@@ -417,8 +436,8 @@ Updated: 2026-04-04
 §1=aaaaaaaaaaaa
 -->
 <!-- file-manifest
-.github/agents/code.agent.md=bbbbbbbbbbbb
-.github/hooks/copilot-hooks.json=bbbbbbbbbbbb
+agents/code.agent.md=bbbbbbbbbbbb
+hooks/copilot-hooks.json=bbbbbbbbbbbb
 -->
 <!-- setup-answers
 PROJECT_NAME=Sandbox
@@ -445,13 +464,13 @@ Updated: 2026-04-04
 §1=aaaaaaaaaaaa
 -->
 <!-- file-manifest
-.github/agents/code.agent.md=bbbbbbbbbbbb
-.github/agents/routing-manifest.json=bbbbbbbbbbbb
-.github/hooks/copilot-hooks.json=bbbbbbbbbbbb
-.github/hooks/scripts/session-start.sh=bbbbbbbbbbbb
+agents/code.agent.md=bbbbbbbbbbbb
+agents/routing-manifest.json=bbbbbbbbbbbb
+hooks/copilot-hooks.json=bbbbbbbbbbbb
+hooks/scripts/session-start.sh=bbbbbbbbbbbb
 .github/instructions/api.instructions.md=bbbbbbbbbbbb
 .github/prompts/commit.prompt.md=bbbbbbbbbbbb
-.github/skills/my-skill/SKILL.md=bbbbbbbbbbbb
+skills/my-skill/SKILL.md=bbbbbbbbbbbb
 .github/workflows/copilot-setup-steps.yml=bbbbbbbbbbbb
 .vscode/settings.json=bbbbbbbbbbbb
 .vscode/extensions.json=bbbbbbbbbbbb
@@ -498,19 +517,19 @@ JSON
 }
 
 mutate_h1_missing_hooks() {
-  remove_sandbox_path "template/hooks/copilot-hooks.json"
+  remove_sandbox_path "hooks/hooks.json"
   remove_sandbox_path ".github/hooks/copilot-hooks.json"
 }
 
 mutate_sh1_missing_shebang() {
-  write_sandbox_file "template/hooks/scripts/noshebang.sh" <<'SH'
+  write_sandbox_file "hooks/scripts/noshebang.sh" <<'SH'
 set -euo pipefail
 echo '{}'
 SH
 }
 
 mutate_sh3_broken_shell() {
-  write_sandbox_file "template/hooks/scripts/broken.sh" <<'SH'
+  write_sandbox_file "hooks/scripts/broken.sh" <<'SH'
 #!/usr/bin/env bash
 set -euo pipefail
 if [[ true; then
@@ -526,7 +545,7 @@ mutate_h2_missing_powershell_script() {
     "SessionStart": [
       {
         "type": "command",
-        "command": "./.github/hooks/scripts/session-start.sh",
+        "command": "./hooks/scripts/session-start.sh",
         "windows": "powershell -File .github\\hooks\\scripts\\missing-session-start.ps1",
         "timeout": 10
       }
@@ -550,11 +569,21 @@ mutate_vs1_invalid_settings_paths() {
   "chat.pluginLocations": {
     ".github/starter-kits/missing": true
   },
-  "chat.instructionsFilesLocations": [".github/missing-instructions"],
-  "chat.promptFilesLocations": [".github/missing-prompts"],
-  "chat.agentFilesLocations": [".github/missing-agents"],
-  "chat.agentSkillsLocations": [".github/missing-skills"],
-  "chat.hookFilesLocations": [".github/missing-hooks"]
+  "chat.instructionsFilesLocations": {
+    ".github/missing-instructions": true
+  },
+  "chat.promptFilesLocations": {
+    ".github/missing-prompts": true
+  },
+  "chat.agentFilesLocations": {
+    ".github/missing-agents": true
+  },
+  "chat.skillsLocations": {
+    ".github/missing-skills": true
+  },
+  "chat.hookFilesLocations": {
+    ".github/missing-hooks": true
+  }
 }
 JSON
 }
@@ -581,6 +610,133 @@ mutate_k2_missing_registry_file() {
   ]
 }
 JSON
+}
+
+mutate_m5_plugin_backed_with_workspace_heartbeat() {
+  # HEARTBEAT_MCP=plugin but workspace mcp.json still has a heartbeat server → M5 HIGH
+  write_sandbox_file ".github/copilot-version.md" <<'MD'
+<!-- markdownlint-disable-file MD041 -->
+5.0.0
+Applied: 2026-01-01
+<!-- ownership-mode
+OWNERSHIP_MODE=plugin-backed
+AGENTS=plugin
+SKILLS=plugin
+HOOKS=plugin
+HEARTBEAT_MCP=plugin
+-->
+MD
+  # Sandbox mcp.json already has a heartbeat entry (added during setup_sandbox)
+}
+
+mutate_m5_all_local_missing_workspace_heartbeat() {
+  # HEARTBEAT_MCP=local but workspace mcp.json lacks heartbeat → M5 HIGH
+  write_sandbox_file ".github/copilot-version.md" <<'MD'
+<!-- markdownlint-disable-file MD041 -->
+5.0.0
+Applied: 2026-01-01
+<!-- ownership-mode
+OWNERSHIP_MODE=all-local
+AGENTS=local
+SKILLS=local
+HOOKS=local
+HEARTBEAT_MCP=local
+-->
+MD
+  # Overwrite mcp.json without a heartbeat entry
+  cat > "$SANDBOX/.vscode/mcp.json" <<'JSON'
+{
+  "servers": {
+    "git": {
+      "command": "uvx",
+      "args": ["mcp-server-git"]
+    }
+  }
+}
+JSON
+}
+
+mutate_m5_plugin_backed_missing_plugin_mcp() {
+  # HEARTBEAT_MCP=plugin and workspace mcp.json has no heartbeat (correct) but
+  # .mcp.json is absent → M5 HIGH (missing plugin-side declaration)
+  write_sandbox_file ".github/copilot-version.md" <<'MD'
+<!-- markdownlint-disable-file MD041 -->
+5.0.0
+Applied: 2026-01-01
+<!-- ownership-mode
+OWNERSHIP_MODE=plugin-backed
+AGENTS=plugin
+SKILLS=plugin
+HOOKS=plugin
+HEARTBEAT_MCP=plugin
+-->
+MD
+  # Workspace mcp.json has no heartbeat (correct for plugin-backed)
+  cat > "$SANDBOX/.vscode/mcp.json" <<'JSON'
+{
+  "servers": {
+    "git": {
+      "command": "uvx",
+      "args": ["mcp-server-git"]
+    }
+  }
+}
+JSON
+  # Remove the plugin .mcp.json so M5 has nothing to validate against
+  rm -f "$SANDBOX/.mcp.json"
+}
+
+mutate_v1_invalid_ownership_mode() {
+  mutate_consumer_layout
+  # Overwrite with a version file that has an invalid OWNERSHIP_MODE
+  write_sandbox_file ".github/copilot-version.md" <<'MD'
+<!-- markdownlint-disable-file MD041 -->
+5.4.0
+Applied: 2026-04-04
+Updated: 2026-04-04
+<!-- section-fingerprints
+§1=aaaaaaaaaaaa
+-->
+<!-- file-manifest
+.github/agents/code.agent.md=bbbbbbbbbbbb
+.github/agents/routing-manifest.json=bbbbbbbbbbbb
+.github/hooks/copilot-hooks.json=bbbbbbbbbbbb
+.github/hooks/scripts/session-start.sh=bbbbbbbbbbbb
+.github/instructions/api.instructions.md=bbbbbbbbbbbb
+.github/prompts/commit.prompt.md=bbbbbbbbbbbb
+.github/skills/my-skill/SKILL.md=bbbbbbbbbbbb
+.github/workflows/copilot-setup-steps.yml=bbbbbbbbbbbb
+.vscode/settings.json=bbbbbbbbbbbb
+.vscode/extensions.json=bbbbbbbbbbbb
+.copilot/workspace/identity/BOOTSTRAP.md=bbbbbbbbbbbb
+.copilot/workspace/operations/HEARTBEAT.md=bbbbbbbbbbbb
+.copilot/workspace/identity/IDENTITY.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/MEMORY.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/RESEARCH.md=bbbbbbbbbbbb
+.copilot/workspace/identity/SOUL.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/TOOLS.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/USER.md=bbbbbbbbbbbb
+.copilot/workspace/operations/commit-style.md=bbbbbbbbbbbb
+.copilot/workspace/operations/workspace-index.json=bbbbbbbbbbbb
+.github/starter-kits/python/.claude-plugin/plugin.json=bbbbbbbbbbbb
+.github/starter-kits/python/commands/python-debug.md=bbbbbbbbbbbb
+-->
+<!-- setup-answers
+PROJECT_NAME=Sandbox
+LANGUAGE=Python
+RUNTIME=Python
+PACKAGE_MANAGER=pip
+TEST_COMMAND=bash tests/run-all.sh
+TYPE_CHECK_COMMAND=echo "no type check configured"
+THREE_CHECK_COMMAND=echo "no three-check configured"
+TEST_FRAMEWORK=bash
+SETUP_DATE=2026-04-04
+-->
+<!-- ownership-mode
+OWNERSHIP_MODE=invalid-value
+HEARTBEAT_MCP=local
+-->
+MD
 }
 
 # ── Tests ─────────────────────────────────────────────────────────────────────
@@ -857,6 +1013,37 @@ run_audit_case json mutate_consumer_setup_answers_missing_core_key consumer
 assert_failure "consumer profile fails on missing core setup answer" "$CASE_STATUS"
 assert_contains "consumer profile flags missing TEST_COMMAND" "$CASE_OUTPUT" 'setup-answers missing required key: TEST_COMMAND'
 echo ""
+
+# ── 32. M5 — plugin-backed: heartbeat in workspace mcp.json is duplicate ─────
+echo "32. M5: plugin-backed ownership with workspace heartbeat triggers HIGH"
+run_audit_case json mutate_m5_plugin_backed_with_workspace_heartbeat
+assert_failure "exits non-zero when heartbeat duplicated in workspace mcp.json" "$CASE_STATUS"
+assert_contains "M5 flags duplicate heartbeat" "$CASE_OUTPUT" '"check_id": "M5"'
+assert_contains "M5 severity is HIGH" "$CASE_OUTPUT" '"severity": "HIGH"'
+echo ""
+
+# ── 33. M5 — all-local: heartbeat absent from workspace mcp.json ─────────────
+echo "33. M5: all-local ownership with missing workspace heartbeat triggers HIGH"
+run_audit_case json mutate_m5_all_local_missing_workspace_heartbeat
+assert_failure "exits non-zero when heartbeat missing from workspace mcp.json" "$CASE_STATUS"
+assert_contains "M5 flags missing heartbeat" "$CASE_OUTPUT" '"check_id": "M5"'
+assert_contains "M5 severity is HIGH" "$CASE_OUTPUT" '"severity": "HIGH"'
+echo ""
+
+# ── 34. V1 — invalid OWNERSHIP_MODE value ─────────────────────────────────────
+echo "34. V1: invalid OWNERSHIP_MODE value triggers HIGH"
+run_audit_case json mutate_v1_invalid_ownership_mode consumer
+assert_failure "exits non-zero on invalid OWNERSHIP_MODE" "$CASE_STATUS"
+assert_contains "V1 flags invalid OWNERSHIP_MODE" "$CASE_OUTPUT" '"check_id": "V1"'
+assert_contains "V1 reports OWNERSHIP_MODE error" "$CASE_OUTPUT" "OWNERSHIP_MODE must be 'plugin-backed' or 'all-local'"
+echo ""
+
+# ── 35. M5 — plugin-backed: .mcp.json absent or missing heartbeat ─────────────
+echo "35. M5: plugin-backed ownership with missing .mcp.json heartbeat triggers HIGH"
+run_audit_case json mutate_m5_plugin_backed_missing_plugin_mcp
+assert_failure "exits non-zero when .mcp.json lacks heartbeat in plugin mode" "$CASE_STATUS"
+assert_contains "M5 flags missing plugin-side heartbeat" "$CASE_OUTPUT" '"check_id": "M5"'
+assert_contains "M5 severity is HIGH for missing .mcp.json" "$CASE_OUTPUT" '"severity": "HIGH"'
 
 # ── Summary ───────────────────────────────────────────────────────────────────
 finish_tests

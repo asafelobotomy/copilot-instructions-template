@@ -13,10 +13,18 @@ SCRIPT="$REPO_ROOT/scripts/harness/resolve-powershell.sh"
 BASH_BIN=$(command -v bash)
 
 make_fake_powershell() {
-  local dir="$1" name="$2" probe_rc="${3:-0}"
+  local dir="$1" name="$2" probe_rc="${3:-0}" probe_trace="${4:-}"
+  local probe_trace_q=""
+  if [[ -n "$probe_trace" ]]; then
+    printf -v probe_trace_q '%q' "$probe_trace"
+  fi
   cat > "$dir/$name" <<EOF
 #!$BASH_BIN
+PROBE_TRACE=$probe_trace_q
 if [[ "\$1" == "-NoLogo" && "\$2" == "-NoProfile" && "\$3" == "-Command" && "\$4" == "exit 0" ]]; then
+  if [[ -n "\$PROBE_TRACE" ]]; then
+    printf 'probe\n' >> "\$PROBE_TRACE"
+  fi
   exit $probe_rc
 fi
 exit 97
@@ -29,7 +37,7 @@ run_resolver() {
   local env_pwsh="$2"
   local env_powershell="$3"
   shift 3
-  PATH="$path_override" PWSH_BIN="$env_pwsh" POWERSHELL_BIN="$env_powershell" "$BASH_BIN" "$SCRIPT" "$@"
+  PATH="$path_override" PWSH_BIN="$env_pwsh" POWERSHELL_BIN="$env_powershell" PWSH_RESOLUTION_DISABLE_CACHE=1 "$BASH_BIN" "$SCRIPT" "$@"
 }
 
 echo "=== resolve-powershell.sh ==="
@@ -96,6 +104,40 @@ output=$(run_resolver "$NAMED_OVERRIDE" "" "my-powershell")
 status=$?
 assert_success "named override exits zero" "$status"
 assert_matches "named override path is returned" "$output" '/my-powershell$'
+echo ""
+
+echo "7. Failed probes are cached to avoid repeated retries"
+CACHE_DIR=$(mktemp -d)
+CLEANUP_DIRS+=("$CACHE_DIR")
+BROKEN_ONLY="$CACHE_DIR/broken-only"
+mkdir -p "$BROKEN_ONLY"
+PROBE_LOG="$CACHE_DIR/probe.log"
+CACHE_FILE="$CACHE_DIR/resolve.cache"
+make_fake_powershell "$BROKEN_ONLY" "pwsh" 1 "$PROBE_LOG"
+
+if PATH="$BROKEN_ONLY" PWSH_BIN="" POWERSHELL_BIN="" PWSH_RESOLUTION_CACHE_FILE="$CACHE_FILE" "$BASH_BIN" "$SCRIPT" --check >/dev/null 2>&1; then
+  status=0
+else
+  status=$?
+fi
+assert_failure "first cached check exits non-zero" "$status"
+
+if PATH="$BROKEN_ONLY" PWSH_BIN="" POWERSHELL_BIN="" PWSH_RESOLUTION_CACHE_FILE="$CACHE_FILE" "$BASH_BIN" "$SCRIPT" --check >/dev/null 2>&1; then
+  status=0
+else
+  status=$?
+fi
+assert_failure "second cached check exits non-zero" "$status"
+
+probe_count=0
+if [[ -f "$PROBE_LOG" ]]; then
+  probe_count=$(wc -l < "$PROBE_LOG")
+fi
+if [[ "$probe_count" == "1" ]]; then
+  pass_note "broken pwsh is probed only once per cache window"
+else
+  fail_note "broken pwsh is probed only once per cache window" "     expected 1 probe, saw: $probe_count"
+fi
 echo ""
 
 finish_tests

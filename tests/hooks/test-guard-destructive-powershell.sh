@@ -7,7 +7,7 @@ set -uo pipefail
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
-SCRIPT="$REPO_ROOT/template/hooks/scripts/guard-destructive.ps1"
+SCRIPT="$REPO_ROOT/hooks/scripts/guard-destructive.ps1"
 PWSH=$(bash "$REPO_ROOT/scripts/harness/resolve-powershell.sh" || true)
 
 if [[ -z "$PWSH" ]]; then
@@ -73,9 +73,9 @@ assert_continue "echo continues" "$(make_input 'terminal' 'echo safe')"
 echo ""
 
 echo "4a. Read-only searches mentioning blocked patterns continue"
-assert_continue "rg search for rm guard regex continues" "$(make_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh")"
-assert_continue "grep search for chmod guard regex continues" "$(make_input 'bash' "grep -n 'chmod -R 777 /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh")"
-assert_decision "search chained with real rm still denies" "$(make_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh && rm -rf /")" "deny"
+assert_continue "rg search for rm guard regex continues" "$(make_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' hooks/scripts/guard-destructive.sh")"
+assert_continue "grep search for chmod guard regex continues" "$(make_input 'bash' "grep -n 'chmod -R 777 /([^a-zA-Z0-9._-]|$)' hooks/scripts/guard-destructive.sh")"
+assert_decision "search chained with real rm still denies" "$(make_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' hooks/scripts/guard-destructive.sh && rm -rf /")" "deny"
 echo ""
 
 echo "5. Malformed input stays stable and missing command asks"
@@ -94,6 +94,15 @@ assert_contains "ask reason present" "$output" "permissionDecisionReason"
 assert_contains "ask context present" "$output" "additionalContext"
 output=$(run_guard "$(make_input 'bash' 'rm -rf /')")
 assert_contains "deny reason present" "$output" "Blocked: destructive pattern"
+echo ""
+
+echo "6a. Read-only terminal observation tools pass through (no command field)"
+assert_continue "get_terminal_output by id" \
+  '{"tool_name":"get_terminal_output","tool_input":{"id":"465a536d-1419-42dd-970c-b5fd46e2483c"}}'
+assert_continue "getTerminalOutput camelCase" \
+  '{"tool_name":"getTerminalOutput","tool_input":{"id":"abc123"}}'
+assert_continue "terminal_last_command" \
+  '{"tool_name":"terminal_last_command","tool_input":{"terminalId":1}}'
 echo ""
 
 finish_tests

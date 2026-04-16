@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/hooks/test-guard-destructive.sh — unit tests for template/hooks/scripts/guard-destructive.sh
+# tests/hooks/test-guard-destructive.sh — unit tests for hooks/scripts/guard-destructive.sh
 # Run: bash tests/hooks/test-guard-destructive.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
@@ -7,7 +7,7 @@ set -uo pipefail
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
-export GUARD_SCRIPT="$REPO_ROOT/template/hooks/scripts/guard-destructive.sh"
+export GUARD_SCRIPT="$REPO_ROOT/hooks/scripts/guard-destructive.sh"
 
 make_input_non_terminal() {
   local tool_name="$1"
@@ -82,9 +82,9 @@ echo ""
 
 # ── 4c. Read-only searches mentioning blocked patterns continue ──────────────
 echo "4c. Read-only searches mentioning blocked patterns continue"
-assert_guard_continue "rg search for rm guard regex"   "$(make_guard_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh")"
-assert_guard_continue "grep search for chmod guard regex" "$(make_guard_input 'bash' "grep -n 'chmod -R 777 /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh")"
-assert_guard_decision "search chained with real rm still denies" "$(make_guard_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' template/hooks/scripts/guard-destructive.sh && rm -rf /")" "deny"
+assert_guard_continue "rg search for rm guard regex"   "$(make_guard_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' hooks/scripts/guard-destructive.sh")"
+assert_guard_continue "grep search for chmod guard regex" "$(make_guard_input 'bash' "grep -n 'chmod -R 777 /([^a-zA-Z0-9._-]|$)' hooks/scripts/guard-destructive.sh")"
+assert_guard_decision "search chained with real rm still denies" "$(make_guard_input 'bash' "rg -n 'rm -rf /([^a-zA-Z0-9._-]|$)' hooks/scripts/guard-destructive.sh && rm -rf /")" "deny"
 echo ""
 
 # ── 5. Robustness — malformed input stays stable and missing command asks ─────
@@ -102,6 +102,16 @@ assert_guard_decision "tool=terminal rm -rf /" "$(make_guard_input 'terminal' 'r
 assert_guard_decision "tool=command rm -rf /"  "$(make_guard_input 'command' 'rm -rf /')"    "deny"
 assert_guard_decision "tool=bash rm -rf /"     "$(make_guard_input 'bash' 'rm -rf /')"       "deny"
 assert_guard_decision "tool=shell rm -rf /"    "$(make_guard_input 'shell' 'rm -rf /')"      "deny"
+echo ""
+
+# ── 6a. Read-only terminal observation tools pass through unconditionally ──────
+echo "6a. Read-only terminal observation tools pass through (no command field)"
+assert_guard_continue "get_terminal_output by id" \
+  '{"tool_name": "get_terminal_output", "tool_input": {"id": "465a536d-1419-42dd-970c-b5fd46e2483c"}}'
+assert_guard_continue "getTerminalOutput camelCase" \
+  '{"tool_name": "getTerminalOutput", "tool_input": {"id": "abc123"}}'
+assert_guard_continue "terminal_last_command" \
+  '{"tool_name": "terminal_last_command", "tool_input": {"terminalId": 1}}'
 echo ""
 
 # ── 7. permissionDecisionReason field is informative ─────────────────────────

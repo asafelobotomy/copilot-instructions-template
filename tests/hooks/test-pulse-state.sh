@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/hooks/test-pulse-state.sh -- unit tests for template/hooks/scripts/pulse_state.py
+# tests/hooks/test-pulse-state.sh -- unit tests for hooks/scripts/pulse_state.py
 # Run: bash tests/hooks/test-pulse-state.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
@@ -7,7 +7,7 @@ set -uo pipefail
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
-MODULE_PATH="$REPO_ROOT/template/hooks/scripts/pulse_state.py"
+MODULE_PATH="$REPO_ROOT/hooks/scripts/pulse_state.py"
 export MODULE_PATH
 PYTHONPATH="$(dirname "$MODULE_PATH")${PYTHONPATH:+:$PYTHONPATH}"
 export PYTHONPATH
@@ -90,9 +90,9 @@ assert policy == module.DEFAULT_POLICY
 '
 echo ""
 
-echo "5. save_state respects workspace existence and writes valid JSON when present"
+echo "5. save_state always writes valid JSON (creates parent dirs if needed)"
 TMP_SAVE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_SAVE")
-assert_python_in_root "save_state skips missing workspaces and writes present ones" "$TMP_SAVE" '
+assert_python_in_root "save_state creates missing workspace dirs and writes valid JSON" "$TMP_SAVE" '
 import importlib.util
 
 spec = importlib.util.spec_from_file_location("pulse_state", os.environ["MODULE_PATH"])
@@ -102,13 +102,15 @@ workspace = root / ".copilot/workspace"
 state_path = workspace / "runtime/state.json"
 state = module.default_state()
 state["session_id"] = "sess-save"
+# save_state creates parent dirs via atomic_write and writes to primary path
 module.save_state(state, workspace, state_path)
-assert not state_path.exists()
-workspace.mkdir(parents=True)
-module.save_state(state, workspace, state_path)
+assert state_path.exists(), f"save_state should write to primary path (got nothing at {state_path})"
 saved = json.loads(state_path.read_text(encoding="utf-8"))
-assert saved["session_id"] == "sess-save"
-assert saved["schema_version"] == 1
+assert saved["session_id"] == "sess-save", f"expected sess-save, got {saved.get('session_id')}"
+assert saved["schema_version"] == 1, f"expected schema_version 1, got {saved.get('schema_version')}"
+# load_state round-trips correctly
+loaded = module.load_state(state_path)
+assert loaded["session_id"] == "sess-save", f"load_state expected sess-save, got {loaded.get('session_id')}"
 '
 echo ""
 

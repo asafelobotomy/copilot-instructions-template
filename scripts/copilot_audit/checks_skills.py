@@ -16,7 +16,7 @@ def check_s1_skill_name_matches_dir(root: pathlib.Path | AuditContext) -> CheckR
         message = "No SKILL.md files found"
         if ctx.repo_shape == "consumer":
             message += " — consumer install may be incomplete"
-        result.findings.append(Finding("S1", ".github/skills/", severity, message))
+        result.findings.append(Finding("S1", "skills/", severity, message))
         return result
     for skill_file in ctx.skill_files:
         rel = ctx.rel(skill_file)

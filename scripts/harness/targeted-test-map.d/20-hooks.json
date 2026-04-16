@@ -4,27 +4,23 @@
     {
       "id": "template-hooks-parity",
       "matchType": "prefix",
-      "pattern": "template/hooks/",
+      "pattern": "hooks/",
       "phaseStrategy": "targeted",
-      "tests": [
-        "tests/contracts/test-template-parity.sh"
-      ],
+      "tests": [],
       "reason": "Template hook assets are guarded by the template parity contract suite."
     },
     {
       "id": "github-hooks-parity",
       "matchType": "prefix",
-      "pattern": ".github/hooks/",
+      "pattern": "hooks/",
       "phaseStrategy": "targeted",
-      "tests": [
-        "tests/contracts/test-template-parity.sh"
-      ],
+      "tests": [],
       "reason": "Repo-live hook copies are guarded by the template parity contract suite."
     },
     {
       "id": "template-hook-shell-broad",
       "matchType": "glob",
-      "pattern": "template/hooks/scripts/*.sh",
+      "pattern": "hooks/scripts/*.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/scripts/test-permission-resilience.sh"
@@ -34,7 +30,7 @@
     {
       "id": "github-hook-shell-broad",
       "matchType": "glob",
-      "pattern": ".github/hooks/scripts/*.sh",
+      "pattern": "hooks/scripts/*.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/scripts/test-permission-resilience.sh"
@@ -44,7 +40,7 @@
     {
       "id": "template-hook-powershell-broad",
       "matchType": "glob",
-      "pattern": "template/hooks/scripts/*.ps1",
+      "pattern": "hooks/scripts/*.ps1",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hooks-powershell.sh"
@@ -54,7 +50,7 @@
     {
       "id": "hook-session-start",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/session-start.sh",
+      "pattern": "hooks/scripts/session-start.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-session-start.sh"
@@ -64,7 +60,7 @@
     {
       "id": "hook-pulse",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/pulse.sh",
+      "pattern": "hooks/scripts/pulse.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-pulse.sh"
@@ -74,7 +70,7 @@
     {
       "id": "hook-post-edit-lint",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/post-edit-lint.sh",
+      "pattern": "hooks/scripts/post-edit-lint.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-post-edit-lint.sh"
@@ -84,7 +80,7 @@
     {
       "id": "hook-save-context",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/save-context.sh",
+      "pattern": "hooks/scripts/save-context.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-save-context.sh"
@@ -94,7 +90,7 @@
     {
       "id": "hook-save-context-python-helper",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/heartbeat_clock_summary.py",
+      "pattern": "hooks/scripts/heartbeat_clock_summary.py",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-heartbeat-clock-summary.sh",
@@ -105,7 +101,7 @@
     {
       "id": "hook-save-context-python-helper-github",
       "matchType": "exact",
-      "pattern": ".github/hooks/scripts/heartbeat_clock_summary.py",
+      "pattern": "hooks/scripts/heartbeat_clock_summary.py",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-heartbeat-clock-summary.sh",
@@ -116,7 +112,7 @@
     {
       "id": "hook-pulse-paths-helper",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/pulse_paths.py",
+      "pattern": "hooks/scripts/pulse_paths.py",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-pulse-paths.sh",
@@ -127,7 +123,7 @@
     {
       "id": "hook-pulse-paths-helper-github",
       "matchType": "exact",
-      "pattern": ".github/hooks/scripts/pulse_paths.py",
+      "pattern": "hooks/scripts/pulse_paths.py",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-pulse-paths.sh",
@@ -138,7 +134,7 @@
     {
       "id": "hook-pulse-state-helper",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/pulse_state.py",
+      "pattern": "hooks/scripts/pulse_state.py",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-pulse-state.sh",
@@ -149,7 +145,7 @@
     {
       "id": "hook-pulse-state-helper-github",
       "matchType": "exact",
-      "pattern": ".github/hooks/scripts/pulse_state.py",
+      "pattern": "hooks/scripts/pulse_state.py",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-pulse-state.sh",
@@ -160,7 +156,7 @@
     {
       "id": "hook-pulse-python-helpers",
       "matchType": "glob",
-      "pattern": "template/hooks/scripts/pulse_*.py",
+      "pattern": "hooks/scripts/pulse_*.py",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-pulse.sh"
@@ -170,7 +166,7 @@
     {
       "id": "hook-pulse-python-helpers-github",
       "matchType": "glob",
-      "pattern": ".github/hooks/scripts/pulse_*.py",
+      "pattern": "hooks/scripts/pulse_*.py",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-pulse.sh"
@@ -180,7 +176,7 @@
     {
       "id": "hook-mcp-heartbeat-server",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/mcp-heartbeat-server.py",
+      "pattern": "hooks/scripts/mcp-heartbeat-server.py",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-mcp-heartbeat-server.sh",
@@ -191,7 +187,7 @@
     {
       "id": "hook-mcp-heartbeat-server-github",
       "matchType": "exact",
-      "pattern": ".github/hooks/scripts/mcp-heartbeat-server.py",
+      "pattern": "hooks/scripts/mcp-heartbeat-server.py",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-mcp-heartbeat-server.sh",
@@ -202,7 +198,7 @@
     {
       "id": "hook-lib-hooks",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/lib-hooks.sh",
+      "pattern": "hooks/scripts/lib-hooks.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-lib-hooks.sh",
@@ -213,7 +209,7 @@
     {
       "id": "hook-lib-hooks-github",
       "matchType": "exact",
-      "pattern": ".github/hooks/scripts/lib-hooks.sh",
+      "pattern": "hooks/scripts/lib-hooks.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-lib-hooks.sh",
@@ -224,7 +220,7 @@
     {
       "id": "hook-scan-secrets",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/scan-secrets.sh",
+      "pattern": "hooks/scripts/scan-secrets.sh",
       "phaseStrategy": "targeted",
       "riskClass": "security-sensitive",
       "tests": [
@@ -235,7 +231,7 @@
     {
       "id": "hook-scan-secrets-powershell",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/scan-secrets.ps1",
+      "pattern": "hooks/scripts/scan-secrets.ps1",
       "phaseStrategy": "targeted",
       "riskClass": "security-sensitive",
       "tests": [
@@ -246,7 +242,7 @@
     {
       "id": "hook-scan-secrets-powershell-github",
       "matchType": "exact",
-      "pattern": ".github/hooks/scripts/scan-secrets.ps1",
+      "pattern": "hooks/scripts/scan-secrets.ps1",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-scan-secrets-powershell.sh"
@@ -256,7 +252,7 @@
     {
       "id": "hook-guard-destructive",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/guard-destructive.sh",
+      "pattern": "hooks/scripts/guard-destructive.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-guard-destructive.sh",
@@ -267,7 +263,7 @@
     {
       "id": "hook-mcp-launchers",
       "matchType": "glob",
-      "pattern": "template/hooks/scripts/mcp-*.sh",
+      "pattern": "hooks/scripts/mcp-*.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/scripts/test-mcp-launchers.sh"
@@ -277,7 +273,7 @@
     {
       "id": "hook-guard-destructive-powershell",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/guard-destructive.ps1",
+      "pattern": "hooks/scripts/guard-destructive.ps1",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-guard-destructive-powershell.sh"
@@ -287,7 +283,7 @@
     {
       "id": "hook-subagent-start",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/subagent-start.sh",
+      "pattern": "hooks/scripts/subagent-start.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-subagent-start.sh"
@@ -297,7 +293,7 @@
     {
       "id": "hook-subagent-start-github",
       "matchType": "exact",
-      "pattern": ".github/hooks/scripts/subagent-start.sh",
+      "pattern": "hooks/scripts/subagent-start.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-subagent-start.sh"
@@ -307,7 +303,7 @@
     {
       "id": "hook-subagent-stop",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/subagent-stop.sh",
+      "pattern": "hooks/scripts/subagent-stop.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-subagent-stop.sh"
@@ -317,7 +313,7 @@
     {
       "id": "hook-subagent-stop-github",
       "matchType": "exact",
-      "pattern": ".github/hooks/scripts/subagent-stop.sh",
+      "pattern": "hooks/scripts/subagent-stop.sh",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-subagent-stop.sh"
@@ -327,7 +323,7 @@
     {
       "id": "hook-subagent-start-powershell",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/subagent-start.ps1",
+      "pattern": "hooks/scripts/subagent-start.ps1",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-subagent-start-powershell.sh"
@@ -337,7 +333,7 @@
     {
       "id": "hook-subagent-start-powershell-github",
       "matchType": "exact",
-      "pattern": ".github/hooks/scripts/subagent-start.ps1",
+      "pattern": "hooks/scripts/subagent-start.ps1",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-subagent-start-powershell.sh"
@@ -347,7 +343,7 @@
     {
       "id": "hook-subagent-stop-powershell",
       "matchType": "exact",
-      "pattern": "template/hooks/scripts/subagent-stop.ps1",
+      "pattern": "hooks/scripts/subagent-stop.ps1",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-subagent-stop-powershell.sh"
@@ -357,7 +353,7 @@
     {
       "id": "hook-subagent-stop-powershell-github",
       "matchType": "exact",
-      "pattern": ".github/hooks/scripts/subagent-stop.ps1",
+      "pattern": "hooks/scripts/subagent-stop.ps1",
       "phaseStrategy": "targeted",
       "tests": [
         "tests/hooks/test-hook-subagent-stop-powershell.sh"

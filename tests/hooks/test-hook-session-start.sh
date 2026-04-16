@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/hooks/test-hook-session-start.sh -- unit tests for template/hooks/scripts/session-start.sh
+# tests/hooks/test-hook-session-start.sh -- unit tests for hooks/scripts/session-start.sh
 # Run: bash tests/hooks/test-hook-session-start.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
@@ -7,7 +7,7 @@ set -uo pipefail
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
-SCRIPT="$REPO_ROOT/template/hooks/scripts/session-start.sh"
+SCRIPT="$REPO_ROOT/hooks/scripts/session-start.sh"
 trap cleanup_dirs EXIT
 
 echo "=== session-start.sh ==="

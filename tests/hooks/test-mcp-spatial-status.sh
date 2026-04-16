@@ -7,8 +7,8 @@ set -uo pipefail
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
-SCRIPT="$REPO_ROOT/template/hooks/scripts/mcp-heartbeat-server.py"
-CLOCK_SCRIPT="$REPO_ROOT/template/hooks/scripts/heartbeat_clock_summary.py"
+SCRIPT="$REPO_ROOT/hooks/scripts/mcp-heartbeat-server.py"
+CLOCK_SCRIPT="$REPO_ROOT/hooks/scripts/heartbeat_clock_summary.py"
 trap cleanup_dirs EXIT
 
 run_spatial() {

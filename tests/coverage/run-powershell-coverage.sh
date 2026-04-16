@@ -22,7 +22,7 @@ run_hook() {
   printf '%s' "$payload" | "$PWSH_BIN" -NoLogo -NoProfile -File "$WRAPPER" -ScriptPath "$script_path" -TracePath "$TRACE_PATH" >/dev/null
 }
 
-TEMPLATE_HOOKS="$REPO_ROOT/template/hooks/scripts"
+TEMPLATE_HOOKS="$REPO_ROOT/hooks/scripts"
 
 run_hook "$TEMPLATE_HOOKS/session-start.ps1" '{}'
 

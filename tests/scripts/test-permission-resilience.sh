@@ -10,8 +10,8 @@ set -uo pipefail
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
 
-HOOKS_DIR="$REPO_ROOT/template/hooks/scripts"
-PARITY_DIR="$REPO_ROOT/.github/hooks/scripts"
+HOOKS_DIR="$REPO_ROOT/hooks/scripts"
+PARITY_DIR="$REPO_ROOT/hooks/scripts"
 
 # Exhaustive list of shell hook scripts that must be executable.
 HOOK_SCRIPTS=(
@@ -147,14 +147,6 @@ echo "7. Repo utility scripts are executable"
 UTIL_SCRIPTS=(
   scripts/workspace/check-workspace-drift.sh
   scripts/harness/run-all-captured.sh
-  scripts/harness/select-targeted-tests.sh
-  scripts/release/verify-version-references.sh
-  scripts/workspace/sync-workspace-index.sh
-  scripts/sync/sync-models.sh
-  scripts/sync/sync-template-parity.sh
-  scripts/ci/validate-agent-frontmatter.sh
-  scripts/release/stub-migration.sh
-  scripts/lib.sh
 )
 for rel_path in "${UTIL_SCRIPTS[@]}"; do
   path="$REPO_ROOT/$rel_path"

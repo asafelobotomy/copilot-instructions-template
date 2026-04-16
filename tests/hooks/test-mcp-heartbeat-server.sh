@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# tests/hooks/test-mcp-heartbeat-server.sh -- unit tests for template/hooks/scripts/mcp-heartbeat-server.py
+# tests/hooks/test-mcp-heartbeat-server.sh -- unit tests for hooks/scripts/mcp-heartbeat-server.py
 # Run: bash tests/hooks/test-mcp-heartbeat-server.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
 set -uo pipefail
@@ -7,7 +7,7 @@ set -uo pipefail
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
-SCRIPT="$REPO_ROOT/template/hooks/scripts/mcp-heartbeat-server.py"
+SCRIPT="$REPO_ROOT/hooks/scripts/mcp-heartbeat-server.py"
 trap cleanup_dirs EXIT
 
 run_reflect() {
@@ -244,6 +244,24 @@ assert "memory_protocol" in payload
 assert isinstance(payload["memory_protocol"], str)
 assert len(payload["memory_protocol"]) > 0
 assert "§14" in payload["memory_protocol"]
+'
+echo ""
+
+echo "6b. heartbeat_record key is present with file, instruction, and row_template"
+REFLECT_OUTPUT="$output" assert_python "heartbeat_record has required sub-keys" '
+import datetime
+payload = json.loads(os.environ["REFLECT_OUTPUT"])
+assert "heartbeat_record" in payload, "heartbeat_record key missing"
+rec = payload["heartbeat_record"]
+file_val = rec.get("file", "")
+assert "file" in rec and file_val.endswith("HEARTBEAT.md"), "file missing or wrong: " + file_val
+instr_val = rec.get("instruction", "")
+assert "instruction" in rec and len(instr_val) > 10, "instruction missing or empty"
+assert "row_template" in rec, "row_template missing"
+today = datetime.date.today().isoformat()
+row = rec.get("row_template", "")
+assert today in row, "today (" + today + ") not in row_template: " + row
+assert "session_reflect" in row, "trigger not in row_template"
 '
 echo ""
 

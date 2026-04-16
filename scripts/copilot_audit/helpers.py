@@ -186,8 +186,7 @@ def prompt_dirs(root: pathlib.Path) -> list[pathlib.Path]:
 def skill_dirs(root: pathlib.Path) -> list[pathlib.Path]:
     """Return all directories that may contain SKILL.md files."""
     dirs: list[pathlib.Path] = [
-        root / ".github" / "skills",
-        root / "template" / "skills",
+        root / "skills",
     ]
     for kit in starter_kit_dirs(root):
         kit_skills = kit / "skills"
@@ -216,20 +215,18 @@ def starter_kit_dirs(root: pathlib.Path) -> list[pathlib.Path]:
 
 
 def iter_shell_scripts(root: pathlib.Path) -> Iterator[pathlib.Path]:
-    """Yield all .sh files under .github/hooks/scripts/ and template/hooks/scripts/."""
+    """Yield all .sh files under hooks/scripts/."""
     for d in [
-        root / "template" / "hooks" / "scripts",
-        root / ".github"  / "hooks" / "scripts",
+        root / "hooks" / "scripts",
     ]:
         if d.is_dir():
             yield from sorted(d.glob("*.sh"))
 
 
 def iter_ps_scripts(root: pathlib.Path) -> Iterator[pathlib.Path]:
-    """Yield all .ps1 files under .github/hooks/scripts/ and template/hooks/scripts/."""
+    """Yield all .ps1 files under hooks/scripts/."""
     for d in [
-        root / "template" / "hooks" / "scripts",
-        root / ".github" / "hooks" / "scripts",
+        root / "hooks" / "scripts",
     ]:
         if d.is_dir():
             yield from sorted(d.glob("*.ps1"))

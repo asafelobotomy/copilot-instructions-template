@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sync-models.sh — keep .github/agents/*.agent.md model lists and llms.txt
+# sync-models.sh — keep agents/*.agent.md model lists and llms.txt
 #                  aligned with the single source of truth in MODELS.md.
 #
 # Usage:

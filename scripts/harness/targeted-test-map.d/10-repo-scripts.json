@@ -14,8 +14,7 @@
         "tests/scripts/test-run-isolated-shell.sh",
         "tests/scripts/test-sync-workspace-index.sh",
         "tests/scripts/test-sync-models.sh",
-        "tests/scripts/test-validate-agent-frontmatter.sh",
-        "tests/scripts/test-sync-template-parity.sh"
+        "tests/scripts/test-validate-agent-frontmatter.sh"
       ],
       "reason": "scripts/lib.sh is sourced by multiple release/sync/validate utilities."
     },
@@ -79,26 +78,6 @@
         "tests/scripts/test-sync-models.sh"
       ],
       "reason": "sync-models has a dedicated contract suite."
-    },
-    {
-      "id": "sync-template-parity-script",
-      "matchType": "exact",
-      "pattern": "scripts/sync/sync-template-parity.sh",
-      "phaseStrategy": "targeted",
-      "tests": [
-        "tests/scripts/test-sync-template-parity.sh"
-      ],
-      "reason": "sync-template-parity has a dedicated behavior suite."
-    },
-    {
-      "id": "validate-template-sync-script",
-      "matchType": "exact",
-      "pattern": "scripts/ci/validate-template-sync.sh",
-      "phaseStrategy": "targeted",
-      "tests": [
-        "tests/scripts/test-validate-template-sync.sh"
-      ],
-      "reason": "validate-template-sync delegates to the canonical parity check and has a dedicated behavior suite."
     },
     {
       "id": "validate-required-files-script",

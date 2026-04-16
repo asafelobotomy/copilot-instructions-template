@@ -9,4 +9,11 @@ if ! command -v python3 >/dev/null 2>&1; then
   exit 1
 fi
 
+PWSH_CACHE_FILE=$(mktemp)
+cleanup_pwsh_cache() {
+  rm -f "$PWSH_CACHE_FILE"
+}
+trap cleanup_pwsh_cache EXIT
+
+export PWSH_CACHE_FILE
 exec python3 "$ROOT_DIR/scripts/harness/suite-manifest.py" run-local --root "$ROOT_DIR"

@@ -23,25 +23,54 @@ def check_vs1_settings_plugins(root: pathlib.Path | AuditContext) -> CheckResult
                                        f"Invalid JSON: {error}"))
         return result
 
-    def _check_plugin_locations(key: str = "chat.pluginLocations", base: pathlib.Path = ctx.root) -> None:
-        locations = data.get(key)
-        if locations is None:
-            return
-        if isinstance(locations, dict):
-            entries = [(path, enabled) for path, enabled in locations.items() if isinstance(path, str)]
-        elif isinstance(locations, list):
-            entries = [(path, True) for path in locations if isinstance(path, str)]
-        else:
-            result.findings.append(Finding(
-                "VS1", rel, WARN,
-                f"{key} must be an object mapping path -> boolean or a list of paths",
-            ))
-            return
+    def _iter_path_entries(key: str) -> list[tuple[str, bool]] | None:
+        value = data.get(key)
+        if value is None:
+            return None
+        if isinstance(value, dict):
+            return [(path, enabled) for path, enabled in value.items() if isinstance(path, str)]
+        if isinstance(value, list):
+            return [(path, True) for path in value if isinstance(path, str)]
+        result.findings.append(Finding(
+            "VS1", rel, WARN,
+            f"{key} must be an object mapping path -> boolean or a list of paths",
+        ))
+        return []
 
+    def _resolve_path(raw_path: str, base: pathlib.Path = ctx.root) -> pathlib.Path:
+        path_obj = pathlib.Path(raw_path).expanduser()
+        if path_obj.is_absolute():
+            return path_obj
+        return base / path_obj
+
+    def _check_plugin_locations(key: str = "chat.pluginLocations") -> None:
+        entries = _iter_path_entries(key)
+        if entries is None:
+            return
         for raw_path, enabled in entries:
             if enabled is False:
                 continue
-            resolved = pathlib.Path(raw_path) if pathlib.Path(raw_path).is_absolute() else base / raw_path
+            if "${" in raw_path:
+                result.findings.append(Finding(
+                    "VS1", rel, WARN,
+                    f"{key} should use literal paths, not variable syntax: {raw_path}",
+                ))
+                continue
+            resolved = _resolve_path(raw_path)
+            if not resolved.exists():
+                result.findings.append(Finding(
+                    "VS1", rel, WARN,
+                    f"{key} entry not found: {raw_path}",
+                ))
+
+    def _check_path_roots(key: str) -> None:
+        entries = _iter_path_entries(key)
+        if entries is None:
+            return
+        for raw_path, enabled in entries:
+            if enabled is False:
+                continue
+            resolved = _resolve_path(raw_path)
             if not resolved.exists():
                 result.findings.append(Finding(
                     "VS1", rel, WARN,
@@ -51,11 +80,15 @@ def check_vs1_settings_plugins(root: pathlib.Path | AuditContext) -> CheckResult
     def _check_path_list(key: str, base: pathlib.Path = ctx.root) -> None:
         paths = data.get(key, [])
         if not isinstance(paths, list):
+            result.findings.append(Finding(
+                "VS1", rel, WARN,
+                f"{key} must be a list of paths",
+            ))
             return
         for p in paths:
             if not isinstance(p, str):
                 continue
-            resolved = pathlib.Path(p) if pathlib.Path(p).is_absolute() else base / p
+            resolved = _resolve_path(p, base)
             if not resolved.exists():
                 result.findings.append(Finding(
                     "VS1", rel, WARN,
@@ -64,10 +97,11 @@ def check_vs1_settings_plugins(root: pathlib.Path | AuditContext) -> CheckResult
 
     _check_plugin_locations()
     _check_path_list("chat.plugins.paths")
-    _check_path_list("chat.instructionsFilesLocations")
-    _check_path_list("chat.promptFilesLocations")
-    _check_path_list("chat.agentFilesLocations")
-    _check_path_list("chat.agentSkillsLocations")
-    _check_path_list("chat.hookFilesLocations")
+    _check_path_roots("chat.instructionsFilesLocations")
+    _check_path_roots("chat.promptFilesLocations")
+    _check_path_roots("chat.agentFilesLocations")
+    _check_path_roots("chat.skillsLocations")
+    _check_path_roots("chat.agentSkillsLocations")
+    _check_path_roots("chat.hookFilesLocations")
 
     return result

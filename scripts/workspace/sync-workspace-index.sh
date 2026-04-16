@@ -56,10 +56,10 @@ def ordered(existing, baseline):
     return ordered_items + extras
 
 
-agents_existing = [p.name for p in (root / ".github/agents").glob("*.agent.md")]
-agent_support_existing = [p.name for p in (root / ".github/agents").glob("*.json")]
-skills_repo_existing = [p.parent.name for p in (root / ".github/skills").glob("*/SKILL.md")]
-skills_template_existing = [p.parent.name for p in (root / "template/skills").glob("*/SKILL.md")]
+agents_existing = [p.name for p in (root / "agents").glob("*.agent.md")]
+agent_support_existing = [p.name for p in (root / "agents").glob("*.json")]
+skills_repo_existing = [p.parent.name for p in (root / "skills").glob("*/SKILL.md")]
+skills_template_existing = []
 prompts_existing = [p.name for p in (root / "template/prompts").glob("*.prompt.md")]
 instructions_existing = [p.name for p in (root / "template/instructions").glob("*.instructions.md")]
 workspace_root = root / "template/workspace"
@@ -69,10 +69,10 @@ workspace_files_existing = [
     if p.is_file()
 ]
 workflow_existing = [p.name for p in (root / "template").glob("copilot-setup-steps.yml")]
-shell_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.sh")]
-ps_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.ps1")]
-python_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.py")]
-json_hooks_existing = [p.name for p in (root / "template/hooks/scripts").glob("*.json")]
+shell_hooks_existing = [p.name for p in (root / "hooks/scripts").glob("*.sh")]
+ps_hooks_existing = [p.name for p in (root / "hooks/scripts").glob("*.ps1")]
+python_hooks_existing = [p.name for p in (root / "hooks/scripts").glob("*.py")]
+json_hooks_existing = [p.name for p in (root / "hooks/scripts").glob("*.json")]
 
 baseline = load_order_baseline(template_index_path, index_path)
 

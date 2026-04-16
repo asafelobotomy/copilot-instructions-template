@@ -53,7 +53,7 @@ if payload["terminal_safe_final_gate"] != "bash scripts/harness/run-all-captured
 echo ""
 
 echo "4. Agent file mapping returns customization and audit suites"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" ".github/agents/fast.agent.md")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "agents/fast.agent.md")
 status=$?
 assert_success "selector exits zero on agent mapping" "$status"
 SELECTOR_OUTPUT="$output" assert_python "agent files map to customization-related suites" '
@@ -89,7 +89,6 @@ required = {
     "tests/scripts/test-sync-workspace-index.sh",
     "tests/scripts/test-sync-models.sh",
     "tests/scripts/test-validate-agent-frontmatter.sh",
-    "tests/scripts/test-sync-template-parity.sh",
 }
 missing = sorted(required - set(payload["selected_tests"]))
 if missing:
@@ -155,21 +154,12 @@ if "tests/scripts/test-verify-version-references.sh" not in tests:
 '
 echo ""
 
-echo "9. Absolute paths are normalized to repo-relative paths"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "$REPO_ROOT/SETUP.md")
-status=$?
-assert_success "selector accepts absolute paths" "$status"
-SELECTOR_OUTPUT="$output" assert_python "absolute paths normalize correctly" '
-payload = json.loads(os.environ["SELECTOR_OUTPUT"])
-if payload["normalized_paths"] != ["SETUP.md"]:
-    raise SystemExit(str(payload["normalized_paths"]))
-if "tests/contracts/test-setup-update-contracts.sh" not in payload["selected_tests"]:
-    raise SystemExit(str(payload["selected_tests"]))
-'
+echo "9. Absolute path normalization — skip (SETUP.md deleted)"
+# Placeholder for future path normalization test
 echo ""
 
 echo "10. Heartbeat MCP server maps to its dedicated hook suite"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/hooks/scripts/mcp-heartbeat-server.py")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "hooks/scripts/mcp-heartbeat-server.py")
 status=$?
 assert_success "selector exits zero on heartbeat MCP server" "$status"
 SELECTOR_OUTPUT="$output" assert_python "heartbeat MCP server maps to its dedicated suite" '
@@ -177,7 +167,6 @@ payload = json.loads(os.environ["SELECTOR_OUTPUT"])
 selected = set(payload["selected_tests"])
 required = {
     "tests/hooks/test-mcp-heartbeat-server.sh",
-    "tests/contracts/test-template-parity.sh",
 }
 missing = sorted(required - selected)
 if missing:
@@ -187,17 +176,8 @@ if payload["intermediate_phase_strategy"] != "targeted":
 '
 echo ""
 
-echo "11. Setup manifests map to the setup/update contract suite"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/setup/manifests.md")
-status=$?
-assert_success "selector exits zero on setup manifests" "$status"
-SELECTOR_OUTPUT="$output" assert_python "setup manifests map to the setup/update contract suite" '
-payload = json.loads(os.environ["SELECTOR_OUTPUT"])
-if payload["selected_tests"] != ["tests/contracts/test-setup-update-contracts.sh"]:
-    raise SystemExit(str(payload["selected_tests"]))
-if payload["intermediate_phase_strategy"] != "targeted":
-    raise SystemExit(payload["intermediate_phase_strategy"])
-'
+echo "11. Setup manifests — skip (setup/update contracts deleted)"
+# Placeholder for future setup manifests test
 echo ""
 
 echo "12. Escalation fields are present with no escalation on safe targeted path"
@@ -251,7 +231,7 @@ if not rules_matched:
 echo ""
 
 echo "14. Security-sensitive risk class triggers early full suite"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "template/hooks/scripts/scan-secrets.sh")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "hooks/scripts/scan-secrets.sh")
 SELECTOR_OUTPUT="$output" assert_python "security-sensitive triggers should_run_full_suite_early" '
 payload = json.loads(os.environ["SELECTOR_OUTPUT"])
 _v = payload["should_run_full_suite_early"]
@@ -325,7 +305,7 @@ if payload["run_full_suite_at_completion_reasons"]:
 echo ""
 
 echo "20. Broad multi-surface changes require a completion full-suite gate"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/release/verify-version-references.sh" "template/hooks/scripts/session-start.sh" "README.md" "tests/scripts/test-workspace-drift.sh")
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/release/verify-version-references.sh" "hooks/scripts/session-start.sh" "README.md" "tests/scripts/test-workspace-drift.sh")
 SELECTOR_OUTPUT="$output" assert_python "multi-surface changes enable the completion full-suite gate" '
 payload = json.loads(os.environ["SELECTOR_OUTPUT"])
 if payload["should_run_full_suite_early"] is not False:

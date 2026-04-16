@@ -19,8 +19,8 @@
     ]
   },
   "mirrorDomains": {
-    "hooks-mirror": [".github/hooks/", "template/hooks/"],
-    "skills-mirror": [".github/skills/", "template/skills/"],
+    "hooks-mirror": ["hooks/", "hooks/"],
+    "skills-mirror": ["skills/", "skills/"],
     "workspace-mirror": [".copilot/workspace/", "template/workspace/"]
   },
   "riskClasses": ["critical-surface", "security-sensitive", "cross-cutting"],
