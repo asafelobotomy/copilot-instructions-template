@@ -95,6 +95,19 @@
 | <https://github.com/github/copilot-plugins> | Official GitHub Copilot plugins marketplace repo — structure mirrors awesome-copilot | 2026-04-13 | agent-plugins, marketplace |
 | <https://github.com/github/awesome-copilot> | Community Copilot marketplace with 50+ plugins, skills, agents, hooks; default marketplace in VS Code | 2026-04-13 | agent-plugins, marketplace |
 
+## VS Code Extension APIs for Copilot Companion — 2026-04-16
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://code.visualstudio.com/api/extension-guides/ai/ai-extensibility-overview> | AI extensibility overview: LM tools vs MCP tools vs chat participants vs LM API — decision guide | 2026-04-16 | extension-api, lm-tools, mcp, copilot |
+| <https://code.visualstudio.com/api/extension-guides/tools> | LM tool guide: `contributes.languageModelTools` package.json schema, `vscode.lm.registerTool()`, `LanguageModelTool<T>` interface, `prepareInvocation`, `invoke`, `LanguageModelToolResult` | 2026-04-16 | extension-api, lm-tools, stable |
+| <https://code.visualstudio.com/api/extension-guides/ai/mcp> | MCP extension guide: `contributes.mcpServerDefinitionProviders`, `vscode.lm.registerMcpServerDefinitionProvider()`, `McpStdioServerDefinition`, `McpHttpServerDefinition`, dev mode, troubleshooting | 2026-04-16 | extension-api, mcp, proposed-api |
+| <https://code.visualstudio.com/api/get-started/your-first-extension> | Extension scaffolding: `yo code` / `npx --package yo --package generator-code -- yo code`, TypeScript template structure | 2026-04-16 | extension-api, scaffolding, yo-code |
+| <https://code.visualstudio.com/api/working-with-extensions/publishing-extension> | Publishing: `@vscode/vsce` CLI, PAT + Azure DevOps, `vsce package` for VSIX, `vsce publish`, publisher management page | 2026-04-16 | extension-api, publishing, vsix |
+| <https://raw.githubusercontent.com/microsoft/vscode-extension-samples/main/mcp-extension-sample/package.json> | Real mcp-extension-sample package.json: `mcpServerDefinitionProviders` contribution point, requires `^1.101.0`, uses `@vscode/dts` for proposed API download | 2026-04-16 | extension-api, mcp, sample |
+| <https://raw.githubusercontent.com/microsoft/vscode-extension-samples/main/chat-sample/package.json> | Real chat-sample package.json: `languageModelTools` contribution point shape, `chatParticipants` shape, requires `^1.100.0`, uses `@types/vscode` (stable) | 2026-04-16 | extension-api, lm-tools, sample |
+| <https://raw.githubusercontent.com/microsoft/vscode-extension-samples/main/mcp-extension-sample/src/extension.ts> | MCP provider implementation: `EventEmitter<void>`, `registerMcpServerDefinitionProvider`, `McpStdioServerDefinition` constructor pattern | 2026-04-16 | extension-api, mcp, sample |
+
 ## Dependency Evaluation — 2026-04-09
 
 | URL | Summary | Date | Tags |

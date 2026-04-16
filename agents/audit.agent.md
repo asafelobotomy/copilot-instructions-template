@@ -195,7 +195,7 @@ Check for skill name collisions between `.github/skills/` and plugin-contributed
 
 Flag: `[WARN]` for conflicts or non-existent paths. Skip silently if no plugin settings.
 
-### D10 — Companion extension (copilot-profile-tools)
+### D10 — Companion extension (copilot-extension)
 
 Check if installed via `code --list-extensions`. If installed, verify it appears in
 `.vscode/extensions.json` recommendations.

@@ -457,5 +457,5 @@ PLACEHOLDER=value (one per resolved token)
 
 ## Companion extension (§ 2.15)
 
-Install: `code --install-extension asafelobotomy.copilot-profile-tools`
-VSIX fallback: `https://api.github.com/repos/asafelobotomy/copilot-profile-tools/releases/latest`
+Install: `code --install-extension asafelobotomy.copilot-extension`
+VSIX fallback: `https://api.github.com/repos/asafelobotomy/copilot-extension/releases/latest`

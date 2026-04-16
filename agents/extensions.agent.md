@@ -70,10 +70,10 @@ user to paste the output of `code --list-extensions | sort`.
 
 ### 2 — Profile check
 
-Check whether the `copilot-profile-tools` companion extension is installed:
+Check whether the `copilot-extension` companion extension is installed:
 
 ```bash
-code --list-extensions | grep -i copilot-profile-tools
+code --list-extensions | grep -i copilot-extension
 ```
 
 **If installed** — use the `get_active_profile` Language Model Tool to detect
@@ -84,7 +84,7 @@ creating a dedicated one.
 **If not installed** — profile detection is best-effort. Inform the user:
 
 ```text
-Profile detection requires the copilot-profile-tools extension.
+Profile detection requires aSafeLobotomy's Copilot Extension.
 Without it, I cannot verify which profile is active.
 
 Recommendation: create a repo-specific Empty Profile to isolate extensions:
@@ -146,16 +146,16 @@ creating a repo-specific Empty Profile before installing extensions.
 
 ---
 
-## Companion extension — copilot-profile-tools
+## Companion extension — aSafeLobotomy's Copilot Extension
 
-The `copilot-profile-tools` VS Code extension contributes Language Model Tools
+The `copilot-extension` VS Code extension contributes Language Model Tools
 that provide capabilities beyond what the CLI offers. When the extension is
 installed, use these tools directly instead of CLI fallbacks.
 
 ### Detection
 
 ```bash
-code --list-extensions | grep -i copilot-profile-tools
+code --list-extensions | grep -i copilot-extension
 ```
 
 ### Available Language Model Tools
@@ -187,7 +187,7 @@ recommend installing it:
 
 ```text
 For full profile support, install the companion extension:
-  code --install-extension asafelobotomy.copilot-profile-tools
+  code --install-extension asafelobotomy.copilot-extension
 ```
 
 ---
