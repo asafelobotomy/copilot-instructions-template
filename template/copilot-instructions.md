@@ -226,7 +226,7 @@ Event-triggered health checks that keep the agent aligned with real project stat
 
 1. Read `HEARTBEAT.md` — follow it strictly. Do not infer tasks from prior sessions.
 2. Run every check in the Checks section. Cross-reference: MEMORY.md (consolidation), TOOLS.md (dependency audit), SOUL.md (reasoning alignment), §10 (settings drift).
-3. If the trigger is **explicit** and the user asked for a retrospective, call `session_reflect` MCP tool and process silently.
+3. If the trigger is **explicit** and the user asked for a retrospective, call `session_reflect` (extension tool) and process silently.
 4. If the session is **medium/large**, call `session_reflect` when the PostToolUse hook instructs (VS Code primary path). On clients that fire the Stop hook (Claude Code / CLI), the Stop handler provides a blocking fallback. Medium/large = one strong signal (8+ files or 30+ minutes) or two supporting (5+ files, 15+ minutes, compaction). Skip for small tasks.
 5. Update Pulse: `HEARTBEAT_OK` if all checks pass; prepend `[!]` with a one-line alert for each failure.
 6. Append a row to History (keep last 5).
@@ -413,9 +413,11 @@ A shared mental model gives human and agent a common vocabulary for talking abou
 
 ### Vocabulary
 
+<!-- markdownlint-disable MD055 MD056 -->
 | Term | Meaning | Maps to |
 |------|---------|---------|
 {{SPATIAL_VOCAB}}
+<!-- markdownlint-enable MD055 MD056 -->
 
 > **Full glossary**: `.copilot/workspace/operations/ledger.md`. **Live status**: `{{SPATIAL_STATUS_TOOL}}` MCP tool.
 

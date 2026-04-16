@@ -189,7 +189,7 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
   path repair, or repository reshaping, and `Cleaner` for stale artefact,
   archive, and cache cleanup.
 - Tool Protocol: activate `skills/tool-protocol/SKILL.md` before building any script.
-- Heartbeat: `.copilot/workspace/operations/HEARTBEAT.md` — run at session start. Health digest emits on meaningful phase transitions and overlay changes, not a fixed tool-call cadence. On significant sessions (8+ files or 30+ active minutes), the PostToolUse hook instructs the model to call the `session_reflect` MCP tool autonomously. The Stop hook provides a blocking fallback on clients that support it (Claude Code / CLI). Silent when healthy.
+- Heartbeat: `.copilot/workspace/operations/HEARTBEAT.md` — run at session start. Health digest emits on meaningful phase transitions and overlay changes, not a fixed tool-call cadence. On significant sessions (8+ files or 30+ active minutes), the PostToolUse hook instructs the model to call the `session_reflect` extension tool autonomously. The Stop hook provides a blocking fallback on clients that support it (Claude Code / CLI). Silent when healthy.
 
 ## User Preferences
 
@@ -217,7 +217,7 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 
 - **Tool Protocol**: Check `.copilot/tools/INDEX.md` before building. Follow `skills/tool-protocol/SKILL.md`.
 - **Skill Protocol**: Skills loaded on demand from `skills/`. Follow `skills/skill-management/SKILL.md`.
-- **MCP Protocol**: Config in `.vscode/mcp.json`. Always-on: filesystem, git, heartbeat. Credentials-required: github, fetch.
+- **MCP Protocol**: Config in `.vscode/mcp.json`. Always-on: filesystem, git. Credentials-required: github, fetch. Heartbeat tools (`session_reflect`, `spatial_status`) are provided by the `asafelobotomy.copilot-extension` extension, not MCP.
 - **Delegation Protocol**: See **Skills and Agents** for the full specialist-first delegation policy.
 - **Subagent depth**: max 3. Stop and surface to user if reached. Subagents inherit all protocols including the Structured Thinking Discipline and anti-loop rules.
 
