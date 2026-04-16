@@ -7,15 +7,12 @@
 - [.github/copilot-instructions.md](.github/copilot-instructions.md): Main always-loaded instruction file. Core methodology and guardrails.
 - [AGENTS.md](AGENTS.md): Machine entry point. Trigger phrases and canonical setup or update pointers.
 - [MODELS.md](MODELS.md): Single source of truth for agent model assignments and thinking-effort guidance.
-- [SETUP.md](SETUP.md): Remote bootstrap protocol for consumer projects.
-- [UPDATE.md](UPDATE.md): Remote update, backup restore, and factory restore protocol.
-- [MIGRATION.md](MIGRATION.md): Per-version migration registry.
-- [MIGRATION.archive.md](MIGRATION.archive.md): Legacy migration registry for installs earlier than v3.4.0.
+- [plugin.json](plugin.json): VS Code Agent Plugin manifest (name, version, metadata).
+- [CHANGELOG.md](CHANGELOG.md): Version history and migration notes.
 - [.github/research/README.md](.github/research/README.md): Research note layout and archive convention.
 
 ## Archive conventions
 
-- `MIGRATION.archive.md` is the only top-level archive file because the update flow fetches it directly.
 - Research notes stay active under `.github/research/` first, then move into `.github/research/archive/YYYY-MM/`.
 
 ## Model strategy
@@ -56,12 +53,12 @@ High-signal examples:
 
 ## Hooks
 
-Hook orchestration config: `.github/hooks/copilot-hooks.json`.
+Hook orchestration config: `.github/hooks/copilot-hooks.json` (all-local) or agent plugin (plugin-backed).
 Canonical script inventory: `.copilot/workspace/operations/workspace-index.json`.
 
 ## Subagent orchestration
 
-Allow-lists live in `.github/agents/*.agent.md` frontmatter (`agents:` field).
+Allow-lists live in `agents/*.agent.md` frontmatter (`agents:` field).
 Max subagent depth: 3. Surfaced coordinators: Setup, Code, Review, Fast, Explore, Commit, Docs, Cleaner.
 Hidden specialists: Planner, Debugger, Audit, Researcher, Extensions, Organise.
 

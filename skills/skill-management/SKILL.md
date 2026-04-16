@@ -55,7 +55,7 @@ Task requires a workflow
 | 6 | Extension `chatSkills` contribution | Extension — VS Code extensions contributing skills via `package.json` |
 | 7 | Organization-level agents | Org — published at GitHub org level for all members |
 
-> **Custom paths**: Use the `chat.agentSkillsLocations` VS Code setting to add custom directories for skill discovery beyond the default locations. Useful for sharing skills across projects or keeping them in a central location.
+> **Custom paths**: Use the `chat.skillsLocations` VS Code setting to add custom directories for skill discovery beyond the default locations. Keep the legacy `chat.agentSkillsLocations` setting in sync when you need compatibility with VS Code builds that still read the older key. Useful for sharing skills across projects or keeping them in a central location.
 
 ## Visibility controls
 

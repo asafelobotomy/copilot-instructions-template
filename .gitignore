@@ -49,3 +49,5 @@ test_*_output.txt
 test_output.log
 test_results.log
 selector_output.json
+audit_results.json
+pulse_test_output.log
