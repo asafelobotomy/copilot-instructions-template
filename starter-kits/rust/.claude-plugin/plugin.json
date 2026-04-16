@@ -2,7 +2,9 @@
   "name": "rust-starter-kit",
   "description": "Stack-specific skills and commands for Rust projects — cargo/clippy patterns, unsafe review, error handling, and crate conventions.",
   "version": "1.0.0",
-  "author": "copilot-instructions-template",
+  "author": {
+    "name": "copilot-instructions-template"
+  },
   "license": "MIT",
   "keywords": ["rust", "cargo", "clippy", "crates"],
   "category": "starter-kit"

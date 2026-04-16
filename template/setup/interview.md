@@ -21,10 +21,14 @@
 - **S4 — Testing**: How should I handle tests?
   Options: Always write tests alongside code | Suggest tests but don't write | Skip unless asked
 
-**Batch 2 (S5)**:
+**Batch 2 (S5–S6)**:
 
 - **S5 — Autonomy**: How should I act when something is ambiguous?
   Options: Ask first (always confirm before acting) | Act then tell (proceed and report) | Best judgement
+
+- **S6 — Ownership mode**: How should agents, skills, and hooks be delivered?
+  Options: Plugin-backed (recommended — agents, skills, and hooks stay in the plugin; no local copies needed; updates arrive automatically when the plugin updates) | All-local (copy all agents, skills, and hook scripts into `.github/` for full local ownership and customisation) | Ask per surface (decide individually for agents, skills, hooks, and MCP)
+  Default: Plugin-backed. When Plugin-backed: §2.5, §2.6, §2.12 skip local copies; heartbeat MCP is delivered by the plugin. When All-local: all surfaces are copied locally as in previous versions.
 
 ---
 
@@ -102,7 +106,8 @@
 
 - **E22a — Optional MCP servers**: Which optional MCP servers should I enable?
   Options: GitHub | Fetch | Context7 | Playwright | None
-  Ask only when E22 = B. Multi-select allowed. Default: None (keep core only: filesystem, git, heartbeat)
+  Ask only when E22 = B. Multi-select allowed. Default: None (keep core only: filesystem, git, heartbeat).
+  Note: when S6 = Plugin-backed, the heartbeat MCP server is delivered by the plugin and omitted from `.vscode/mcp.json`. When S6 = All-local, heartbeat is written to `.vscode/mcp.json` pointing to `.github/hooks/scripts/mcp-heartbeat-server.py`.
 
 - **E23 — Claude compatibility**: Should I generate a `CLAUDE.md` file for Claude Code compatibility?
   Options: Yes | No

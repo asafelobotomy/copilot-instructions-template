@@ -2,7 +2,9 @@
   "name": "python-starter-kit",
   "description": "Stack-specific skills and commands for Python projects — pytest patterns, type checking, security practices, and PEP conventions.",
   "version": "1.0.0",
-  "author": "copilot-instructions-template",
+  "author": {
+    "name": "copilot-instructions-template"
+  },
   "license": "MIT",
   "keywords": ["python", "pytest", "typing", "security", "pep8"],
   "category": "starter-kit"

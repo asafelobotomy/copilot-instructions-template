@@ -22,19 +22,24 @@ inventory of supporting upstream sources so `AGENTS.md` and
 
 ## Agent files (§ 2.5)
 
-Use **dynamic discovery** via GitHub API tree to enumerate all agent assets:
+**All-local mode** (S6 = All-local or per-surface local): Copy all agent files
+from `${CLAUDE_PLUGIN_ROOT}/agents/` to `.github/agents/`. This includes all
+`*.agent.md` files and the routing sidecar `routing-manifest.json`.
 
-```text
-GET https://api.github.com/repos/asafelobotomy/copilot-instructions-template/git/trees/main?recursive=1
-```
-
-Filter for `type == "blob"` and `path` matching `.github/agents/*.agent.md` or `.github/agents/*.json`. Fetch each verbatim. This currently includes the routing sidecar `.github/agents/routing-manifest.json`. If `"truncated": true`, fall back to the `agents` and `agentSupportFiles` arrays in the workspace-index payload prefetched by SETUP.md §2. Write that same payload to `.copilot/workspace/operations/workspace-index.json` later in §3.
+**Plugin-backed mode** (S6 = Plugin-backed or per-surface plugin): Skip. Agents
+are delivered by the plugin and discovered automatically. Do not create
+`.github/agents/`.
 
 ---
 
 ## Skill files (§ 2.6)
 
-Dynamic discovery: filter API tree for `template/skills/*/SKILL.md`. If truncated, fall back to the `skills.template` array in the workspace-index payload prefetched by SETUP.md §2.
+**All-local mode**: Copy all skill directories from
+`${CLAUDE_PLUGIN_ROOT}/skills/` to `.github/skills/`. Each skill directory
+contains a `SKILL.md` frontmatter file.
+
+**Plugin-backed mode**: Skip. Skills are delivered by the plugin and discovered
+automatically. Do not create `.github/skills/`.
 
 ---
 
@@ -50,7 +55,7 @@ For each stub, evaluate the `condition` before installing. A condition `exists:G
 | `docs.instructions.md` | `exists:**/*.md` (true for almost every project) |
 | `terminal.instructions.md` | `exists:**/*` (install for every non-empty project; terminal discipline applies regardless of source language) |
 
-Fetch pattern: `{BASE_URL}/template/instructions/{name}`
+Fetch pattern: `${CLAUDE_PLUGIN_ROOT}/template/instructions/{name}`
 
 After writing, replace `{{TEST_FRAMEWORK}}` and `{{TEST_COMMAND}}` tokens in stubs that contain them.
 
@@ -68,7 +73,7 @@ After writing, replace `{{TEST_FRAMEWORK}}` and `{{TEST_COMMAND}}` tokens in stu
 | `commit-msg.prompt.md` |
 | `onboard-commit-style.prompt.md` |
 
-Fetch pattern: `{BASE_URL}/template/prompts/{name}`
+Fetch pattern: `${CLAUDE_PLUGIN_ROOT}/template/prompts/{name}`
 
 After writing, replace `{{THREE_CHECK_COMMAND}}`, `{{TEST_FRAMEWORK}}`, `{{TEST_COMMAND}}`.
 
@@ -76,21 +81,27 @@ After writing, replace `{{THREE_CHECK_COMMAND}}`, `{{TEST_FRAMEWORK}}`, `{{TEST_
 
 ## Hook scripts (§ 2.12)
 
-**Configuration**: fetch `{BASE_URL}/template/hooks/copilot-hooks.json` → `.github/hooks/copilot-hooks.json`
+**All-local mode** (S6 = All-local or per-surface local, and A16 = Yes):
 
-Fetch all files listed in the `hookScripts.shell`, `hookScripts.powershell`, `hookScripts.python`, and `hookScripts.json` arrays from the workspace-index payload prefetched by SETUP.md §2.
+**Configuration**: Copy `${CLAUDE_PLUGIN_ROOT}/template/hooks/copilot-hooks.json` → `.github/hooks/copilot-hooks.json`
+
+Fetch all files listed in the `hookScripts.shell`, `hookScripts.powershell`, `hookScripts.python`, and `hookScripts.json` arrays from the workspace-index payload.
+
+**Plugin-backed mode** (S6 = Plugin-backed or per-surface plugin): Skip. Hooks
+are delivered by the plugin's `hooks/hooks.json` and execute from the plugin
+root. Do not create `.github/hooks/`.
 
 **Bash scripts** → `.github/hooks/scripts/`:
 
-Fetch pattern: `{BASE_URL}/template/hooks/scripts/{name}`
+Source: `${CLAUDE_PLUGIN_ROOT}/hooks/scripts/{name}`
 
 **PowerShell scripts** → `.github/hooks/scripts/`:
 
-Fetch pattern: `{BASE_URL}/template/hooks/scripts/{name}`
+Source: `${CLAUDE_PLUGIN_ROOT}/hooks/scripts/{name}`
 
 **Python support files** → `.github/hooks/scripts/`:
 
-Fetch pattern: `{BASE_URL}/template/hooks/scripts/{name}`
+Source: `${CLAUDE_PLUGIN_ROOT}/hooks/scripts/{name}`
 
 After writing `.sh` files: `chmod +x .github/hooks/scripts/*.sh`
 
@@ -119,6 +130,18 @@ Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today
 ---
 
 ## MCP server configs (§ 2.10)
+
+### Heartbeat delivery (S6 mode-conditional)
+
+- **Plugin-backed**: The heartbeat MCP server is delivered by the plugin via
+  `.mcp.json` at the plugin root. Omit the `heartbeat` entry from
+  `.vscode/mcp.json` entirely.
+- **All-local**: Include the `heartbeat` entry in `.vscode/mcp.json` pointing to
+  `${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py`.
+
+**Invariant**: Exactly one heartbeat server must be active — never zero, never
+both. Plugin-backed mode relies on the plugin's `.mcp.json`; all-local relies on
+the workspace's `.vscode/mcp.json`.
 
 ### Sandbox detection (Linux only)
 
@@ -335,7 +358,11 @@ Also merge extension recommendations from `{BASE_URL}/template/vscode/extensions
 
 ## Version file template (§ 2.13)
 
-Compute section fingerprints and file manifest hashes:
+Compute section fingerprints and file manifest hashes. When ownership mode is
+`plugin-backed`, skip file-manifest entries for surfaces managed by the plugin
+(agents, skills, hook scripts) — those files do not exist locally.
+
+When ownership mode is `all-local`, hash all surfaces as before.
 
 ```bash
 # Section fingerprints
@@ -403,6 +430,15 @@ Omit fingerprint/manifest blocks only if neither `sha256sum` nor Python is avail
 
 X.Y.Z
 Applied: YYYY-MM-DD
+Ownership: plugin-backed | all-local
+
+<!-- ownership-mode
+OWNERSHIP_MODE=plugin-backed|all-local
+AGENTS=plugin|local
+SKILLS=plugin|local
+HOOKS=plugin|local
+HEARTBEAT_MCP=plugin|local
+-->
 
 <!-- section-fingerprints
 §1=<fp> ... §9=<fp>

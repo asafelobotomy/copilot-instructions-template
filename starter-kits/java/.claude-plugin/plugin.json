@@ -2,7 +2,9 @@
   "name": "java-starter-kit",
   "description": "Stack-specific skills and commands for Java projects — Maven/Gradle patterns, JUnit testing, Spring Boot conventions, and dependency management.",
   "version": "1.0.0",
-  "author": "copilot-instructions-template",
+  "author": {
+    "name": "copilot-instructions-template"
+  },
   "license": "MIT",
   "keywords": ["java", "maven", "gradle", "junit", "spring-boot"],
   "category": "starter-kit"

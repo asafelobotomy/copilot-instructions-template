@@ -2,7 +2,9 @@
   "name": "docker-starter-kit",
   "description": "Stack-specific skills and commands for Docker projects — Dockerfile best practices, compose patterns, image security, and multi-stage builds.",
   "version": "1.0.0",
-  "author": "copilot-instructions-template",
+  "author": {
+    "name": "copilot-instructions-template"
+  },
   "license": "MIT",
   "keywords": ["docker", "dockerfile", "compose", "containers"],
   "category": "starter-kit"

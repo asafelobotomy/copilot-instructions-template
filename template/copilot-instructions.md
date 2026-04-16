@@ -1,6 +1,6 @@
 # Copilot Instructions — {{PROJECT_NAME}}
 
-> **Template version**: 0.5.13 <!-- x-release-please-version --> | **Applied**: {{SETUP_DATE}}
+> **Template version**: 0.6.0 <!-- x-release-please-version --> | **Applied**: {{SETUP_DATE}}
 > Living document — self-edit rules in §8.
 >
 > **Models**: each `.github/agents/*.agent.md` pins its model. Codex models are headless-only (no interactive prompts). See [model comparison](https://docs.github.com/en/copilot/reference/ai-models/model-comparison).
@@ -200,7 +200,7 @@ Copilot may edit this file when patterns stabilise. Rules:
 2. **Additive by default** — append to sections; don't restructure them.
 3. **Flag before writing** — describe the change and wait for confirmation on edits to §1–§7.
 4. **Self-update trigger phrases**: "Add this to your instructions", "Remember this for next time" — these add a convention to this file.
-5. **Template updates**: When the user says **"Update your instructions"** (or any variant listed in the Canonical triggers table of `AGENTS.md`), this means: go to the upstream template repository at `https://github.com/asafelobotomy/copilot-instructions-template`, fetch the latest version, compare it against the installed version, and run the update protocol defined in `UPDATE.md`. This is not a request to make arbitrary edits — it is specifically a check-for-upstream-updates command.
+5. **Template updates**: When the user says **"Update your instructions"** (or any variant listed in the Canonical triggers table of `AGENTS.md`), this means: run the update protocol via the Setup agent. The template is delivered as a VS Code Agent Plugin — updates are applied locally from the installed plugin version, not fetched from a remote URL. This is not a request to make arbitrary edits — it is specifically a check-for-upstream-updates command.
 
 ### Attention Budget
 
@@ -227,7 +227,7 @@ Event-triggered health checks that keep the agent aligned with real project stat
 1. Read `HEARTBEAT.md` — follow it strictly. Do not infer tasks from prior sessions.
 2. Run every check in the Checks section. Cross-reference: MEMORY.md (consolidation), TOOLS.md (dependency audit), SOUL.md (reasoning alignment), §10 (settings drift).
 3. If the trigger is **explicit** and the user asked for a retrospective, call `session_reflect` MCP tool and process silently.
-4. If the session is **medium/large**, call `session_reflect` when the Stop hook instructs. Medium/large = one strong signal (8+ files or 30+ minutes) or two supporting (5+ files, 15+ minutes, compaction). Skip for small tasks.
+4. If the session is **medium/large**, call `session_reflect` when the PostToolUse hook instructs (VS Code primary path). On clients that fire the Stop hook (Claude Code / CLI), the Stop handler provides a blocking fallback. Medium/large = one strong signal (8+ files or 30+ minutes) or two supporting (5+ files, 15+ minutes, compaction). Skip for small tasks.
 5. Update Pulse: `HEARTBEAT_OK` if all checks pass; prepend `[!]` with a one-line alert for each failure.
 6. Append a row to History (keep last 5).
 7. Write observations to Agent Notes for the next heartbeat.
@@ -238,7 +238,7 @@ Event-triggered health checks that keep the agent aligned with real project stat
 
 Hooks are deterministic shell commands executed by VS Code at specific agent lifecycle points. Unlike instructions (soft guidance), hooks guarantee outcomes.
 
-Hook configuration lives in `.github/hooks/copilot-hooks.json`. VS Code supports eight lifecycle events. The template wires all eight events using deterministic scripts:
+Hook configuration lives in `.github/hooks/copilot-hooks.json` (all-local mode) or is delivered by the agent plugin (plugin-backed mode). VS Code supports eight lifecycle events. The template wires all eight events using deterministic scripts:
 
 | Event | Primary script(s) | Purpose |
 |-------|-------------------|---------|
@@ -347,7 +347,7 @@ The Graduated Trust Model assigns verification behaviour based on path patterns.
 
 > Set {{SETUP_DATE}}. Update via §8.
 
-*(Populated from setup interview answers. See `SETUP.md` for question definitions.)*
+*(Populated from setup interview answers. See `template/setup/interview.md` in the plugin for question definitions.)*
 
 ### Thinking Effort Configuration
 
@@ -383,7 +383,7 @@ Key rules (always loaded):
 
 ## §12 — Skill Protocol
 
-Skills are reusable markdown-based behavioural instructions following the [Agent Skills](https://agentskills.io) open standard. Activate the **skill-management** skill (`.github/skills/skill-management/SKILL.md`) for the full discovery and activation workflow.
+Skills are reusable markdown-based behavioural instructions following the [Agent Skills](https://agentskills.io) open standard. Activate the **skill-management** skill for the full discovery and activation workflow.
 
 Key rules (always loaded):
 
@@ -435,4 +435,4 @@ Each specialist agent may record significant findings in a diary file under `.co
 
 ---
 
-*See also: `.github/agents/` (model-pinned VS Code agents) · `.github/hooks/` (agent lifecycle hooks) · `.copilot/workspace/` (session identity) · `.copilot/tools/` (reusable tool library) · `.github/skills/` (reusable skill library) · `.vscode/mcp.json` (MCP server configuration) · `UPDATE.md` (update protocol) · `MIGRATION.md` (per-version migration registry) · `AGENTS.md` (AI agent entry point)*
+*See also: agent definitions (plugin or `.github/agents/`) · hook scripts (plugin or `.github/hooks/`) · `.copilot/workspace/` (session identity) · `.copilot/tools/` (reusable tool library) · skills (plugin or `.github/skills/`) · `.vscode/mcp.json` (MCP server configuration) · `AGENTS.md` (AI agent entry point)*

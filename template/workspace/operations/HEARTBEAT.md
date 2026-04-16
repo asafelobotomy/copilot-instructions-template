@@ -46,7 +46,7 @@ Run each check; prepend `[!]` to Pulse if any fails:
 
 Retrospective runs autonomously via the `session_reflect` MCP tool. Do not prompt the user.
 
-The Stop hook blocks the session and instructs you to call `session_reflect` when a significant task is detected (one strong signal: 8+ modified files or 30+ minutes active; or two supporting signals: 5+ modified files, 15+ minutes, context compaction).
+The PostToolUse hook instructs you to call `session_reflect` when a significant task is detected (one strong signal: 8+ modified files or 30+ minutes active; or two supporting signals: 5+ modified files, 15+ minutes, context compaction). On clients that fire the Stop hook (Claude Code / CLI), the Stop handler provides a blocking fallback for the same check.
 
 When `session_reflect` returns, process its output silently:
 
