@@ -8,13 +8,13 @@ compatibility: ">=1.4"
 
 > Skill metadata: version "1.1"; license MIT; tags [tools, automation, scripting, toolbox, plugins, mcp-apps]; compatibility ">=1.4"; recommended tools [codebase, editFiles, runCommands, fetch].
 
-When a task requires automation, a scripted command sequence, or a repeatable utility, follow this decision tree before writing anything ad-hoc.
+When a task requires automation or a repeatable utility, follow this decision tree before writing anything ad-hoc.
 
 ## When to use
 
-- The user asks to "build a tool", "create a script", or "automate" something
-- You need a repeatable utility and want to check if one already exists
-- You are evaluating whether to save a script to the toolbox
+- User asks to "build a tool", "create a script", or "automate" something
+- You need a repeatable utility and want to check if one exists
+- Evaluating whether to save a script to the toolbox
 
 ## Decision tree
 
@@ -89,22 +89,12 @@ Files: `INDEX.md` (catalogue) · `*.sh` · `*.py` · `*.js`/`*.ts` · `*.mcp.jso
 
 ## Tool quality rules
 
-**Naming** — Tool names must be a verb-noun kebab phrase describing the action (`count-exports`, `sync-schema`), not a noun or generic label (`exports`, `utils`).
+**Naming** — Verb-noun kebab phrase (`count-exports`, `sync-schema`), not nouns or generic labels.
 
-**Risk tier**:
+**Risk tier**: `safe` (read-only/idempotent, invoke freely) | `destructive` (deletes/overwrites/writes remote; **must confirm with user**).
 
-- `safe` — read-only or fully idempotent; invoke without confirmation
-- `destructive` — deletes files, overwrites data, or writes to remote systems; **must pause and confirm with the user before execution**, regardless of session autonomy level
-
-**Other rules**:
-
-- Tools must be idempotent where possible
-- Tools must not hardcode project-specific paths, names, or secrets — accept arguments
-- Retire unused tools: mark `[DEPRECATED]` in INDEX.md; counts as W1 (Overproduction)
-- Tools follow the same LOC baseline as source code (§3 hard limit: 400 lines)
-- Output efficiency — prefer targeted reads (`grep`, `head`, `jq`) over raw dumps; return the minimum token payload the callsite requires.
-- For interactive workflows (forms, tabular drill-down, visual states), prefer MCP Apps output over plain text when the runtime supports it.
+**Other rules**: idempotent where possible; no hardcoded paths/names/secrets (accept arguments); retire unused tools with `[DEPRECATED]` in INDEX.md (W1); LOC ≤ 400; prefer targeted reads over raw dumps; prefer MCP Apps output for interactive workflows.
 
 ## Subagent tool use
 
-Subagents inherit this protocol fully. A subagent may build or adapt a tool independently. To **save** a tool to the toolbox, the subagent must first flag the proposal to the parent agent, which confirms before any write to `.copilot/tools/`.
+Subagents inherit this protocol. A subagent may build or adapt tools independently but must flag toolbox saves to the parent agent for confirmation.

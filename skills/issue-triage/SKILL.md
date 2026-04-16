@@ -8,18 +8,17 @@ compatibility: ">=1.4"
 
 > Skill metadata: version "1.1"; license MIT; tags [triage, issues, github, lean, kaizen, bug, feature-request]; compatibility ">=1.4"; recommended tools [codebase, githubRepo, runCommands].
 
-Systematically triage a GitHub issue using Lean waste categories, severity classification, and structured output — producing an actionable recommendation and a ready-to-post comment.
+Systematically triage a GitHub issue using Lean waste categories, severity classification, and structured output.
 
 ## When to use
 
-- The user says "triage this issue", "classify this bug", or "triage #NNN"
-- A new issue has been opened and needs a first-response classification
-- A batch of issues needs sorting before sprint planning
+- User says "triage this issue", "classify this bug", or "triage #NNN"
+- New issue needs first-response classification, or batch needs sorting
 
 ## When NOT to use
 
-- The issue is already triaged and has labels/milestone assigned — use Review Mode instead
-- The user wants a full root-cause analysis (that is a debugging task, not triage)
+- Issue already triaged with labels/milestone — use Review Mode
+- Full root-cause analysis needed (debugging task, not triage)
 
 ## Steps
 
@@ -75,7 +74,7 @@ Systematically triage a GitHub issue using Lean waste categories, severity class
    ```
 
 7. **Verify** — Confirm:
-   - Severity matches the impact described in step 2
-   - Waste category is justified by evidence from the codebase (not guessed)
-   - The drafted comment is factual and does not speculate beyond the code read
-   - No file content claimed without being read this session (§4 read-before-claiming)
+   - Severity matches impact from step 2
+   - Waste category justified by codebase evidence
+   - Comment is factual, no speculation beyond code read
+   - No file content claimed without being read this session

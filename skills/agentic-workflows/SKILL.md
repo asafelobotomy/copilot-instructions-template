@@ -8,36 +8,35 @@ compatibility: ">=3.2"
 
 > Skill metadata: version "1.0"; license MIT; tags [github-actions, automation, ci, agents, pull-requests]; compatibility ">=3.2"; recommended tools [codebase, editFiles, runCommands, githubRepo].
 
-Set up GitHub Actions workflows that invoke Copilot coding agents to automate tasks like issue resolution, PR creation, and code review — triggered by GitHub events rather than interactive chat.
+Set up GitHub Actions workflows that invoke Copilot coding agents to automate issue resolution, PR creation, and code review via GitHub events.
 
 ## When to use
 
-- The user asks to "automate issue handling", "set up agentic workflows", or "use Copilot in CI"
-- The user wants agents to respond to GitHub events (issues, PRs, comments)
-- The user says "auto-fix issues", "agent-driven PRs", or "coding agent in Actions"
+- User asks to "automate issue handling", "set up agentic workflows", or "use Copilot in CI"
+- User wants agents responding to GitHub events (issues, PRs, comments)
 
 ## When NOT to use
 
-- The user wants interactive Copilot chat — that is the default experience, not a workflow
-- The user wants to fix a failing CI pipeline — use the **fix-ci-failure** skill instead
-- The CI system is not GitHub Actions — this skill is GitHub-specific
+- Interactive Copilot chat (default experience, not a workflow)
+- Fixing a failing CI pipeline — use **fix-ci-failure** skill
+- Non-GitHub-Actions CI
 
 ## Prerequisites
 
-- GitHub Copilot must be enabled for the repository or organization
-- The repository must use GitHub Actions
-- The `copilot-setup-steps.yml` workflow must exist (provides agent environment setup)
-- Appropriate permissions must be configured on the workflow (`contents: write`, `pull-requests: write`, `issues: read`)
+- GitHub Copilot enabled for the repository/organization
+- Repository uses GitHub Actions
+- `copilot-setup-steps.yml` exists (provides agent environment)
+- Workflow permissions configured (`contents: write`, `pull-requests: write`, `issues: read`)
 
 ## Concepts
 
 ### Copilot coding agent
 
-A headless Copilot session triggered by a GitHub Actions workflow. It runs without interactive prompts, using a Codex-class model. The agent reads the issue or event context, plans a fix, implements it, and opens a PR.
+Headless Copilot session triggered by a workflow. Reads issue/event context, plans a fix, implements it, and opens a PR using a Codex-class model.
 
 ### copilot-setup-steps.yml
 
-A reusable workflow that configures the agent's environment (runtime, dependencies, tools). It runs before the agent starts. The template ships one at `template/copilot-setup-steps.yml`.
+Reusable workflow configuring the agent's environment (runtime, deps, tools). Runs before the agent. Template at `template/copilot-setup-steps.yml`.
 
 ### Event triggers
 
@@ -89,22 +88,18 @@ A reusable workflow that configures the agent's environment (runtime, dependenci
 
    Adjust the trigger and condition based on the user's choice in step 2.
 
-4. **Configure guardrails** — Ensure the workflow respects project conventions:
-   - The agent inherits `.github/copilot-instructions.md` automatically
-   - Add a label filter to prevent accidental triggers
-   - Set appropriate `permissions` — principle of least privilege
-   - Consider adding a `concurrency` group to prevent parallel agent runs on the same issue
+4. **Configure guardrails** — Agent inherits `.github/copilot-instructions.md` automatically. Add label filter, least-privilege `permissions`, and optional `concurrency` group.
 
-5. **Test the workflow** — Create a test issue, apply the trigger label (or comment), and verify the agent picks it up. Check the Actions tab for the workflow run.
+5. **Test** — Create a test issue, apply trigger label/comment, verify in Actions tab.
 
-6. **Document the trigger** — Add the trigger phrase and label to `AGENTS.md` so team members know how to invoke the agent.
+6. **Document** — Add trigger phrase and label to `AGENTS.md`.
 
 ## Security considerations
 
-- Never grant `permissions: write-all` — scope to exactly what the agent needs
-- Use label-based triggers with restricted label permissions to prevent unauthorized invocations
-- Review agent-created PRs before merging — automated does not mean trusted
-- Consider branch protection rules that require human approval for agent PRs
+- Never grant `permissions: write-all` — scope exactly
+- Restrict label permissions to prevent unauthorized invocations
+- Review agent PRs before merging — automated ≠ trusted
+- Consider branch protection requiring human approval
 
 ## Waste categories
 

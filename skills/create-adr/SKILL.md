@@ -12,33 +12,24 @@ Create a structured ADR document that captures the context, decision, consequenc
 
 ## When to use
 
-- The user asks to "create an ADR", "document this decision", or "record why we chose X"
-- A significant technology, framework, pattern, or architectural choice was just made
-- A design decision needs to be preserved for future maintainers and AI agents
-- A rejected option needs to be documented to prevent re-litigating it later
+- User asks to "create an ADR", "document this decision", or "record why we chose X"
+- A significant architectural choice was made or a rejected option needs documenting
 
 ## When NOT to use
 
-- Trivial implementation details (naming, minor refactors) — those belong in commit messages
-- Decisions that are already obvious from the code itself
-- A full project design doc is needed (that is a specification, not an ADR)
+- Trivial details (naming, minor refactors) — use commit messages
+- Obvious-from-code decisions
+- Full design docs needed (that’s a specification, not an ADR)
 
 ## Steps
 
-1. **Gather inputs** — Collect from the user (or infer from conversation context):
-   - Decision title (verb phrase: "Use X for Y")
-   - Context: the problem, constraints, and forces driving the decision
-   - Decision: what was chosen and why
-   - Alternatives: what else was considered and why each was rejected
-   - Stakeholders: teams or roles affected
+1. **Gather inputs** — Collect or infer: decision title (verb phrase), context (problem/constraints), decision (what and why), alternatives (rejected and why), stakeholders. Ask if required inputs are missing.
 
-   If any required input is missing and cannot be inferred, ask before proceeding.
+2. **Determine sequence number** — List `docs/adr/` (create if absent). Next 4-digit number.
 
-2. **Determine sequence number** — List existing files in `docs/adr/` (create directory if absent). Use the next 4-digit number (`0001`, `0002`, …).
+3. **Write the ADR** — Save to `docs/adr/adr-NNNN-<title-slug>.md` using template below.
 
-3. **Write the ADR** — Save to `docs/adr/adr-NNNN-<title-slug>.md` using the template below. Replace all bracketed placeholders.
-
-4. **Confirm** — Show the created file path to the user.
+4. **Confirm** — Show the created file path.
 
 ## ADR Template
 

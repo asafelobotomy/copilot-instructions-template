@@ -12,32 +12,23 @@ Perform a structured pull request review using §5 Review Mode conventions and �
 
 ## When to use
 
-- The user asks to "review this PR", "review these changes", or "check my diff"
-- The Review agent hands off a PR-scoped review task
-- A pull request needs a quality gate before merge
+- User asks to "review this PR", "review these changes", or "check my diff"
+- Review agent hands off a PR-scoped task, or PR needs quality gate before merge
 
 ## When NOT to use
 
-- The user wants a full architectural review (use Review Mode directly with the full codebase)
-- The changes are a single-line typo fix (overkill — just approve)
+- Full architectural review needed (use Review Mode with full codebase)
+- Single-line typo fix (just approve)
 
 ## Steps
 
-1. **Get the diff** — Read the PR diff or the set of changed files. If working locally, use `git diff main...HEAD` or the equivalent for the target branch.
+1. **Get the diff** — Read PR diff or changed files. Locally: `git diff main...HEAD`.
 
-2. **Scan each changed file** — For every file in the diff, read the full file (not just the diff hunk) to understand context.
+2. **Scan each changed file** — Read full files (not just hunks) for context.
 
-3. **Classify each finding** — For every issue found, record:
+3. **Classify each finding** — `[severity] | [file:line] | [waste category] | [description]`
 
-   ```text
-   [severity] | [file:line] | [waste category] | [description]
-   ```
-
-   Severity levels:
-   - `critical` — blocks merge; security flaw, data loss risk, or broken functionality
-   - `major` — should fix before merge; logic error, missing test, or significant smell
-   - `minor` — nice to fix; style issue, naming, minor inefficiency
-   - `advisory` — informational; suggestion for future improvement
+   Severity: `critical` (blocks merge), `major` (fix before merge), `minor` (nice to fix), `advisory` (informational).
 
    Waste categories (§6) — full list W1–W16; most common in PR review:
 
@@ -56,12 +47,9 @@ Perform a structured pull request review using §5 Review Mode conventions and �
 
    For W9–W10, W12–W13, W15–W16 definitions, see §6 of `.github/copilot-instructions.md`.
 
-4. **Check test coverage** — Verify that new or changed behaviour has corresponding tests. Flag untested paths as `major | W7 Defects`.
+4. **Check test coverage** — New/changed behaviour must have tests. Flag untested paths as `major | W7`.
 
-5. **Check for baseline breaches** — Compare against §2 baselines:
-   - File LOC limits (warn / hard)
-   - Dependency budget (if deps were added)
-   - Type errors (must be zero)
+5. **Check baselines** — §2 baselines: file LOC limits, dependency budget, zero type errors.
 
 6. **Produce the report** — Format as:
 

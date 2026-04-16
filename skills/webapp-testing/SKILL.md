@@ -8,32 +8,20 @@ compatibility: ">=2.0"
 
 > Skill metadata: version "2.1"; license MIT; tags [testing, e2e, playwright, browser, ci, browser-tools, mcp]; compatibility ">=2.0"; recommended tools [codebase, editFiles, runCommands].
 
-Set up browser testing for a web application. This skill offers three paths:
+Three paths — choose by need:
 
-- **Path A — Built-in browser tools** (VS Code 1.110+): lightweight, interactive verification using VS Code's agentic browser tools. No dependencies to install. Ideal for development-time checks and exploratory testing.
-- **Path B — Playwright**: full end-to-end testing framework with CI integration. Ideal for automated regression testing in CI/CD pipelines.
-- **Path C — Playwright MCP server**: expose Playwright browser automation as MCP tools. Ideal for agent-driven testing workflows that need Playwright capabilities without a full test suite.
+| Factor | A: Browser tools | B: Playwright | C: Playwright MCP |
+|--------|-----------------|---------------|-------------------|
+| Setup | Zero — built-in | Moderate — install + config | Low — MCP server config |
+| CI | No | Yes — headless | No |
+| Persistence | Conversational | Test files in repo | On-demand via MCP |
+| Browsers | Chromium | Chromium + Firefox + WebKit | Chromium |
+| Best for | Dev-time checks, debugging | Regression testing, PR gates | Agent-driven automation |
+| Requires | `workbench.browser.enableChatTools: true` | Node.js + Playwright | `@playwright/mcp` |
 
-## Decision criteria
+Use A for interactive verification, B for CI, C for agent-driven browser control. They complement each other.
 
-| Factor | Path A (Browser tools) | Path B (Playwright) | Path C (Playwright MCP) |
-|--------|----------------------|---------------------|------------------------|
-| **Setup effort** | Zero — built-in, no install | Moderate — install + configure | Low — add MCP server config |
-| **CI integration** | No — interactive only | Yes — runs headless in CI | No — agent-driven only |
-| **Test persistence** | No — conversational | Yes — test files committed to repo | No — on-demand via MCP tools |
-| **Browser coverage** | Chromium only | Chromium + Firefox + WebKit | Chromium (default) |
-| **Best for** | Quick verification, dev-time checks, debugging | Regression testing, PR gates, cross-browser | Agent-driven automation, scraping, form testing |
-| **Requires** | `workbench.browser.enableChatTools: true` (Preview) | Node.js + Playwright package | `@playwright/mcp` package |
-
-**Recommendation**: Use Path A for interactive verification during development, Path B for CI, Path C when you want Playwright browser control available as MCP tools to agents. They complement each other.
-
-### Maintainer note
-
-Use Path A when the agent only needs to inspect or click through a page during a live session in VS Code. It is the cheapest option and keeps browser access local to the current conversation.
-
-Use Path C when website navigation should become part of the repo's repeatable agent tooling. Prefer it for agents that need reliable page navigation, form automation, or structured browser actions across Copilot, MCP-aware subagents, and CLI sessions.
-
-Do not use Path C as a replacement for committed regression tests. When the behavior needs CI coverage or long-term safety, add Path B as well.
+**Path guidance**: A when the agent only needs to inspect or click a page during a live VS Code session. C when browser navigation should be part of repeatable agent tooling (form automation, structured actions across Copilot/MCP-aware subagents/CLI). C does not replace committed regression tests — add B when CI coverage is needed.
 
 ## When to activate
 
@@ -45,65 +33,30 @@ Do not use Path C as a replacement for committed regression tests. When the beha
 
 ## Path A — Built-in Browser Tools
 
-VS Code 1.110+ provides 10 agentic browser tools that allow Copilot to interact with web pages directly. These tools are experimental and require opt-in.
+VS Code 1.110+ provides agentic browser tools (Preview, opt-in).
 
-### A1. Enable browser tools
-
-The user must enable the setting:
+### A1. Enable
 
 ```json
-{
-  "workbench.browser.enableChatTools": true
-}
+{ "workbench.browser.enableChatTools": true }
 ```
 
-> **Note**: This is a Preview feature. It may change or be removed in future VS Code releases.
+### A2. Available tools
 
-### A2. Available browser tools
+`openBrowserPage`, `navigatePage`, `readPage`, `screenshotPage`, `clickElement`, `hoverElement`, `dragElement`, `typeInPage`, `handleDialog`, `runPlaywrightCode`
 
-| Tool | Purpose |
-|------|--------|
-| `openBrowserPage` | Open a URL in a managed browser |
-| `navigatePage` | Navigate to a new URL |
-| `readPage` | Read page content (text, links, forms, structure) |
-| `screenshotPage` | Capture a screenshot for visual verification |
-| `clickElement` | Click a button, link, or interactive element |
-| `hoverElement` | Hover over an element |
-| `dragElement` | Drag and drop an element |
-| `typeInPage` | Type text into input fields |
-| `handleDialog` | Accept or dismiss browser dialogs |
-| `runPlaywrightCode` | Run custom Playwright code snippets in the browser context |
+### A3. Workflow
 
-### A3. Interactive verification workflow
+1. Start the dev server
+2. `openBrowserPage` → app URL
+3. `readPage` → verify content
+4. `screenshotPage` → visual check
+5. `clickElement` / `typeInPage` → interact with forms, navigation
+6. `readPage` after interactions → verify state changes
 
-1. Start the dev server (manually or via terminal)
-2. Use `openBrowserPage` to open the app URL
-3. Use `readPage` to verify page content loads correctly
-4. Use `screenshotPage` for visual verification
-5. Use `clickElement` / `typeInPage` to interact with forms, navigation
-6. Use `readPage` after interactions to verify state changes
+### A4. Limitations
 
-### A4. Example verification session
-
-```text
-User: "Check if my login page works"
-Agent:
-  1. openBrowserPage("http://localhost:3000/login")
-  2. readPage() → verify login form elements exist
-  3. typeInPage(selector: "#email", text: "test@example.com")
-  4. typeInPage(selector: "#password", text: "testpass")
-  5. clickElement(selector: "button[type=submit]")
-  6. readPage() → verify redirect or error message
-  7. screenshotPage() → capture visual state
-```
-
-### A5. Limitations
-
-- Chromium only (no Firefox or WebKit)
-- Interactive — results are conversational, not persisted as test files
-- Cannot run in CI/CD pipelines
-- Preview feature — may have stability issues
-- Some dynamic content may not be fully accessible
+- Chromium only, interactive (not persisted), no CI, Preview stability caveats, some dynamic content may be inaccessible
 
 ---
 
@@ -111,21 +64,17 @@ Agent:
 
 ### B1. Detect the web framework
 
-Scan the project for framework signals:
-
-| Signal | Framework | Dev server command |
-|--------|-----------|-------------------|
+| Signal | Framework | Dev command |
+|--------|-----------|------------|
 | `next.config.*`, `"next"` in deps | Next.js | `npx next dev` |
-| `vite.config.*`, `"vite"` in deps | Vite (React/Vue/Svelte) | `npx vite` |
+| `vite.config.*`, `"vite"` in deps | Vite | `npx vite` |
 | `nuxt.config.*`, `"nuxt"` in deps | Nuxt | `npx nuxt dev` |
-| `angular.json`, `"@angular/core"` in deps | Angular | `npx ng serve` |
-| `svelte.config.*`, `"@sveltejs/kit"` in deps | SvelteKit | `npx vite dev` |
-| `remix.config.*`, `"@remix-run/dev"` in deps | Remix | `npx remix dev` |
+| `angular.json`, `"@angular/core"` | Angular | `npx ng serve` |
+| `svelte.config.*`, `"@sveltejs/kit"` | SvelteKit | `npx vite dev` |
+| `remix.config.*`, `"@remix-run/dev"` | Remix | `npx remix dev` |
 | `astro.config.*`, `"astro"` in deps | Astro | `npx astro dev` |
 
-Also check `package.json` scripts for `"dev"`, `"start"`, or `"serve"` commands.
-
-If no framework is detected, ask the user how to start the development server.
+Also check `package.json` scripts for `"dev"`, `"start"`, or `"serve"`. If no framework detected, ask the user.
 
 ### B2. Install Playwright
 
@@ -133,26 +82,9 @@ If no framework is detected, ask the user how to start the development server.
 npm init playwright@latest -- --quiet
 ```
 
-This creates:
+Creates `playwright.config.ts`, `tests/`, `tests-examples/`. Alternatives: `pnpm create playwright --quiet`, `yarn create playwright --quiet`, `bunx create-playwright --quiet`.
 
-- `playwright.config.ts` — configuration file
-- `tests/` — test directory
-- `tests-examples/` — example tests (can be deleted)
-
-If the user prefers a different package manager:
-
-```bash
-# pnpm
-pnpm create playwright --quiet
-
-# yarn
-yarn create playwright --quiet
-
-# bun
-bunx create-playwright --quiet
-```
-
-### B3. Configure Playwright
+### B3. Configure
 
 Update `playwright.config.ts` for the detected framework:
 
@@ -189,7 +121,7 @@ Replace `<PORT>` and `<DEV_SERVER_COMMAND>` with the detected values.
 
 ### B4. Write the first test
 
-Create `tests/e2e/smoke.spec.ts` — a smoke test that verifies the app loads:
+Create `tests/e2e/smoke.spec.ts`:
 
 ```typescript
 import { test, expect } from "@playwright/test";
@@ -197,20 +129,18 @@ import { test, expect } from "@playwright/test";
 test("home page loads successfully", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveTitle(/.+/);
-  // Verify the page is not an error page
   await expect(page.locator("body")).not.toContainText("500");
   await expect(page.locator("body")).not.toContainText("Internal Server Error");
 });
 
 test("navigation is functional", async ({ page }) => {
   await page.goto("/");
-  // Verify at least one link or navigation element exists
   const links = page.locator("a[href]");
   await expect(links.first()).toBeVisible();
 });
 ```
 
-If the project has a login page, authentication flow, or other critical paths identified in Step 1, write targeted tests for those too.
+Add targeted tests for login pages, auth flows, or other critical paths identified during detection.
 
 ### B5. Verify tests pass
 
@@ -218,17 +148,7 @@ If the project has a login page, authentication flow, or other critical paths id
 npx playwright test
 ```
 
-Expected output:
-
-- All tests pass on at least one browser
-- No flaky tests (run twice to confirm)
-- HTML report is generated (`npx playwright show-report`)
-
-If tests fail:
-
-- Check that the dev server starts correctly
-- Verify the `baseURL` matches the actual dev server port
-- Ensure selectors match actual page elements
+All tests should pass on at least one browser with no flaky results (run twice to confirm). Use `npx playwright show-report` for the HTML report. If tests fail, check dev server startup, `baseURL` port, and selector accuracy.
 
 ### B6. Add CI workflow
 
@@ -289,9 +209,9 @@ jobs:
 
 ## Path C — Playwright MCP Server
 
-The `@playwright/mcp` package exposes Playwright browser automation as MCP tools, allowing agents to navigate pages, take screenshots, click elements, fill forms, and execute JavaScript — all through the MCP protocol.
+`@playwright/mcp` exposes Playwright browser automation as MCP tools for agent-driven navigation, screenshots, form filling, and JS execution.
 
-### C1. Install and configure
+### C1. Configure
 
 Add to `.vscode/mcp.json`:
 
@@ -312,33 +232,25 @@ Add to `.vscode/mcp.json`:
 }
 ```
 
-Remove `"disabled": true` when you want the server to start. If the repo uses
-agent-level `mcp-servers` allowlists, add `playwright` only to the agents that
-should be allowed to drive websites.
+Remove `"disabled": true` to start. If the repo uses agent-level `mcp-servers` allowlists, add `playwright` only to agents that need browser access.
 
 ### C2. Available MCP tools
 
-The server exposes tools including: `browser_navigate`, `browser_screenshot`, `browser_click`, `browser_type`, `browser_select_option`, `browser_hover`, `browser_evaluate`, `browser_handle_dialog`, `browser_tab_list`, `browser_tab_create`, `browser_tab_close`, `browser_pdf_save`, `browser_console_messages`.
+`browser_navigate`, `browser_screenshot`, `browser_click`, `browser_type`, `browser_select_option`, `browser_hover`, `browser_evaluate`, `browser_handle_dialog`, `browser_tab_list`, `browser_tab_create`, `browser_tab_close`, `browser_pdf_save`, `browser_console_messages`
 
 ### C3. When to prefer over Path A
 
-- You need Playwright's engine (more reliable element targeting, network interception)
-- The agent workflow benefits from structured MCP tool calls rather than ad-hoc browser tool usage
-- You want the same automation capabilities available to Copilot CLI or external agents via MCP bridge
+- Need Playwright's engine (reliable element targeting, network interception)
+- Structured MCP tool calls preferred over ad-hoc browser tools
+- Same automation needed across Copilot CLI or external agents via MCP bridge
 
 ### C4. Limitations
 
-- No built-in CI integration (use Path B for CI)
-- Tests are not persisted as files — they run on-demand through agent interaction
-- Requires Node.js runtime for the MCP server process
+No CI integration (use Path B), tests not persisted as files, requires Node.js for the MCP server process.
 
 ## Verify
 
-- [ ] Path A (browser tools): `workbench.browser.enableChatTools` is enabled when using built-in tools
-- [ ] Path A (browser tools): page opens, key action works, and a screenshot is captured
-- [ ] Path B (Playwright): `npx playwright test` passes on at least Chromium
-- [ ] Path B (Playwright): CI workflow file is valid YAML (`actionlint .github/workflows/playwright.yml`)
-- [ ] Path B (Playwright): `.gitignore` excludes Playwright artifacts
-- [ ] Path B (Playwright): `package.json` has `test:e2e` script
-- [ ] Path C (Playwright MCP): `@playwright/mcp` entry exists in `.vscode/mcp.json`
-- [ ] Path C (Playwright MCP): `browser_navigate` tool is available after server starts
+- [ ] Path A: `workbench.browser.enableChatTools` enabled; page opens, action works, screenshot captured
+- [ ] Path B: `npx playwright test` passes on at least Chromium
+- [ ] Path B: CI workflow is valid YAML; `.gitignore` excludes artifacts; `package.json` has `test:e2e`
+- [ ] Path C: `@playwright/mcp` entry in `.vscode/mcp.json`; `browser_navigate` available after start

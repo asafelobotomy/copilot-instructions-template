@@ -8,11 +8,9 @@ compatibility: ">=1.4"
 
 > Skill metadata: version "1.1"; license MIT; tags [skills, workflow, discovery, management]; compatibility ">=1.4"; recommended tools [codebase, editFiles, fetch].
 
-Skills are reusable markdown-based **behavioural instructions** that teach the agent *how* to perform a specific workflow. Unlike tools (§11) which are executable scripts, skills are declarative — they shape the agent's approach rather than running code.
+Skills are reusable markdown-based **behavioural instructions** that teach the agent *how* to perform a workflow. Unlike tools (§11) which are executable scripts, skills are declarative. They follow the [Agent Skills](https://agentskills.io) open standard: `SKILL.md` with YAML frontmatter (`name`, `description`) plus step-by-step instructions.
 
-Skills follow the [Agent Skills](https://agentskills.io) open standard. Each skill is a `SKILL.md` file with minimal YAML frontmatter (`name`, `description`) plus a markdown body that includes a `Skill metadata` note and step-by-step workflow instructions.
-
-Use the `description` field as the discovery surface. Do not rely on custom top-level keys such as `stacks`; VS Code does not use them when selecting a skill.
+Use `description` as the discovery surface. Do not rely on custom keys like `stacks`; VS Code ignores them.
 
 ## When to use
 
@@ -55,19 +53,17 @@ Task requires a workflow
 | 6 | Extension `chatSkills` contribution | Extension — VS Code extensions contributing skills via `package.json` |
 | 7 | Organization-level agents | Org — published at GitHub org level for all members |
 
-> **Custom paths**: Use the `chat.skillsLocations` VS Code setting to add custom directories for skill discovery beyond the default locations. Keep the legacy `chat.agentSkillsLocations` setting in sync when you need compatibility with VS Code builds that still read the older key. Useful for sharing skills across projects or keeping them in a central location.
+> **Custom paths**: Use `chat.skillsLocations` to add custom directories. Keep legacy `chat.agentSkillsLocations` in sync for older VS Code builds.
 
 ## Visibility controls
 
-Control how each skill is accessed via SKILL.md frontmatter:
-
 | Setting | `/` menu | Auto-load | Use case |
 |---------|----------|-----------|----------|
-| Default (both omitted) | Yes | Yes | General-purpose skills |
-| `user-invocable: false` | No | Yes | Background knowledge skills the model loads when relevant |
-| `disable-model-invocation: true` | Yes | No | Skills you only want to run on demand |
-| Both set | No | No | Disabled skills |
+| Default | Yes | Yes | General-purpose |
+| `user-invocable: false` | No | Yes | Background knowledge |
+| `disable-model-invocation: true` | Yes | No | On-demand only |
+| Both set | No | No | Disabled |
 
 ## Subagent skill use
 
-Subagents inherit this protocol fully. A subagent may read and follow any project or personal skill. To **create** a new skill, the subagent must flag the proposal to the parent agent, which confirms before any write to `.github/skills/`.
+Subagents inherit this protocol. A subagent may read and follow any skill but must flag new skill creation to the parent agent for confirmation.

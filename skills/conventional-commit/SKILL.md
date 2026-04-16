@@ -18,8 +18,8 @@ Write a well-structured commit message following the [Conventional Commits](http
 
 ## When NOT to use
 
-- The user has their own commit message format documented in §10 of their project's Copilot instructions
-- The project uses a different commit convention (check §4 and §10 of the project's Copilot instructions first)
+- Project has its own commit format in §10 of Copilot instructions
+- Project uses a different convention (check §4 and §10 first)
 
 ## Steps
 
@@ -40,23 +40,13 @@ Write a well-structured commit message following the [Conventional Commits](http
    | `ci` | CI configuration changes |
    | `chore` | Maintenance tasks that don't modify src or test files |
 
-3. **Determine the scope** — Identify the primary area affected (e.g., `auth`, `api`, `ci`, `docs`). Use the directory name or module name. Omit scope if the change spans many areas.
+3. **Determine the scope** — Primary area affected (directory or module name). Omit if change spans many areas.
 
-4. **Write the subject line** — Format: `<type>(<scope>): <imperative summary>`
-   - Use imperative mood ("add", not "added" or "adds")
-   - Lowercase first letter after the colon
-   - No period at the end
-   - Maximum 72 characters
+4. **Write the subject line** — `<type>(<scope>): <imperative summary>`. Imperative mood, lowercase after colon, no period, ≤72 chars.
 
-5. **Write the body** (if the change is non-trivial):
-   - Blank line after the subject
-   - Explain *what* changed and *why* (not *how* — the diff shows how)
-   - Wrap at 72 characters
-   - Reference issue numbers if applicable: `Fixes #123`, `Closes #456`
+5. **Write the body** (non-trivial changes): blank line after subject, explain *what* and *why* (not *how*), wrap at 72 chars, reference issues (`Fixes #123`).
 
-6. **Add breaking change footer** (if applicable):
-   - Add `!` after the type/scope: `feat(api)!: remove v1 endpoints`
-   - Add footer: `BREAKING CHANGE: <description of what breaks and migration path>`
+6. **Breaking change** (if applicable): `!` after type/scope + `BREAKING CHANGE: <description and migration path>` footer.
 
 7. **Present the message** — Show the complete commit message for user review:
 
@@ -92,9 +82,7 @@ Write a well-structured commit message following the [Conventional Commits](http
 
 ## Co-author attribution
 
-VS Code 1.110+ supports `git.addAICoAuthor` (enabled by default), which automatically appends a `Co-authored-by: GitHub Copilot` trailer to commits made with AI assistance. If this setting is enabled, the trailer is added automatically — you do not need to include it manually in the commit message.
-
-To check or change the setting: search for `git.addAICoAuthor` in VS Code Settings.
+VS Code 1.110+ `git.addAICoAuthor` (enabled by default) auto-appends `Co-authored-by: GitHub Copilot`. Check/change in VS Code Settings.
 
 ## Verify
 

@@ -12,80 +12,36 @@ Review the current project's test coverage posture and recommend what to test ne
 
 ## When to use
 
-- The user asks to "review my tests", "check test coverage", or "what tests should I add"
-- The user wants help identifying untested or weakly tested code
-- The user wants CI workflow recommendations for coverage and test quality
+- User asks to "review my tests", "check test coverage", or "what tests should I add"
+- User wants help identifying untested code or CI coverage recommendations
 
 ## When NOT to use
 
-- The user already asked for a specific test file to be written
-- The task is only to fix a single failing test
+- User asked for a specific test file to be written
+- Task is to fix a single failing test
 
 ## Steps
 
-1. **Discover the test stack** - Detect test runners and coverage tooling from config files, manifests, and CI workflows.
+1. **Discover test stack** — Detect runners and coverage tooling from config files, manifests, CI.
 
-2. **Ask for coverage output when available** - If a coverage command is configured, ask the user to run it and paste the output. Copilot cannot run the command on the user's machine in chat.
+2. **Get coverage output** — If coverage command exists, ask user to run it and paste output.
 
-3. **Fall back to static analysis when needed** - If no coverage tooling exists, scan the repository for source files, test files, and obvious gaps.
+3. **Static analysis fallback** — If no coverage tooling, scan for source/test files and obvious gaps.
 
-4. **Identify coverage gaps** - Classify gaps into:
-   - **Zero coverage** - no corresponding tests or 0% coverage
-   - **Low coverage** - weak or partial coverage, especially under 50%
-   - **Missing test types** - no integration, edge-case, or error-path coverage
+4. **Identify gaps** — Classify: zero coverage, low coverage (<50%), missing test types (integration, edge-case, error-path).
 
-5. **Recommend local tests** - For each important gap, specify:
-   - file or module
-   - test type: unit, integration, end-to-end, property-based, or snapshot
-   - priority: critical, high, medium, or low
-   - a brief description of the behavior or edge case to cover
+5. **Recommend local tests** — Per gap: file/module, test type (unit/integration/e2e/property/snapshot), priority (critical/high/medium/low), brief description.
 
-6. **Recommend CI workflows** - Suggest copy-ready GitHub Actions improvements when they are justified by the stack, such as:
-   - coverage gate
-   - coverage diff comments
-   - nightly full suite
-   - runtime matrix
-   - mutation testing
-   - contract or API tests
+6. **Recommend CI workflows** — Coverage gate, diff comments, nightly suite, runtime matrix, mutation testing, contract tests.
 
-7. **Present the report** - Use this structure:
+7. **Present report** — Sections: current snapshot, well-covered, partially covered, untested, recommended tests, recommended CI, notes.
 
-   ```markdown
-   ## Test Coverage Review - <project>
-
-   ### Current coverage snapshot
-   - framework and runner
-   - overall coverage if known
-   - test file count and obvious untested areas
-
-   ### Well-covered
-   - files or modules that appear healthy
-
-   ### Partially covered
-   - files or modules with notable gaps
-
-   ### Untested or near-zero
-   - highest-priority missing coverage
-
-   ### Recommended local tests
-   - file | type | priority | what to cover
-
-   ### Recommended CI workflows
-   - workflow name and why it helps
-   - ready-to-copy YAML when appropriate
-
-   ### Notes
-   - missing tooling
-   - assumptions
-   - risk areas
-   ```
-
-8. **Wait** - Do not write test files, workflow files, or coverage config until the user explicitly asks.
+8. **Wait** — Do not write tests, workflows, or config until user asks.
 
 ## Verify
 
-- [ ] Test stack detection is tied to real repository signals
-- [ ] Coverage output was requested from the user when tooling exists
-- [ ] Static analysis clearly distinguishes assumptions from measured coverage
-- [ ] Recommendations are prioritized by user impact and risk
-- [ ] No tests or workflows were written automatically
+- [ ] Test stack detection tied to real repo signals
+- [ ] Coverage output requested when tooling exists
+- [ ] Static analysis distinguishes assumptions from measurements
+- [ ] Recommendations prioritized by impact and risk
+- [ ] Nothing written automatically

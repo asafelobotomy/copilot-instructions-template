@@ -8,7 +8,7 @@ compatibility: ">=3.2"
 
 > Skill metadata: version "1.1"; license MIT; tags [plugins, agents, extensions, discovery, management]; compatibility ">=3.2"; recommended tools [codebase, runCommands, editFiles].
 
-Agent plugins (VS Code 1.110+, Preview) are installable packages that bundle agents, skills, hooks, MCP servers, and slash commands. This skill covers discovering, evaluating, installing, testing, and managing plugins alongside the template's own customization files.
+Agent plugins (VS Code 1.110+, Preview) bundle agents, skills, hooks, MCP servers, and slash commands as installable packages.
 
 ## When to use
 
@@ -19,15 +19,13 @@ Agent plugins (VS Code 1.110+, Preview) are installable packages that bundle age
 
 ## What plugins provide
 
-A single plugin can bundle any combination of:
-
 | Type | Description |
 |------|-------------|
 | Slash commands | Additional `/` commands in chat |
-| Skills | Agent skills with instructions, scripts, and resources |
-| Agents | Custom agents with specialized personas and tool configurations |
-| Hooks | Shell commands at agent lifecycle points (hook config in `hooks/hooks.json` (Claude format) or `copilot-hooks.json` (Copilot format), or declared in `plugin.json` hooks component) |
-| MCP servers | External tool integrations (config in `.mcp.json` at plugin root, uses `mcpServers` key) |
+| Skills | Instructions, scripts, and resources |
+| Agents | Specialized personas and tool configs |
+| Hooks | Shell commands at lifecycle points (`hooks/hooks.json`, `copilot-hooks.json`, or `plugin.json` hooks component) |
+| MCP servers | External tool integrations (`.mcp.json` at plugin root, `mcpServers` key) |
 
 ## Discovery
 
@@ -58,17 +56,17 @@ User wants a plugin
 
 ## Quality gate
 
-Before recommending or installing a plugin, verify:
+Before installing, verify:
 
-- [ ] **Publisher trust** — known publisher or verified organization
-- [ ] **Maintenance** — updated within 12 months; no abandoned or archived repo
-- [ ] **No credential exposure** — plugin does not require secrets beyond standard VS Code secret storage
-- [ ] **Conflict check** — no naming collisions with existing workspace agents, skills, or hooks
-- [ ] **Scope review** — plugin only requests the minimum capability it needs (check the contributed agent and skill metadata for unnecessary tool access)
-- [ ] **Hook review** — if the plugin includes hooks, inspect hook scripts before enabling (hooks execute with VS Code's permissions)
-- [ ] **MCP review** — if the plugin bundles MCP servers, verify server sources and tool capabilities
+- [ ] **Publisher trust** — known publisher or verified org
+- [ ] **Maintenance** — updated within 12 months; not abandoned/archived
+- [ ] **No credential exposure** — no secrets beyond standard VS Code secret storage
+- [ ] **Conflict check** — no naming collisions with existing agents, skills, or hooks
+- [ ] **Scope review** — minimum capability requested (check agent/skill metadata)
+- [ ] **Hook review** — inspect hook scripts before enabling (execute with VS Code permissions)
+- [ ] **MCP review** — verify MCP server sources and tool capabilities
 
-Plugins failing two or more checks are rejected.
+Reject plugins failing two or more checks.
 
 ## Conflict resolution
 
@@ -85,21 +83,11 @@ Use the **Agent Debug Panel** (`Developer: Open Agent Debug Panel`) to see exact
 
 ## Plugin hooks
 
-Plugins can include hooks that fire at lifecycle events (`SessionStart`, `PreToolUse`, `PostToolUse`, `PreCompact`, `SubagentStart`, `SubagentStop`, `Stop`).
-
-- Hook config location depends on format: `hooks/hooks.json` (Claude format) or `copilot-hooks.json` (Copilot workspace format); for plugins, hooks are declared as a component type in `plugin.json`
-- Use `${CLAUDE_PLUGIN_ROOT}` in hook commands to reference scripts within the plugin directory
-- Plugin hooks are implicitly trusted on install — review before enabling
-- Disabling a plugin also disables its hooks
+Plugins can fire hooks at lifecycle events (`SessionStart`, `PreToolUse`, `PostToolUse`, `PreCompact`, `SubagentStart`, `SubagentStop`, `Stop`). Use `${CLAUDE_PLUGIN_ROOT}` in hook commands. Plugin hooks are implicitly trusted on install. Disabling a plugin also disables its hooks.
 
 ## Plugin MCP servers
 
-Plugins can bundle MCP servers that start automatically when the plugin is enabled.
-
-- Config in `.mcp.json` at plugin root using `mcpServers` key (not `servers`)
-- Use `${CLAUDE_PLUGIN_ROOT}` in `command`, `args`, `cwd`, `env`, `url`, and `headers` fields
-- Plugin MCP servers are implicitly trusted (no separate trust prompt)
-- Disabling a plugin stops its MCP servers
+Config in `.mcp.json` at plugin root (`mcpServers` key, not `servers`). Use `${CLAUDE_PLUGIN_ROOT}` in `command`, `args`, `cwd`, `env`, `url`, `headers`. Implicitly trusted; disabling a plugin stops its MCP servers.
 
 ## Settings reference
 
@@ -111,7 +99,7 @@ Plugins can bundle MCP servers that start automatically when the plugin is enabl
 
 ## Workspace plugin recommendations
 
-Projects can recommend plugins for team members:
+Projects can recommend plugins:
 
 ```json
 {
@@ -120,40 +108,29 @@ Projects can recommend plugins for team members:
       "source": { "source": "github", "repo": "your-org/plugin-marketplace" }
     }
   },
-  "enabledPlugins": {
-    "code-formatter@company-tools": true
-  }
+  "enabledPlugins": { "code-formatter@company-tools": true }
 }
 ```
 
 ## Testing the template as a plugin
 
-To preview how the template's agents, skills, hooks, and prompts appear as plugin-contributed customizations:
-
-1. Clone the template repo (or use an existing local copy)
-2. Add to VS Code settings:
-
-   ```json
-   "chat.pluginLocations": {
-       "/path/to/copilot-instructions-template": true
-   }
-   ```
-
-3. Reload VS Code — plugin-contributed agents appear in the Copilot dropdown
-4. Verify: open the Agent Debug Panel to confirm agents, skills, and hooks are loaded
-5. Check for conflicts with any workspace-level agents in `.github/agents/`
+1. Clone or use an existing local copy
+2. Add to settings: `"chat.pluginLocations": { "/path/to/copilot-instructions-template": true }`
+3. Reload VS Code — plugin agents appear in Copilot dropdown
+4. Open Agent Debug Panel to confirm agents, skills, hooks loaded
+5. Check for conflicts with workspace-level agents in `.github/agents/`
 
 ## Managing installed plugins
 
-1. **List** — Extensions view → filter `@agentPlugins` to see all installed plugins
-2. **Inspect** — select a plugin to see its contributed agents, skills, MCP servers, and commands
-3. **Disable** — right-click → Disable (globally or per-workspace; also disables hooks and MCP servers)
-4. **Remove** — right-click → Uninstall to fully remove
-5. **Update** — `Extensions: Check for Extension Updates` or automatic every 24 hours
+1. **List** — Extensions view → filter `@agentPlugins`
+2. **Inspect** — select to see contributed agents, skills, MCP servers, commands
+3. **Disable** — right-click → Disable (globally or per-workspace; disables hooks and MCP servers)
+4. **Remove** — right-click → Uninstall
+5. **Update** — `Extensions: Check for Extension Updates` or automatic every 24h
 
 ## Verify
 
-- [ ] Requested plugin was found or a suitable alternative was identified
-- [ ] Quality gate was applied before installation (including hook and MCP review)
-- [ ] No unresolved naming conflicts between plugin and workspace agents/skills
-- [ ] Agent Debug Panel confirms correct loading order and source attribution
+- [ ] Plugin found or suitable alternative identified
+- [ ] Quality gate applied (including hook and MCP review)
+- [ ] No unresolved naming conflicts
+- [ ] Agent Debug Panel confirms correct loading and source attribution

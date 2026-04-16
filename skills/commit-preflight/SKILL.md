@@ -8,45 +8,29 @@ compatibility: ">=1.4"
 
 > Skill metadata: version "1.0"; license MIT; tags [commit, preflight, ci, workflow, git]; compatibility ">=1.4"; recommended tools [codebase, runCommands, editFiles, askQuestions].
 
-Inspect the repo's active workflows before a commit or push and clear
-locally reproducible failures before the Commit agent proceeds.
+Inspect active workflows before commit/push and clear locally reproducible failures before the Commit agent proceeds.
 
 ## When to use
 
-- The user asks to commit or push changes
-- The repo has GitHub Actions workflows or local CI scripts
-- The agent needs to reduce avoidable workflow failures before a push
+- User asks to commit/push and the repo has GitHub Actions workflows or local CI scripts
 
 ## When not to use
 
-- The repo has no local checks to run
-- The failing gate depends on secrets, hosted services, or other non-local inputs
-- The user explicitly accepts the risk of skipping verification
+- No local checks to run, gate depends on secrets/hosted services, or user explicitly skips verification
 
 ## Steps
 
-1. Determine the operation and candidate file set.
-   - For commit preflight, prefer `git diff --cached --name-only`.
-   - If nothing is staged and the user approved staging, use the proposed file
-     list instead.
-   - For push preflight, compare the branch against `origin/<branch>` and use
-     the unpushed diff.
-   - Stop if the file set is empty.
+1. Determine candidate file set.
+   - Commit: `git diff --cached --name-only` (if empty and staging approved, use proposed list).
+   - Push: diff against `origin/<branch>`. Stop if empty.
 
 2. Discover active workflow gates.
-   - Read `.github/workflows/*.yml`.
-   - Prioritise workflows that trigger on `push` for the current branch.
-   - Include `pull_request` workflows when they run the same local checks.
-   - Honor `branches`, `branches-ignore`, `paths`, and `paths-ignore`.
-   - When both branch and path filters exist, both must match.
-   - Treat `workflow_run` workflows as downstream automation, not direct
-     preflight gates, unless they expose a local planner or validation command
-     that the repo already documents.
+   - Read `.github/workflows/*.yml`. Prioritise `push` triggers for current branch; include `pull_request` workflows running the same checks.
+   - Honor `branches`, `branches-ignore`, `paths`, `paths-ignore` (both must match when combined).
+   - Treat `workflow_run` as downstream unless it exposes a documented local command.
 
-3. Build a local execution plan from the matching workflows.
-   - Prefer explicit `run:` commands and repo scripts over heuristic guesses.
-   - Use curated local equivalents for common wrapper actions.
-   - Keep the plan ordered from cheapest checks to most expensive checks.
+3. Build local execution plan (cheapest → most expensive).
+   - Prefer explicit `run:` commands and repo scripts. Use curated equivalents for wrapper actions.
 
    | Workflow shape | Local preflight command |
    |----------------|-------------------------|
@@ -57,14 +41,9 @@ locally reproducible failures before the Commit agent proceeds.
    | `uses: ludeeus/action-shellcheck` | `shellcheck` with the workflow severity |
    | `run: pip install yamllint` + `yamllint ...` | Probe or install `yamllint`, then run the exact lint command |
 
-4. Probe required dependencies before running checks.
-   - Extract required commands from the local execution plan.
-   - Probe each command with `command -v`.
-   - If a workflow already contains an install step, reuse that install method
-     as the preferred option.
-   - If a dependency is missing, do not install it silently.
-   - Use `askQuestions` to ask which tools, if any, the user wants installed.
-   - Ask only about missing tools.
+4. Probe dependencies.
+   - `command -v` each required tool. Reuse workflow install steps when available.
+   - Never install silently. Use `askQuestions` for missing tools only.
 
    ```yaml
    header: "Preflight Dependencies"
@@ -84,45 +63,19 @@ locally reproducible failures before the Commit agent proceeds.
    > Fallback: If `askQuestions` is unavailable, present the same choices as a
    > numbered list in chat.
 
-5. Install only what the user approved.
-   - Use the workflow's install command when available.
-   - Otherwise use the repo's documented package manager or the system package
-     manager only after approval.
-   - Re-probe commands after installation.
-   - Mark failed installs as unavailable and continue to the residual-risk
-     decision.
+5. Install only approved tools. Use workflow install commands first; re-probe after install. Mark failed installs as unavailable.
 
-6. Run the checks.
-   - Run read-only checks first.
-   - Run file-scoped checks before full-suite checks.
-   - Capture each command, exit status, and affected files.
+6. Run checks: read-only first, file-scoped before full-suite. Capture command, exit status, affected files.
 
-7. Repair only in-scope failures.
-   - If a failing check can be fixed within the candidate file set, repair it
-     directly or hand off to the Code agent with the failing command, error
-     output, and file scope.
-   - If a fix would touch files outside scope, stop and ask whether to widen
-     scope.
-   - After each repair, rerun only the affected checks before moving on.
+7. Repair in-scope failures only. If fix requires out-of-scope files, ask before widening. Rerun affected checks after each repair.
 
-8. Decide whether the Commit agent can proceed.
-   - If all applicable checks pass, return a concise pass summary.
-   - If some checks were skipped because tools were unavailable or the user
-     declined installation, use `askQuestions` to confirm whether to continue
-     with residual risk.
-   - If any required check still fails, stop the commit or push flow and report
-     the exact blocker.
+8. Decide proceed/block. All pass → concise summary. Skipped checks → `askQuestions` for residual risk. Any required check failing → block with exact blocker.
 
-9. Hand back the result in one summary.
-   - List executed checks.
-   - List skipped checks and why.
-   - List files changed by auto-fixes.
-   - State whether commit or push may proceed.
+9. Summary: executed checks, skipped checks (with reason), auto-fixed files, proceed/block verdict.
 
 ## Verify
 
-- Applicable workflow-backed checks were discovered from `.github/workflows/`
-- Missing dependencies were probed before installation
-- Any dependency installs were approved via `askQuestions`
-- Auto-fixes stayed inside the approved scope or were explicitly re-approved
-- The Commit agent received a clear pass, blocked, or residual-risk outcome
+- Workflow-backed checks discovered from `.github/workflows/`
+- Dependencies probed before install; installs approved via `askQuestions`
+- Auto-fixes stayed in scope or were re-approved
+- Commit agent received clear pass, block, or residual-risk outcome
