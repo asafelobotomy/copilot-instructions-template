@@ -39,7 +39,7 @@ Agent delegation stays narrow by design. See [`AGENTS.md`](AGENTS.md) for the en
 
 ## Version
 
-Current template version: **0.6.0** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md).
+Current template version: **0.6.1** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Release automation
 

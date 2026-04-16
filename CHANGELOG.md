@@ -13,6 +13,16 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 * N/A
 
+## [0.6.1](https://github.com/asafelobotomy/copilot-instructions-template/compare/v0.6.0...v0.6.1) (2026-04-16)
+
+### Changed
+
+* **skills:** compress prose across 16 SKILL.md files for token efficiency (−391 LOC, 15.5% reduction)
+
+### Fixed
+
+* **refactor:** canonicalize heartbeat routing to Python-only, slim PS1 pulse test, split audit test, extract Python selector, tighten MCP policy prose
+
 ## [0.6.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.12.0...v0.6.0) (2026-04-14)
 
 
