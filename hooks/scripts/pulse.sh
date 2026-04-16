@@ -31,4 +31,23 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 INPUT=$(cat)
 
-printf '%s' "$INPUT" | python3 "$SCRIPT_DIR/pulse_runtime.py" "$TRIGGER"
+# Resolve Python executable (mirror pulse.ps1 fallback logic)
+PYTHON_CMD=""
+if command -v python3 >/dev/null 2>&1; then
+  PYTHON_CMD="python3"
+elif command -v python >/dev/null 2>&1; then
+  PYTHON_CMD="python"
+fi
+
+if [[ -z "$PYTHON_CMD" ]]; then
+  echo '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse hook: python3/python not found; skipping heartbeat runtime."}}'
+  exit 0
+fi
+
+RUNTIME_SCRIPT="$SCRIPT_DIR/pulse_runtime.py"
+if [[ ! -f "$RUNTIME_SCRIPT" ]]; then
+  echo '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse hook: pulse_runtime.py not found; skipping heartbeat runtime."}}'
+  exit 0
+fi
+
+printf '%s' "$INPUT" | "$PYTHON_CMD" "$RUNTIME_SCRIPT" "$TRIGGER"
