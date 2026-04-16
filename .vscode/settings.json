@@ -1,6 +1,20 @@
 {
   "chat.mcp.autostart": "newAndOutdated",
   "chat.subagents.allowInvocationsFromSubagents": true,
+  "chat.useAgentsMdFile": true,
+  "chat.useNestedAgentsMdFiles": true,
+  "chat.useCustomAgentHooks": true,
+  "chat.promptFilesRecommendations": true,
+  "chat.plugins.enabled": true,
+  "chat.agentFilesLocations": {
+    "agents": true
+  },
+  "chat.skillsLocations": {
+    "skills": true
+  },
+  "chat.agentSkillsLocations": {
+    "skills": true
+  },
   "chat.mcp.serverSampling": {
     "copilot-instructions-template/.vscode/mcp.json: github": {
       "allowedModels": [
