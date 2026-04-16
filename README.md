@@ -1,128 +1,182 @@
-# Lean/Kaizen Copilot Instructions Template
+<div align="center">
+  <img src="assets/logo.png" alt="Lean/Kaizen Copilot Instructions Template" width="200"/>
 
-A versioned, self-updating GitHub Copilot instruction template that keeps AI developer behaviour consistent across projects.
+<h1>Lean/Kaizen Copilot Instructions Template</h1>
 
-## Repository map
+  **A versioned VS Code agent plugin that keeps AI developer behaviour consistent across all your projects.**
 
-## Set up in your project
+  [![Version](https://img.shields.io/badge/version-0.6.1-blue)](CHANGELOG.md) <!-- x-release-please-version -->
+  [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+  [![Agents](https://img.shields.io/badge/agents-14-purple)](agents/)
+  [![Skills](https://img.shields.io/badge/skills-18-teal)](skills/)
+</div>
 
-1. Install the plugin: open VS Code → `Chat: Install Plugin` → search **copilot-instructions-template**.
-2. Tell Copilot:
+---
 
-> *"Set up this project"*
+## What this is
 
-The Setup agent runs a personalisation wizard using the locally-installed plugin. No manual file copying or URL fetching required.
+A single VS Code agent plugin that installs a full AI developer workflow into any project via a guided personalisation wizard. One installation gives every project:
 
-## Update an existing installation
+| Component | Count | Description |
+|-----------|------:|-------------|
+| Model-pinned agents | 14 | Specialist agents for every workflow stage |
+| Reusable skills | 18 | Domain-specific capability modules |
+| Lifecycle hooks | 6 | PreToolUse, PostToolUse, and Stop guards |
+| Starter kits | 8 | Stack-specific bundles (Python, TypeScript, Go, Rust, Java, C++, React, Docker) |
+| MCP configuration | — | Pre-configured server set with sandbox policy |
+| Setup wizard | — | Interactive personalisation at install time |
 
-Tell Copilot:
+The template follows Lean/Kaizen principles — waste-tagged reviews, PDCA cycles, and progressive narrowing of test scope by default.
 
-> *"Update your instructions"*
+---
 
-The Setup agent compares your installed version against the plugin version and applies a selective update.
+## Install
 
-## Recover a broken installation
+1. Open VS Code → open the Chat panel → click **Chat: Install Plugin**
+2. Search **copilot-instructions-template** and install
+3. Tell Copilot:
 
-Tell Copilot:
+   > *"Set up this project"*
 
-> *"Factory restore instructions"*
+The Setup agent runs an interactive personalisation wizard. It asks a few questions, then writes your `.github/copilot-instructions.md`, copies agents and skills into `.github/`, installs hooks and MCP config, and creates a workspace scaffold. No manual file copying or URL fetching required.
 
-The Setup agent backs up every template-managed surface, removes those files from the working tree, and reruns the full setup from scratch.
+---
 
-## All trigger phrases
+## Agents
 
-See [`AGENTS.md`](AGENTS.md) for the full list of direct consumer-facing commands (heartbeat, retrospective, tools, skills, MCP, hooks, and more).
+| Agent | Role |
+|-------|------|
+| **Setup** | Interactive personalisation wizard — first-time setup, updates, backup restore, and factory restore |
+| **Code** | Implement features, refactor, and run multi-step coding tasks |
+| **Review** | Deep code review and architectural analysis with Lean/Kaizen critique |
+| **Audit** | Read-only health check — structural validation, OWASP Top 10, secret detection |
+| **Commit** | Full git lifecycle — stage, commit, push, branch, stash, tag, PR creation |
+| **Debugger** | Diagnose failures, isolate root causes, and triage regressions |
+| **Docs** | Draft and update documentation, migration notes, and README sections |
+| **Planner** | Break complex work into scoped execution plans with risks and verification steps |
+| **Explore** | Fast read-only codebase exploration and Q&A |
+| **Researcher** | Fetch current external documentation and produce structured research output |
+| **Cleaner** | Prune stale artefacts, caches, archives, and dead files |
+| **Organise** | Move files, fix broken paths, and reshape repository layouts |
+| **Extensions** | Manage VS Code extensions, profiles, and workspace configuration |
+| **Fast** | Quick questions, syntax lookups, and lightweight single-file edits |
 
-## Keep delegation narrow
+---
 
-Agent delegation stays narrow by design. See [`AGENTS.md`](AGENTS.md) for the entrypoint rules and [`template/copilot-instructions.md`](template/copilot-instructions.md) for the consumer runtime policy. Keep each `agents:` allow-list limited to explicit workflow handoffs rather than speculative convenience delegates.
+## Skills
 
-## Version
+| Skill | Purpose |
+|-------|---------|
+| `agentic-workflows` | Set up GitHub Actions workflows with Copilot coding agents |
+| `commit-preflight` | Inspect CI workflows before commit and run matching local checks |
+| `compress-prose` | Tighten prose without losing required meaning |
+| `conventional-commit` | Write Conventional Commits spec messages with scope and body |
+| `create-adr` | Create Architectural Decision Records |
+| `extension-review` | Audit VS Code extensions against the current project stack |
+| `fix-ci-failure` | Diagnose and fix failing CI pipelines |
+| `issue-triage` | Classify severity, label waste, and draft structured responses |
+| `lean-pr-review` | Review pull requests with Lean waste categories and severity ratings |
+| `mcp-builder` | Scaffold and register new MCP servers |
+| `mcp-management` | Configure and manage MCP servers |
+| `plugin-management` | Discover, install, and manage agent plugins |
+| `security-audit` | OWASP Top 10, secret detection, injection patterns, supply chain checks |
+| `skill-creator` | Create new agent skills following the open standard |
+| `skill-management` | Discover, activate, and manage agent skills |
+| `test-coverage-review` | Audit coverage gaps and recommend local tests plus CI workflows |
+| `tool-protocol` | Find, build, or adapt automation tools |
+| `webapp-testing` | Set up browser testing with VS Code tools or Playwright |
 
-Current template version: **0.6.1** <!-- x-release-please-version --> — see [`CHANGELOG.md`](CHANGELOG.md).
+---
 
-## Release automation
+## Starter kits
 
-Pushes to `main` run the full validation workflow first. A final CI release job runs only after the validation jobs succeed.
+Stack-specific instruction bundles installed during setup when the stack is detected:
 
-Version bumps are done locally. Bump `VERSION.md` and all `<!-- x-release-please-version -->` markers together, then verify with `bash scripts/release/verify-version-references.sh`. When the push lands on `main` and the version in `VERSION.md` does not yet have a corresponding git tag, CI creates a GitHub release automatically.
+`cpp` · `docker` · `go` · `java` · `python` · `react` · `rust` · `typescript`
 
-SemVer policy:
+---
 
-- Major: breaking changes to consumer-facing surfaces.
-- Minor: `feat:` for a consumer-facing addition.
-- Patch: fixes, maintenance, wording updates, and refactors.
+## Daily commands
 
-Use `feat` only for a real consumer-facing capability. Use patch-level headers for corrections, maintenance, wording updates, and refactors. This keeps the minor digit meaningful instead of incrementing it for every change.
+| What you want | Tell Copilot |
+|---------------|-------------|
+| Update to latest plugin version | *"Update your instructions"* |
+| Restore a broken installation | *"Factory restore instructions"* |
+| Check heartbeat / session state | *"Check your heartbeat"* |
+| Run a retrospective | *"Run retrospective"* |
+| Commit staged changes | *"Commit my changes"* |
+| Create a pull request | *"Create a PR"* |
+| Configure MCP servers | *"Configure MCP servers"* |
+| Install a starter kit | *"Install a starter kit"* |
 
-## Validation entrypoints
+See [AGENTS.md](AGENTS.md) for the full trigger phrase list.
 
-- During iterative work, prefer `bash scripts/harness/select-targeted-tests.sh <paths...>` and keep the selected checks narrow. Reserve `bash tests/run-all.sh` for a single end-of-task full-suite gate unless a targeted failure forces broader re-verification.
-- Full suite: `bash tests/run-all.sh`
-- Captured full suite: `bash scripts/harness/run-all-captured.sh`
-- Targeted test selection: `bash scripts/harness/select-targeted-tests.sh <paths...>`
-- Workspace index drift: `bash scripts/workspace/sync-workspace-index.sh --check`
-- Model registry drift: `bash scripts/sync/sync-models.sh --check`
+---
 
-## Terminal-safe shell protocol
+## For contributors
 
-Use this decision order whenever an agent needs the terminal:
+### Version
 
-1. If an existing repo script already does the job, run that script directly.
-2. If the task is a single existing command with no shell control flow, tempfile plumbing, redirection, retries, or shell-specific syntax, direct execution is fine.
-3. For any ad hoc snippet beyond that, use an isolated child shell wrapper instead of relying on the persistent terminal's current shell or option state.
+Current template version: **0.6.1** <!-- x-release-please-version --> — see [CHANGELOG.md](CHANGELOG.md).
 
-For the async terminal tool family, use the exact terminal ID returned by `run_in_terminal` async mode with `get_terminal_output`, `send_to_terminal`, and `kill_terminal`.
-
-Treat those tools as valid only when `run_in_terminal` returned a live terminal ID, usually from async mode or from a sync command that outlived its timeout.
-
-Do not pass terminal labels, shell names, normal editor terminals, or `execution_subagent` results to those tools. Use `terminal_last_command` and `terminal_selection` only for the currently active editor terminal. If you only need command output, prefer `execution_subagent` or a synchronous terminal run over creating a background terminal just to poll it.
-
-Reuse async terminals only for genuinely interactive or persistent sessions, and call `kill_terminal` when the session is no longer needed. Do not add `sleep` loops or blind polling around background terminals. For standard build or run workflows, prefer repo scripts or `create_and_run_task` instead of a persistent interactive shell.
-
-In zsh workspaces, do not issue top-level `set -euo pipefail` or `setopt errexit nounset pipefail` directly into a persistent terminal session. Use the repo wrappers so strict mode stays isolated to a child shell.
-
-For one-line or multi-step snippets:
+Version bumps are done locally. Bump `VERSION.md` and all `<!-- x-release-please-version -->` markers together, then verify:
 
 ```bash
-bash scripts/harness/run-isolated-shell.sh --shell bash --strict --command 'tmpdir=$(mktemp -d) && printf "ok\n" > "$tmpdir/out" && cat "$tmpdir/out" && rm -rf "$tmpdir"'
+bash scripts/release/verify-version-references.sh
 ```
 
-For zsh-specific syntax:
+When the push lands on `main` and the version in `VERSION.md` does not yet have a corresponding git tag, CI creates a GitHub release automatically.
+
+**SemVer policy**: Major for breaking consumer-facing changes · Minor (`feat:`) for consumer-facing additions · Patch for fixes, maintenance, and refactors.
+
+### Validation
 
 ```bash
-bash scripts/harness/run-isolated-shell.sh --shell zsh --command 'print -r -- "$ZSH_VERSION"'
+# Full suite (use as final gate only)
+bash tests/run-all.sh
+
+# Targeted — prefer during iterative work
+bash scripts/harness/select-targeted-tests.sh <paths...>
+
+# Captured full suite (output saved to logs/)
+bash scripts/harness/run-all-captured.sh
+
+# Drift checks
+bash scripts/workspace/sync-workspace-index.sh --check
+bash scripts/sync/sync-models.sh --check
 ```
 
-For PowerShell syntax:
+### Recommended GitHub repository settings
+
+- Block branch deletion and non-fast-forward pushes on `main`
+- Enable squash merge
+
+Audit live settings with an authenticated GitHub CLI session:
 
 ```bash
-bash scripts/harness/run-isolated-shell.sh --shell pwsh --strict --command '$value = "pwsh-ok"; Write-Output $value'
+bash scripts/release/audit-release-settings.sh
+```
+
+### Terminal-safe shell protocol
+
+When an agent needs the terminal, follow this order:
+
+1. Run an existing repo script directly if one covers the task.
+2. Use direct execution for a single command with no shell control flow, tempfile plumbing, or retries.
+3. For ad hoc multi-step snippets, use an isolated child shell wrapper:
+
+```bash
+bash scripts/harness/run-isolated-shell.sh --shell bash --strict --command 'your-command-here'
 ```
 
 For multi-line snippets:
 
 ```bash
 bash scripts/harness/run-isolated-shell-stdin.sh --shell bash --strict <<'EOF'
-tmpdir=$(mktemp -d)
-printf 'hello\n' > "$tmpdir/out.txt"
-cat "$tmpdir/out.txt"
-rm -rf "$tmpdir"
+your
+multi-line
+snippet
 EOF
 ```
 
-For Bash-specific strict mode, keep `--shell bash --strict` on the generic wrappers.
-
-## Recommended GitHub settings
-
-The current release workflow assumes a lightweight ruleset on `main`.
-
-- Block branch deletion.
-- Block non-fast-forward pushes.
-- Enable squash merge.
-
-Audit the live repository settings with an authenticated GitHub CLI session:
-
-```bash
-bash scripts/release/audit-release-settings.sh
-```
+Use `get_terminal_output`, `send_to_terminal`, and `kill_terminal` only with the exact opaque terminal ID returned by `run_in_terminal` async mode. Do not pass terminal labels, shell names, or integer IDs.
