@@ -13,6 +13,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 * N/A
 
+## [0.6.2](https://github.com/asafelobotomy/copilot-instructions-template/compare/v0.6.1...v0.6.2) (2026-04-17)
+
+### Fixed
+
+* fix stale Setup-agent references in developer docs, audit rules, and setup manifests
+* fix strict JSON validity for MCP configuration files and align customization contracts with the new protocol source
+
 ## [0.6.1](https://github.com/asafelobotomy/copilot-instructions-template/compare/v0.6.0...v0.6.1) (2026-04-16)
 
 ### Changed
@@ -28,7 +35,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ### Changed
 
-* **versioning:** reset version scheme from 5.x to 0.x to signal beta status ([migration](MIGRATION.md))
+* **versioning:** reset version scheme from 5.x to 0.x to signal beta status
 
 ## [5.12.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v5.11.0...v5.12.0) (2026-04-11)
 

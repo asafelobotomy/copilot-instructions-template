@@ -1,7 +1,7 @@
 # Setup Companion File Manifests
 
-> Data reference for SETUP.md §2.5–§3. Fetch URLs, file lists, configs, and
-> token-replacement rules. SETUP.md owns write targets and conditions.
+> Data reference for the Setup agent §2.5–§3. Fetch URLs, file lists, configs, and
+> token-replacement rules. The Setup agent owns write targets and conditions.
 
 Base URL: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main`
 
@@ -9,14 +9,14 @@ Base URL: `https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-
 
 ## Protocol sources
 
-Use `SETUP.md` and `UPDATE.md` for behaviour. Use this section as the canonical
+Use `agents/setup.agent.md` for behaviour. Use this section as the canonical
 inventory of supporting upstream sources so `AGENTS.md` and
 `.github/agents/setup.agent.md` do not need to restate the same fetch lists.
 
 | Protocol | Canonical behaviour file | Supporting upstream sources |
 |----------|--------------------------|-----------------------------|
-| Setup | `SETUP.md` | `template/copilot-instructions.md`, `template/setup/interview.md`, `template/setup/manifests.md`, `template/workspace/operations/workspace-index.json`, `template/copilot-setup-steps.yml`, `template/vscode/settings.json`, `template/vscode/extensions.json`, `starter-kits/REGISTRY.json` |
-| Update, backup restore, and factory restore | `UPDATE.md` | `VERSION.md`, `MIGRATION.md`, `CHANGELOG.md`, `template/copilot-instructions.md`, `template/setup/manifests.md`, `SETUP.md` |
+| Setup | `agents/setup.agent.md` | `template/copilot-instructions.md`, `template/setup/interview.md`, `template/setup/manifests.md`, `template/workspace/operations/workspace-index.json`, `template/copilot-setup-steps.yml`, `template/vscode/settings.json`, `template/vscode/extensions.json`, `starter-kits/REGISTRY.json` |
+| Update, backup restore, and factory restore | `agents/setup.agent.md` | `VERSION.md`, `CHANGELOG.md`, `template/copilot-instructions.md`, `template/setup/manifests.md` |
 
 ---
 

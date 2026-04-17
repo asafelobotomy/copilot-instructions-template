@@ -76,7 +76,7 @@ counts for CRITICAL/HIGH/WARN/INFO/OK and an overall health status.
 Before running D1-D14, detect which layout you are auditing:
 
 - **Developer template repo**: `template/copilot-instructions.md`, `VERSION.md`,
-  and `SETUP.md` are present.
+  and `plugin.json` are present.
 - **Consumer repo**: `.github/copilot-version.md` or
   `.copilot/workspace/operations/workspace-index.json` is present and
   `template/copilot-instructions.md` is absent.

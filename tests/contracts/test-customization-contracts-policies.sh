@@ -153,8 +153,7 @@ checks = {
         "## Protocol sources",
         "| Setup |",
         "| Update, backup restore, and factory restore |",
-        "`SETUP.md`",
-        "`UPDATE.md`",
+        "`agents/setup.agent.md`",
     ],
 }
 for rel, needles in checks.items():

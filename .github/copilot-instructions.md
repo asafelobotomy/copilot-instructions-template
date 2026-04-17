@@ -1,6 +1,6 @@
 # Developer Instructions — copilot-instructions-template
 
-> Role: AI developer for this repository. Template version: 0.6.1 <!-- x-release-please-version --> | Updated: 2026-04-16
+> Role: AI developer for this repository. Template version: 0.6.2 <!-- x-release-please-version --> | Updated: 2026-04-17
 >
 > **⚡ Critical Reminders** — every session, every task:
 >
@@ -20,7 +20,7 @@ This repo has two distinct layers that must never be mixed:
 
 | Layer | Path | Purpose |
 |-------|------|---------|
-| **Consumer template** | `template/copilot-instructions.md` | Delivered to consumers by `SETUP.md`. Contains `{{PLACEHOLDER}}` tokens. |
+| **Consumer template** | `template/copilot-instructions.md` | Delivered to consumers by the Setup agent. Contains `{{PLACEHOLDER}}` tokens. |
 | **Developer instructions** | `.github/copilot-instructions.md` *(this file)* | Governs how I act in this repo. Zero `{{}}` tokens. |
 | **Consumer instruction stubs** | `template/instructions/` | Path-scoped stubs; most are delivered verbatim, a subset contain `{{}}` tokens resolved during consumer setup. |
 | **Consumer prompt stubs** | `template/prompts/` | Slash command prompts; most are delivered verbatim, a subset contain `{{}}` tokens resolved during consumer setup. |
