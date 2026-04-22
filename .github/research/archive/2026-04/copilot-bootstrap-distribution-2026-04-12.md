@@ -125,7 +125,7 @@ Constraints:
   first install from a new marketplace.
 - Plugin MCP servers bypass the per-server trust prompt, so the plugin itself
   is the trust boundary.
-- `${CLAUDE_PLUGIN_ROOT}` token is available in hook commands and MCP config.
+- Plugin-root tokens are format-specific in VS Code: `${CLAUDE_PLUGIN_ROOT}` for Claude format, `${PLUGIN_ROOT}` for OpenPlugin, and no documented equivalent for Copilot format.
   Personal/workspace copilot-instructions.md from SETUP.md is **not** installed
   by the plugin — the plugin supplements a workspace, it does not bootstrap files
   outside the plugin directory.

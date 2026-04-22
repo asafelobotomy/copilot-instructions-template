@@ -18,9 +18,19 @@ source "$(dirname "$0")/lib-hooks.sh"
 
 INPUT=$(cat)
 TOOL_NAME=$(echo "$INPUT" | grep -o '"tool_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/.*: *"\(.*\)"/\1/') || TOOL_NAME=""
+TOOL_NAME_LOWER=${TOOL_NAME,,}
+TOOL_NAME_CANON=$(printf '%s' "$TOOL_NAME_LOWER" | tr -d '_-')
 
-# Only guard terminal/command tools
-if [[ "$TOOL_NAME" != *"terminal"* && "$TOOL_NAME" != *"command"* && "$TOOL_NAME" != *"bash"* && "$TOOL_NAME" != *"shell"* ]]; then
+# Only guard terminal/command tools plus create_and_run_task, which nests its
+# executable command under tool_input.task.command.
+if [[ "$TOOL_NAME" != *"terminal"* && "$TOOL_NAME" != *"command"* && "$TOOL_NAME" != *"bash"* && "$TOOL_NAME" != *"shell"* && "$TOOL_NAME_CANON" != "createandruntask" ]]; then
+  echo '{"continue": true}'
+  exit 0
+fi
+
+# Read-only terminal observer tools do not execute commands and therefore
+# legitimately omit tool_input.command.
+if [[ "$TOOL_NAME_CANON" == "getterminaloutput" || "$TOOL_NAME_CANON" == "terminallastcommand" || "$TOOL_NAME_CANON" == "terminalselection" || "$TOOL_NAME_CANON" == "killterminal" ]]; then
   echo '{"continue": true}'
   exit 0
 fi
@@ -57,6 +67,16 @@ try:
     data = json.load(sys.stdin)
     ti = data.get('tool_input', {})
     command = ti.get('command', '')
+    tool_name = str(data.get('tool_name', '') or '').lower().replace('_', '').replace('-', '')
+    if tool_name == 'createandruntask':
+      task = ti.get('task', {}) if isinstance(ti, dict) else {}
+      task_command = task.get('command', '') if isinstance(task, dict) else ''
+      task_args = task.get('args', []) if isinstance(task, dict) else []
+      if isinstance(task_command, str):
+        parts = [task_command]
+        if isinstance(task_args, list):
+          parts.extend(arg for arg in task_args if isinstance(arg, str))
+        command = ' '.join(part for part in parts if part)
     print(command if isinstance(command, str) else '')
 except Exception:
     print('')

@@ -21,7 +21,7 @@ make_input() { make_guard_input "$@"; }
 run_guard() {
   local payload="$1"
   if [[ -n "${PWSH_COVERAGE_TRACE:-}" ]]; then
-    printf '%s' "$payload" | "$PWSH" -NoLogo -NoProfile -File "$REPO_ROOT/tests/coverage/invoke-powershell-with-coverage.ps1" -ScriptPath "$SCRIPT" -TracePath "$PWSH_COVERAGE_TRACE" 2>/dev/null
+    "$PWSH" -NoLogo -NoProfile -File "$REPO_ROOT/tests/coverage/invoke-powershell-with-coverage.ps1" -ScriptPath "$SCRIPT" -TracePath "$PWSH_COVERAGE_TRACE" -Payload "$payload" 2>/dev/null
     return
   fi
 
@@ -83,6 +83,14 @@ output=$(run_guard 'not-json')
 assert_contains "malformed JSON continues" "$output" '"continue": true'
 output=$(run_guard '{}')
 assert_contains "empty JSON continues" "$output" '"continue": true'
+assert_continue "get_terminal_output without command continues" '{"tool_name":"get_terminal_output","tool_input":{"id":"abc"}}'
+assert_continue "getTerminalOutput without command continues" '{"tool_name":"getTerminalOutput","tool_input":{"id":"abc"}}'
+assert_continue "terminal_last_command without command continues" '{"tool_name":"terminal_last_command","tool_input":{}}'
+assert_continue "terminal_selection without command continues" '{"tool_name":"terminal_selection","tool_input":{}}'
+assert_continue "kill_terminal without command continues" '{"tool_name":"kill_terminal","tool_input":{"id":"abc"}}'
+assert_continue "create_and_run_task safe command continues" '{"tool_name":"create_and_run_task","tool_input":{"workspaceFolder":"/tmp/project","task":{"label":"List files","type":"shell","command":"ls","args":["-la"]}}}'
+assert_decision "create_and_run_task caution command asks" '{"tool_name":"create_and_run_task","tool_input":{"workspaceFolder":"/tmp/project","task":{"label":"Force push","type":"shell","command":"git","args":["push","origin","--force"]}}}' "ask"
+assert_decision "create_and_run_task missing task command asks" '{"tool_name":"create_and_run_task","tool_input":{"workspaceFolder":"/tmp/project","task":{"label":"Broken task","type":"shell"}}}' "ask"
 assert_decision "missing tool_input asks" '{"tool_name":"bash"}' "ask"
 assert_decision "null command asks" '{"tool_name":"bash","tool_input":{"command":null}}' "ask"
 assert_decision "unsupported input key asks" '{"tool_name":"bash","tool_input":{"input":"rm -rf /"}}' "ask"

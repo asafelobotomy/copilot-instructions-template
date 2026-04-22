@@ -1,7 +1,7 @@
 # Plan: Plugin Packaging and Answers-File Generator — Next Steps
 
 > Date: 2026-04-12 | Agent: Docs | Status: active
-> Builds on: [copilot-bootstrap-distribution-2026-04-12.md](copilot-bootstrap-distribution-2026-04-12.md)
+> Builds on: [copilot-bootstrap-distribution-2026-04-12.md](archive/2026-04/copilot-bootstrap-distribution-2026-04-12.md)
 
 ## Summary
 
@@ -10,10 +10,13 @@ model to one that supports both native plugin install and pre-answered automated
 setup. Neither changes the existing `SETUP.md` or `UPDATE.md` flow. Both are
 additive.
 
-**Deliverable 1 — Root plugin packaging**: add `plugin.json` and `.mcp.json` at
-the repo root so `asafelobotomy/copilot-instructions-template` can be installed
-directly via Copilot's "Install Plugin From Source" path. Wire in the existing
-`.github/skills/`, `.github/agents/`, and `.github/hooks/` assets.
+**Deliverable 1 — Root plugin packaging**: ship plugin manifests for the
+token-bearing formats that can safely resolve plugin-owned executables. This is
+now partially complete via `.plugin/` (OpenPlugin) and `.claude-plugin/`
+(Claude format), both wired to the live `.github/skills/`, `.github/agents/`,
+and `.github/hooks/` assets. A Copilot-format root `plugin.json` remains
+deferred because VS Code does not yet document a plugin-root token for
+plugin-owned hook and MCP executable paths.
 
 **Deliverable 2 — Answers file plus generator**: define a
 `.github/copilot-answers.json` schema that consumers can pre-populate to skip
@@ -25,8 +28,8 @@ path into `SETUP.md` and `UPDATE.md`.
 
 | ID | Task | Priority | Status | Owning files | Verification |
 |----|------|----------|--------|--------------|--------------|
-| P1 | Draft root `plugin.json` with name, display name, description, and version | High | Not started | `plugin.json` | CI parity check and manual plugin install |
-| P2 | Draft root `.mcp.json` with plugin-scoped servers that are safe to trust at plugin-install time | High | Not started | `.mcp.json` | Manual plugin MCP smoke test |
+| P1 | Draft token-bearing root plugin manifests with description and component paths | High | Done | `.plugin/plugin.json`, `.claude-plugin/plugin.json` | Contract coverage and manual plugin install |
+| P2 | Draft plugin-scoped heartbeat MCP config for the token-bearing formats | High | Done | `.plugin/.mcp.json`, `.claude-plugin/.mcp.json` | Contract coverage and manual plugin MCP smoke test |
 | P3 | Add plugin recommendation settings for consumers | High | Not started | `.vscode/settings.json`, `template/vscode/settings.json` | `validate-template-sync.sh` and manual workspace prompt |
 | P4 | Wire plugin recommendation settings into setup manifests | High | Not started | `template/setup/manifests.md` | `tests/contracts/test-setup-update-contracts.sh` |
 | P5 | Track root plugin surfaces in workspace inventory | Medium | Not started | `workspace-index.json`, `scripts/workspace/sync-workspace-index.sh` | `bash scripts/workspace/sync-workspace-index.sh --check` |
@@ -50,20 +53,19 @@ Goal: produce a minimal installable plugin.
 
 Steps:
 
-1. Read the current plugin manifest shape from `starter-kits/*/plugin.json`.
-2. Draft `plugin.json` at the repo root with:
-   - `name`: `copilot-instructions-template`
-   - `displayName`: `Lean/Kaizen Copilot Instructions Template`
-   - `description`: one-line summary aligned with `README.md`
-   - `version`: sourced from `VERSION.md`
-3. Point the plugin at live repo assets under `.github/` rather than `template/`.
-4. Draft root `.mcp.json` with the smallest safe server set. Start with
-   heartbeat only unless filesystem access in plugin scope is proven clean.
-5. Confirm the plugin trust model stays explicit. Only include servers whose
+1. Keep the token-bearing manifests under `.plugin/` and `.claude-plugin/` in
+   sync with the live repo assets under `.github/`.
+2. Keep heartbeat as the only plugin-scoped MCP server unless filesystem access
+   in plugin scope is proven clean.
+3. Confirm the plugin trust model stays explicit. Only include servers whose
    code lives in the repo.
+4. Keep the format-specific token guidance accurate: `${PLUGIN_ROOT}` for
+   OpenPlugin, `${CLAUDE_PLUGIN_ROOT}` for Claude format, no documented token
+   assumption for Copilot format.
 
-Acceptance: `Chat: Install Plugin From Source` loads agents and skills without
-schema or path errors.
+Acceptance: plugin install surfaces load agents and skills without schema or
+path errors, and plugin-owned hook/MCP executable paths resolve through the
+documented format-specific token.
 
 ### Phase 1-B — Add Distribution Hooks
 
@@ -192,7 +194,7 @@ During implementation, keep verification scoped to the touched surfaces first:
 
 ## Cross References
 
-- [copilot-bootstrap-distribution-2026-04-12.md](copilot-bootstrap-distribution-2026-04-12.md)
+- [copilot-bootstrap-distribution-2026-04-12.md](archive/2026-04/copilot-bootstrap-distribution-2026-04-12.md)
 - [SETUP.md](../../SETUP.md)
 - [UPDATE.md](../../UPDATE.md)
 - [template/setup/interview.md](../../template/setup/interview.md)

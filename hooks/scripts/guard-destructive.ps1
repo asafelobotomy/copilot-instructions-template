@@ -17,9 +17,18 @@ try {
 }
 
 $toolName = $data.tool_name ?? ''
+$toolNameLower = $toolName.ToLowerInvariant()
+$toolNameCanon = ($toolNameLower -replace '[_-]', '')
 
-# Only guard terminal/command tools
-if ($toolName -notmatch 'terminal|command|bash|shell') {
+# Only guard terminal/command tools plus create_and_run_task, which nests its
+# executable command under tool_input.task.command.
+if ($toolName -notmatch 'terminal|command|bash|shell' -and $toolNameCanon -ne 'createandruntask') {
+    '{"continue": true}'; exit 0
+}
+
+# Read-only terminal observer tools do not execute commands and therefore
+# legitimately omit tool_input.command.
+if ($toolNameCanon -in @('getterminaloutput', 'terminallastcommand', 'terminalselection', 'killterminal')) {
     '{"continue": true}'; exit 0
 }
 # Read-only terminal observation tools — never execute commands, always allow
@@ -32,6 +41,21 @@ $ti = $data.tool_input
 $command = ''
 if ($null -ne $ti -and $ti.command -is [string]) {
     $command = $ti.command
+}
+
+if ($toolNameCanon -eq 'createandruntask' -and $null -ne $ti.task) {
+    $task = $ti.task
+    if ($task.command -is [string]) {
+        $parts = @($task.command)
+        if ($task.args -is [System.Collections.IEnumerable]) {
+            foreach ($arg in $task.args) {
+                if ($arg -is [string] -and $arg) {
+                    $parts += $arg
+                }
+            }
+        }
+        $command = ($parts | Where-Object { $_ }) -join ' '
+    }
 }
 
 if ([string]::IsNullOrWhiteSpace($command)) {

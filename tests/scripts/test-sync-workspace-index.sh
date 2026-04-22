@@ -166,6 +166,7 @@ json.load(path.open())
 assert_python_in_root "counts match fixture contents" "$TMP_WRITE" "
 for rel in ('.copilot/workspace/operations/workspace-index.json', 'template/workspace/operations/workspace-index.json'):
   data = json.load((root / rel).open())
+  assert data['\$schema'] == 'https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/schema/workspace-index.schema.json'
   assert data['counts']['agents'] == 3
   assert data['counts']['agentSupportFiles'] == 1
   assert data['counts']['skillsRepo'] == 3
@@ -238,6 +239,15 @@ output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" --check 2>&1)
 status=$?
 assert_success "real repo indices are in sync" "$status"
 assert_contains "real repo reports both indices are in sync" "$output" "OK: workspace-index.json files are in sync"
+
+assert_python "workspace-index schema file exists" '
+schema = root / ".copilot/schema/workspace-index.schema.json"
+if not schema.exists():
+  raise SystemExit("missing .copilot/schema/workspace-index.schema.json")
+payload = json.load(schema.open(encoding="utf-8"))
+if payload.get("title") != "Workspace Index":
+  raise SystemExit("unexpected schema title")
+'
 echo ""
 
 finish_tests

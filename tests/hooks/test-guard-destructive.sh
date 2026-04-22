@@ -91,6 +91,14 @@ echo ""
 echo "5. Robustness — malformed input stays stable and missing command asks"
 assert_no_crash "empty JSON object" '{}'
 assert_no_crash "empty string"      ''
+assert_guard_continue "get_terminal_output without command continues" '{"tool_name":"get_terminal_output","tool_input":{"id":"abc"}}'
+assert_guard_continue "getTerminalOutput without command continues" '{"tool_name":"getTerminalOutput","tool_input":{"id":"abc"}}'
+assert_guard_continue "terminal_last_command without command continues" '{"tool_name":"terminal_last_command","tool_input":{}}'
+assert_guard_continue "terminal_selection without command continues" '{"tool_name":"terminal_selection","tool_input":{}}'
+assert_guard_continue "kill_terminal without command continues" '{"tool_name":"kill_terminal","tool_input":{"id":"abc"}}'
+assert_guard_continue "create_and_run_task safe command continues" '{"tool_name":"create_and_run_task","tool_input":{"workspaceFolder":"/tmp/project","task":{"label":"List files","type":"shell","command":"ls","args":["-la"]}}}'
+assert_guard_decision "create_and_run_task caution command asks" '{"tool_name":"create_and_run_task","tool_input":{"workspaceFolder":"/tmp/project","task":{"label":"Force push","type":"shell","command":"git","args":["push","origin","--force"]}}}' "ask"
+assert_guard_decision "create_and_run_task missing task command asks" '{"tool_name":"create_and_run_task","tool_input":{"workspaceFolder":"/tmp/project","task":{"label":"Broken task","type":"shell"}}}' "ask"
 assert_guard_decision "missing tool_input asks"    '{"tool_name": "bash"}'                               "ask"
 assert_guard_decision "null command asks"          '{"tool_name": "bash", "tool_input": {"command": null}}' "ask"
 assert_guard_decision "unsupported input key asks" '{"tool_name": "bash", "tool_input": {"input": "rm -rf /"}}' "ask"

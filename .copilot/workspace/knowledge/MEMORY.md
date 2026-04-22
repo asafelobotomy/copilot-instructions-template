@@ -31,6 +31,7 @@
 |--------|--------|----------|--------|-------|
 | Doctor↔Security circular handoffs | notable | 2026-04-02 | `.github/agents/` | Consider merging into unified Audit agent |
 | Explore agent read-only guarantee (no editFiles) | critical | 2026-04-02 | `.github/agents/explore.agent.md` | Required for parallel subagent safety — do not add editFiles |
+| Starter-kit plugin locations must stay repo-relative | critical | 2026-04-22 | `SETUP.md`, `README.md`, consumer review findings | Absolute home-directory `chat.pluginLocations` entries create machine-specific drift in generated consumer workspaces; prefer `.github/starter-kits/<kit-name>` style paths |
 
 ## Archived
 

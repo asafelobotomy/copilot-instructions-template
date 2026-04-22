@@ -19,7 +19,7 @@ fi
 
 run_hook() {
   local script_path="$1" payload="$2"
-  printf '%s' "$payload" | "$PWSH_BIN" -NoLogo -NoProfile -File "$WRAPPER" -ScriptPath "$script_path" -TracePath "$TRACE_PATH" >/dev/null
+  "$PWSH_BIN" -NoLogo -NoProfile -File "$WRAPPER" -ScriptPath "$script_path" -TracePath "$TRACE_PATH" -Payload "$payload" >/dev/null
 }
 
 TEMPLATE_HOOKS="$REPO_ROOT/hooks/scripts"

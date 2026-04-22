@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/schema/workspace-index.schema.json",
+  "title": "Workspace Index",
+  "type": "object",
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "updated",
+    "purpose",
+    "counts",
+    "prompts",
+    "instructions",
+    "workspaceFiles",
+    "workflowFiles",
+    "notes"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "schemaVersion": {
+      "type": "string"
+    },
+    "updated": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "ownershipMode": {
+      "type": "string"
+    },
+    "plugin": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "agents": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "agentSupportFiles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "skills": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "prompts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "instructions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "workspaceFiles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "workflowFiles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "hookScripts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": true
+}

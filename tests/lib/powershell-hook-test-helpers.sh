@@ -35,7 +35,7 @@ run_ps_script() {
   shift 2
   if [[ -n "${PWSH_COVERAGE_TRACE:-}" ]]; then
     if [[ $# -eq 0 ]]; then
-      printf '%s' "$payload" | "$PWSH" -NoLogo -NoProfile -File "$REPO_ROOT/tests/coverage/invoke-powershell-with-coverage.ps1" -ScriptPath "$script_path" -TracePath "$PWSH_COVERAGE_TRACE" 2>/dev/null
+      "$PWSH" -NoLogo -NoProfile -File "$REPO_ROOT/tests/coverage/invoke-powershell-with-coverage.ps1" -ScriptPath "$script_path" -TracePath "$PWSH_COVERAGE_TRACE" -Payload "$payload" 2>/dev/null
       return
     fi
     printf '%s' "$payload" | "$PWSH" -NoLogo -NoProfile -File "$script_path" "$@" 2>/dev/null

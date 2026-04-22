@@ -45,6 +45,8 @@ secrets.yaml
 copilot-heartbeat/
 
 # Local test/debug artifacts
+audit_results.json
+pulse_test_output.log
 test_*_output.txt
 test_output.log
 test_results.log

@@ -268,17 +268,22 @@ required_dev = [
     "prefer a repo wrapper if one exists",
     "prefer a dedicated stdin or here-doc wrapper when the repo provides one",
     "run the snippet through a child Bash process with strict mode enabled",
-    "Use `get_terminal_output`, `send_to_terminal`, and `kill_terminal` only with the exact opaque terminal ID returned by `run_in_terminal` async mode",
-    "Treat `get_terminal_output`, `send_to_terminal`, and `kill_terminal` as valid only when `run_in_terminal` returned a live terminal ID",
-    "Do not pass shell names, terminal labels, editor terminals, or `execution_subagent` results",
+    "`get_terminal_output` and `send_to_terminal` accept two distinct selectors",
+    "`kill_terminal` accepts only the opaque UUID returned by `run_in_terminal` async mode",
+    "Do not pass shell names, terminal labels, or `execution_subagent` results",
     "Use `terminal_last_command` and `terminal_selection` only for the currently active editor terminal",
+    "For interactive terminal input, send one answer at a time with `send_to_terminal`",
     "prefer a synchronous terminal run or `execution_subagent` over polling a background terminal",
     "call `kill_terminal` when that session is no longer needed",
-    "Do not add `sleep` loops or blind polling around background terminals",
+    "Background terminal notifications are enabled by default",
     "prefer repo scripts or `create_and_run_task`",
     "avoid reserved variable names such as `status`",
     "Do not rely on profile files, aliases, or exported shell options",
     "stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation",
+    "Terminal command auto-approval rules use best-effort parsing",
+    "When `chat.tools.terminal.sandbox.enabled` is active on macOS, Linux, or WSL2",
+    "Linux terminal sandboxing requires `bubblewrap` and `socat`",
+    "Before declaring GitHub CLI auth missing or broken, run `gh auth status` explicitly",
 ]
 required_tpl = [
     "For high-volume commands, capture the full output to a log file and print only a bounded tail instead of streaming everything",
@@ -290,17 +295,22 @@ required_tpl = [
     "prefer a repo wrapper if one exists",
     "prefer a dedicated stdin or here-doc wrapper when the repo provides one",
     "run the snippet through a child Bash process with strict mode enabled",
-    "Use `get_terminal_output`, `send_to_terminal`, and `kill_terminal` only with the exact opaque terminal ID returned by `run_in_terminal` async mode",
-    "Treat `get_terminal_output`, `send_to_terminal`, and `kill_terminal` as valid only when `run_in_terminal` returned a live terminal ID",
-    "Do not pass shell names, terminal labels, editor terminals, or `execution_subagent` results",
+    "`get_terminal_output` and `send_to_terminal` accept two distinct selectors",
+    "`kill_terminal` accepts only the opaque UUID returned by `run_in_terminal` async mode",
+    "Do not pass shell names, terminal labels, or `execution_subagent` results",
     "Use `terminal_last_command` and `terminal_selection` only for the currently active editor terminal",
+    "For interactive terminal input, send one answer at a time with `send_to_terminal`",
     "prefer a synchronous terminal run or `execution_subagent` over polling a background terminal",
     "call `kill_terminal` when that session is no longer needed",
-    "Do not add `sleep` loops or blind polling around background terminals",
+    "Background terminal notifications are enabled by default",
     "prefer repo scripts or `create_and_run_task`",
     "avoid reserved variable names such as `status`",
     "Do not rely on profile files, aliases, or exported shell options",
     "stop retrying equivalent one-liners and switch to a repo script or simpler direct invocation",
+    "Terminal command auto-approval rules use best-effort parsing",
+    "When `chat.tools.terminal.sandbox.enabled` is active on macOS, Linux, or WSL2",
+    "Linux terminal sandboxing requires `bubblewrap` and `socat`",
+    "Before declaring GitHub CLI auth missing or broken, run `gh auth status` explicitly",
 ]
 
 for path_rel, needles in [
@@ -321,13 +331,14 @@ if "bash scripts/harness/run-all-captured.sh" not in dev_text:
 
 readme_text = " ".join((root / "README.md").read_text(encoding="utf-8").split())
 for needle in [
-    "For the async terminal tool family, use the exact terminal ID returned by `run_in_terminal` async mode with `get_terminal_output`, `send_to_terminal`, and `kill_terminal`.",
-    "Treat those tools as valid only when `run_in_terminal` returned a live terminal ID, usually from async mode or from a sync command that outlived its timeout.",
+    "For terminal-session tools, use the right selector: `id` is the opaque UUID returned by `run_in_terminal` async mode, while `terminalId` is the numeric instanceId for a terminal already visible in the terminal panel.",
+    "`get_terminal_output` and `send_to_terminal` can use either selector in the correct parameter; `kill_terminal` only accepts the async `id` UUID.",
     "Use `terminal_last_command` and `terminal_selection` only for the currently active editor terminal.",
     "prefer `execution_subagent` or a synchronous terminal run over creating a background terminal just to poll it.",
     "call `kill_terminal` when the session is no longer needed.",
-    "Do not add `sleep` loops or blind polling around background terminals.",
+    "Background terminal notifications are enabled by default, so do not add `sleep` loops or blind polling around background terminals.",
     "prefer repo scripts or `create_and_run_task` instead of a persistent interactive shell.",
+    "For interactive terminal prompts, send one answer at a time with `send_to_terminal`",
 ]:
     if " ".join(needle.split()) not in readme_text:
         raise SystemExit("README.md missing async terminal guidance: " + needle)
@@ -633,6 +644,110 @@ for rel, needles in checks.items():
     for needle in needles:
         if needle not in text:
             raise SystemExit(rel + " missing targeted-first policy guidance: " + needle)
+'
+echo ""
+
+echo "15. Plugin root-token guidance and root plugin hook surfaces stay format-aware"
+assert_python "plugin guidance distinguishes formats and root plugin surfaces stay wired" '
+import json
+
+guidance_checks = {
+    ".github/skills/plugin-management/SKILL.md": [
+        "`${CLAUDE_PLUGIN_ROOT}` for Claude-format plugins",
+        "`${PLUGIN_ROOT}` for OpenPlugin plugins",
+        "Copilot-format plugins do not currently document a plugin-root token in VS Code",
+    ],
+    "template/skills/plugin-management/SKILL.md": [
+        "`${CLAUDE_PLUGIN_ROOT}` for Claude-format plugins",
+        "`${PLUGIN_ROOT}` for OpenPlugin plugins",
+        "Copilot-format plugins do not currently document a plugin-root token in VS Code",
+    ],
+    ".github/skills/mcp-builder/SKILL.md": [
+        "For Claude-format plugins, use `${CLAUDE_PLUGIN_ROOT}`",
+        "For OpenPlugin plugins, replace it with `${PLUGIN_ROOT}`",
+        "Copilot-format plugins do not currently document a plugin-root token in VS Code",
+    ],
+    "template/skills/mcp-builder/SKILL.md": [
+        "For Claude-format plugins, use `${CLAUDE_PLUGIN_ROOT}`",
+        "For OpenPlugin plugins, replace it with `${PLUGIN_ROOT}`",
+        "Copilot-format plugins do not currently document a plugin-root token in VS Code",
+    ],
+    "README.md": [
+        "OpenPlugin under [`.plugin/plugin.json`](.plugin/plugin.json)",
+        "Claude format under [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json)",
+        "does not currently ship a Copilot-format root `plugin.json`",
+    ],
+}
+for rel, needles in guidance_checks.items():
+    text = (root / rel).read_text(encoding="utf-8")
+    for needle in needles:
+        if needle not in text:
+            raise SystemExit(rel + " missing plugin-format guidance: " + needle)
+
+plugin_specs = {
+    ".plugin": {
+        "manifest": "plugin.json",
+        "hooks": "hooks.json",
+        "mcp": ".mcp.json",
+        "token": "${PLUGIN_ROOT}",
+        "forbidden": ["${CLAUDE_PLUGIN_ROOT}", "${workspaceFolder}"],
+    },
+    ".claude-plugin": {
+        "manifest": "plugin.json",
+        "hooks": "hooks/hooks.json",
+        "mcp": ".mcp.json",
+        "token": "${CLAUDE_PLUGIN_ROOT}",
+        "forbidden": ["${PLUGIN_ROOT}", "${workspaceFolder}"],
+    },
+}
+
+workspace_hooks = json.loads((root / "template/hooks/copilot-hooks.json").read_text(encoding="utf-8"))["hooks"]
+workspace_events = set(workspace_hooks.keys())
+
+for plugin_root, spec in plugin_specs.items():
+    manifest_path = root / plugin_root / spec["manifest"]
+    hooks_path = root / plugin_root / spec["hooks"]
+    mcp_path = root / plugin_root / spec["mcp"]
+
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    hooks = json.loads(hooks_path.read_text(encoding="utf-8"))
+    mcp = json.loads(mcp_path.read_text(encoding="utf-8"))
+
+    if manifest.get("name") != "copilot-instructions-template":
+        raise SystemExit(str(manifest_path.relative_to(root)) + " has unexpected plugin name")
+    if manifest.get("agents") != "../.github/agents":
+        raise SystemExit(str(manifest_path.relative_to(root)) + " must point agents at ../.github/agents")
+    if manifest.get("skills") != "../.github/skills":
+        raise SystemExit(str(manifest_path.relative_to(root)) + " must point skills at ../.github/skills")
+    if manifest.get("hooks") != spec["hooks"]:
+        raise SystemExit(str(manifest_path.relative_to(root)) + " must point hooks at " + spec["hooks"])
+    if manifest.get("mcpServers") != spec["mcp"]:
+        raise SystemExit(str(manifest_path.relative_to(root)) + " must point mcpServers at " + spec["mcp"])
+
+    hook_events = set(hooks.get("hooks", {}).keys())
+    if hook_events != workspace_events:
+        raise SystemExit(str(hooks_path.relative_to(root)) + " events diverged from template/hooks/copilot-hooks.json")
+
+    hook_text = hooks_path.read_text(encoding="utf-8")
+    if spec["token"] not in hook_text:
+        raise SystemExit(str(hooks_path.relative_to(root)) + " missing expected token " + spec["token"])
+    for forbidden in spec["forbidden"]:
+        if forbidden in hook_text:
+            raise SystemExit(str(hooks_path.relative_to(root)) + " contains wrong path token " + forbidden)
+
+    mcp_text = mcp_path.read_text(encoding="utf-8")
+    if spec["token"] not in mcp_text:
+        raise SystemExit(str(mcp_path.relative_to(root)) + " missing expected token " + spec["token"])
+    for forbidden in spec["forbidden"]:
+        if forbidden in mcp_text:
+            raise SystemExit(str(mcp_path.relative_to(root)) + " contains wrong path token " + forbidden)
+
+    heartbeat = mcp.get("mcpServers", {}).get("heartbeat")
+    if not heartbeat:
+        raise SystemExit(str(mcp_path.relative_to(root)) + " missing heartbeat MCP server")
+    args = heartbeat.get("args", [])
+    if not any(spec["token"] in arg and "mcp-heartbeat-server.py" in arg for arg in args):
+        raise SystemExit(str(mcp_path.relative_to(root)) + " must launch the heartbeat server from plugin-aware path")
 '
 echo ""
 

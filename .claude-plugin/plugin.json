@@ -1,0 +1,16 @@
+{
+  "name": "copilot-instructions-template",
+  "description": "Lean/Kaizen GitHub Copilot template for VS Code projects.",
+  "author": {
+    "name": "asafelobotomy",
+    "url": "https://github.com/asafelobotomy"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/asafelobotomy/copilot-instructions-template",
+  "keywords": ["copilot", "vscode", "agents", "hooks", "mcp"],
+  "category": "productivity",
+  "agents": "../.github/agents",
+  "skills": "../.github/skills",
+  "hooks": "hooks/hooks.json",
+  "mcpServers": ".mcp.json"
+}

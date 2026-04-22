@@ -56,7 +56,27 @@ for kit in registry["kits"]:
 '
 echo ""
 
-echo "4. Every .claude-plugin/plugin.json has required fields"
+echo "4. Every on-disk starter-kit file is declared in REGISTRY.json"
+assert_python "kit registries fully enumerate shipped files" '
+registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
+for kit in registry["kits"]:
+    kit_dir = root / "starter-kits" / kit["name"]
+    listed = set(kit["files"])
+    actual = {
+        path.relative_to(kit_dir).as_posix()
+        for path in kit_dir.rglob("*")
+        if path.is_file() and "__pycache__" not in path.parts
+    }
+    if listed != actual:
+        raise SystemExit(
+            "starter-kits/" + kit["name"] + " registry drift "
+            + "registry-only=" + str(sorted(listed - actual)) + " "
+            + "disk-only=" + str(sorted(actual - listed))
+        )
+'
+echo ""
+
+echo "5. Every .claude-plugin/plugin.json has required fields"
 assert_python "plugin.json schema is valid" '
 registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
 for kit in registry["kits"]:
@@ -102,7 +122,7 @@ if mcp != {}:
 '
 echo ""
 
-echo "5. SKILL.md files in kits have valid YAML frontmatter"
+echo "6. SKILL.md files in kits have valid YAML frontmatter"
 assert_python "kit SKILL.md frontmatter is valid" '
 registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
 for kit in registry["kits"]:
@@ -120,7 +140,7 @@ for kit in registry["kits"]:
 '
 echo ""
 
-echo "6. Kit command files have valid frontmatter"
+echo "7. Kit command files have valid frontmatter"
 assert_python "kit command frontmatter is valid" '
 registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
 for kit in registry["kits"]:
@@ -141,7 +161,7 @@ for kit in registry["kits"]:
 '
 echo ""
 
-echo "7. Plugin manifests are in .claude-plugin/ directory"
+echo "8. Plugin manifests are in .claude-plugin/ directory"
 assert_python "plugin.json location is correct" '
 registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
 for kit in registry["kits"]:
@@ -154,7 +174,7 @@ for kit in registry["kits"]:
 '
 echo ""
 
-echo "8. No placeholder tokens in any starter-kit file"
+echo "9. No placeholder tokens in any starter-kit file"
 assert_python "no {{ tokens in starter-kits/" '
 for path in (root / "starter-kits").rglob("*"):
     if not path.is_file():
@@ -168,7 +188,7 @@ for path in (root / "starter-kits").rglob("*"):
 '
 echo ""
 
-echo "9. Kit names are lowercase alphanumeric with hyphens only"
+echo "10. Kit names are lowercase alphanumeric with hyphens only"
 assert_python "kit names follow naming convention" '
 registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
 for kit in registry["kits"]:

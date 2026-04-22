@@ -78,6 +78,14 @@
 | <https://engineering.fb.com/2026/02/11/developer-tools/the-death-of-traditional-testing-agentic-development-jit-testing-revival/> | Meta JiTTesting 2026: LLM-generated on-the-fly tests for each change via mutation testing; addresses agentic development test burden | 2026-04-12 | jit-testing, meta, agentic, 2026 |
 | <https://testmon.org/> | pytest-testmon: Coverage.py-based per-method dependency tracking; --testmon-noselect for risk-ordered execution without deselection | 2026-04-12 | test-selection, python, testmon |
 | <https://code.visualstudio.com/docs/copilot/security> | Trust boundaries: workspace, extension publisher, MCP server, network domain; sandbox constraints; recommended security baseline | 2026-04-12 | security, trust, sandbox |
+
+## VS Code Terminal Agent Tools — 2026-04-22
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://code.visualstudio.com/updates/v1_115> | v1.115 (2026-04-08): `send_to_terminal` introduced for background terminals; `chat.tools.terminal.backgroundNotifications` experimental; `get_terminal_output` for background only | 2026-04-22 | terminal, tools, release-notes |
+| <https://code.visualstudio.com/updates/v1_116> | v1.116 (2026-04-15): `send_to_terminal`/`get_terminal_output` extended to ALL visible terminals via `terminalId` (numeric instanceId); LLM prompt-detection removed; background notifications default-on | 2026-04-22 | terminal, tools, release-notes |
+| <https://code.visualstudio.com/docs/copilot/concepts/trust-and-safety> | Agent sandboxing: macOS (Seatbelt) / Linux (bubblewrap+socat); read-all/write-cwd default; network blocked by default; child processes inherit restrictions; sandbox auto-approves commands | 2026-04-22 | sandbox, security, terminal |
 | <https://code.visualstudio.com/docs/editor/workspace-trust> | Workspace Trust Restricted Mode disables agents, tasks, debugging; trust required before agent bootstrap can run | 2026-04-12 | security, workspace-trust |
 | <https://code.visualstudio.com/docs/devcontainers/create-dev-container> | devcontainer.json: postCreateCommand + customizations.vscode.extensions for zero-touch Copilot + template install | 2026-04-12 | devcontainer, bootstrap |
 | <https://code.visualstudio.com/api/working-with-extensions/publishing-extension> | VSIX packaging via vsce; Azure DevOps publisher account required; sideload vs Marketplace paths | 2026-04-12 | vsix, extension, distribution |
@@ -253,7 +261,7 @@
 | <https://docs.openclaw.ai/gateway/heartbeat> | OpenClaw heartbeat: timed interval turns (30m default), HEARTBEAT_OK suppression, lightContext/isolatedSession cost controls, response-contract, HEARTBEAT.md as read-only checklist input | 2026-03-30 | heartbeat, openclaw, agent-health |
 | <https://docs.openclaw.ai/automation/cron-vs-heartbeat> | Cron vs Heartbeat decision guide: heartbeat = batched main-session awareness, cron = exact timing + isolation. Heartbeat reduces API calls vs many small pollers | 2026-03-30 | heartbeat, cron, openclaw |
 | <https://code.visualstudio.com/docs/copilot/customization/hooks> | VS Code hooks full reference: 8 lifecycle events, Stop hook decision:block vs continue:false semantics, PreCompact additionalContext-only output, SessionStart sessionId field, timeout constraints | 2026-03-30 | hooks, vscode, lifecycle |
-| <https://code.visualstudio.com/docs/copilot/customization/agent-plugins> | Agent plugins: bundles of skills/hooks/agents/MCP servers; CLAUDE_PLUGIN_ROOT env var; hooks.json discovered automatically; plugin hooks fire alongside workspace hooks | 2026-03-30 | plugins, vscode, hooks |
+| <https://code.visualstudio.com/docs/copilot/customization/agent-plugins> | Agent plugins: bundles of skills/hooks/agents/MCP servers; plugin-root token is format-specific (`${CLAUDE_PLUGIN_ROOT}` for Claude, `${PLUGIN_ROOT}` for OpenPlugin, none documented for Copilot); hooks.json or hooks/hooks.json discovered automatically; plugin hooks fire alongside workspace hooks | 2026-03-30 | plugins, vscode, hooks |
 | <https://martinfowler.com/articles/201701-event-driven.html> | Fowler event-driven patterns: Event Notification vs Event-Carried State Transfer vs Event Sourcing; event-as-passive-aggressive-command anti-pattern | 2026-03-30 | event-driven, patterns, architecture |
 
 ## Metadata, Constants, and AI Agent File Patterns

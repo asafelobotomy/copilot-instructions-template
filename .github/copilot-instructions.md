@@ -66,8 +66,9 @@ Run deterministic targeted suites during intermediate phases when the repo has a
 **Terminal discipline**: See `.github/instructions/terminal.instructions.md` (loaded automatically for shell files). The following rules apply regardless of file type:
 
 - Prefer `execution_subagent` or synchronous `run_in_terminal` over async+poll for any command that will finish on its own. Reserve async sessions for genuinely persistent processes (servers, watchers).
-- `get_terminal_output` is only valid with the exact opaque UUID returned by `run_in_terminal` async mode. Integer terminal IDs, shell names, and labels are not valid inputs.
+- `get_terminal_output` and `send_to_terminal` accept `id` for async `run_in_terminal` sessions and `terminalId` for visible foreground terminals. `kill_terminal` still accepts only the async `id` UUID.
 - If `get_terminal_output` returns "command not found", the call used an invalid ID. Discard the result and re-run with `execution_subagent` or synchronous `run_in_terminal`.
+- Background terminal notifications are enabled by default, so polling loops and sleep-based checks are wasted work.
 
 ## PDCA Cycle
 
