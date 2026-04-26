@@ -1,7 +1,7 @@
 # Setup Interview Questions
 
 > Fetched by the Setup agent during § 0d. Question content only — batching and
-> presentation rules are in SETUP.md.
+> presentation rules are in `agents/setup.agent.md`.
 
 ---
 

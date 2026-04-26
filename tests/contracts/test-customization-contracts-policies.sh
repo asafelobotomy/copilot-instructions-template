@@ -188,6 +188,36 @@ for rel in ("AGENTS.md", "agents/setup.agent.md"):
 '
 echo ""
 
+echo "5b. Setup guide stays aligned with plugin and manual bootstrap entry points"
+assert_python "SETUP.md documents searchable setup routes and canonical triggers" '
+checks = {
+    "SETUP.md": [
+        "# Setup Guide",
+        "Install the copilot-instructions-template plugin",
+        "Setup from asafelobotomy/copilot-instructions-template",
+        "Set up this project",
+        "Chat: Install Plugin",
+        "Chat: Install Plugin From Source",
+        "chat.pluginLocations",
+        "Plugin-backed",
+        "All-local",
+        "See [AGENTS.md](AGENTS.md) for the full trigger table.",
+    ],
+    "README.md": [
+        "### Setup routes",
+        "Set up this project",
+        "See [SETUP.md](SETUP.md) for the full plugin and manual setup flow",
+        "If the plugin marketplace entry is unavailable, follow the manual Copilot bootstrap path in [SETUP.md](SETUP.md).",
+    ],
+}
+for rel, needles in checks.items():
+    text = (root / rel).read_text(encoding="utf-8")
+    for needle in needles:
+        if needle not in text:
+            raise SystemExit(rel + " missing setup routing guidance: " + needle)
+'
+echo ""
+
 # ──────────────────────────────────────────────────────────────
 echo "6. Task completion and testing policy distinguish targeted vs full-suite gates"
 assert_python "instruction files define phase testing vs final completion semantics" '

@@ -125,7 +125,7 @@ After writing `.sh` files: `chmod +x .github/hooks/scripts/*.sh`
 | `.copilot/workspace/operations/ledger.md` | `template/workspace/operations/ledger.md` |
 | `.copilot/workspace/knowledge/diaries/README.md` | `template/workspace/knowledge/diaries/README.md` |
 
-Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today's date, `{{SPATIAL_THEME}}` → chosen one-word metaphor, `{{SPATIAL_VOCAB}}` → the resolved Markdown row set from SETUP.md §2.
+Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today's date, `{{SPATIAL_THEME}}` → chosen one-word metaphor, `{{SPATIAL_VOCAB}}` → the resolved Markdown row set from the setup interview answers.
 
 ---
 
