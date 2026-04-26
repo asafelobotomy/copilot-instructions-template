@@ -41,7 +41,7 @@ Use one of these bootstrap paths:
 
 For local plugin paths, prefer repo-relative entries for workspace-installed starter kits and avoid committing machine-specific absolute home-directory paths.
 
-This repo now ships plugin manifests for the token-bearing plugin formats that can safely resolve plugin-owned executables: OpenPlugin under [`.plugin/plugin.json`](.plugin/plugin.json) and Claude format under [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json). The repo does not currently ship a Copilot-format root `plugin.json` because VS Code does not document an equivalent plugin-root token for plugin-owned hook and MCP executable paths.
+This repo now ships plugin manifests for all three currently relevant surfaces: the root Copilot-format manifest at [`plugin.json`](plugin.json), OpenPlugin under [`.plugin/plugin.json`](.plugin/plugin.json), and Claude format under [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json). The OpenPlugin and Claude manifests are the token-bearing formats that can safely resolve plugin-owned executables. VS Code still does not document an equivalent plugin-root token for Copilot-format plugin-owned hook and MCP executable paths, so the root manifest keeps explicit component wiring instead.
 
 ## Install
 

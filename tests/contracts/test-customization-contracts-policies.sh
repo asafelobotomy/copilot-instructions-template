@@ -673,9 +673,10 @@ guidance_checks = {
         "Copilot-format plugins do not currently document a plugin-root token in VS Code",
     ],
     "README.md": [
+        "the root Copilot-format manifest at [`plugin.json`](plugin.json)",
         "OpenPlugin under [`.plugin/plugin.json`](.plugin/plugin.json)",
         "Claude format under [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json)",
-        "does not currently ship a Copilot-format root `plugin.json`",
+        "does not document an equivalent plugin-root token for Copilot-format plugin-owned hook and MCP executable paths",
     ],
 }
 for rel, needles in guidance_checks.items():
@@ -734,6 +735,12 @@ for plugin_root, spec in plugin_specs.items():
     for forbidden in spec["forbidden"]:
         if forbidden in hook_text:
             raise SystemExit(str(hooks_path.relative_to(root)) + " contains wrong path token " + forbidden)
+    expected_hook_suffix = "../hooks/scripts/"
+    forbidden_hook_suffix = "../.github/hooks/scripts/"
+    if expected_hook_suffix not in hook_text:
+        raise SystemExit(str(hooks_path.relative_to(root)) + " must point hook commands at " + expected_hook_suffix)
+    if forbidden_hook_suffix in hook_text:
+        raise SystemExit(str(hooks_path.relative_to(root)) + " must not point hook commands at deleted " + forbidden_hook_suffix + " paths")
 
     mcp_text = mcp_path.read_text(encoding="utf-8")
     if spec["token"] not in mcp_text:
