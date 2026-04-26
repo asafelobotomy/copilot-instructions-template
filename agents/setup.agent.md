@@ -102,6 +102,7 @@ table (§ 10). Write to `.github/copilot-instructions.md`. Validate no `{{.*}}`
 tokens remain; if any, batch-ask the user (max 4 per call).
 
 Apply E24 to the Thinking Effort Configuration table in §10:
+
 - E24 = A (MODELS.md recommendations): keep the static table as written.
 - E24 = B (All High): set all effort cells to **High**.
 - E24 = C (All Medium): set all effort cells to **Medium**.
