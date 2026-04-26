@@ -1,6 +1,6 @@
 #!/usr/bin/env pwsh
-# purpose:  Scan modified files for leaked secrets at session end
-# when:     Stop hook — fires when the agent session ends
+# purpose:  Scan modified files for leaked secrets
+# when:     Stop
 # inputs:   JSON via stdin
 # outputs:  JSON continuation signal on stdout; diagnostics on stderr
 # risk:     read-only
@@ -235,7 +235,7 @@ if ($Findings.Count -gt 0) {
             hookSpecificOutput = @{
                 hookEventName = 'Stop'
                 decision = 'block'
-                reason = "Secrets detected ($($Findings.Count) finding(s)). Resolve before ending the session or set SCAN_MODE=warn to continue."
+                reason = "Secrets detected ($($Findings.Count)). Resolve them or set SCAN_MODE=warn."
             }
             continue = $true
         }

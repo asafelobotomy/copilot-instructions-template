@@ -1,8 +1,8 @@
 #!/usr/bin/env pwsh
-# purpose:  Inject subagent governance context when a subagent is spawned
-# when:     SubagentStart hook — fires before a subagent begins work
+# purpose:  Add governance context when a subagent starts
+# when:     SubagentStart
 # inputs:   JSON via stdin with subagent details (agent_type, agent_id)
-# outputs:  JSON with additionalContext including governance hint
+# outputs:  JSON with additionalContext
 # risk:     safe
 # ESCALATION: none
 
@@ -21,7 +21,7 @@ catch {
 }
 
 # Spatial status is via the extension tool
-$context = "Depth<=3. Protocols: PDCA, Tool, Skill. Agent: ${agentName}. Call asafelobotomy_spatial_status (deferred extension tool) for session context and diary summaries."
+$context = "Depth<=3. PDCA, Tool, Skill. Agent: ${agentName}. Use asafelobotomy_spatial_status for context."
 
 $output = [ordered]@{
   hookSpecificOutput = [ordered]@{

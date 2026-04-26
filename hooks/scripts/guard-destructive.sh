@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # purpose:  Block dangerous terminal commands before execution
-# when:     PreToolUse hook — fires before the agent invokes any tool
+# when:     PreToolUse
 # inputs:   JSON via stdin with tool_name and tool_input
 # outputs:  JSON with permissionDecision (allow/deny/ask)
 # risk:     safe
@@ -54,7 +54,7 @@ if ! command -v python3 >/dev/null 2>&1; then
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
     "permissionDecision": "ask",
-    "permissionDecisionReason": "python3 missing — cannot parse command. Manual confirmation."
+    "permissionDecisionReason": "python3 missing. Confirm manually."
   }
 }
 EOF
@@ -88,7 +88,7 @@ if [[ -z "$TOOL_INPUT" ]]; then
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
     "permissionDecision": "ask",
-    "permissionDecisionReason": "Missing tool_input.command. Manual confirmation."
+    "permissionDecisionReason": "Missing tool_input.command. Confirm manually."
   }
 }
 EOF
@@ -205,7 +205,7 @@ for pattern in "${CAUTION_PATTERNS[@]}"; do
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
     "permissionDecision": "ask",
-    "permissionDecisionReason": "Caution pattern '${PATTERN_ESC}' matched. Confirm to proceed.",
+    "permissionDecisionReason": "Caution pattern '${PATTERN_ESC}'. Confirm.",
     "additionalContext": "Command: '${COMMAND_ESC}'"
   }
 }
@@ -235,8 +235,8 @@ if [[ "$AGENT_NAME" =~ ^(Audit|Review|Explore)$ ]]; then
   "hookSpecificOutput": {
     "hookEventName": "PreToolUse",
     "permissionDecision": "ask",
-    "permissionDecisionReason": "${AGENT_ESC} is read-only. Mutations need confirmation.",
-    "additionalContext": "Command '${COMMAND_ESC}' mutates state. Use Code agent or confirm."
+    "permissionDecisionReason": "${AGENT_ESC} is read-only. Confirm mutation.",
+    "additionalContext": "Command '${COMMAND_ESC}' mutates state. Use Code or confirm."
   }
 }
 EOF

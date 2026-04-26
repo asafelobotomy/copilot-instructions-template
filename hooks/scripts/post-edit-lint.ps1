@@ -1,8 +1,8 @@
 #!/usr/bin/env pwsh
 # purpose:  Auto-format files after agent edits them
-# when:     PostToolUse hook — fires after a tool completes successfully
+# when:     PostToolUse
 # inputs:   JSON via stdin with tool_name and tool_input
-# outputs:  JSON with additionalContext if lint errors found
+# outputs:  JSON with additionalContext if formatting fails
 # risk:     safe
 
 Set-StrictMode -Version 1

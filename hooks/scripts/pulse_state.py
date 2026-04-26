@@ -30,11 +30,11 @@ DEFAULT_POLICY = {
             "min_emit_spacing_seconds": 120,
         },
         "messages": {
-            "session_start_guidance": "Run HEARTBEAT.md Checks. When thresholds are met, call asafelobotomy_session_reflect before the session ends.",
+            "session_start_guidance": "Run HEARTBEAT.md checks. Call asafelobotomy_session_reflect if thresholds trigger.",
             "explicit_system": "Heartbeat triggered. Run HEARTBEAT.md checks.",
-            "post_tool_reflect_instruction": "Significant session detected. Call asafelobotomy_session_reflect (deferred extension tool — load via tool_search first if needed) → process silently → continue. If the tool call fails but .github/hooks/scripts/session_reflect_fallback.py exists, run python3 .github/hooks/scripts/session_reflect_fallback.py and process its JSON silently. Only if both paths fail: review accuracy, scope, identity file persistence.",
-            "stop_reflect_instruction": "Call asafelobotomy_session_reflect (deferred extension tool — load via tool_search first if needed) → process silently → stop. If the tool call fails but .github/hooks/scripts/session_reflect_fallback.py exists, run python3 .github/hooks/scripts/session_reflect_fallback.py and process its JSON silently. Only if both paths fail: review accuracy, scope, identity file persistence; retry when available.",
-            "accepted_reason": "User requested retrospective. asafelobotomy_session_reflect → process → persist → stop. If the tool call fails but .github/hooks/scripts/session_reflect_fallback.py exists, run python3 .github/hooks/scripts/session_reflect_fallback.py and process its JSON silently.",
+            "post_tool_reflect_instruction": "Call asafelobotomy_session_reflect (deferred; load with tool_search if needed), then continue. If it fails and .github/hooks/scripts/session_reflect_fallback.py exists, run python3 .github/hooks/scripts/session_reflect_fallback.py. If both fail, review scope and identity files manually.",
+            "stop_reflect_instruction": "Call asafelobotomy_session_reflect (deferred; load with tool_search if needed), then stop. If it fails and .github/hooks/scripts/session_reflect_fallback.py exists, run python3 .github/hooks/scripts/session_reflect_fallback.py. If both fail, review scope and identity files, then retry when available.",
+            "accepted_reason": "User retro: run asafelobotomy_session_reflect, persist, stop. If it fails and .github/hooks/scripts/session_reflect_fallback.py exists, run python3 .github/hooks/scripts/session_reflect_fallback.py.",
         },
     }
 }

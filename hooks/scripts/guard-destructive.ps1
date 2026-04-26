@@ -1,6 +1,6 @@
 #!/usr/bin/env pwsh
 # purpose:  Block dangerous terminal commands before execution
-# when:     PreToolUse hook — fires before the agent invokes any tool
+# when:     PreToolUse
 # inputs:   JSON via stdin with tool_name and tool_input
 # outputs:  JSON with permissionDecision (allow/deny/ask)
 # risk:     safe
@@ -143,7 +143,7 @@ foreach ($pattern in $cautionPatterns) {
             hookSpecificOutput = [PSCustomObject]@{
                 hookEventName           = 'PreToolUse'
                 permissionDecision      = 'ask'
-                permissionDecisionReason = "Caution pattern '$pattern' matched. Confirm to proceed."
+                permissionDecisionReason = "Caution pattern '$pattern'. Confirm."
                 additionalContext       = "Command: '$preview'"
             }
         } | ConvertTo-Json -Depth 5
@@ -188,8 +188,8 @@ if ($agentName -match '^(Audit|Review|Explore)$') {
                 hookSpecificOutput = [PSCustomObject]@{
                     hookEventName           = 'PreToolUse'
                     permissionDecision      = 'ask'
-                    permissionDecisionReason = "$agentName is read-only. Mutations need confirmation."
-                    additionalContext       = "Command '$preview' mutates state. Use Code agent or confirm."
+                    permissionDecisionReason = "$agentName is read-only. Confirm mutation."
+                    additionalContext       = "Command '$preview' mutates state. Use Code or confirm."
                 }
             } | ConvertTo-Json -Depth 5
             exit 0

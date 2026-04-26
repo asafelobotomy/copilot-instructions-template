@@ -226,32 +226,32 @@ Event-triggered health checks that keep the agent aligned with real project stat
 
 1. Read `HEARTBEAT.md` — follow it strictly. Do not infer tasks from prior sessions.
 2. Run every check in the Checks section. Cross-reference: MEMORY.md (consolidation), TOOLS.md (dependency audit), SOUL.md (reasoning alignment), §10 (settings drift).
-3. If the trigger is **explicit** and the user asked for a retrospective, call `asafelobotomy_session_reflect` (deferred extension tool — use tool_search to load it first) and process silently.
-4. If the session is **medium/large**, call `asafelobotomy_session_reflect` when the PostToolUse hook instructs (VS Code primary path). On clients that fire the Stop hook (Claude Code / CLI), the Stop handler provides a blocking fallback. Medium/large = one strong signal (8+ files or 30+ minutes) or two supporting (5+ files, 15+ minutes, compaction). Skip for small tasks.
+3. If the trigger is **explicit** and the user asked for a retrospective, call `asafelobotomy_session_reflect` (deferred; load with tool_search if needed) and process silently.
+4. If the session is **medium/large**, call `asafelobotomy_session_reflect` when PostToolUse instructs (VS Code primary path). On clients that fire Stop (Claude Code / CLI), the Stop handler is the blocking fallback. Medium/large = one strong signal (8+ files or 30+ minutes) or two supporting (5+ files, 15+ minutes, compaction). Skip small tasks.
 5. Update Pulse: `HEARTBEAT_OK` if all checks pass; prepend `[!]` with a one-line alert for each failure.
 6. Append a row to History (keep last 5).
 7. Write observations to Agent Notes for the next heartbeat.
 8. Report to user only if alerts or actionable retrospective findings exist — silent when healthy.
-9. **Context limit**: if context pressure is high, run `save-context.sh`, append a resume note to Agent Notes, then continue — never abandon a task mid-flight.
+9. **Context limit**: if context pressure is high, run `save-context.sh`, add a resume note to Agent Notes, then continue.
 
 ### Agent Hooks
 
-Hooks are deterministic shell commands executed by VS Code at specific agent lifecycle points. Unlike instructions (soft guidance), hooks guarantee outcomes.
+Hooks are deterministic shell commands that VS Code runs at specific lifecycle points. Unlike instructions, hooks guarantee outcomes.
 
-Hook configuration lives in `.github/hooks/copilot-hooks.json` (all-local mode) or is delivered by the agent plugin (plugin-backed mode). VS Code supports eight lifecycle events. The template wires all eight events using deterministic scripts:
+Hook configuration lives in `.github/hooks/copilot-hooks.json` (all-local mode) or is delivered by the agent plugin (plugin-backed mode). The template wires all eight VS Code lifecycle events:
 
 | Event | Primary script(s) | Purpose |
 |-------|-------------------|---------|
-| `SessionStart` | `session-start.sh`, `pulse.sh --trigger session_start` | Inject project context and initialize heartbeat state |
+| `SessionStart` | `session-start.sh`, `pulse.sh --trigger session_start` | Add project context and initialize heartbeat state |
 | `UserPromptSubmit` | `pulse.sh --trigger user_prompt` | Detect explicit heartbeat and retrospective prompts |
-| `PreToolUse` | `guard-destructive.sh` | Block dangerous commands; flag caution patterns for user confirmation (§3 enforcement) |
-| `PostToolUse` | `post-edit-lint.sh`, `pulse.sh --trigger soft_post_tool` | Auto-format edited files and debounce heartbeat soft triggers |
-| `Stop` | `scan-secrets.sh`, `pulse.sh --trigger stop` | Run secret scan and recommend retrospective only for medium/large completed tasks |
-| `PreCompact` | `save-context.sh`, `pulse.sh --trigger compaction` | Preserve workspace state before context compaction |
-| `SubagentStart` | `subagent-start.sh` | Inject governance context when a subagent spawns; hint to call `asafelobotomy_spatial_status` |
-| `SubagentStop` | `subagent-stop.sh` | Signal subagent completion |
+| `PreToolUse` | `guard-destructive.sh` | Block dangerous commands and flag caution patterns (§3) |
+| `PostToolUse` | `post-edit-lint.sh`, `pulse.sh --trigger soft_post_tool` | Auto-format edited files and debounce soft heartbeat triggers |
+| `Stop` | `scan-secrets.sh`, `pulse.sh --trigger stop` | Run secret scan and gate retrospectives for medium/large tasks |
+| `PreCompact` | `save-context.sh`, `pulse.sh --trigger compaction` | Save workspace state before compaction |
+| `SubagentStart` | `subagent-start.sh` | Add governance context and hint `asafelobotomy_spatial_status` |
+| `SubagentStop` | `subagent-stop.sh` | Mark subagent completion |
 
-Agent-scoped hooks: individual agents can define a `hooks:` section in their `.agent.md` YAML frontmatter. Agent-scoped hooks run only when that agent is active and supplement (not replace) global hooks. Enable via `chat.useCustomAgentHooks` setting.
+Agent-scoped hooks: individual agents can define a `hooks:` section in their `.agent.md` YAML frontmatter. These run only when that agent is active and supplement, not replace, global hooks. Enable them with `chat.useCustomAgentHooks`.
 
 ---
 

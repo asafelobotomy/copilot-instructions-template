@@ -1,8 +1,8 @@
 #!/usr/bin/env pwsh
-# purpose:  Save critical workspace context before conversation compaction
-# when:     PreCompact hook — fires when context is about to be truncated
+# purpose:  Save workspace context before compaction
+# when:     PreCompact
 # inputs:   JSON via stdin with trigger field
-# outputs:  JSON with additionalContext summarising saved state
+# outputs:  JSON with additionalContext summarizing saved state
 # risk:     safe
 # ESCALATION: none
 
@@ -230,7 +230,7 @@ if ($summaryLines.Count -eq 0) {
 }
 
 if ($summaryLines) {
-    $summary = "Pre-compaction workspace snapshot:`n" + ($summaryLines -join "`n")
+    $summary = "Workspace snapshot:`n" + ($summaryLines -join "`n")
     if ($summary.Length -gt 2000) { $summary = $summary.Substring(0,2000) }
 
     [PSCustomObject]@{

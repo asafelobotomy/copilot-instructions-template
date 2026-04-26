@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# purpose:  Signal subagent completion; diary writes are explicit agent actions via asafelobotomy_write_diary
-# when:     SubagentStop hook — fires after a subagent finishes
+# purpose:  Mark subagent completion
+# when:     SubagentStop
 # inputs:   JSON via stdin with subagent details (agent_type, agent_id, stop_hook_active)
-# outputs:  JSON with additionalContext summarising outcome
+# outputs:  JSON with additionalContext
 # risk:     safe
 # ESCALATION: none
 set -euo pipefail
@@ -17,7 +17,7 @@ AGENT_NAME=$(printf '%s' "$INPUT" | python3 -c "import sys,json; d=json.load(sys
 [[ -z "$AGENT_NAME" ]] && AGENT_NAME="unknown"
 
 # Build summary context
-CONTEXT="${AGENT_NAME} done. Review before continuing."
+CONTEXT="${AGENT_NAME} done. Review next step."
 
 # JSON-escape the context
 CONTEXT_ESC=$(json_escape "$CONTEXT")

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# purpose:  Orchestrate heartbeat trigger state and retrospective gating.
-# when:     Invoked by lifecycle hooks (SessionStart/PostToolUse/PreCompact/Stop/UserPromptSubmit).
+# purpose:  Run heartbeat state and retrospective gating.
+# when:     Invoked by lifecycle hooks.
 # inputs:   JSON on stdin + --trigger <session_start|pre_tool|soft_post_tool|compaction|stop|user_prompt|explicit>.
-# outputs:  JSON hook response (`continue` or Stop `decision:block`).
+# outputs:  JSON hook response.
 # risk:     safe
 # source:   original
 # ESCALATION: none
-# STOP LOOP: if stop_hook_active is true in the Stop payload, do not re-enter blocking Stop logic.
+# STOP LOOP: if stop_hook_active is true, do not re-enter blocking Stop logic.
 set -euo pipefail
 
 TRIGGER=""
@@ -40,13 +40,13 @@ elif command -v python >/dev/null 2>&1; then
 fi
 
 if [[ -z "$PYTHON_CMD" ]]; then
-  echo '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse hook: python3/python not found; skipping heartbeat runtime."}}'
+  echo '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse: python missing; heartbeat skipped."}}'
   exit 0
 fi
 
 RUNTIME_SCRIPT="$SCRIPT_DIR/pulse_runtime.py"
 if [[ ! -f "$RUNTIME_SCRIPT" ]]; then
-  echo '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse hook: pulse_runtime.py not found; skipping heartbeat runtime."}}'
+  echo '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse: pulse_runtime.py missing; heartbeat skipped."}}'
   exit 0
 fi
 

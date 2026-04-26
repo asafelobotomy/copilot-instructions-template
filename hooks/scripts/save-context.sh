@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# purpose:  Save critical workspace context before conversation compaction
-# when:     PreCompact hook — fires when context is about to be truncated
+# purpose:  Save workspace context before compaction
+# when:     PreCompact
 # inputs:   JSON via stdin with trigger field
-# outputs:  JSON with additionalContext summarising saved state
+# outputs:  JSON with additionalContext summarizing saved state
 # risk:     safe
 # ESCALATION: none
 set -euo pipefail
@@ -220,7 +220,7 @@ if [[ ${#SUMMARY_LINES[@]} -eq 0 ]]; then
   exit 0
 fi
 
-SUMMARY=$(printf 'Pre-compaction workspace snapshot:\n%s\n' "${SUMMARY_LINES[@]}")
+SUMMARY=$(printf 'Workspace snapshot:\n%s\n' "${SUMMARY_LINES[@]}")
 SUMMARY=$(printf '%s' "$SUMMARY" | head -c 2000)
 
 SUMMARY_ESCAPED=$(json_escape "$SUMMARY")

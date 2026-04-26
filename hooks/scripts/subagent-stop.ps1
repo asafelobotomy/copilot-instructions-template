@@ -1,8 +1,8 @@
 #!/usr/bin/env pwsh
-# purpose:  Signal subagent completion; diary writes are explicit agent actions via asafelobotomy_write_diary
-# when:     SubagentStop hook — fires after a subagent finishes
+# purpose:  Mark subagent completion
+# when:     SubagentStop
 # inputs:   JSON via stdin with subagent details (agent_type, agent_id, stop_hook_active)
-# outputs:  JSON with additionalContext summarising outcome
+# outputs:  JSON with additionalContext
 # risk:     safe
 # ESCALATION: none
 
@@ -20,7 +20,7 @@ catch {
   $payload = $null
 }
 
-$context = "${agentName} done. Review before continuing."
+$context = "${agentName} done. Review next step."
 
 $output = [ordered]@{
   hookSpecificOutput = [ordered]@{

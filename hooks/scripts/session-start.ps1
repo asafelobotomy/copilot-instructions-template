@@ -1,8 +1,8 @@
 #!/usr/bin/env pwsh
-# purpose:  Inject project context into every new agent session
-# when:     SessionStart hook — fires when a new agent session begins
-# inputs:   JSON via stdin (common hook fields)
-# outputs:  JSON with additionalContext for the agent
+# purpose:  Add project context to each new agent session
+# when:     SessionStart
+# inputs:   JSON via stdin
+# outputs:  JSON with additionalContext
 # risk:     safe
 # ESCALATION: none
 

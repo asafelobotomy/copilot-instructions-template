@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# purpose:  Scan files modified during a Copilot agent session for leaked secrets
-# when:     Stop hook — fires when the agent session ends
-# inputs:   JSON via stdin (consumed and ignored)
-# outputs:  JSON continuation signal; scan results on stdout
+# purpose:  Scan modified files for leaked secrets
+# when:     Stop
+# inputs:   JSON via stdin (ignored)
+# outputs:  JSON continuation signal; diagnostics on stderr
 # risk:     read-only
 # ESCALATION: block
-# STOP LOOP: if stop_hook_active is true in the Stop payload, do not re-enter blocking Stop logic.
+# STOP LOOP: if stop_hook_active is true, do not re-enter blocking Stop logic.
 #
 # Environment variables:
 #   SCAN_MODE          - "warn" (log only) or "block" (exit non-zero on findings) (default: warn)
@@ -310,7 +310,7 @@ if [[ $FINDING_COUNT -gt 0 ]]; then
   if [[ "$MODE" == "block" ]]; then
     echo "🚫 Session blocked: resolve the findings above before committing." >&2
     echo "   Set SCAN_MODE=warn to log without blocking, or add patterns to SECRETS_ALLOWLIST." >&2
-    printf '{"hookSpecificOutput":{"hookEventName":"Stop","decision":"block","reason":"Secrets detected (%d finding(s)). Resolve before ending the session or set SCAN_MODE=warn to continue."},"continue":true}' "$FINDING_COUNT"
+    printf '{"hookSpecificOutput":{"hookEventName":"Stop","decision":"block","reason":"Secrets detected (%d). Resolve them or set SCAN_MODE=warn."},"continue":true}' "$FINDING_COUNT"
     exit 0
   else
     echo "💡 Review the findings above. Set SCAN_MODE=block to prevent commits with secrets." >&2

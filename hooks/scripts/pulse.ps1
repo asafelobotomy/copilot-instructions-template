@@ -1,12 +1,12 @@
 #!/usr/bin/env pwsh
-# purpose:  Thin proxy — delegates heartbeat/routing to Python canonical runtime.
-# when:     Invoked by lifecycle hooks (SessionStart/PostToolUse/PreCompact/Stop/UserPromptSubmit).
+# purpose:  Thin proxy to the Python heartbeat runtime.
+# when:     Invoked by lifecycle hooks.
 # inputs:   JSON on stdin + -Trigger <name>.
 # outputs:  JSON hook response from pulse_runtime.py.
 # risk:     safe
 # source:   original
 # ESCALATION: none
-# STOP LOOP: if stop_hook_active is true in the Stop payload, do not re-enter blocking Stop logic.
+# STOP LOOP: if stop_hook_active is true, do not re-enter blocking Stop logic.
 
 [CmdletBinding()]
 param(
@@ -41,20 +41,20 @@ if (-not $effectiveTrigger) {
 $pythonCmd = Get-Command 'python3' -ErrorAction SilentlyContinue
 if (-not $pythonCmd) { $pythonCmd = Get-Command 'python' -ErrorAction SilentlyContinue }
 if (-not $pythonCmd) {
-    '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse hook: python3/python not found; skipping heartbeat runtime."}}'
+    '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse: python missing; heartbeat skipped."}}'
     exit 0
 }
 
 $runtimeScript = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) 'pulse_runtime.py'
 if (-not (Test-Path -LiteralPath $runtimeScript)) {
-    '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse hook: pulse_runtime.py not found; skipping heartbeat runtime."}}'
+    '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse: pulse_runtime.py missing; heartbeat skipped."}}'
     exit 0
 }
 
 try {
     $output = $inputJson | & $pythonCmd.Source $runtimeScript $effectiveTrigger
     if ($LASTEXITCODE -ne 0) {
-        '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse hook: python runtime failed; continuing without heartbeat update."}}'
+        '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse: python runtime failed; heartbeat skipped."}}'
     } elseif ($null -eq $output -or [string]::IsNullOrWhiteSpace(($output -join "`n"))) {
         '{"continue":true}'
     } else {
@@ -67,5 +67,5 @@ try {
         }
     }
 } catch {
-    '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse hook: python runtime invocation failed; continuing without heartbeat update."}}'
+    '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse: python runtime invocation failed; heartbeat skipped."}}'
 }
