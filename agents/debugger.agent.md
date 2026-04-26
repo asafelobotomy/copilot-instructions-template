@@ -39,8 +39,6 @@ Guidelines:
 - Use `Audit` when the likely cause involves security posture, secrets, shell hardening, or unsafe configuration.
 - Use `Code` only after the diagnosis is specific enough to implement without guessing.
 - Use `Planner` when the diagnosis reveals a multi-component fix that benefits from a scoped execution plan before implementation begins.
-- Use `asafelobotomy_spatial_status` when recent session state or diary context
-  would help narrow the failing slice before reproduction.
 - Do not mix diagnosis with broad refactoring.
 
 ## Skill activation map

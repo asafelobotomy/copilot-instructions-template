@@ -56,8 +56,6 @@ Guidelines:
 - Start with a dry-run inventory. Classify findings as cache, generated output,
   archive, stale draft, or dead file before changing anything.
 - Split tracked and untracked candidates early. Tracked deletions always need explicit user approval.
-- Use `asafelobotomy_spatial_status` when session context or diary notes help
-  you understand which surfaces are still active.
 - When you discover a durable hygiene insight worth preserving, follow
   `.copilot/workspace/knowledge/diaries/README.md` and append a concise note to
   `.copilot/workspace/knowledge/diaries/cleaner.md` if it is not already recorded.

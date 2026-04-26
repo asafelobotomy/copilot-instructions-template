@@ -45,8 +45,6 @@ Guidelines:
 - Use `Code` when the requested documentation cannot be made truthful without implementation changes.
 - Do not silently change runtime behavior while doing docs-only work.
 - When examples depend on commands or file inventories, verify them against the repo before writing.
-- Use `asafelobotomy_spatial_status` when session context or recent diary notes
-  help you avoid duplicating documentation work.
 - When you discover a durable docs-specific insight worth preserving, follow
   `.copilot/workspace/knowledge/diaries/README.md` and append a concise note to
   `.copilot/workspace/knowledge/diaries/docs.md` if it is not already recorded.

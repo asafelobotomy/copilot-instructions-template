@@ -6,7 +6,7 @@
   **A versioned VS Code agent plugin that keeps AI developer behaviour consistent across all your projects.**
 
   [![Version](https://img.shields.io/badge/version-0.6.2-blue)](CHANGELOG.md) <!-- x-release-please-version -->
-  [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+  [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE.md)
   [![Agents](https://img.shields.io/badge/agents-14-purple)](agents/)
   [![Skills](https://img.shields.io/badge/skills-18-teal)](skills/)
 </div>
@@ -35,7 +35,7 @@ The template follows Lean/Kaizen principles — waste-tagged reviews, PDCA cycle
 Use the plugin install path by default. Use the manual Copilot bootstrap path only when the marketplace entry is unavailable or you are testing locally.
 
 - Plugin marketplace install: use **Chat: Install Plugin**, search `copilot-instructions-template`, install, reload VS Code if needed, then tell Copilot `Set up this project`.
-- Manual Copilot bootstrap: use **Chat: Install Plugin From Source** and enter the full URL `https://github.com/asafelobotomy/copilot-instructions-template` (the `owner/repo` shorthand is not accepted by this dialog — use the full URL), or add a local repo path to `chat.pluginLocations`, reload VS Code, then tell Copilot `Set up this project`.
+- Manual Copilot bootstrap: use **Chat: Install Plugin From Source** and enter `https://github.com/asafelobotomy/copilot-instructions-template` (enter the full HTTPS URL, not the `owner/repo` shorthand), or add a local repo path to `chat.pluginLocations`, reload VS Code, then tell Copilot `Set up this project`.
 
 If you need to confirm the plugin in VS Code, search the Extensions view for `@agentPlugins copilot-instructions-template` and make sure it is enabled.
 

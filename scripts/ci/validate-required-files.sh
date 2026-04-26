@@ -64,7 +64,6 @@ required_files=(
   "template/workspace/knowledge/MEMORY-GUIDE.md"
   "template/workspace/knowledge/RESEARCH.md"
   "template/workspace/knowledge/diaries/README.md"
-  "template/workspace/operations/ledger.md"
 )
 
 if [[ -f "$WORKSPACE_INDEX_PATH" ]]; then

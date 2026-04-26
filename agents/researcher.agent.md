@@ -117,8 +117,6 @@ One-paragraph executive summary.
   rather than a standalone research report.
 - Use `Planner` when research output reveals a complex implementation that
   benefits from a scoped execution plan before handing off to Code.
-- Use `asafelobotomy_spatial_status` when recent session activity or diary notes
-  would help you avoid duplicating research already gathered in this workspace.
 - When you discover a durable research insight worth preserving, follow
   `.copilot/workspace/knowledge/diaries/README.md` and append a concise note to
   `.copilot/workspace/knowledge/diaries/researcher.md` if it is not already recorded.

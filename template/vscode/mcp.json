@@ -40,6 +40,23 @@
       "args": ["--with", "httpx[socks]>=0.28", "mcp-server-fetch"],
       "disabled": true
     },
+    "heartbeat": {
+      "type": "stdio",
+      "command": "uvx",
+      "env": {
+        "HEARTBEAT_WORKSPACE": "${workspaceFolder}",
+        "CLAUDE_TMPDIR": "${userHome}/.cache/uv/.copilot-tmp",
+        "TMPDIR": "${userHome}/.cache/uv/.copilot-tmp"
+      },
+      "args": [
+        "--from",
+        "mcp[cli]",
+        "mcp",
+        "run",
+        "${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py"
+      ],
+      "disabled": true
+    },
     "context7": {
       "type": "http",
       "url": "https://mcp.context7.com/mcp",

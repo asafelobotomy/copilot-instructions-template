@@ -2,7 +2,7 @@
 description: Map every file affected by a task before making any changes
 argument-hint: Describe the task or feature you are about to implement
 agent: agent
-tools: [codebase, editFiles]
+tools: [codebase]
 ---
 
 # Context Map

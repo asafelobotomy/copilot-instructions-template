@@ -49,6 +49,7 @@ expected = {
     "api-routes.instructions.md",
     "config.instructions.md",
     "docs.instructions.md",
+    "plugin-components.instructions.md",
     "terminal.instructions.md",
     "tests.instructions.md",
 }

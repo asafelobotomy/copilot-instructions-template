@@ -48,8 +48,6 @@ Guidelines:
 - Use `Code` when the task expands from structural cleanup into semantic
   implementation or non-structural refactoring.
 - Use `Docs` when file moves require updating documentation, migration guides, or user-facing references beyond inline path fixes.
-- Use `asafelobotomy_spatial_status` when the current session map or diary trail
-  helps you understand how workspace structure is being used before moving it.
 - When you discover a durable structural insight worth preserving, follow
   `.copilot/workspace/knowledge/diaries/README.md` and append a concise note to
   `.copilot/workspace/knowledge/diaries/organise.md` if it is not already recorded.

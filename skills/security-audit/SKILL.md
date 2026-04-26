@@ -70,7 +70,7 @@ Flag: `[CRITICAL]` `eval` with external data, fetch-and-execute. `[HIGH]` missin
 
 ### S7 — GitHub Repository Security
 
-**File presence**: `SECURITY.md` (`[HIGH]` if absent), `.github/CODEOWNERS` (`[HIGH]`), `.github/dependabot.yml` (`[WARN]`), CodeQL workflow (`[WARN]`).
+**File presence**: `SECURITY.md` at root or `.github/SECURITY.md` (`[HIGH]` if absent from both), `.github/CODEOWNERS` (`[HIGH]`), `.github/dependabot.yml` (`[WARN]`), CodeQL workflow (`[WARN]`).
 
 **`.gitignore` coverage**: Verify patterns for `.env`, `*.pem`, `*.key`, private key files, `*.credentials`, `secrets.yml`, `.aws/credentials`.
 

@@ -248,7 +248,7 @@ Hook configuration lives in `.github/hooks/copilot-hooks.json` (all-local mode) 
 | `PostToolUse` | `post-edit-lint.sh`, `pulse.sh --trigger soft_post_tool` | Auto-format edited files and debounce soft heartbeat triggers |
 | `Stop` | `scan-secrets.sh`, `pulse.sh --trigger stop` | Run secret scan and gate retrospectives for medium/large tasks |
 | `PreCompact` | `save-context.sh`, `pulse.sh --trigger compaction` | Save workspace state before compaction |
-| `SubagentStart` | `subagent-start.sh` | Add governance context and hint `asafelobotomy_spatial_status` |
+| `SubagentStart` | `subagent-start.sh` | Add governance context for subagents |
 | `SubagentStop` | `subagent-stop.sh` | Mark subagent completion |
 
 Agent-scoped hooks: individual agents can define a `hooks:` section in their `.agent.md` YAML frontmatter. These run only when that agent is active and supplement, not replace, global hooks. Enable them with `chat.useCustomAgentHooks`.
@@ -281,7 +281,7 @@ When spawning subagents:
 - Pass the full contents of this file as system context.
 - Set `max_depth = {{SUBAGENT_MAX_DEPTH}}`. Stop and surface to user if reached.
 - Subagent output must include: files changed, LOC delta, test result, any baseline breaches.
-- Subagents inherit §3 (Structured Thinking), §11 (Tools), §12 (Skills), §13 (MCP), §14 (Spatial Layer) — all anti-loop rules apply at every depth.
+- Subagents inherit §3 (Structured Thinking), §11 (Tools), §12 (Skills), §13 (MCP), §14 (Workspace Knowledge) — all anti-loop rules apply at every depth.
 - **Prompt clarity**: when spawning a subagent, the prompt must include: (a) the
   specific deliverable expected, (b) the format of the response, and (c) explicit
   stop conditions. Vague prompts cause subagent loops.
@@ -407,33 +407,21 @@ Key rules (always loaded):
 
 ---
 
-## §14 — Spatial Layer
-
-A shared mental model gives human and agent a common vocabulary for talking about where things live in the project.
-
-### Vocabulary
-
-<!-- markdownlint-disable MD055 MD056 -->
-| Term | Meaning | Maps to |
-|------|---------|---------|
-{{SPATIAL_VOCAB}}
-<!-- markdownlint-enable MD055 MD056 -->
-
-> **Full glossary**: `.copilot/workspace/operations/ledger.md`. **Live status**: `{{SPATIAL_STATUS_TOOL}}` extension tool (deferred — use tool_search to load).
+## §14 — Workspace Knowledge
 
 ### Alignment Protocol
 
-- **Echo before acting**: when the task is ambiguous, restate the goal in one sentence using the vocabulary above before executing. This lets the human correct misunderstandings early.
+- **Echo before acting**: when the task is ambiguous, restate the goal in one sentence before executing. This lets the human correct misunderstandings early.
 - **Surface assumptions**: if a plan depends on an assumption about the project state, name it explicitly: "I'm assuming X because Y."
 - **Memory protocol**: before persisting any insight, walk the routing decision tree in `MEMORY-GUIDE.md` to select the correct store. Then: (1) check the target store for duplicates, (2) check `SOUL.md` if the insight is a reasoning heuristic — add only genuinely new patterns, (3) update `USER.md` only from direct observation, never inference. Use provenance: `file:line` for code, URL for docs, `session:{id}` for observed. For `/memories/repo/` entries, use the Copilot Memory JSON schema (`subject`, `fact`, `citations`, `reason`, `category`). For user memory (`/memories/`), organise by topic file with `[YYYY-MM]` date prefixes.
 
 ### Per-Agent Diaries
 
-Each specialist agent may record significant findings in a diary file under `.copilot/workspace/knowledge/diaries/`. Diaries are independent of the spatial environment — `spatial_status` includes them, but diaries exist and operate on their own.
+Each specialist agent may record significant findings in a diary file under `.copilot/workspace/knowledge/diaries/`.
 
 - Diary files: `.copilot/workspace/knowledge/diaries/{agent-name}.md`
 - Write trigger: call `asafelobotomy_write_diary(agent_name, finding)` explicitly when you discover a durable insight worth sharing across sessions. The extension tool handles dedup, timestamping, and a 30-line cap.
-- Read: call `asafelobotomy_read_diaries(agent_name)` for one agent or `asafelobotomy_read_diaries()` for all. `asafelobotomy_spatial_status` also surfaces a recent summary.
+- Read: call `asafelobotomy_read_diaries(agent_name)` for one agent or `asafelobotomy_read_diaries()` for all.
 - `asafelobotomy_write_diary` and `asafelobotomy_read_diaries` are extension LM tools (deferred — load via `tool_search` before first use). Diary files at `.copilot/workspace/knowledge/diaries/` remain human-readable and git-tracked independently of the tool.
 
 ---

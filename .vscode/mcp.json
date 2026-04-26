@@ -62,6 +62,22 @@
 				"mcp-server-fetch"
 			]
 		},
+		"heartbeat": {
+			"type": "stdio",
+			"command": "uvx",
+			"env": {
+				"HEARTBEAT_WORKSPACE": "${workspaceFolder}",
+				"CLAUDE_TMPDIR": "${userHome}/.cache/uv/.copilot-tmp",
+				"TMPDIR": "${userHome}/.cache/uv/.copilot-tmp"
+			},
+			"args": [
+				"--from",
+				"mcp[cli]",
+				"mcp",
+				"run",
+				"${workspaceFolder}/hooks/scripts/mcp-heartbeat-server.py"
+			]
+		},
 		"context7": {
 			"type": "http",
 			"url": "https://mcp.context7.com/mcp"

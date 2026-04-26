@@ -33,7 +33,7 @@ This repo has two distinct layers that must never be mixed:
 **Invariant**: `.github/instructions/` and `.github/prompts/` must never contain `{{PLACEHOLDER}}` tokens.
 **Invariant**: `template/` files must never contain resolved project-specific values.
 **Note**: `starter-kits/` are deliberate verbatim-delivered exceptions that lack `template/` mirrors. This is intentional — see Architecture table above.
-**Note**: Developer workspace discovers repo-root `agents/` via `chat.agentFilesLocations` and repo-root `skills/` via both `chat.skillsLocations` and legacy `chat.agentSkillsLocations` in `.vscode/settings.json`. Hooks still come from `.github/hooks/`. No `.github/agents/` or `.github/skills/` directories are needed in this repo.
+**Note**: Developer workspace discovers repo-root `agents/` via `chat.agentFilesLocations` and repo-root `skills/` via both `chat.skillsLocations` and legacy `chat.agentSkillsLocations` in `.vscode/settings.json`. Developer hooks are loaded by VS Code from `.github/hooks/copilot-hooks.json`; the plugin delivers `hooks/hooks.json` as its own component — both files are kept in sync. No `.github/agents/` directory is needed in this repo. `.github/skills/` is the consumer-facing skill delivery path referenced by `.plugin/plugin.json` and `.claude-plugin/plugin.json` — keep it in sync with any significant changes to root `skills/`.
 
 ## Key Commands
 
@@ -219,7 +219,7 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 - **Tool Protocol**: Check `.copilot/tools/INDEX.md` before building. Follow `skills/tool-protocol/SKILL.md`.
 - **Skill Protocol**: Skills loaded on demand from `skills/`. Follow `skills/skill-management/SKILL.md`.
 - **MCP Protocol**: Config in `.vscode/mcp.json`. Always-on: filesystem, git. Credentials-required: github, fetch.
-- **Extension Protocol**: The `asafelobotomy.copilot-extension` provides LM tools directly (not via MCP). They are deferred tools — use `tool_search` to load before the first call each session. Exact callable names: `asafelobotomy_session_reflect`, `asafelobotomy_spatial_status`, `asafelobotomy_get_workspace_state`. Always attempt to call them; declare unavailable only if the call itself returns an error — never pre-emptively assume they are inactive.
+- **Extension Protocol**: The `asafelobotomy.copilot-extension` provides LM tools directly (not via MCP). They are deferred tools — use `tool_search` to load before the first call each session. Exact callable names: `asafelobotomy_session_reflect`. Always attempt to call them; declare unavailable only if the call itself returns an error — never pre-emptively assume they are inactive.
 - **Delegation Protocol**: See **Skills and Agents** for the full specialist-first delegation policy.
 - **Subagent depth**: max 3. Stop and surface to user if reached. Subagents inherit all protocols including the Structured Thinking Discipline and anti-loop rules.
 

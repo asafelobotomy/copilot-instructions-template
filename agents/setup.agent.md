@@ -181,9 +181,8 @@ fails (e.g. `code` not on PATH), note it for the user and continue.
 
 **§ 3 — Workspace scaffold**: Create `.copilot/workspace/` directories
 (`identity/`, `knowledge/`, `operations/`, `runtime/`). Copy from
-`${CLAUDE_PLUGIN_ROOT}/template/workspace/`. Replace `{{PLACEHOLDER}}` tokens,
-`{{SETUP_DATE}}` with today's date, and `{{SPATIAL_VOCAB}}` per manifests.md
-§ Workspace identity files.
+`${CLAUDE_PLUGIN_ROOT}/template/workspace/`. Replace `{{PLACEHOLDER}}` tokens
+and `{{SETUP_DATE}}` with today's date per manifests.md § Workspace identity files.
 
 **§ 4 — Documentation stubs**: Create `CHANGELOG.md` if not present (§ 0c).
 

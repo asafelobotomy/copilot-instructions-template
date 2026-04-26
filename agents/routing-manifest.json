@@ -159,7 +159,7 @@
       "name": "Audit",
       "summary": "Health and security audit specialist",
       "route": "active",
-      "visibility": "picker-visible",
+      "visibility": "internal",
       "min_prompt_confidence": 0.78,
       "min_behavior_confidence": 0.8,
       "min_behavior_events": 1,

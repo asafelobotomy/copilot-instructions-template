@@ -45,8 +45,6 @@ Guidelines:
   repository structure, file placement, or broken pathing after moves.
 - Use `Debugger` when a finding cannot be substantiated without isolating the underlying root cause first.
 - Use `Docs` when the review outcome is primarily missing documentation, migration guidance, or user-facing explanation.
-- Use `asafelobotomy_spatial_status` when session state or diary context would
-  help explain why a review surface changed recently.
 - Tag every finding with a waste category from §6 (Muda).
 - Reference specific file paths and line numbers for every finding.
 - Structure output per finding: [severity] | [file:line] | [waste category] | [description]

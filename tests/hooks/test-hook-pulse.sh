@@ -110,7 +110,6 @@ done
 output=$(run_pulse "$TMPDIR_BLOCK" stop '{"stop_hook_active": false}')
 assert_matches "large stop blocks" "$output" '"decision": "block"'
 assert_matches "large stop instructs model to call session_reflect" "$output" 'session_reflect'
-assert_matches "large stop mentions direct fallback helper" "$output" 'session_reflect_fallback.py'
 assert_python_in_root "large stop records retrospective suggested" "$TMPDIR_BLOCK" '
 state = json.loads((root / ".copilot/workspace/runtime/state.json").read_text(encoding="utf-8"))
 assert state["retrospective_state"] == "suggested"

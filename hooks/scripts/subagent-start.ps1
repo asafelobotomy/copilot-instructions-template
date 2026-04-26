@@ -20,8 +20,8 @@ catch {
   $payload = $null
 }
 
-# Spatial status is via the extension tool
-$context = "Depth<=3. PDCA, Tool, Skill. Agent: ${agentName}. Use asafelobotomy_spatial_status for context."
+# Build governance context
+$context = "Depth<=3. PDCA, Tool, Skill. Agent: ${agentName}."
 
 $output = [ordered]@{
   hookSpecificOutput = [ordered]@{

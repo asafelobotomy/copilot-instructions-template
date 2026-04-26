@@ -122,10 +122,9 @@ After writing `.sh` files: `chmod +x .github/hooks/scripts/*.sh`
 | `.copilot/workspace/operations/HEARTBEAT.md` | `template/workspace/operations/HEARTBEAT.md` |
 | `.copilot/workspace/knowledge/RESEARCH.md` | `template/workspace/knowledge/RESEARCH.md` |
 | `.copilot/workspace/knowledge/MEMORY-GUIDE.md` | `template/workspace/knowledge/MEMORY-GUIDE.md` |
-| `.copilot/workspace/operations/ledger.md` | `template/workspace/operations/ledger.md` |
 | `.copilot/workspace/knowledge/diaries/README.md` | `template/workspace/knowledge/diaries/README.md` |
 
-Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today's date, `{{SPATIAL_THEME}}` → chosen one-word metaphor, `{{SPATIAL_VOCAB}}` → the resolved Markdown row set from the setup interview answers.
+Token replacement: `{{PLACEHOLDER}}` tokens from §1, `{{SETUP_DATE}}` → today's date.
 
 ---
 

@@ -38,7 +38,7 @@ Use this path when the marketplace entry is unavailable or you are testing the p
 
 1. Open VS Code.
 2. Run `Chat: Install Plugin From Source`.
-3. Enter the full repository URL (the `owner/repo` shorthand is not accepted by this dialog):
+3. Enter the full HTTPS URL (the `owner/repo` shorthand is not accepted — use the full URL):
 
   ```text
   https://github.com/asafelobotomy/copilot-instructions-template

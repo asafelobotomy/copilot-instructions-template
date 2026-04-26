@@ -65,8 +65,6 @@ Guidelines:
   fixing path references, or reshaping directory structure.
 - Use `Cleaner` when the task is primarily repo hygiene — pruning stale
   artefacts, caches, dead files, or archive clutter — rather than implementation.
-- Use `asafelobotomy_spatial_status` when session context, workspace navigation,
-  or prior agent diary notes would help you narrow scope before editing.
 - When you discover a durable implementation insight worth sharing across
   sessions, follow `.copilot/workspace/knowledge/diaries/README.md` and append a
   concise note to `.copilot/workspace/knowledge/diaries/code.md` if it is not

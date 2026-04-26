@@ -48,13 +48,12 @@ assert_valid_json "quoted-name payload stays valid JSON" "$output"
 SUBAGENT_OUTPUT="$output" assert_python "quoted agent names survive JSON escaping" "payload = json.loads(os.environ['SUBAGENT_OUTPUT']); ctx = payload['hookSpecificOutput']['additionalContext']; assert 'Review \"Quoted\"' in ctx"
 echo ""
 
-echo "5. Diary tool hint is present in governance context"
+echo "5. Governance context includes protocol keywords"
 output=$(run_ps_script "$SCRIPT" '{"agent_type":"Explore"}')
 status=$?
 assert_success "hint-check exits zero" "$status"
 assert_valid_json "hint-check emits valid JSON" "$output"
-assert_contains "context includes spatial_status hint" "$output" 'spatial_status'
-assert_contains "context includes spatial_status hint" "$output" 'asafelobotomy_spatial_status'
+assert_contains "context includes PDCA keyword" "$output" 'PDCA'
 echo ""
 
 finish_tests

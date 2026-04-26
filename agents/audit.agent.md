@@ -44,8 +44,6 @@ Do not modify any files — diagnosis only. Surface findings and use handoffs fo
   recommendation, or profile configuration rather than general code changes.
 - Use `Planner` when audit findings require a phased, multi-step remediation plan
   before implementation begins.
-- Use `asafelobotomy_spatial_status` when the current session state or diary
-  trail would help you understand recent workspace activity before auditing it.
 
 - Apply the Structured Thinking Discipline (§3): run each check sequentially.
   If a check requires data from a prior check, reuse it — do not re-read or
