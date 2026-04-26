@@ -4,7 +4,7 @@ description: Manage VS Code extensions, profile isolation, and workspace extensi
 argument-hint: Say "review extensions", "check my profile", "sync extensions", or "install recommended extensions"
 model:
   - Claude Sonnet 4.6
-  - Claude Opus 4.6
+  - Gemini 3.1 Pro
   - GPT-5.2
 tools: [agent, codebase, runCommands, fetch, editFiles, askQuestions, get_active_profile, list_profiles, get_workspace_profile_association, ensure_repo_profile, get_installed_extensions, install_extension, uninstall_extension, sync_extensions_with_recommendations]
 mcp-servers: [filesystem, git, context7]

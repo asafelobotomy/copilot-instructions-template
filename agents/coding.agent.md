@@ -6,6 +6,7 @@ model:
   - GPT-5.3-Codex
   - GPT-5.2-Codex
   - GPT-5.2
+  - Grok Code Fast 1
   - Claude Sonnet 4.6
   - GPT-5 mini
 tools: [agent, editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]

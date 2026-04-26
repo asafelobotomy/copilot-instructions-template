@@ -2,10 +2,15 @@
 
 Single source of truth for all agent model assignments in this repository.
 
-Current external review date: 2026-04-11. GitHub now designates GPT-5.3-Codex
-as the Copilot base + LTS model, and GPT-5.2 is the current GA non-Codex
-replacement for retiring GPT-5.1. GitHub's supported-models docs also note
-that Claude Sonnet 4.6 and GPT-5.4 mini multipliers are subject to change.
+Current external review date: 2026-04-26. GitHub designates GPT-5.3-Codex as
+the Copilot base + LTS model. GPT-5.1 was retired April 15, 2026; GPT-5.2 is
+the current GA non-Codex general-purpose model. GPT-5.4 mini (0.33×) covers
+agentic grep/exploration tasks; Grok Code Fast 1 (0.25×) is code-specialized
+at low cost; Raptor mini (0×, preview) is a fine-tuned GPT-5 mini for fast
+coding suggestions. Models at 7.5× promotional rates (Claude Opus 4.7, GPT-5.5)
+are excluded from this registry to avoid cost instability. GitHub's
+supported-models docs note that Claude Sonnet 4.6 and GPT-5.4 mini multipliers
+are subject to change.
 
 `llms.txt` includes a machine-readable repo catalog and mirrors the
 primary-model and thinking-effort summary for quick navigation.
@@ -66,13 +71,14 @@ Recommended effort levels per agent:
 ## coding
 
 Implementation, refactoring, and multi-step coding tasks. GPT-5.3-Codex is the
-primary because GitHub now treats it as the Copilot base + LTS model for
-agentic software development; GPT-5.2-Codex is the like-for-like fallback, and
-GPT-5.2 replaces retiring GPT-5.1 as the general-purpose fallback.
+primary because GitHub treats it as the Copilot base + LTS model for agentic
+software development; GPT-5.2-Codex is the like-for-like Codex fallback;
+Grok Code Fast 1 is the code-specialized cost-efficient fallback (0.25×).
 
 - GPT-5.3-Codex
 - GPT-5.2-Codex
 - GPT-5.2
+- Grok Code Fast 1
 - Claude Sonnet 4.6
 - GPT-5 mini
 
@@ -104,29 +110,37 @@ full breadth of general implementation.
 
 Read-only health check and security audit — structural validation, upstream
 comparison, OWASP Top 10, secrets, injection patterns, supply chain, shell
-hardening. GPT-5.4 for deep analytical capability; Opus as fallback.
+hardening. GPT-5.4 for deep analytical capability; Claude Sonnet 4.6 as the
+Anthopic reasoning fallback; Gemini 3.1 Pro for long-context cross-file analysis.
 
 - GPT-5.4
-- Claude Opus 4.6
 - Claude Sonnet 4.6
+- Gemini 3.1 Pro
 - GPT-5.2
 
 ## fast
 
-Quick questions, syntax lookups, and lightweight single-file edits.
+Quick questions, syntax lookups, and lightweight single-file edits. Haiku 4.5
+is the quality-speed sweet spot (0.33×); GPT-5.4 mini (0.33×) handles
+tool-heavy lightweight tasks; Grok Code Fast 1 (0.25×) for code-specific
+queries; Raptor mini and GPT-5 mini are free alternatives.
 
 - Claude Haiku 4.5
+- GPT-5.4 mini
+- Grok Code Fast 1
 - GPT-5 mini
+- Raptor mini
 - GPT-4.1
 
 ## review
 
 Deep code review and architectural analysis with Lean/Kaizen critique.
-GPT-5.4 is the primary; Claude Opus 4.6 provides Agent Teams capability.
+GPT-5.4 is the primary for Xhigh reasoning; Claude Sonnet 4.6 is the Anthropic
+fallback; Gemini 3.1 Pro provides advanced reasoning across long contexts.
 
 - GPT-5.4
-- Claude Opus 4.6
 - Claude Sonnet 4.6
+- Gemini 3.1 Pro
 - GPT-5.2
 
 ## setup
@@ -142,12 +156,15 @@ Requires interactive question capability (never use Codex/autonomous models).
 ## explore
 
 Fast read-only codebase exploration and Q&A. Uses lightweight models for speed;
-GPT-5.4 mini is the tool-using fallback for grep-heavy exploration, and Sonnet
-is the capability fallback for complex queries.
+GPT-5.4 mini is the grep/tool-use specialist (0.33×); Grok Code Fast 1 is the
+code-specialized fast fallback (0.25×); Raptor mini provides free inline-speed
+for simple lookups.
 
 - Claude Haiku 4.5
 - GPT-5.4 mini
+- Grok Code Fast 1
 - GPT-5 mini
+- Raptor mini
 - Claude Sonnet 4.6
 
 ## extensions
@@ -155,17 +172,19 @@ is the capability fallback for complex queries.
 VS Code extension management, profile isolation, and workspace configuration.
 
 - Claude Sonnet 4.6
-- Claude Opus 4.6
+- Gemini 3.1 Pro
 - GPT-5.2
 
 ## researcher
 
 Online and offline research — fetch documentation, track URLs, and produce
 structured research output. Claude Sonnet 4.6 is primary for synthesis quality;
-Gemini 2.5 Pro provides a capable mid-tier fallback before dropping to GPT-5 mini.
+Gemini 3.1 Pro provides stronger analytical reasoning across long contexts;
+Gemini 2.5 Pro is the GA Gemini fallback.
 
 - Claude Sonnet 4.6
 - Claude Sonnet 4.5
+- Gemini 3.1 Pro
 - Gemini 2.5 Pro
 - GPT-5 mini
 
@@ -182,11 +201,12 @@ message formatting); GPT-5.2 is the capability fallback.
 ## planner
 
 Read-only planning, scoping, and execution sequencing before implementation.
-GPT-5.4 is primary for deep reasoning depth suited to architectural planning
-and task decomposition; Sonnet 4.6 is the balanced fallback.
+GPT-5.4 is primary for deep reasoning depth; Claude Sonnet 4.6 is the
+Anthopic reasoning fallback; Gemini 3.1 Pro for multi-document analysis.
 
 - GPT-5.4
 - Claude Sonnet 4.6
+- Gemini 3.1 Pro
 - GPT-5.2
 
 ## docs
@@ -199,8 +219,11 @@ Documentation generation, migration notes, README work, and user-facing guides.
 
 ## debugger
 
-Root-cause analysis, error diagnosis, and regression triage.
+Root-cause analysis, error diagnosis, and regression triage. GPT-5.4 is
+primary; Claude Sonnet 4.6 as the Anthropic fallback; Gemini 3.1 Pro for
+ambiguous multi-file failures requiring long-context reasoning.
 
 - GPT-5.4
 - Claude Sonnet 4.6
+- Gemini 3.1 Pro
 - GPT-5.2

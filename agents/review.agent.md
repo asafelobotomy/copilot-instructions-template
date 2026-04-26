@@ -4,8 +4,8 @@ description: Deep code review and architectural analysis with Lean/Kaizen critiq
 argument-hint: Describe what to review — e.g. "review my latest changes", "architectural review of the auth module", "review PR #42"
 model:
   - GPT-5.4
-  - Claude Opus 4.6
   - Claude Sonnet 4.6
+  - Gemini 3.1 Pro
   - GPT-5.2
 tools: [agent, codebase, githubRepo, runCommands, search]
 mcp-servers: [filesystem, git, github, fetch, context7]

@@ -5,7 +5,9 @@ argument-hint: Describe WHAT you're looking for and desired thoroughness (quick/
 model:
   - Claude Haiku 4.5
   - GPT-5.4 mini
+  - Grok Code Fast 1
   - GPT-5 mini
+  - Raptor mini
   - Claude Sonnet 4.6
 tools: [agent, codebase, search, runCommands]
 mcp-servers: [filesystem, git]

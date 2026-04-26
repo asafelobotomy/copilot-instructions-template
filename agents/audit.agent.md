@@ -4,8 +4,8 @@ description: Read-only health check and security audit — structural validation
 argument-hint: Say "health check", "security audit", "full audit", "scan for secrets", "check for vulnerabilities", or "review security posture"
 model:
   - GPT-5.4
-  - Claude Opus 4.6
   - Claude Sonnet 4.6
+  - Gemini 3.1 Pro
   - GPT-5.2
 tools: [agent, codebase, runCommands, githubRepo, fetch, search, webSearch]
 mcp-servers: [filesystem, git, github, fetch, playwright]

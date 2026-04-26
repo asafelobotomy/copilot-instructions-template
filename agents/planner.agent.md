@@ -5,6 +5,7 @@ argument-hint: Describe what needs planning — e.g. "plan the routing rollout" 
 model:
   - GPT-5.4
   - Claude Sonnet 4.6
+  - Gemini 3.1 Pro
   - GPT-5.2
 tools: [agent, codebase, search, runCommands]
 mcp-servers: [filesystem, git]

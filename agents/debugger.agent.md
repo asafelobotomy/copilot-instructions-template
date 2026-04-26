@@ -5,6 +5,7 @@ argument-hint: Describe the failure or regression — e.g. "debug the broken set
 model:
   - GPT-5.4
   - Claude Sonnet 4.6
+  - Gemini 3.1 Pro
   - GPT-5.2
 tools: [agent, codebase, search, runCommands]
 mcp-servers: [filesystem, git, fetch, context7, playwright]
