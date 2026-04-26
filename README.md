@@ -35,7 +35,7 @@ The template follows Lean/Kaizen principles — waste-tagged reviews, PDCA cycle
 Use the plugin install path by default. Use the manual Copilot bootstrap path only when the marketplace entry is unavailable or you are testing locally.
 
 - Plugin marketplace install: use **Chat: Install Plugin**, search `copilot-instructions-template`, install, reload VS Code if needed, then tell Copilot `Set up this project`.
-- Manual Copilot bootstrap: use **Chat: Install Plugin From Source** with the full repository URL, or add a local repo path to `chat.pluginLocations`, reload VS Code, then tell Copilot `Set up this project`.
+- Manual Copilot bootstrap: use **Chat: Install Plugin From Source** and enter the full URL `https://github.com/asafelobotomy/copilot-instructions-template` (the `owner/repo` shorthand is not accepted by this dialog — use the full URL), or add a local repo path to `chat.pluginLocations`, reload VS Code, then tell Copilot `Set up this project`.
 
 If you need to confirm the plugin in VS Code, search the Extensions view for `@agentPlugins copilot-instructions-template` and make sure it is enabled.
 
