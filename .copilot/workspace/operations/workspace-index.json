@@ -10,7 +10,7 @@
     "skillsTemplate": 0,
     "hookScriptsShell": 11,
     "hookScriptsPowerShell": 8,
-    "hookScriptsPython": 8,
+    "hookScriptsPython": 9,
     "hookScriptsJson": 1
   },
   "agents": [
@@ -120,7 +120,8 @@
       "pulse_state.py",
       "pulse_artifacts.py",
       "pulse_routing.py",
-      "mcp-heartbeat-server.py"
+      "mcp-heartbeat-server.py",
+      "session_reflect_fallback.py"
     ],
     "json": [
       "heartbeat-policy.json"

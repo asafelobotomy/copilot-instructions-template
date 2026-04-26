@@ -118,9 +118,15 @@ if author is not None:
         raise SystemExit("root plugin.json has non-object author field")
     if not isinstance(author.get("name"), str) or not author["name"]:
         raise SystemExit("root plugin.json has invalid author.name field")
-for field, expected in (("agents", "agents"), ("skills", "skills"), ("hooks", "hooks/hooks.json"), ("mcpServers", ".mcp.json")):
+# VS Code Copilot plugin format has no plugin-root token for hook/MCP executable paths.
+# "hooks" and "mcpServers" must NOT be present — they cause broken path resolution
+# (${CLAUDE_PLUGIN_ROOT} expands to empty string, yielding /hooks/scripts/... errors).
+for field, expected in (("agents", "agents"), ("skills", "skills")):
     if pj.get(field) != expected:
         raise SystemExit("root plugin.json has unexpected " + field + " path")
+for forbidden_field in ("hooks", "mcpServers"):
+    if forbidden_field in pj:
+        raise SystemExit("root plugin.json must not contain " + forbidden_field + " (no plugin-root token in VS Code Copilot format)")
 '
 echo ""
 

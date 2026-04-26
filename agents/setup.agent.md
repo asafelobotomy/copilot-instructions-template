@@ -149,20 +149,29 @@ kits from `${CLAUDE_PLUGIN_ROOT}/starter-kits/<kit-name>/` to
 `.github/starter-kits/<kit-name>/`. Register in `.vscode/settings.json` under
 `chat.pluginLocations`.
 
-**§ 2.12 — Hook scripts** (A16 conditional, S6 mode-conditional): Hook scripts
-are already active via the plugin's `hooks/hooks.json` registration.
+**§ 2.12 — Hook scripts** (A16 conditional, S6 mode-conditional): Hook delivery
+depends on the plugin format installed.
 
-- **Plugin-backed** (S6 = Plugin-backed, or S6 = Ask per surface and user chose
-  plugin for hooks): Skip local hook installation. Hooks run from the plugin.
-  Do not create `.github/hooks/`.
+- **Plugin-backed — OpenPlugin or Claude-format** (S6 = Plugin-backed via
+  `.plugin/plugin.json` or `.claude-plugin/plugin.json`): Hooks are already
+  active via the plugin's `hooks/hooks.json` registration using
+  `${PLUGIN_ROOT}` or `${CLAUDE_PLUGIN_ROOT}` paths. Skip local hook
+  installation. Do not create `.github/hooks/`.
+- **Plugin-backed — VS Code Copilot format** (S6 = Plugin-backed via
+  `plugin.json`): The VS Code Copilot plugin format does **not** deliver hooks
+  (no plugin-root token is available; see AGENTS.md architecture notes). If
+  A16 = Yes, install hooks locally even in plugin-backed mode: copy scripts
+  from `${CLAUDE_PLUGIN_ROOT}/hooks/scripts/` to `.github/hooks/scripts/` and
+  write `.github/hooks/copilot-hooks.json`. If the user is unsure which plugin
+  format they used, ask before skipping hook installation.
 - **All-local** (S6 = All-local, or S6 = Ask per surface and user chose local
   for hooks, and A16 = Yes): Copy scripts from
   `${CLAUDE_PLUGIN_ROOT}/hooks/scripts/` to `.github/hooks/scripts/` and write
   `.github/hooks/copilot-hooks.json` using `.github/hooks/scripts/...` paths —
   enabling independent operation and consumer customisation. Follow
   manifests.md § Hook scripts for the file list and config format.
-- When hooks are **All-local**, instruct the user to disable the plugin's hooks
-  to prevent duplicate execution (plugin hooks and workspace hooks both fire).
+- When hooks are **All-local** on OpenPlugin or Claude-format: instruct the user
+  to disable the plugin's hooks to prevent duplicate execution.
 
 **§ 2.13 — Version file**: Read plugin version from
 `${CLAUDE_PLUGIN_ROOT}/plugin.json` (`.version` field). Compute section

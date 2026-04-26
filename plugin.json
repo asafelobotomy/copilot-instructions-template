@@ -9,7 +9,5 @@
   "keywords": ["copilot", "agents", "skills", "lean", "kaizen", "productivity", "workflow"],
   "category": "productivity",
   "agents": "agents",
-  "skills": "skills",
-  "hooks": "hooks/hooks.json",
-  "mcpServers": ".mcp.json"
+  "skills": "skills"
 }

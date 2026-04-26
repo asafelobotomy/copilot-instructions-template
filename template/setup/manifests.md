@@ -87,9 +87,15 @@ After writing, replace `{{THREE_CHECK_COMMAND}}`, `{{TEST_FRAMEWORK}}`, `{{TEST_
 
 Fetch all files listed in the `hookScripts.shell`, `hookScripts.powershell`, `hookScripts.python`, and `hookScripts.json` arrays from the workspace-index payload.
 
-**Plugin-backed mode** (S6 = Plugin-backed or per-surface plugin): Skip. Hooks
-are delivered by the plugin's `hooks/hooks.json` and execute from the plugin
-root. Do not create `.github/hooks/`.
+**Plugin-backed mode — OpenPlugin or Claude-format**: Skip. Hooks are delivered
+by the plugin's `hooks/hooks.json` and execute from the plugin root using
+`${PLUGIN_ROOT}` or `${CLAUDE_PLUGIN_ROOT}` paths. Do not create `.github/hooks/`.
+
+**Plugin-backed mode — VS Code Copilot format**: The VS Code Copilot plugin
+format (`plugin.json`) does not deliver hooks. If A16 = Yes, install hooks
+locally even in plugin-backed mode (same steps as All-local below).
+
+**All-local mode** (S6 = All-local or per-surface local, and A16 = Yes):
 
 **Bash scripts** → `.github/hooks/scripts/`:
 

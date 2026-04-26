@@ -36,7 +36,7 @@ After adding a skill, add a corresponding `llms.txt` entry and re-run `bash scri
 
 ## Plugin Manifests (`plugin.json`, `.plugin/`, `.claude-plugin/`)
 
-- `plugin.json` is the VS Code Copilot plugin manifest. Do not add executable paths here — VS Code does not resolve plugin-root tokens for hook/MCP executables.
-- `.plugin/plugin.json` uses `${PLUGIN_ROOT}` for OpenPlugin format. `.claude-plugin/plugin.json` uses `${CLAUDE_PLUGIN_ROOT}` for Claude format.
+- `plugin.json` is the VS Code Copilot plugin manifest. It must contain only `agents` and `skills` — do NOT add `hooks` or `mcpServers`. VS Code Copilot plugin format has no plugin-root token, so any hook or MCP executable path would be resolved incorrectly (token expands to empty string, producing paths like `/hooks/scripts/...`).
+- `.plugin/plugin.json` uses `${PLUGIN_ROOT}` for OpenPlugin format. `.claude-plugin/plugin.json` uses `${CLAUDE_PLUGIN_ROOT}` for Claude format. These manifests CAN include `hooks` and `mcpServers` because their respective runtimes expand the token correctly.
 - MCP server paths in `.plugin/.mcp.json` and `.claude-plugin/.mcp.json` must point to `.github/hooks/scripts/mcp-heartbeat-server.py` relative to the plugin root.
 - After changing any manifest, verify that `.vscode/mcp.json` and `template/vscode/mcp.json` remain consistent with the plugin MCP config.

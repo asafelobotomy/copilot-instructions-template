@@ -34,6 +34,7 @@ This repo has two distinct layers that must never be mixed:
 **Invariant**: `template/` files must never contain resolved project-specific values.
 **Note**: `starter-kits/` are deliberate verbatim-delivered exceptions that lack `template/` mirrors. This is intentional — see Architecture table above.
 **Note**: Developer workspace discovers repo-root `agents/` via `chat.agentFilesLocations` and repo-root `skills/` via both `chat.skillsLocations` and legacy `chat.agentSkillsLocations` in `.vscode/settings.json`. Developer hooks are loaded by VS Code from `.github/hooks/copilot-hooks.json`; the plugin delivers `hooks/hooks.json` as its own component — both files are kept in sync. No `.github/agents/` directory is needed in this repo. `.github/skills/` is the consumer-facing skill delivery path referenced by `.plugin/plugin.json` and `.claude-plugin/plugin.json` — keep it in sync with any significant changes to root `skills/`.
+**Note**: The repo now ships both OpenPlugin and Claude-format root plugin manifests for executable hook/MCP packaging: `.plugin/*` uses `${PLUGIN_ROOT}` and `.claude-plugin/*` uses `${CLAUDE_PLUGIN_ROOT}`. The root `plugin.json` (VS Code Copilot format) intentionally contains only `agents` and `skills` — do NOT add `hooks` or `mcpServers` to it. VS Code Copilot plugin format has no plugin-root token, so hook/MCP executable paths cannot be resolved; doing so produces errors like `/hooks/scripts/...` immediately on plugin install.
 
 ## Key Commands
 

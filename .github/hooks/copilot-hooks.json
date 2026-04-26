@@ -3,13 +3,13 @@
     "SessionStart": [
       {
         "type": "command",
-        "command": "./hooks/scripts/session-start.sh",
+        "command": "hooks/scripts/session-start.sh",
         "windows": "powershell -File hooks\\scripts\\session-start.ps1",
         "timeout": 10
       },
       {
         "type": "command",
-        "command": "./hooks/scripts/pulse.sh --trigger session_start",
+        "command": "hooks/scripts/pulse.sh --trigger session_start",
         "windows": "powershell -File hooks\\scripts\\pulse.ps1 -Trigger session_start",
         "timeout": 5
       }
@@ -17,7 +17,7 @@
     "UserPromptSubmit": [
       {
         "type": "command",
-        "command": "./hooks/scripts/pulse.sh --trigger user_prompt",
+        "command": "hooks/scripts/pulse.sh --trigger user_prompt",
         "windows": "powershell -File hooks\\scripts\\pulse.ps1 -Trigger user_prompt",
         "timeout": 3
       }
@@ -25,13 +25,13 @@
     "PreToolUse": [
       {
         "type": "command",
-        "command": "./hooks/scripts/guard-destructive.sh",
+        "command": "hooks/scripts/guard-destructive.sh",
         "windows": "powershell -File hooks\\scripts\\guard-destructive.ps1",
         "timeout": 5
       },
       {
         "type": "command",
-        "command": "./hooks/scripts/pulse.sh --trigger pre_tool",
+        "command": "hooks/scripts/pulse.sh --trigger pre_tool",
         "windows": "powershell -File hooks\\scripts\\pulse.ps1 -Trigger pre_tool",
         "timeout": 4
       }
@@ -39,13 +39,13 @@
     "PostToolUse": [
       {
         "type": "command",
-        "command": "./hooks/scripts/post-edit-lint.sh",
+        "command": "hooks/scripts/post-edit-lint.sh",
         "windows": "powershell -File hooks\\scripts\\post-edit-lint.ps1",
         "timeout": 30
       },
       {
         "type": "command",
-        "command": "./hooks/scripts/pulse.sh --trigger soft_post_tool",
+        "command": "hooks/scripts/pulse.sh --trigger soft_post_tool",
         "windows": "powershell -File hooks\\scripts\\pulse.ps1 -Trigger soft_post_tool",
         "timeout": 5
       }
@@ -53,13 +53,13 @@
     "Stop": [
       {
         "type": "command",
-        "command": "./hooks/scripts/pulse.sh --trigger stop",
+        "command": "hooks/scripts/pulse.sh --trigger stop",
         "windows": "powershell -File hooks\\scripts\\pulse.ps1 -Trigger stop",
         "timeout": 5
       },
       {
         "type": "command",
-        "command": "./hooks/scripts/scan-secrets.sh",
+        "command": "hooks/scripts/scan-secrets.sh",
         "windows": "powershell -File hooks\\scripts\\scan-secrets.ps1",
         "timeout": 30
       }
@@ -67,13 +67,13 @@
     "PreCompact": [
       {
         "type": "command",
-        "command": "./hooks/scripts/save-context.sh",
+        "command": "hooks/scripts/save-context.sh",
         "windows": "powershell -File hooks\\scripts\\save-context.ps1",
         "timeout": 10
       },
       {
         "type": "command",
-        "command": "./hooks/scripts/pulse.sh --trigger compaction",
+        "command": "hooks/scripts/pulse.sh --trigger compaction",
         "windows": "powershell -File hooks\\scripts\\pulse.ps1 -Trigger compaction",
         "timeout": 5
       }
@@ -81,7 +81,7 @@
     "SubagentStart": [
       {
         "type": "command",
-        "command": "./hooks/scripts/subagent-start.sh",
+        "command": "hooks/scripts/subagent-start.sh",
         "windows": "powershell -File hooks\\scripts\\subagent-start.ps1",
         "timeout": 5
       }
@@ -89,10 +89,11 @@
     "SubagentStop": [
       {
         "type": "command",
-        "command": "./hooks/scripts/subagent-stop.sh",
+        "command": "hooks/scripts/subagent-stop.sh",
         "windows": "powershell -File hooks\\scripts\\subagent-stop.ps1",
         "timeout": 5
       }
     ]
   }
 }
+
