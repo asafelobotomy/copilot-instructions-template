@@ -7,9 +7,11 @@ as the Copilot base + LTS model, and GPT-5.2 is the current GA non-Codex
 replacement for retiring GPT-5.1. GitHub's supported-models docs also note
 that Claude Sonnet 4.6 and GPT-5.4 mini multipliers are subject to change.
 
-`llms.txt` mirrors only the primary-model and thinking-effort summary for quick
-navigation. Edit this file to change assignments; `sync-models.sh` propagates
-the primary-model and thinking-effort summary to `llms.txt` automatically.
+`llms.txt` includes a machine-readable repo catalog and mirrors the
+primary-model and thinking-effort summary for quick navigation.
+Edit this file to change assignments; `sync-models.sh` propagates only the
+primary-model and thinking-effort summary table within `llms.txt`
+automatically.
 
 The `model:` list in each `.agent.md` file is ordered: VS Code Copilot picks the
 first available model and falls back down the list. Edit this file to change any

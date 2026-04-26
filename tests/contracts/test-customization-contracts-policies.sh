@@ -199,6 +199,7 @@ checks = {
         "Chat: Install Plugin",
         "Chat: Install Plugin From Source",
         "chat.pluginLocations",
+        "@agentPlugins copilot-instructions-template",
         "Plugin-backed",
         "All-local",
         "See [AGENTS.md](AGENTS.md) for the full trigger table.",
@@ -206,6 +207,7 @@ checks = {
     "README.md": [
         "### Setup routes",
         "Set up this project",
+        "@agentPlugins copilot-instructions-template",
         "See [SETUP.md](SETUP.md) for the full plugin and manual setup flow",
         "If the plugin marketplace entry is unavailable, follow the manual Copilot bootstrap path in [SETUP.md](SETUP.md).",
     ],
@@ -215,6 +217,41 @@ for rel, needles in checks.items():
     for needle in needles:
         if needle not in text:
             raise SystemExit(rel + " missing setup routing guidance: " + needle)
+'
+echo ""
+
+echo "5c. Starter-kit ranking and hook catalog stay documented"
+assert_python "setup agent and README document starter-kit ranking metadata and hooks" '
+checks = {
+    "agents/setup.agent.md": [
+        "featured matches first (`featured: true`)",
+        "Use `tags` and the kit description",
+        "Starter kits",
+    ],
+    "README.md": [
+        "## Hooks",
+        "Featured default kits: `python` and `typescript`.",
+        "[hooks/hooks.json](hooks/hooks.json)",
+        "`SessionStart`",
+        "`UserPromptSubmit`",
+        "`PreToolUse`",
+        "`PostToolUse`",
+        "`Stop`",
+        "`PreCompact`",
+        "`SubagentStart`",
+        "`SubagentStop`",
+        "`session-start.sh`",
+        "`scan-secrets.sh`",
+        "`save-context.sh`",
+        "`subagent-start.sh`",
+        "`subagent-stop.sh`",
+    ],
+}
+for rel, needles in checks.items():
+    text = (root / rel).read_text(encoding="utf-8")
+    for needle in needles:
+        if needle not in text:
+            raise SystemExit(rel + " missing hook or starter-kit documentation: " + needle)
 '
 echo ""
 
@@ -582,7 +619,7 @@ for forbidden in [
 echo ""
 
 echo "12. Lightweight AI entry surfaces point to canonical sources"
-assert_python "CLAUDE.md and llms.txt stay lean and point to the canonical sources" '
+assert_python "CLAUDE.md stays lean and llms.txt stays machine-readable" '
 claude_text = (root / "CLAUDE.md").read_text(encoding="utf-8")
 for needle in [
     ".github/copilot-instructions.md",
@@ -602,7 +639,14 @@ for needle in [
     "[.github/copilot-instructions.md](.github/copilot-instructions.md)",
     "[AGENTS.md](AGENTS.md)",
     "[MODELS.md](MODELS.md)",
+    "[SETUP.md](SETUP.md)",
+    "[starter-kits/REGISTRY.json](starter-kits/REGISTRY.json)",
+    "[.copilot/workspace/operations/workspace-index.json](.copilot/workspace/operations/workspace-index.json)",
     "## Model strategy",
+    "## Agents",
+    "## Skills",
+    "## Starter kits",
+    "## Hook and runtime surfaces",
 ]:
     if needle not in llms_text:
         raise SystemExit("llms.txt missing canonical navigation link: " + needle)
@@ -610,9 +654,43 @@ for forbidden in ["## Route queries quickly", "## Canonical machine sources"]:
     if forbidden in llms_text:
         raise SystemExit("llms.txt still duplicates navigation section: " + forbidden)
 
+for agent_path in sorted((root / "agents").glob("*.agent.md")):
+    rel = agent_path.relative_to(root).as_posix()
+    marker = f"[{rel}]({rel})"
+    if marker not in llms_text:
+        raise SystemExit("llms.txt missing agent catalog entry: " + rel)
+
+for skill_path in sorted((root / "skills").glob("*/SKILL.md")):
+    rel = skill_path.relative_to(root).as_posix()
+    marker = f"[{rel}]({rel})"
+    if marker not in llms_text:
+        raise SystemExit("llms.txt missing skill catalog entry: " + rel)
+
+for starter_kit_path in sorted((root / "starter-kits").glob("*/.claude-plugin/plugin.json")):
+    rel = starter_kit_path.relative_to(root).as_posix()
+    marker = f"[{rel}]({rel})"
+    if marker not in llms_text:
+        raise SystemExit("llms.txt missing starter-kit catalog entry: " + rel)
+
+for rel in [
+    "hooks/hooks.json",
+    "template/hooks/copilot-hooks.json",
+    "template/vscode/settings.json",
+    "template/vscode/mcp.json",
+    "CLAUDE.md",
+]:
+    marker = f"[{rel}]({rel})"
+    if marker not in llms_text:
+        raise SystemExit("llms.txt missing hook or runtime catalog entry: " + rel)
+
 models_text = (root / "MODELS.md").read_text(encoding="utf-8")
-if "llms.txt` mirrors only the primary-model and thinking-effort summary" not in models_text:
-    raise SystemExit("MODELS.md missing llms.txt mirror note")
+for needle in [
+    "llms.txt` includes a machine-readable repo catalog",
+    "sync-models.sh` propagates only the",
+    "primary-model and thinking-effort summary table within `llms.txt`",
+]:
+    if needle not in models_text:
+        raise SystemExit("MODELS.md missing llms.txt catalog note: " + needle)
 '
 echo ""
 

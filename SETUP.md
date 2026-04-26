@@ -26,6 +26,8 @@ This is the supported default path.
 5. Reload VS Code if the Setup agent does not appear immediately.
 6. Tell Copilot `Set up this project`.
 
+If you need to confirm the install in VS Code, search the Extensions view for `@agentPlugins copilot-instructions-template` and make sure the plugin is enabled.
+
 The Setup agent then runs the interview, writes `.github/copilot-instructions.md`, installs companion files, and records the installed version in `.github/copilot-version.md`.
 
 ## Use Manual Copilot Bootstrap
@@ -38,12 +40,12 @@ Use this path when the marketplace entry is unavailable or you are testing the p
 2. Run `Chat: Install Plugin From Source`.
 3. Enter the full repository URL:
 
-```text
-https://github.com/asafelobotomy/copilot-instructions-template
-```
+  ```text
+  https://github.com/asafelobotomy/copilot-instructions-template
+  ```
 
-4. Reload VS Code if needed.
-5. Tell Copilot `Set up this project`.
+1. Reload VS Code if needed.
+2. Tell Copilot `Set up this project`.
 
 ### Use A Local Plugin Path
 
@@ -82,6 +84,7 @@ After setup, confirm these outcomes:
 3. The Setup trigger `Update your instructions` resolves to the lifecycle update flow.
 4. The Agent Debug Panel shows the expected agent, skill, and hook sources.
 5. If hooks are local, `.github/hooks/copilot-hooks.json` points at `.github/hooks/scripts/...`.
+6. The Extensions view shows `@agentPlugins copilot-instructions-template` and the plugin is enabled.
 
 ## Update Or Repair An Existing Install
 

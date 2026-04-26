@@ -1,19 +1,99 @@
 # copilot-instructions-template
 
-> Lean/Kaizen GitHub Copilot template for VS Code projects. It scaffolds model-pinned agents, reusable skills, hooks, MCP config, workspace identity files, and update protocols into a user's repository.
+> Lean/Kaizen GitHub Copilot template for VS Code projects. It ships a VS Code agent plugin, setup or update lifecycle docs, model-pinned agents, reusable skills, starter kits, hooks, MCP config, and workspace identity scaffolding.
 
-## Start here
+## Install and lifecycle
 
-- [.github/copilot-instructions.md](.github/copilot-instructions.md): Main always-loaded instruction file. Core methodology and guardrails.
-- [AGENTS.md](AGENTS.md): Machine entry point. Trigger phrases and canonical setup or update pointers.
-- [MODELS.md](MODELS.md): Single source of truth for agent model assignments and thinking-effort guidance.
-- [plugin.json](plugin.json): VS Code Agent Plugin manifest (name, version, metadata).
-- [CHANGELOG.md](CHANGELOG.md): Version history and migration notes.
-- [.github/research/README.md](.github/research/README.md): Research note layout and archive convention.
+- [SETUP.md](SETUP.md): Plugin marketplace install, source bootstrap, local `chat.pluginLocations`, ownership modes, verification, and update or restore phrases.
+- [README.md](README.md): Human quick start, install routes, and contributor overview.
+- [AGENTS.md](AGENTS.md): Machine entry point and canonical trigger phrases.
+- [plugin.json](plugin.json): Root Copilot-format plugin manifest.
+- [.plugin/plugin.json](.plugin/plugin.json): OpenPlugin manifest.
+- [.claude-plugin/plugin.json](.claude-plugin/plugin.json): Claude-format plugin manifest.
+- [starter-kits/REGISTRY.json](starter-kits/REGISTRY.json): Starter-kit registry and detection metadata.
+- [.copilot/workspace/operations/workspace-index.json](.copilot/workspace/operations/workspace-index.json): Canonical machine-readable repo inventory.
 
-## Archive conventions
+## Canonical instructions and templates
 
-- Research notes stay active under `.github/research/` first, then move into `.github/research/archive/YYYY-MM/`.
+- [.github/copilot-instructions.md](.github/copilot-instructions.md): Always-loaded developer instructions.
+- [template/copilot-instructions.md](template/copilot-instructions.md): Consumer instruction template with placeholders.
+- [MODELS.md](MODELS.md): Single source of truth for model assignments and thinking effort.
+- [template/setup/interview.md](template/setup/interview.md): Setup interview question bank.
+- [template/setup/manifests.md](template/setup/manifests.md): Setup companion-file manifests and ownership rules.
+- [template/copilot-setup-steps.yml](template/copilot-setup-steps.yml): GitHub Actions setup-steps scaffold.
+- [CHANGELOG.md](CHANGELOG.md): Version history and migrations.
+
+## Agents
+
+- [agents/setup.agent.md](agents/setup.agent.md): Template lifecycle, setup, update, backup restore, and factory restore.
+- [agents/coding.agent.md](agents/coding.agent.md): Multi-step implementation and refactoring.
+- [agents/review.agent.md](agents/review.agent.md): Deep code review and architecture critique.
+- [agents/audit.agent.md](agents/audit.agent.md): Health and security audit.
+- [agents/commit.agent.md](agents/commit.agent.md): Git lifecycle and release operations.
+- [agents/debugger.agent.md](agents/debugger.agent.md): Root-cause analysis and regression triage.
+- [agents/docs.agent.md](agents/docs.agent.md): Documentation and migration notes.
+- [agents/planner.agent.md](agents/planner.agent.md): Read-only planning and task decomposition.
+- [agents/explore.agent.md](agents/explore.agent.md): Fast read-only codebase exploration.
+- [agents/researcher.agent.md](agents/researcher.agent.md): Online and offline research.
+- [agents/cleaner.agent.md](agents/cleaner.agent.md): Repository hygiene and stale-artifact cleanup.
+- [agents/organise.agent.md](agents/organise.agent.md): Structural cleanup, moves, and path repair.
+- [agents/extensions.agent.md](agents/extensions.agent.md): VS Code extensions, profiles, and workspace config.
+- [agents/fast.agent.md](agents/fast.agent.md): Quick questions and lightweight edits.
+
+## Skills
+
+- [skills/agentic-workflows/SKILL.md](skills/agentic-workflows/SKILL.md): GitHub Actions workflows with Copilot coding agents.
+- [skills/commit-preflight/SKILL.md](skills/commit-preflight/SKILL.md): CI-aware preflight checks before commit or push.
+- [skills/compress-prose/SKILL.md](skills/compress-prose/SKILL.md): Shorten prose without losing required meaning.
+- [skills/conventional-commit/SKILL.md](skills/conventional-commit/SKILL.md): Conventional Commit message composition.
+- [skills/create-adr/SKILL.md](skills/create-adr/SKILL.md): Architectural Decision Records.
+- [skills/extension-review/SKILL.md](skills/extension-review/SKILL.md): VS Code extension auditing.
+- [skills/fix-ci-failure/SKILL.md](skills/fix-ci-failure/SKILL.md): CI failure diagnosis and repair.
+- [skills/issue-triage/SKILL.md](skills/issue-triage/SKILL.md): Issue severity, waste labels, and response drafting.
+- [skills/lean-pr-review/SKILL.md](skills/lean-pr-review/SKILL.md): Lean PR review workflow.
+- [skills/mcp-builder/SKILL.md](skills/mcp-builder/SKILL.md): Scaffold and register MCP servers.
+- [skills/mcp-management/SKILL.md](skills/mcp-management/SKILL.md): Configure and manage MCP servers.
+- [skills/plugin-management/SKILL.md](skills/plugin-management/SKILL.md): Discover, install, and manage agent plugins.
+- [skills/security-audit/SKILL.md](skills/security-audit/SKILL.md): Security review workflow.
+- [skills/skill-creator/SKILL.md](skills/skill-creator/SKILL.md): Create a new agent skill.
+- [skills/skill-management/SKILL.md](skills/skill-management/SKILL.md): Discover and manage skills.
+- [skills/test-coverage-review/SKILL.md](skills/test-coverage-review/SKILL.md): Coverage review and test-gap analysis.
+- [skills/tool-protocol/SKILL.md](skills/tool-protocol/SKILL.md): Search before building automation.
+- [skills/webapp-testing/SKILL.md](skills/webapp-testing/SKILL.md): Browser testing with VS Code tools or Playwright.
+
+## Consumer instruction stubs and prompts
+
+- [template/instructions/api-routes.instructions.md](template/instructions/api-routes.instructions.md): API route conventions.
+- [template/instructions/config.instructions.md](template/instructions/config.instructions.md): Config and RC-file conventions.
+- [template/instructions/docs.instructions.md](template/instructions/docs.instructions.md): Documentation conventions.
+- [template/instructions/terminal.instructions.md](template/instructions/terminal.instructions.md): Terminal session safety.
+- [template/instructions/tests.instructions.md](template/instructions/tests.instructions.md): Test and spec conventions.
+- [template/prompts/commit-msg.prompt.md](template/prompts/commit-msg.prompt.md): Commit-message prompt.
+- [template/prompts/context-map.prompt.md](template/prompts/context-map.prompt.md): Codebase context-map prompt.
+- [template/prompts/explain.prompt.md](template/prompts/explain.prompt.md): Explanation prompt.
+- [template/prompts/onboard-commit-style.prompt.md](template/prompts/onboard-commit-style.prompt.md): Commit-style onboarding prompt.
+- [template/prompts/refactor.prompt.md](template/prompts/refactor.prompt.md): Refactor prompt.
+- [template/prompts/review-file.prompt.md](template/prompts/review-file.prompt.md): Single-file review prompt.
+- [template/prompts/test-gen.prompt.md](template/prompts/test-gen.prompt.md): Test-generation prompt.
+
+## Starter kits
+
+- [starter-kits/cpp/.claude-plugin/plugin.json](starter-kits/cpp/.claude-plugin/plugin.json): C++ starter kit plugin manifest.
+- [starter-kits/docker/.claude-plugin/plugin.json](starter-kits/docker/.claude-plugin/plugin.json): Docker starter kit plugin manifest.
+- [starter-kits/go/.claude-plugin/plugin.json](starter-kits/go/.claude-plugin/plugin.json): Go starter kit plugin manifest.
+- [starter-kits/java/.claude-plugin/plugin.json](starter-kits/java/.claude-plugin/plugin.json): Java starter kit plugin manifest.
+- [starter-kits/python/.claude-plugin/plugin.json](starter-kits/python/.claude-plugin/plugin.json): Python starter kit plugin manifest.
+- [starter-kits/react/.claude-plugin/plugin.json](starter-kits/react/.claude-plugin/plugin.json): React starter kit plugin manifest.
+- [starter-kits/rust/.claude-plugin/plugin.json](starter-kits/rust/.claude-plugin/plugin.json): Rust starter kit plugin manifest.
+- [starter-kits/typescript/.claude-plugin/plugin.json](starter-kits/typescript/.claude-plugin/plugin.json): TypeScript starter kit plugin manifest.
+
+## Hook and runtime surfaces
+
+- [hooks/hooks.json](hooks/hooks.json): Plugin hook registration.
+- [template/hooks/copilot-hooks.json](template/hooks/copilot-hooks.json): All-local hook-config template.
+- [template/vscode/settings.json](template/vscode/settings.json): VS Code settings template.
+- [template/vscode/mcp.json](template/vscode/mcp.json): MCP server template.
+- [CLAUDE.md](CLAUDE.md): Claude Code compatibility surface.
 
 ## Model strategy
 
@@ -37,43 +117,13 @@ Sync command: `bash scripts/sync/sync-models.sh --write`.
 | `docs.agent.md` | Claude Sonnet 4.6 | Medium | Documentation |
 | `debugger.agent.md` | GPT-5.4 | High | Failure diagnosis |
 
-## Skills
-
-Skill inventory changes over time.
-Use `.copilot/workspace/operations/workspace-index.json` as the canonical source for exact skill names and counts.
-
-High-signal examples:
-
-- `extension-review`: audit VS Code extensions against detected stack signals
-- `test-coverage-review`: audit test coverage and recommend local tests plus CI workflows
-- `tool-protocol`: search before building automation
-- `skill-management`: discover and manage skills on demand
-- `mcp-management`: configure external tool access
-- `plugin-management`: discover and manage agent plugins
-
-## Hooks
-
-Hook orchestration config: `.github/hooks/copilot-hooks.json` (all-local) or agent plugin (plugin-backed).
-Canonical script inventory: `.copilot/workspace/operations/workspace-index.json`.
-
-## Subagent orchestration
-
-Allow-lists live in `agents/*.agent.md` frontmatter (`agents:` field).
-Max subagent depth: 3. Surfaced coordinators: Setup, Code, Review, Fast, Explore, Commit, Docs, Cleaner.
-Hidden specialists: Planner, Debugger, Audit, Researcher, Extensions, Organise.
-
-## Cross-tool compatibility
-
-- `CLAUDE.md` template stub for Claude Code compatibility
-- VS Code settings template at `template/vscode/settings.json`
-- Agent plugins enabled via `chat.plugins.enabled`
-
 ## Validation
 
 - Main suite: `bash tests/run-all.sh`
+- Captured full suite: `bash scripts/harness/run-all-captured.sh`
 - Metadata sync: `bash scripts/workspace/sync-workspace-index.sh --check`
 - Model registry sync: `bash scripts/sync/sync-models.sh --check`
 
 ## Human documentation
 
-See [`README.md`](README.md) for a human-readable overview and quick-start links.
+See [README.md](README.md) for the human-readable overview and quick-start guidance.

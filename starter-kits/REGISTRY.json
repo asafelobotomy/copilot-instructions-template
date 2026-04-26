@@ -1,11 +1,18 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "description": "Machine-readable index mapping stack detection signals to starter-kit plugins.",
   "kits": [
     {
       "name": "python",
       "displayName": "Python Starter Kit",
       "description": "pytest/unittest patterns, type checking, venv/poetry guidance, security practices",
+      "featured": true,
+      "tags": [
+        "language-python",
+        "testing",
+        "typing",
+        "security"
+      ],
       "detect": {
         "files": ["pyproject.toml", "setup.py", "requirements.txt", "Pipfile"],
         "language": "Python"
@@ -23,6 +30,13 @@
       "name": "typescript",
       "displayName": "TypeScript Starter Kit",
       "description": "ESLint/Prettier patterns, Jest/Vitest testing, type safety, module conventions",
+      "featured": true,
+      "tags": [
+        "language-typescript",
+        "testing",
+        "linting",
+        "security"
+      ],
       "detect": {
         "files": ["tsconfig.json"],
         "language": "TypeScript"
@@ -40,6 +54,13 @@
       "name": "cpp",
       "displayName": "C++ Starter Kit",
       "description": "CMake patterns, memory safety, clang-tidy/format, modern C++ conventions",
+      "featured": false,
+      "tags": [
+        "language-cpp",
+        "cmake",
+        "formatting",
+        "safety"
+      ],
       "detect": {
         "files": ["CMakeLists.txt"],
         "language": "C++"
@@ -56,6 +77,13 @@
       "name": "rust",
       "displayName": "Rust Starter Kit",
       "description": "Cargo/clippy patterns, unsafe review, crate conventions, error handling",
+      "featured": false,
+      "tags": [
+        "language-rust",
+        "cargo",
+        "clippy",
+        "safety"
+      ],
       "detect": {
         "files": ["Cargo.toml"],
         "language": "Rust"
@@ -71,6 +99,13 @@
       "name": "go",
       "displayName": "Go Starter Kit",
       "description": "Go testing patterns, golangci-lint, module management, idiomatic Go conventions",
+      "featured": false,
+      "tags": [
+        "language-go",
+        "testing",
+        "linting",
+        "modules"
+      ],
       "detect": {
         "files": ["go.mod"],
         "language": "Go"
@@ -86,6 +121,13 @@
       "name": "java",
       "displayName": "Java Starter Kit",
       "description": "Maven/Gradle patterns, JUnit testing, Spring Boot conventions, dependency management",
+      "featured": false,
+      "tags": [
+        "language-java",
+        "build-tools",
+        "testing",
+        "dependencies"
+      ],
       "detect": {
         "files": ["pom.xml", "build.gradle", "build.gradle.kts"],
         "language": "Java"
@@ -101,6 +143,13 @@
       "name": "docker",
       "displayName": "Docker Starter Kit",
       "description": "Dockerfile best practices, compose patterns, image security, multi-stage builds",
+      "featured": false,
+      "tags": [
+        "containers",
+        "compose",
+        "security",
+        "builds"
+      ],
       "detect": {
         "files": ["Dockerfile", "docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml"]
       },
@@ -115,6 +164,13 @@
       "name": "react",
       "displayName": "React Starter Kit",
       "description": "Component testing, accessibility, hooks patterns, state management, Next.js conventions",
+      "featured": false,
+      "tags": [
+        "framework-react",
+        "testing",
+        "accessibility",
+        "nextjs"
+      ],
       "detect": {
         "dependencies": ["react", "react-dom", "next"]
       },

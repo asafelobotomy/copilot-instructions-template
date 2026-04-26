@@ -14,15 +14,23 @@ echo ""
 echo "1. REGISTRY.json is valid JSON with required schema"
 assert_python "REGISTRY.json schema is valid" '
 registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
-if registry.get("schemaVersion") != "1.0":
+if registry.get("schemaVersion") != "1.1":
     raise SystemExit("missing or wrong schemaVersion")
 kits = registry.get("kits")
 if not isinstance(kits, list) or len(kits) == 0:
     raise SystemExit("kits must be a non-empty list")
 for kit in kits:
-    for field in ("name", "displayName", "description", "detect", "files"):
+    for field in ("name", "displayName", "description", "featured", "tags", "detect", "files"):
         if field not in kit:
             raise SystemExit("kit " + kit.get("name", "?") + " missing field: " + field)
+    if not isinstance(kit["featured"], bool):
+        raise SystemExit("kit " + kit["name"] + " has non-boolean featured field")
+    if not isinstance(kit["tags"], list) or len(kit["tags"]) == 0:
+        raise SystemExit("kit " + kit["name"] + " has empty tags list")
+    if any(not isinstance(tag, str) or not tag for tag in kit["tags"]):
+        raise SystemExit("kit " + kit["name"] + " has invalid tag entry")
+    if len(set(kit["tags"])) != len(kit["tags"]):
+        raise SystemExit("kit " + kit["name"] + " has duplicate tags")
     if not isinstance(kit["files"], list) or len(kit["files"]) == 0:
         raise SystemExit("kit " + kit["name"] + " has empty files list")
     if ".claude-plugin/plugin.json" not in kit["files"]:
@@ -31,6 +39,8 @@ for kit in kits:
     has_signal = "files" in detect or "language" in detect or "dependencies" in detect
     if not has_signal:
         raise SystemExit("kit " + kit["name"] + " detect has no signals (files/language/dependencies)")
+if not any(kit["featured"] for kit in kits):
+    raise SystemExit("expected at least one featured starter kit")
 '
 echo ""
 

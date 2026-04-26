@@ -21,7 +21,7 @@ A single VS Code agent plugin that installs a full AI developer workflow into an
 |-----------|------:|-------------|
 | Model-pinned agents | 14 | Specialist agents for every workflow stage |
 | Reusable skills | 18 | Domain-specific capability modules |
-| Lifecycle hooks | 6 | PreToolUse, PostToolUse, and Stop guards |
+| Lifecycle hooks | 8 | Session, prompt, tool, compaction, and subagent lifecycle events |
 | Starter kits | 8 | Stack-specific bundles (Python, TypeScript, Go, Rust, Java, C++, React, Docker) |
 | MCP configuration | — | Pre-configured server set with sandbox policy |
 | Setup wizard | — | Interactive personalisation at install time |
@@ -36,6 +36,8 @@ Use the plugin install path by default. Use the manual Copilot bootstrap path on
 
 - Plugin marketplace install: use **Chat: Install Plugin**, search `copilot-instructions-template`, install, reload VS Code if needed, then tell Copilot `Set up this project`.
 - Manual Copilot bootstrap: use **Chat: Install Plugin From Source** with the full repository URL, or add a local repo path to `chat.pluginLocations`, reload VS Code, then tell Copilot `Set up this project`.
+
+If you need to confirm the plugin in VS Code, search the Extensions view for `@agentPlugins copilot-instructions-template` and make sure it is enabled.
 
 See [SETUP.md](SETUP.md) for the full plugin and manual setup flow, exact trigger phrases, verification steps, and ownership-mode choices.
 
@@ -54,6 +56,8 @@ This repo now ships plugin manifests for all three currently relevant surfaces: 
 The Setup agent runs an interactive personalisation wizard. It asks a few questions, then writes your `.github/copilot-instructions.md`, copies agents and skills into `.github/`, installs hooks and MCP config, and creates a workspace scaffold. No manual file copying or URL fetching required.
 
 If the plugin marketplace entry is unavailable, follow the manual Copilot bootstrap path in [SETUP.md](SETUP.md).
+
+If the Setup agent does not appear, search the Extensions view for `@agentPlugins copilot-instructions-template`, confirm the plugin is enabled, reload VS Code, and rerun `Set up this project`.
 
 ---
 
@@ -108,6 +112,23 @@ If the plugin marketplace entry is unavailable, follow the manual Copilot bootst
 Stack-specific instruction bundles installed during setup when the stack is detected:
 
 `cpp` · `docker` · `go` · `java` · `python` · `react` · `rust` · `typescript`
+
+Featured default kits: `python` and `typescript`. The starter-kit registry carries `featured` and `tags` metadata so Setup can present the highest-confidence matches first when several kits fit the same workspace.
+
+## Hooks
+
+The plugin wires eight lifecycle events. In plugin-backed mode, these run from [hooks/hooks.json](hooks/hooks.json). In all-local mode, the same behavior can be installed into `.github/hooks/` during setup.
+
+| Event | Primary script(s) | Purpose |
+|-------|-------------------|---------|
+| `SessionStart` | `session-start.sh`, `pulse.sh --trigger session_start` | Add project context and initialize heartbeat state |
+| `UserPromptSubmit` | `pulse.sh --trigger user_prompt` | Detect explicit heartbeat and retrospective prompts |
+| `PreToolUse` | `guard-destructive.sh`, `pulse.sh --trigger pre_tool` | Block dangerous commands and track pre-tool heartbeat signals |
+| `PostToolUse` | `post-edit-lint.sh`, `pulse.sh --trigger soft_post_tool` | Auto-format edits and debounce soft heartbeat triggers |
+| `Stop` | `pulse.sh --trigger stop`, `scan-secrets.sh` | Gate retrospectives and run the secret scan |
+| `PreCompact` | `save-context.sh`, `pulse.sh --trigger compaction` | Save workspace state before compaction |
+| `SubagentStart` | `subagent-start.sh` | Add governance context when a subagent starts |
+| `SubagentStop` | `subagent-stop.sh` | Mark subagent completion |
 
 ---
 
@@ -210,4 +231,3 @@ For the async terminal tool family, use the exact terminal ID returned by `run_i
 - Background terminal notifications are enabled by default, so do not add `sleep` loops or blind polling around background terminals.
 - For persistent task workflows, prefer repo scripts or `create_and_run_task` instead of a persistent interactive shell.
 - For interactive terminal prompts, send one answer at a time with `send_to_terminal` and check the next prompt before sending more input.
-

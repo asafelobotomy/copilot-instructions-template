@@ -142,7 +142,9 @@ optional servers per E22a. Run sandbox detection on Linux first.
 
 **§ 2.11a — Starter kits**: Read
 `${CLAUDE_PLUGIN_ROOT}/starter-kits/REGISTRY.json`. Match detected stack against
-`kits[].detect` conditions. Present matches with `ask_questions`. Copy matched
+`kits[].detect` conditions. Present featured matches first (`featured: true`),
+then remaining matches alphabetically. Use `tags` and the kit description to
+explain why each match is relevant in `ask_questions`. Copy matched
 kits from `${CLAUDE_PLUGIN_ROOT}/starter-kits/<kit-name>/` to
 `.github/starter-kits/<kit-name>/`. Register in `.vscode/settings.json` under
 `chat.pluginLocations`.

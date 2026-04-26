@@ -92,6 +92,19 @@
 | <https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-template-repository> | GitHub template repos: copies directory structure + files on "Use this template"; branches have unrelated histories | 2026-04-12 | github, template-repo, bootstrap |
 | <https://github.com/github/copilot-plugins> | Official Copilot plugins marketplace repo; skills only as of Apr 2026; MCP servers and hooks listed as "coming soon" | 2026-04-12 | plugins, marketplace |
 
+## Awesome Copilot — Community Pattern Research — 2026-04-26
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://github.com/github/awesome-copilot> | Community Copilot collection: agents, instructions, skills, plugins, hooks, agentic workflows; default plugin marketplace for VS Code and Copilot CLI | 2026-04-26 | agent-plugins, marketplace, community |
+| <https://awesome-copilot.github.com/llms.txt> | Machine-readable llms.txt: full structured listing of all agents, instructions, and skills with raw GitHub URLs for AI agent discovery | 2026-04-26 | llms-txt, discoverability, machine-readable |
+| <https://awesome-copilot.github.com/learning-hub> | Learning Hub: 20+ curated guides covering agents, skills, hooks, MCP servers, agentic workflows, CLI intro, context management | 2026-04-26 | learning, onboarding, guides |
+| <https://raw.githubusercontent.com/github/awesome-copilot/main/docs/README.skills.md> | Skills doc: gh CLI install pattern (`gh skill install github/awesome-copilot <name>`), bundled assets column, requires GitHub CLI v2.90.0+ | 2026-04-26 | skills, gh-cli, install |
+| <https://raw.githubusercontent.com/github/awesome-copilot/main/docs/README.plugins.md> | Plugins doc: tags array per plugin, featured plugins at top, `@agentPlugins` Extensions search filter, `copilot plugin install` CLI command | 2026-04-26 | plugins, discoverability, tags |
+| <https://raw.githubusercontent.com/github/awesome-copilot/main/docs/README.hooks.md> | Hooks catalog: dependency license checker, governance audit, secrets scanner, session auto-commit, session logger, tool guardian; event types reference | 2026-04-26 | hooks, catalog, events |
+| <https://raw.githubusercontent.com/github/awesome-copilot/main/docs/README.agents.md> | Agents doc: VS Code/VS Code Insiders install badges (deeplink pattern `vscode:chat-agent/install?url=...`), MCP server dependencies per agent | 2026-04-26 | agents, install-badges, deeplink |
+| <https://raw.githubusercontent.com/github/awesome-copilot/main/CONTRIBUTING.md> | Contributing guide: quality criteria, what's rejected (no circumvention, no duplicate model strengths, no remote-source plugins), format examples | 2026-04-26 | contributing, quality, guidelines |
+
 ## VS Code Agent Plugins — Schema and Install Flow
 
 | URL | Summary | Date | Tags |
