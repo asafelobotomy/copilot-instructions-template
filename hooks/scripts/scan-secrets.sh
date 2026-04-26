@@ -73,53 +73,62 @@ if [[ -f "$_LOG_FILE_PATH" ]] && [[ "$_DEBOUNCE_SECONDS" -gt 0 ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# Secret detection patterns (edit this list to add or remove patterns)
-#
-# Each entry: "PATTERN_NAME|SEVERITY|REGEX"
-# Severity levels: critical, high, medium
+# Secret detection patterns — loaded from secrets-patterns.json
+# Edit secrets-patterns.json to add, remove, or tune patterns.
 # ---------------------------------------------------------------------------
-PATTERNS=(
-  # Cloud provider credentials
-  "AWS_ACCESS_KEY|critical|AKIA[0-9A-Z]{16}"
-  "AWS_SECRET_KEY|critical|aws_secret_access_key[[:space:]]*[:=][[:space:]]*['\"]?[A-Za-z0-9/+=]{40}"
-  "GCP_SERVICE_ACCOUNT|critical|\"type\"[[:space:]]*:[[:space:]]*\"service_account\""
-  "GCP_API_KEY|high|AIza[0-9A-Za-z_-]{35}"
-  "AZURE_CLIENT_SECRET|critical|azure[_-]?client[_-]?secret[[:space:]]*[:=][[:space:]]*['\"]?[A-Za-z0-9_~.-]{34,}"
+_SECRETS_POLICY="$(dirname "$0")/secrets-patterns.json"
+PATTERNS=()
 
-  # GitHub tokens
-  "GITHUB_PAT|critical|ghp_[0-9A-Za-z]{36}"
-  "GITHUB_OAUTH|critical|gho_[0-9A-Za-z]{36}"
-  "GITHUB_APP_TOKEN|critical|ghs_[0-9A-Za-z]{36}"
-  "GITHUB_REFRESH_TOKEN|critical|ghr_[0-9A-Za-z]{36}"
-  "GITHUB_FINE_GRAINED_PAT|critical|github_pat_[0-9A-Za-z_]{82}"
+if command -v python3 >/dev/null 2>&1 && [[ -f "$_SECRETS_POLICY" ]]; then
+  while IFS= read -r _pline; do
+    [[ -n "$_pline" ]] && PATTERNS+=("$_pline")
+  done < <(python3 - "$_SECRETS_POLICY" <<'PY'
+import json, sys
+try:
+    with open(sys.argv[1]) as f:
+        catalog = json.load(f)
+    for item in catalog.get('patterns', []):
+        name     = item.get('name', '')
+        severity = item.get('severity', 'medium')
+        ptn      = item.get('bash', '')
+        if name and ptn:
+            print(f'{name}|{severity}|{ptn}')
+except Exception:
+    pass
+PY
+  )
+fi
 
-  # Private keys
-  "PRIVATE_KEY|critical|-----BEGIN (RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----"
-  "PGP_PRIVATE_BLOCK|critical|-----BEGIN PGP PRIVATE KEY BLOCK-----"
-
-  # Generic secrets and tokens
-  "GENERIC_SECRET|high|(secret|token|password|passwd|pwd|api[_-]?key|apikey|access[_-]?key|auth[_-]?token|client[_-]?secret)[[:space:]]*[:=][[:space:]]*['\"]?[A-Za-z0-9_/+=~.-]{8,}"
-  "CONNECTION_STRING|high|(mongodb(\+srv)?|postgres(ql)?|mysql|redis|amqp|mssql)://[^[:space:]'\"]{10,}"
-  "BEARER_TOKEN|medium|[Bb]earer[[:space:]]+[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}"
-
-  # Messaging and SaaS tokens
-  "SLACK_TOKEN|high|xox[baprs]-[0-9]{10,}-[0-9A-Za-z-]+"
-  "SLACK_WEBHOOK|high|https://hooks\.slack\.com/services/T[0-9A-Z]{8,}/B[0-9A-Z]{8,}/[0-9A-Za-z]{24}"
-  "DISCORD_TOKEN|high|[MN][A-Za-z0-9]{23,}\.[A-Za-z0-9_-]{6}\.[A-Za-z0-9_-]{27,}"
-  "TWILIO_API_KEY|high|SK[0-9a-fA-F]{32}"
-  "SENDGRID_API_KEY|high|SG\.[0-9A-Za-z_-]{22}\.[0-9A-Za-z_-]{43}"
-  "STRIPE_SECRET_KEY|critical|sk_live_[0-9A-Za-z]{24,}"
-  "STRIPE_RESTRICTED_KEY|high|rk_live_[0-9A-Za-z]{24,}"
-
-  # npm tokens
-  "NPM_TOKEN|high|npm_[0-9A-Za-z]{36}"
-
-  # JWT (long, structured tokens)
-  "JWT_TOKEN|medium|eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"
-
-  # IP addresses with ports (possible internal services)
-  "INTERNAL_IP_PORT|medium|(^|[^.0-9])(10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|172\.(1[6-9]|2[0-9]|3[01])\.[0-9]{1,3}\.[0-9]{1,3}|192\.168\.[0-9]{1,3}\.[0-9]{1,3}):[0-9]{2,5}([^0-9]|$)"
-)
+# Fallback when secrets-patterns.json is absent or unreadable
+if [[ ${#PATTERNS[@]} -eq 0 ]]; then
+  PATTERNS=(
+    "AWS_ACCESS_KEY|critical|AKIA[0-9A-Z]{16}"
+    "AWS_SECRET_KEY|critical|aws_secret_access_key[[:space:]]*[:=][[:space:]]*['\"]?[A-Za-z0-9/+=]{40}"
+    "GCP_SERVICE_ACCOUNT|critical|\"type\"[[:space:]]*:[[:space:]]*\"service_account\""
+    "GCP_API_KEY|high|AIza[0-9A-Za-z_-]{35}"
+    "AZURE_CLIENT_SECRET|critical|azure[_-]?client[_-]?secret[[:space:]]*[:=][[:space:]]*['\"]?[A-Za-z0-9_~.-]{34,}"
+    "GITHUB_PAT|critical|ghp_[0-9A-Za-z]{36}"
+    "GITHUB_OAUTH|critical|gho_[0-9A-Za-z]{36}"
+    "GITHUB_APP_TOKEN|critical|ghs_[0-9A-Za-z]{36}"
+    "GITHUB_REFRESH_TOKEN|critical|ghr_[0-9A-Za-z]{36}"
+    "GITHUB_FINE_GRAINED_PAT|critical|github_pat_[0-9A-Za-z_]{82}"
+    "PRIVATE_KEY|critical|-----BEGIN (RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----"
+    "PGP_PRIVATE_BLOCK|critical|-----BEGIN PGP PRIVATE KEY BLOCK-----"
+    "GENERIC_SECRET|high|(secret|token|password|passwd|pwd|api[_-]?key|apikey|access[_-]?key|auth[_-]?token|client[_-]?secret)[[:space:]]*[:=][[:space:]]*['\"]?[A-Za-z0-9_/+=~.-]{8,}"
+    "CONNECTION_STRING|high|(mongodb(\+srv)?|postgres(ql)?|mysql|redis|amqp|mssql)://[^[:space:]'\"]{10,}"
+    "BEARER_TOKEN|medium|[Bb]earer[[:space:]]+[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}"
+    "SLACK_TOKEN|high|xox[baprs]-[0-9]{10,}-[0-9A-Za-z-]+"
+    "SLACK_WEBHOOK|high|https://hooks\.slack\.com/services/T[0-9A-Z]{8,}/B[0-9A-Z]{8,}/[0-9A-Za-z]{24}"
+    "DISCORD_TOKEN|high|[MN][A-Za-z0-9]{23,}\.[A-Za-z0-9_-]{6}\.[A-Za-z0-9_-]{27,}"
+    "TWILIO_API_KEY|high|SK[0-9a-fA-F]{32}"
+    "SENDGRID_API_KEY|high|SG\.[0-9A-Za-z_-]{22}\.[0-9A-Za-z_-]{43}"
+    "STRIPE_SECRET_KEY|critical|sk_live_[0-9A-Za-z]{24,}"
+    "STRIPE_RESTRICTED_KEY|high|rk_live_[0-9A-Za-z]{24,}"
+    "NPM_TOKEN|high|npm_[0-9A-Za-z]{36}"
+    "JWT_TOKEN|medium|eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"
+    "INTERNAL_IP_PORT|medium|(^|[^.0-9])(10\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}|172\.(1[6-9]|2[0-9]|3[01])\.[0-9]{1,3}\.[0-9]{1,3}|192\.168\.[0-9]{1,3}\.[0-9]{1,3}):[0-9]{2,5}([^0-9]|$)"
+  )
+fi
 
 if [[ "${SKIP_SECRETS_SCAN:-}" == "true" ]]; then
   echo "⏭️  Secrets scan skipped (SKIP_SECRETS_SCAN=true)" >&2

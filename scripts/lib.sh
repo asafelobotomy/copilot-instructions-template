@@ -37,3 +37,35 @@ require_python_check_write() {
   require_check_write_mode "$1" "$2"
   require_command python3
 }
+
+# require_file <path> [error_prefix]
+#   Fail fast if a required file is missing.
+#   error_prefix defaults to ROOT_DIR for relative path display.
+# Usage: require_file "template/copilot-instructions.md"
+require_file() {
+  local path="$1" prefix="${2:-${ROOT_DIR:-}}"
+  local full_path
+  if [[ "$path" = /* ]]; then
+    full_path="$path"
+  else
+    full_path="${prefix:+$prefix/}$path"
+  fi
+  if [[ ! -f "$full_path" ]]; then
+    err "Required file not found: $full_path"
+    exit 1
+  fi
+}
+
+# find_repo_root
+#   Walk up from the script's own directory until .git is found.
+#   Prints the repo root path. Exits 1 if not found.
+find_repo_root() {
+  local dir
+  dir="$(cd "$(dirname "${BASH_SOURCE[1]}")" && pwd)"
+  while [[ "$dir" != "/" ]]; do
+    [[ -d "$dir/.git" ]] && { echo "$dir"; return 0; }
+    dir="$(dirname "$dir")"
+  done
+  err "Could not find repo root (no .git directory found)"
+  exit 1
+}

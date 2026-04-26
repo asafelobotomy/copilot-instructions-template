@@ -15,3 +15,35 @@ json_escape() {
     | sed 's/^"//;s/"$//' \
     || printf '%s' "$1"
 }
+
+# json_field <json_string> <field_name> [default]
+#   Extract a top-level string field from a JSON object.
+#   Returns the field value, or [default] (empty string if omitted) when the
+#   field is absent, null, or python3 is unavailable.
+json_field() {
+  local json="$1" field="$2" default="${3:-}"
+  local val
+  val=$(printf '%s' "$json" | python3 -c "
+import sys,json
+try:
+    d=json.load(sys.stdin)
+    v=d.get('$field')
+    print(v if isinstance(v,str) and v else '')
+except Exception:
+    print('')
+" 2>/dev/null) || val=""
+  printf '%s' "${val:-$default}"
+}
+
+# try_exec_in_container <cmd> [args...]
+#   Attempt to exec <cmd> via distrobox then toolbox (for immutable desktops).
+#   Does nothing and returns 1 if neither container manager is found.
+try_exec_in_container() {
+  local cmd="$1"; shift
+  if command -v distrobox &>/dev/null; then
+    exec distrobox enter -- "$cmd" "$@" 2>/dev/null
+  elif command -v toolbox &>/dev/null; then
+    exec toolbox run "$cmd" "$@" 2>/dev/null
+  fi
+  return 1
+}

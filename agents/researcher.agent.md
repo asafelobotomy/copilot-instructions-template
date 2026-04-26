@@ -5,6 +5,7 @@ argument-hint: Describe what to research — e.g. "research MCP server patterns"
 model:
   - Claude Sonnet 4.6
   - Claude Sonnet 4.5
+  - Gemini 3.1 Pro
   - Gemini 2.5 Pro
   - GPT-5 mini
 tools: [agent, fetch, webSearch, codebase, search, editFiles, runCommands]

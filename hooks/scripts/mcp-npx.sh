@@ -24,12 +24,9 @@ for candidate in \
   [[ -n "$candidate" ]] && [[ -x "$candidate" ]] && exec "$candidate" "$@"
 done
 
-# Toolbox / Distrobox fallback (Bazzite / immutable Fedora Atomic desktops)
-if command -v distrobox &>/dev/null; then
-  exec distrobox enter -- npx "$@" 2>/dev/null
-elif command -v toolbox &>/dev/null; then
-  exec toolbox run npx "$@" 2>/dev/null
-fi
+# shellcheck source=hooks/scripts/lib-hooks.sh
+source "$(dirname "$0")/lib-hooks.sh"
+try_exec_in_container npx "$@"
 
 echo "ERROR: npx not found." >&2
 echo "Install Node.js: https://nodejs.org/ or via your package manager." >&2

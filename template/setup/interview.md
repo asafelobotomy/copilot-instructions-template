@@ -93,7 +93,7 @@
 - **E18 — VS Code settings**: May I modify `.vscode/settings.json`?
   Options: Yes | No | Ask each time
 
-**Batch 7 (E20–E24, E22a)**:
+**Batch 7 (E20–E22, E22a)**:
 
 - **E20 — Mood lightener**: Should I occasionally add light humour?
   Options: Yes | No
@@ -107,6 +107,8 @@
 - **E22a — Optional MCP servers**: Which optional MCP servers should I enable?
   Options: GitHub | Fetch | Context7 | Playwright | None
   Ask only when E22 = B. Multi-select allowed. Default: None (keep core only: filesystem, git).
+
+**Batch 8 (E23–E24)**:
 
 - **E23 — Claude compatibility**: Should I generate a `CLAUDE.md` file for Claude Code compatibility?
   Options: Yes | No

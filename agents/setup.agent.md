@@ -101,6 +101,12 @@ exploration. Leave undetermined values as `{{PLACEHOLDER}}` with
 table (§ 10). Write to `.github/copilot-instructions.md`. Validate no `{{.*}}`
 tokens remain; if any, batch-ask the user (max 4 per call).
 
+Apply E24 to the Thinking Effort Configuration table in §10:
+- E24 = A (MODELS.md recommendations): keep the static table as written.
+- E24 = B (All High): set all effort cells to **High**.
+- E24 = C (All Medium): set all effort cells to **Medium**.
+- E24 = D (Skip): remove the Thinking Effort Configuration subsection.
+
 **§ 2.5 — Agent files** (S6 mode-conditional):
 
 - **Plugin-backed** (S6 = Plugin-backed, or S6 = Ask per surface and user chose

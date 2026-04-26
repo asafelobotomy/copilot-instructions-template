@@ -37,7 +37,7 @@ make_agent "$TMP" "test"
 output=$(ROOT_DIR="$TMP" bash "$SCRIPT" 2>&1)
 status=$?
 assert_success "valid agent exits zero" "$status"
-assert_contains "reports valid" "$output" "valid frontmatter"
+assert_contains "reports valid" "$output" "validated successfully"
 echo ""
 
 echo "2. Missing name field is detected"
@@ -142,7 +142,7 @@ output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" 2>&1)
 status=$?
 assert_success "real repo exits zero" "$status"
 expected_count=$(find "$REPO_ROOT/agents" -name '*.agent.md' | wc -l | tr -d ' ')
-assert_contains "real repo all valid" "$output" "$expected_count agent files"
+assert_contains "real repo all valid" "$output" "$expected_count agent file(s) validated successfully"
 echo ""
 
 finish_tests

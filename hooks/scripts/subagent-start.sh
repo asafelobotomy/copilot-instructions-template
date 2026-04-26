@@ -12,15 +12,9 @@ source "$(dirname "$0")/lib-hooks.sh"
 
 INPUT=$(cat)
 
-# Extract agent type from VS Code SubagentStart payload (field: agent_type)
-AGENT_NAME=$(printf '%s' "$INPUT" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('agent_type','unknown'))" 2>/dev/null) || AGENT_NAME="unknown"
+AGENT_NAME=$(json_field "$INPUT" "agent_type" "unknown")
 [[ -z "$AGENT_NAME" ]] && AGENT_NAME="unknown"
-
-# Build governance context
-CONTEXT="Depth≤3. PDCA, Tool, Skill. Agent: ${AGENT_NAME}."
-
-# JSON-escape the context
-CONTEXT_ESC=$(json_escape "$CONTEXT")
+CONTEXT_ESC=$(json_escape "Depth≤3. PDCA, Tool, Skill. Agent: ${AGENT_NAME}.")
 
 cat <<EOF
 {

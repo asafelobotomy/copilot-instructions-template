@@ -9,9 +9,26 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ## [Unreleased]
 
-### Changed
+## [0.7.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v0.6.2...v0.7.0) (2026-04-27)
 
-* N/A
+### Added
+
+* **hooks:** extract `guard-policy.json` (13 blocked + 11 caution + 6 readonly-write patterns) as single source for guard-destructive logic
+* **hooks:** extract `secrets-patterns.json` (25 patterns) as single source for scan-secrets logic
+* **hooks:** add `json_field` and `try_exec_in_container` helpers to `lib-hooks.sh` to centralize inline Python and distrobox logic
+* **scripts:** extract `validate_agent_frontmatter.py` from shell heredoc into standalone Python CI module
+* **scripts:** add `scripts/ci/validate-manifest-alignment.sh` for routing-manifest vs. frontmatter alignment validation
+* **tests:** add `tests/lib/suite-bootstrap.sh` and `tests/lib/guard-test-helpers.sh` to reduce per-suite ceremony
+* **scripts:** add `require_file` and `find_repo_root` helpers to `scripts/lib.sh`
+* **models:** add Grok Code Fast 1, Raptor mini, and Gemini 3.1 Pro to model registry; enforce 7.5× rate exclusion policy; correct GPT-5.4 nano → GPT-5.4 mini for VS Code clients
+* **settings:** add 8 optimized Copilot settings to `template/vscode/settings.json` — `codesearch.enabled`, `checkpoints.showFileChanges`, `agent.maxRequests: 50`, `autopilot.enabled`, `copilotMemory.enabled`, `agent.thinkingTool`, `codeGeneration.useInstructionFiles`, `useClaudeMdFile`
+
+### Fixed
+
+* **setup:** fix duplicate "All-local mode" heading in `template/setup/manifests.md` hook scripts section — plugin-backed guard clauses now appear before the all-local block
+* **setup:** split interview Batch 7 into Batches 7 and 8 so no batch exceeds the 4-question `ask_questions` limit
+* **setup:** add E24 (thinking effort) handling step to `agents/setup.agent.md` §2 so the Thinking Effort Configuration table in §10 is correctly customised during install
+* **settings:** remove retired models from dev workspace `serverSampling` lists (`gpt-5.1`, `gpt-5.1-codex*`, `gemini-3-pro-preview`, `oswe-vscode-prime`); normalize ordering across all 5 MCP servers; add `gpt-5.4-mini`
 
 ## [0.6.2](https://github.com/asafelobotomy/copilot-instructions-template/compare/v0.6.1...v0.6.2) (2026-04-17)
 

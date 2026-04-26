@@ -117,22 +117,64 @@ except Exception:
   print('')
 " 2>/dev/null || echo "")
 
-# Blocked patterns — dangerous commands that should never auto-execute
-BLOCKED_PATTERNS=(
-  'rm -rf /([^a-zA-Z0-9._-]|$)'
-  'rm -rf ~([^a-zA-Z0-9._/-]|$)'
-  'rm -rf \.([[:space:]]|$)'
-  'DROP TABLE'
-  'DROP DATABASE'
-  'TRUNCATE TABLE'
-  'DELETE FROM .* WHERE 1'
-  'mkfs\.'
-  'dd if=.* of=/dev/'
-  ':\(\)\{:[|]:&\};:'
-  'chmod -R 777 /([^a-zA-Z0-9._-]|$)'
-  'curl .*[|].*sh'
-  'wget .*[|].*sh'
-)
+# ── Load policy patterns from guard-policy.json ──────────────────────────────
+_GUARD_POLICY="$(dirname "$0")/guard-policy.json"
+BLOCKED_PATTERNS=()
+CAUTION_PATTERNS=()
+READONLY_WRITE_PATTERNS=()
+
+if [[ -f "$_GUARD_POLICY" ]]; then
+  _policy_output=$(python3 - "$_GUARD_POLICY" <<'PY'
+import json, sys
+try:
+    with open(sys.argv[1]) as f:
+        p = json.load(f)
+    for section in ('blocked', 'caution', 'readonly_write'):
+        print(f'\x00{section}')
+        for item in p.get(section, []):
+            ptn = item.get('bash', '')
+            if ptn:
+                print(ptn)
+except Exception:
+    pass
+PY
+  )
+  _curr_section=""
+  while IFS= read -r _line; do
+    case "$_line" in
+      $'\x00'blocked)        _curr_section="blocked" ;;
+      $'\x00'caution)        _curr_section="caution" ;;
+      $'\x00'readonly_write) _curr_section="readonly_write" ;;
+      *)
+        [[ -z "$_line" ]] && continue
+        case "$_curr_section" in
+          blocked)        BLOCKED_PATTERNS+=("$_line") ;;
+          caution)        CAUTION_PATTERNS+=("$_line") ;;
+          readonly_write) READONLY_WRITE_PATTERNS+=("$_line") ;;
+        esac
+        ;;
+    esac
+  done <<< "$_policy_output"
+fi
+
+# Fallback when guard-policy.json is absent or unreadable
+if [[ ${#BLOCKED_PATTERNS[@]} -eq 0 ]]; then
+  BLOCKED_PATTERNS=(
+    'rm -rf /([^a-zA-Z0-9._-]|$)'
+    'rm -rf ~([^a-zA-Z0-9._/-]|$)'
+    'rm -rf \.([[:space:]]|$)'
+    'DROP TABLE'
+    'DROP DATABASE'
+    'TRUNCATE TABLE'
+    'DELETE FROM .* WHERE 1'
+    'mkfs\.'
+    'dd if=.* of=/dev/'
+    ':\(\)\{:[|]:&\};:'
+    'chmod -R 777 /([^a-zA-Z0-9._-]|$)'
+    'curl .*[|].*sh'
+    'wget .*[|].*sh'
+  )
+fi
 
 # Allow pure read-only pattern searches so investigations can inspect the guard
 # definitions without tripping on the blocked regex literals themselves.
@@ -182,19 +224,21 @@ EOF
 done
 
 # Caution patterns — require user confirmation
-CAUTION_PATTERNS=(
-  'rm -rf'
-  'rm -r '
-  'chmod -R 777'
-  'DROP '
-  'DELETE FROM'
-  'git push.*--force'
-  'git reset --hard'
-  'git clean -fd'
-  'npm publish'
-  'cargo publish'
-  'pip install --'
-)
+if [[ ${#CAUTION_PATTERNS[@]} -eq 0 ]]; then
+  CAUTION_PATTERNS=(
+    'rm -rf'
+    'rm -r '
+    'chmod -R 777'
+    'DROP '
+    'DELETE FROM'
+    'git push.*--force'
+    'git reset --hard'
+    'git clean -fd'
+    'npm publish'
+    'cargo publish'
+    'pip install --'
+  )
+fi
 
 for pattern in "${CAUTION_PATTERNS[@]}"; do
   if echo "$TOOL_INPUT" | grep -qiE "$pattern"; then
@@ -217,14 +261,16 @@ done
 # Read-only agent guardrails — Audit, Review, and Explore should not perform
 # mutating terminal operations without explicit user approval.
 if [[ "$AGENT_NAME" =~ ^(Audit|Review|Explore)$ ]]; then
-  READONLY_WRITE_PATTERNS=(
-    '(^|[;&|][[:space:]]*)(mkdir|touch|cp|mv|truncate|install)[[:space:]]'
-    '(^|[;&|][[:space:]]*)(sed[[:space:]]+-i|perl[[:space:]]+-i|tee[[:space:]])'
-    '(^|[;&|][[:space:]]*)(echo|printf).*>+'
-    '(^|[;&|][[:space:]]*)(git[[:space:]]+(add|commit|push|reset|checkout|switch|merge|rebase|cherry-pick|revert|tag|stash))'
-    '(^|[;&|][[:space:]]*)((npm|pnpm|yarn|bun)[[:space:]]+(install|add|remove|update|upgrade|publish))'
-    '(^|[;&|][[:space:]]*)(pip|uv[[:space:]]+pip)[[:space:]]+install'
-  )
+  if [[ ${#READONLY_WRITE_PATTERNS[@]} -eq 0 ]]; then
+    READONLY_WRITE_PATTERNS=(
+      '(^|[;&|][[:space:]]*)(mkdir|touch|cp|mv|truncate|install)[[:space:]]'
+      '(^|[;&|][[:space:]]*)(sed[[:space:]]+-i|perl[[:space:]]+-i|tee[[:space:]])'
+      '(^|[;&|][[:space:]]*)(echo|printf).*>+'
+      '(^|[;&|][[:space:]]*)(git[[:space:]]+(add|commit|push|reset|checkout|switch|merge|rebase|cherry-pick|revert|tag|stash))'
+      '(^|[;&|][[:space:]]*)((npm|pnpm|yarn|bun)[[:space:]]+(install|add|remove|update|upgrade|publish))'
+      '(^|[;&|][[:space:]]*)(pip|uv[[:space:]]+pip)[[:space:]]+install'
+    )
+  fi
 
   for pattern in "${READONLY_WRITE_PATTERNS[@]}"; do
     if echo "$TOOL_INPUT" | grep -qiE "$pattern"; then

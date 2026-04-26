@@ -69,22 +69,39 @@ if ([string]::IsNullOrWhiteSpace($command)) {
     exit 0
 }
 
-# Blocked patterns — hard deny
-$blockedPatterns = @(
-    'rm\s+-rf\s+/([^a-zA-Z0-9._-]|$)',
-    'rm\s+-rf\s+~([^a-zA-Z0-9._/-]|$)',
-    'rm\s+-rf\s+\.($|\s)',
-    'DROP\s+TABLE',
-    'DROP\s+DATABASE',
-    'TRUNCATE\s+TABLE',
-    'DELETE\s+FROM\s+.+\s+WHERE\s+1',
-    'mkfs\.',
-    'dd\s+if=.+of=/dev/',
-    ':\(\)\{:\|:&\};:',
-    'chmod\s+-R\s+777\s+/([^a-zA-Z0-9._-]|$)',
-    'curl\s+.+\|\s*sh',
-    'wget\s+.+\|\s*sh'
-)
+# ── Load policy patterns from guard-policy.json ──────────────────────────────
+$guardPolicyPath = Join-Path (Split-Path -Parent $PSCommandPath) 'guard-policy.json'
+$blockedPatterns      = @()
+$cautionPatterns      = @()
+$readonlyWritePatterns = @()
+
+if (Test-Path $guardPolicyPath) {
+    try {
+        $policy = Get-Content $guardPolicyPath -Raw | ConvertFrom-Json
+        $blockedPatterns       = @($policy.blocked       | Where-Object { $_.powershell } | ForEach-Object { $_.powershell })
+        $cautionPatterns       = @($policy.caution       | Where-Object { $_.powershell } | ForEach-Object { $_.powershell })
+        $readonlyWritePatterns = @($policy.readonly_write | Where-Object { $_.powershell } | ForEach-Object { $_.powershell })
+    } catch { <# fall through to hardcoded defaults #> }
+}
+
+# Fallback when guard-policy.json is absent or unreadable
+if ($blockedPatterns.Count -eq 0) {
+    $blockedPatterns = @(
+        'rm\s+-rf\s+/([^a-zA-Z0-9._-]|$)',
+        'rm\s+-rf\s+~([^a-zA-Z0-9._/-]|$)',
+        'rm\s+-rf\s+\.($|\s)',
+        'DROP\s+TABLE',
+        'DROP\s+DATABASE',
+        'TRUNCATE\s+TABLE',
+        'DELETE\s+FROM\s+.+\s+WHERE\s+1',
+        'mkfs\.',
+        'dd\s+if=.+of=/dev/',
+        ':\(\)\{:\|:&\};:',
+        'chmod\s+-R\s+777\s+/([^a-zA-Z0-9._-]|$)',
+        'curl\s+.+\|\s*sh',
+        'wget\s+.+\|\s*sh'
+    )
+}
 
 function Test-ReadonlyPatternSearch {
     param(
@@ -122,19 +139,21 @@ foreach ($pattern in $blockedPatterns) {
 }
 
 # Caution patterns — require user confirmation
-$cautionPatterns = @(
-    'rm\s+-rf',
-    'rm\s+-r\s+',
-    'chmod\s+-R\s+777',
-    'DROP\s+',
-    'DELETE\s+FROM',
-    'git\s+push.*--force',
-    'git\s+reset\s+--hard',
-    'git\s+clean\s+-fd',
-    'npm\s+publish',
-    'cargo\s+publish',
-    'pip\s+install\s+--'
-)
+if ($cautionPatterns.Count -eq 0) {
+    $cautionPatterns = @(
+        'rm\s+-rf',
+        'rm\s+-r\s+',
+        'chmod\s+-R\s+777',
+        'DROP\s+',
+        'DELETE\s+FROM',
+        'git\s+push.*--force',
+        'git\s+reset\s+--hard',
+        'git\s+clean\s+-fd',
+        'npm\s+publish',
+        'cargo\s+publish',
+        'pip\s+install\s+--'
+    )
+}
 
 foreach ($pattern in $cautionPatterns) {
     if ($command -imatch $pattern) {
@@ -172,14 +191,16 @@ try {
 } catch { $agentName = '' }
 
 if ($agentName -match '^(Audit|Review|Explore)$') {
-    $readonlyWritePatterns = @(
-        '(^|[;&|]\s*)(mkdir|touch|cp|mv|truncate|install)\s',
-        '(^|[;&|]\s*)(sed\s+-i|perl\s+-i|tee\s)',
-        '(^|[;&|]\s*)(echo|printf).*>+',
-        '(^|[;&|]\s*)(git\s+(add|commit|push|reset|checkout|switch|merge|rebase|cherry-pick|revert|tag|stash))',
-        '(^|[;&|]\s*)((npm|pnpm|yarn|bun)\s+(install|add|remove|update|upgrade|publish))',
-        '(^|[;&|]\s*)(pip|uv\s+pip)\s+install'
-    )
+    if ($readonlyWritePatterns.Count -eq 0) {
+        $readonlyWritePatterns = @(
+            '(^|[;&|]\s*)(mkdir|touch|cp|mv|truncate|install)\s',
+            '(^|[;&|]\s*)(sed\s+-i|perl\s+-i|tee\s)',
+            '(^|[;&|]\s*)(echo|printf).*>+',
+            '(^|[;&|]\s*)(git\s+(add|commit|push|reset|checkout|switch|merge|rebase|cherry-pick|revert|tag|stash))',
+            '(^|[;&|]\s*)((npm|pnpm|yarn|bun)\s+(install|add|remove|update|upgrade|publish))',
+            '(^|[;&|]\s*)(pip|uv\s+pip)\s+install'
+        )
+    }
 
     foreach ($rwp in $readonlyWritePatterns) {
         if ($command -imatch $rwp) {

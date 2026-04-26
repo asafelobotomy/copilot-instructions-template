@@ -6,6 +6,8 @@ set -uo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
+# shellcheck source=../lib/guard-test-helpers.sh
+source "$(dirname "$0")/../lib/guard-test-helpers.sh"
 init_test_context "$0"
 export GUARD_SCRIPT="$REPO_ROOT/hooks/scripts/guard-destructive.sh"
 

@@ -11,7 +11,7 @@
     "hookScriptsShell": 11,
     "hookScriptsPowerShell": 8,
     "hookScriptsPython": 9,
-    "hookScriptsJson": 1
+    "hookScriptsJson": 3
   },
   "agents": [
     "setup.agent.md",
@@ -124,7 +124,9 @@
       "session_reflect_fallback.py"
     ],
     "json": [
-      "heartbeat-policy.json"
+      "heartbeat-policy.json",
+      "guard-policy.json",
+      "secrets-patterns.json"
     ]
   },
   "notes": [
