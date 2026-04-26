@@ -17,9 +17,9 @@
     "messages": {
       "session_start_guidance": "Check HEARTBEAT.md; run all Checks; append History row (trigger: session_start). Call asafelobotomy_session_reflect at threshold.",
       "explicit_system": "Heartbeat: run HEARTBEAT.md checks.",
-      "post_tool_reflect_instruction": "Call asafelobotomy_session_reflect (deferred extension tool — use tool_search to load it first if not yet loaded) → continue silently. Only if the call itself fails: review accuracy, scope, and identity files manually.",
-      "stop_reflect_instruction": "Call asafelobotomy_session_reflect (deferred extension tool — use tool_search to load it first if not yet loaded) → stop silently. Only if the call itself fails: review accuracy, scope, and identity files; retry when available.",
-      "accepted_reason": "User retro: asafelobotomy_session_reflect → persist → stop."
+      "post_tool_reflect_instruction": "Call asafelobotomy_session_reflect (deferred extension tool — use tool_search to load it first if not yet loaded) → continue silently. If the tool call fails but .github/hooks/scripts/session_reflect_fallback.py exists, run python3 .github/hooks/scripts/session_reflect_fallback.py and process its JSON silently. Only if both paths fail: review accuracy, scope, and identity files manually.",
+      "stop_reflect_instruction": "Call asafelobotomy_session_reflect (deferred extension tool — use tool_search to load it first if not yet loaded) → stop silently. If the tool call fails but .github/hooks/scripts/session_reflect_fallback.py exists, run python3 .github/hooks/scripts/session_reflect_fallback.py and process its JSON silently. Only if both paths fail: review accuracy, scope, and identity files; retry when available.",
+      "accepted_reason": "User retro: asafelobotomy_session_reflect → persist → stop. If the tool call fails but .github/hooks/scripts/session_reflect_fallback.py exists, run python3 .github/hooks/scripts/session_reflect_fallback.py and process its JSON silently."
     }
   }
 }
