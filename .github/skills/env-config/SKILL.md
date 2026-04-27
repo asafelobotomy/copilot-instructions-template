@@ -78,6 +78,7 @@ FEATURE_NEW_CHECKOUT=false
 ```
 
 Rules:
+
 - Every variable must have a comment explaining its purpose
 - Secrets use `<replace>` or `<generate with: ...>` as their value — never real values
 - Group by concern (database, auth, external APIs, feature flags)

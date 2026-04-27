@@ -93,6 +93,7 @@ MIT — see [LICENSE](LICENSE).
 ```
 
 Rules:
+
 - Every command in the README must work when copy-pasted
 - Version requirements must be specific (not "latest")
 - No setup steps that require tribal knowledge or Slack messages

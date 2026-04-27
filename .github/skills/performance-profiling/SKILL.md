@@ -56,6 +56,7 @@ go test -cpuprofile cpu.prof -bench . && go tool pprof cpu.prof
 ```
 
 Look for:
+
 - Functions consuming >10% of total time
 - Unexpected call frequency (called 1000× when 10× expected)
 - Memory allocations in tight loops
