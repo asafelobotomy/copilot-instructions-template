@@ -45,10 +45,6 @@
 				"${workspaceFolder}"
 			]
 		},
-		"github": {
-			"type": "http",
-			"url": "https://api.githubcopilot.com/mcp/"
-		},
 		"fetch": {
 			"type": "stdio",
 			"command": "uvx",
