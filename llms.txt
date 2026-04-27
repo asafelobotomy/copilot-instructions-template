@@ -60,6 +60,16 @@
 - [skills/test-coverage-review/SKILL.md](skills/test-coverage-review/SKILL.md): Coverage review and test-gap analysis.
 - [skills/tool-protocol/SKILL.md](skills/tool-protocol/SKILL.md): Search before building automation.
 - [skills/webapp-testing/SKILL.md](skills/webapp-testing/SKILL.md): Browser testing with VS Code tools or Playwright.
+- [skills/accessibility-review/SKILL.md](skills/accessibility-review/SKILL.md): WCAG 2.1 AA accessibility audit and fixes.
+- [skills/api-design/SKILL.md](skills/api-design/SKILL.md): REST/GraphQL API design and OpenAPI review.
+- [skills/changelog-entry/SKILL.md](skills/changelog-entry/SKILL.md): Generate CHANGELOG entries from commits or diffs.
+- [skills/dependency-update/SKILL.md](skills/dependency-update/SKILL.md): Update dependencies and run vulnerability scan.
+- [skills/docker-scaffold/SKILL.md](skills/docker-scaffold/SKILL.md): Scaffold production-ready Dockerfile and docker-compose.yml.
+- [skills/env-config/SKILL.md](skills/env-config/SKILL.md): .env management, startup validation, and secrets separation.
+- [skills/onboarding-docs/SKILL.md](skills/onboarding-docs/SKILL.md): Generate README, CONTRIBUTING, and dev setup validation.
+- [skills/performance-profiling/SKILL.md](skills/performance-profiling/SKILL.md): Profile hot paths and apply targeted optimizations.
+- [skills/refactor-extract/SKILL.md](skills/refactor-extract/SKILL.md): Systematically extract functions, classes, or modules safely.
+- [skills/tech-debt-audit/SKILL.md](skills/tech-debt-audit/SKILL.md): Catalog TODOs, dead code, complexity hotspots, and deprecated APIs.
 
 ## Consumer instruction stubs and prompts
 
