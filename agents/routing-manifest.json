@@ -269,7 +269,7 @@
       "summary": "External documentation and version behavior specialist",
       "route": "active",
       "visibility": "internal",
-      "min_prompt_confidence": 0.78,
+      "min_prompt_confidence": 0.76,
       "min_behavior_confidence": 0.78,
       "min_behavior_events": 1,
       "cooldown_seconds": 1800,
@@ -277,10 +277,18 @@
       "prompt_patterns": [
         "\\bresearch\\b",
         "\\blatest docs?\\b",
-        "\\bupstream\\b",
+        "\\bofficial docs?\\b",
+        "\\bfetch (?:the )?(?:latest |current )?docs?\\b",
+        "\\bupstream (?:version|template|docs?|api|behavior|release|changes?)\\b",
         "\\bversion-specific\\b",
         "\\bexternal docs?\\b",
         "\\bapi behavior\\b"
+      ],
+      "suppress_patterns": [
+        "\\b(?:implement|add|build|create|write|fix|refactor)\\b.{0,30}\\bresearch\\b",
+        "\\bresearch\\b.{0,30}\\b(?:implementation|feature|class|method|function)\\b",
+        "\\b(?:git |fetch from |pull from )upstream\\b",
+        "\\bupstream (?:branch|remote|repo|repository|pr|pull request|merge|rebase)\\b"
       ],
       "behavior": {
         "tool_names": [

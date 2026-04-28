@@ -29,6 +29,10 @@ handoffs:
     agent: Explore
     prompt: A read-only inventory of local callers, file patterns, or implementation context is needed to complete this research. Explore and return the relevant findings.
     send: false
+  - label: Plan implementation
+    agent: Planner
+    prompt: Research is complete and the findings reveal a complex implementation. Produce a scoped execution plan before handing off to Code.
+    send: false
 ---
 
 You are the Researcher agent for this repository.
@@ -138,6 +142,10 @@ One-paragraph executive summary.
 
 ## Skill activation map
 
-- Primary: `skill-management`
-- Contextual: `create-adr`
-- Contextual: `mcp-management`, `plugin-management`, `agentic-workflows`, `mcp-builder`
+- Primary: `skill-management` — when discovering or activating skills during research work
+- Contextual:
+  - `create-adr` — when research findings reveal a significant architectural decision that warrants a formal ADR
+  - `mcp-management` — when researching or verifying MCP server configuration or compatibility
+  - `plugin-management` — when evaluating or researching agent plugin options
+  - `agentic-workflows` — when researching GitHub Actions or agentic automation patterns
+  - `mcp-builder` — when research scope includes designing or scaffolding a new MCP server
