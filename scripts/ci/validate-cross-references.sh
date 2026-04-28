@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# scripts/ci/validate-cross-references.sh — detect stale section ranges.
+# scripts/ci/validate-cross-references.sh — detect stale section ranges and dead llms.txt links.
 # Called from CI workflow. Exit 0 = consistent, exit 1 = stale references found.
 set -euo pipefail
 
@@ -51,3 +51,27 @@ done
 
 [[ $failed -eq 0 ]] || exit 1
 echo "✅ Cross-references consistent (§1–§$SECTION_MAX)"
+
+# Validate llms.txt file link targets exist
+LLMS_FILE="$ROOT_DIR/llms.txt"
+if [[ -f "$LLMS_FILE" ]]; then
+  echo ""
+  echo "ℹ️  Checking llms.txt link targets…"
+  _link_re='\[([^]]+)\]\(([^)]+)\)'
+  while IFS= read -r line; do
+    # Extract markdown link target: [text](path) — capture the path
+    if [[ "$line" =~ $_link_re ]]; then
+      target="${BASH_REMATCH[2]}"
+      # Skip URLs (http/https) and fragment-only links
+      [[ "$target" =~ ^https?:// ]] && continue
+      [[ "$target" =~ ^# ]] && continue
+      if [[ ! -e "$ROOT_DIR/$target" ]]; then
+        echo "❌ llms.txt: dead link target '$target'"
+        failed=1
+      fi
+    fi
+  done < "$LLMS_FILE"
+  [[ $failed -eq 0 ]] && echo "✅ llms.txt link targets all exist"
+fi
+
+[[ $failed -eq 0 ]] || exit 1

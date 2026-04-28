@@ -6,7 +6,7 @@ model:
   - GPT-5.2
   - Claude Sonnet 4.6
 tools: [agent, editFiles, runCommands, codebase, githubRepo, askQuestions]
-mcp-servers: [filesystem, git, gitkraken, github]
+mcp-servers: [filesystem, git, github]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Review', 'Audit', 'Debugger', 'Organise', 'Cleaner']
@@ -231,7 +231,7 @@ Only execute when the user requests pull, fetch, rebase, or merge.
 
 Only execute when the user requests stash operations.
 
-1. **Save**: `git stash push -m "<description>"` or use MCP `gitkraken_git_stash`. If no message is provided, generate one from the current diff summary.
+1. **Save**: `git stash push -m "<description>"`. If no message is provided, generate one from the current diff summary.
 2. **List**: `git stash list` to show all stashed entries.
 3. **Apply**: `git stash pop` (default, removes from stash) or `git stash apply` (keeps in stash). Ask which entry if multiple exist.
 4. **Drop**: `git stash drop stash@{n}`. Confirm before dropping.
@@ -246,7 +246,7 @@ Enter this workflow when a merge, rebase, cherry-pick, or pull produces conflict
    - Accept incoming (theirs)
    - Accept current (ours)
    - Manual edit (open file for editing)
-   - Use `git blame` (MCP `gitkraken_git_blame`) to understand authorship of each side
+   - Use `git blame` to understand authorship of each side
 4. After resolving all conflicts, stage the resolved files with `git add`.
 5. Continue the interrupted operation: `git merge --continue`, `git rebase --continue`, or `git cherry-pick --continue`.
 6. If the user wants to abandon: `git merge --abort`, `git rebase --abort`, or `git cherry-pick --abort`.
@@ -277,7 +277,7 @@ Only execute when the user requests PR creation or update.
 
 ## Commit splitting
 
-When the user has a large set of changes and asks to "split into multiple commits" or "organise my commits", use the GitLens Commit Composer (`mcp_gitkraken_gitlens_commit_composer`) if available. It intelligently groups changes into logical commits with clear messages. Fall back to manual `git add -p` interactive staging via the terminal if the MCP tool is unavailable.
+When the user has a large set of changes and asks to "split into multiple commits" or "organise my commits", use manual `git add -p` interactive staging via the terminal to group changes into logical commits with clear messages.
 
 ## Safety rules
 
@@ -310,12 +310,12 @@ provide structured output and are less prone to shell escaping issues.
 | Commit | `mcp_git_git_commit` | `git commit` |
 | Log | `mcp_git_git_log` | `git log` |
 | Show | `mcp_git_git_show` | `git show` |
-| Push | `mcp_gitkraken_git_push` | `git push` |
+| Push | — | `git push` |
 | Branch | `mcp_git_git_branch` | `git branch` |
 | Checkout | `mcp_git_git_checkout` | `git checkout` |
-| Stash | `mcp_gitkraken_git_stash` | `git stash` |
-| Blame | `mcp_gitkraken_git_blame` | `git blame` |
-| Commit split | `mcp_gitkraken_gitlens_commit_composer` | `git add -p` |
+| Stash | — | `git stash` |
+| Blame | — | `git blame` |
+| Commit split | — | `git add -p` |
 | Merge conflicts | `get_changed_files` (merge-conflicts) | `git diff --name-only --diff-filter=U` |
 | PR create | `mcp_github_create_pull_request` | `gh pr create` |
 | PR update | `mcp_github_update_pull_request` | `gh pr edit` |

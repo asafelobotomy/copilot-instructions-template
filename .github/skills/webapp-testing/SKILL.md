@@ -12,12 +12,12 @@ Three paths — choose by need:
 
 | Factor | A: Browser tools | B: Playwright | C: Playwright MCP |
 |--------|-----------------|---------------|-------------------|
-| Setup | Zero — built-in | Moderate — install + config | Low — MCP server config |
+| Setup | Zero — built-in | Moderate — install + config | Low — add `@playwright/mcp` to your `.vscode/mcp.json` (not in default template) |
 | CI | No | Yes — headless | No |
 | Persistence | Conversational | Test files in repo | On-demand via MCP |
 | Browsers | Chromium | Chromium + Firefox + WebKit | Chromium |
 | Best for | Dev-time checks, debugging | Regression testing, PR gates | Agent-driven automation |
-| Requires | `workbench.browser.enableChatTools: true` | Node.js + Playwright | `@playwright/mcp` |
+| Requires | `workbench.browser.enableChatTools: true` | Node.js + Playwright | `@playwright/mcp` added to MCP config |
 
 Use A for interactive verification, B for CI, C for agent-driven browser control. They complement each other.
 

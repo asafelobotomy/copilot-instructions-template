@@ -96,6 +96,18 @@ if m:
 '
 echo ""
 
+echo "4b. Agent files have no functional placeholder tokens outside code spans"
+assert_python "no functional {{ tokens in agents/*.agent.md prose" '
+for path in sorted((root / "agents").glob("*.agent.md")):
+    text = path.read_text(encoding="utf-8")
+    stripped = re.sub(r"```[\s\S]*?```", "", text)
+    stripped = re.sub(r"`[^`\n]+`", "", stripped)
+    m = re.search(r"\{\{[A-Z_]+\}\}", stripped)
+    if m:
+        raise SystemExit(f"unresolved placeholder {m.group()} in agents/{path.name}")
+'
+echo ""
+
 echo "5. Skill files have no unresolved placeholder tokens"
 # shellcheck disable=SC2016
 assert_python "no unresolved {{PLACEHOLDER}} tokens in repo or template skills" '

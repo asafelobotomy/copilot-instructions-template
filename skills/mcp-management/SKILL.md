@@ -53,7 +53,7 @@ Not included in base template. Add to `.vscode/mcp.json` by stack:
 
 | Stack | Server | Notes |
 |-------|--------|-------|
-| Browser/UI testing | `@playwright/mcp` (Microsoft) | `npx -y @playwright/mcp@latest`, accessibility-tree-based |
+| Browser/UI testing | `@playwright/mcp` (Microsoft) | `npx -y @playwright/mcp@latest`, accessibility-tree-based — not in default template, add manually |
 | PostgreSQL, SQLite, Redis | Search MCP Marketplace | Official reference servers archived; find maintained replacements |
 | Docker | Search MCP Marketplace | Evaluate trust and permissions carefully |
 | AWS | Search MCP Marketplace | Fine-grained IAM via `${env:}`, never hardcode |

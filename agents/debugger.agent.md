@@ -8,7 +8,7 @@ model:
   - Gemini 3.1 Pro
   - GPT-5.2
 tools: [agent, codebase, search, runCommands]
-mcp-servers: [filesystem, git, fetch, context7, playwright]
+mcp-servers: [filesystem, git, fetch, context7, duckduckgo]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Researcher', 'Audit', 'Planner']

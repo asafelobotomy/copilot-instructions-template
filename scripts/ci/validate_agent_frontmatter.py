@@ -9,6 +9,12 @@ agents_dir = root / "agents"
 
 REQUIRED_FIELDS = ["name", "description", "model", "tools", "user-invocable"]
 
+# Canonical MCP server IDs — must match .vscode/mcp.json server keys
+KNOWN_MCP_SERVERS = {
+    "filesystem", "git", "github", "fetch", "heartbeat",
+    "context7", "sequential-thinking", "duckduckgo",
+}
+
 errors = []
 count = 0
 
@@ -55,6 +61,13 @@ for agent_file in sorted(agents_dir.glob("*.agent.md")):
         agents = [item.strip().strip("'\"") for item in agents_match.group(1).split(",") if item.strip()]
         if agents and "agent" not in tools:
             errors.append(f"{agent_file.name}: agents allow-list requires 'agent' in tools")
+
+    mcp_match = re.search(r'^mcp-servers:\s*\[(.*)\]\s*$', fm, re.M)
+    if mcp_match:
+        mcp_servers = [item.strip().strip("'\"") for item in mcp_match.group(1).split(",") if item.strip()]
+        unknown = [s for s in mcp_servers if s not in KNOWN_MCP_SERVERS]
+        if unknown:
+            errors.append(f"{agent_file.name}: unknown mcp-servers: {unknown!r} — update KNOWN_MCP_SERVERS if intentional")
 
 if count == 0:
     errors.append("no *.agent.md files found in agents/")
