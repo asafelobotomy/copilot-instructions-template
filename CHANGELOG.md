@@ -9,6 +9,32 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ## [Unreleased]
 
+## [0.8.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v0.7.0...v0.8.0) (2026-04-28)
+
+### Added
+
+* **skills:** add 8 new skills — `accessibility-review`, `api-design`, `changelog-entry`, `dependency-update`, `docker-scaffold`, `env-config`, `onboarding-docs`, `performance-profiling`, `refactor-extract`, `tech-debt-audit` ([5546baf](https://github.com/asafelobotomy/copilot-instructions-template/commit/5546baf))
+* **mcp:** add `duckduckgo-mcp-server` (`uvx`) as default web search provider; replace `@playwright/mcp` Path C (now opt-in only) ([7fe3fea](https://github.com/asafelobotomy/copilot-instructions-template/commit/7fe3fea))
+* **mcp:** add `github` MCP server entry to `.vscode/mcp.json` (disabled by default) ([bf62716](https://github.com/asafelobotomy/copilot-instructions-template/commit/bf62716))
+* **ci:** add `mcp-servers:` ID validation to `validate_agent_frontmatter.py`; add `llms.txt` link-target existence check to `validate-cross-references.sh` ([9d1e549](https://github.com/asafelobotomy/copilot-instructions-template/commit/9d1e549))
+* **commit:** add `pull-strategy` field to commit-style config ([b33abe6](https://github.com/asafelobotomy/copilot-instructions-template/commit/b33abe6))
+
+### Fixed
+
+* **agents:** audit all 13 agents — normalize `askQuestions` naming, update handoffs, skill maps, routing guards, and diary stubs ([5ed5f55](https://github.com/asafelobotomy/copilot-instructions-template/commit/5ed5f55), [be7f4f9](https://github.com/asafelobotomy/copilot-instructions-template/commit/be7f4f9)–[ebeae29](https://github.com/asafelobotomy/copilot-instructions-template/commit/ebeae29))
+* **agents:** remove stale `playwright` and `gitkraken` entries from `mcp-servers:` allowlists; replace GitKraken-specific tool calls in `commit.agent.md` with `mcp_git_*` / `mcp_github_*` equivalents; remove literal `{{...}}` tokens from agent prose ([9d1e549](https://github.com/asafelobotomy/copilot-instructions-template/commit/9d1e549))
+* **heartbeat:** rename `asafelobotomy_session_reflect` → `mcp_heartbeat_session_reflect`, `write_diary` → `mcp_heartbeat_write_diary`, `read_diaries` → `mcp_heartbeat_read_diaries` throughout all surfaces ([a16b6b5](https://github.com/asafelobotomy/copilot-instructions-template/commit/a16b6b5), [12a875a](https://github.com/asafelobotomy/copilot-instructions-template/commit/12a875a))
+* **hooks:** harden `pulse.sh` stdio contract; fix `pulse_runtime.py` importability (move module-level execution into `main()` with `if __name__ == "__main__"` guard); fix `save-context.ps1` priority-row parity with shell version; wrap `session_reflect_fallback.py` loader in error-safe try/except; fix `mcp-npx.sh` SC2012 lint warning ([01e7967](https://github.com/asafelobotomy/copilot-instructions-template/commit/01e7967))
+* **hooks:** harden `scan-secrets` strict mode and self-exclusion; extract `pulse` handlers and heartbeat lib; mirror pulse Python modules to template ([44db58c](https://github.com/asafelobotomy/copilot-instructions-template/commit/44db58c), [9eecd6a](https://github.com/asafelobotomy/copilot-instructions-template/commit/9eecd6a), [df966db](https://github.com/asafelobotomy/copilot-instructions-template/commit/df966db))
+* **skills:** fix `conventional-commit` v1.2 and `commit-preflight` v1.1 ([f3c38a3](https://github.com/asafelobotomy/copilot-instructions-template/commit/f3c38a3))
+* **llms.txt:** split Skills catalog into Developer and Plugin sections with correct paths ([9d1e549](https://github.com/asafelobotomy/copilot-instructions-template/commit/9d1e549))
+* **routing-manifest:** fix commit guard, git-lifecycle coverage, and Code suppress ([b440f79](https://github.com/asafelobotomy/copilot-instructions-template/commit/b440f79))
+* **docs:** archive Playwright Path C in `webapp-testing` and `mcp-management` skills; fix stale tool names in research docs; complete `CHANGELOG.md` entries for prior releases ([8e5c0b1](https://github.com/asafelobotomy/copilot-instructions-template/commit/8e5c0b1))
+
+### Removed
+
+* **mcp:** remove `@playwright/mcp` from default template MCP config (`@playwright/mcp` Path C is now opt-in only) ([7fe3fea](https://github.com/asafelobotomy/copilot-instructions-template/commit/7fe3fea))
+
 ## [0.7.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v0.6.2...v0.7.0) (2026-04-27)
 
 ### Removed
