@@ -160,7 +160,7 @@
         "\\bwc\\s+-l\\b"
       ],
       "suppress_patterns": [
-        "\\b(implement|refactor|feature|bugfix|write tests?|review|audit|health check|security|research|upstream|docs?|documentation|readme|plan|break down|roadmap|scoping|root cause|regression|debug(?:ger)?|extensions?|profile|setup(?: from)?|update your instructions|restore instructions|factory restore|reinstall instructions|organi[sz]e|reorgani[sz]e|move files?|fix paths?|stage(?: and)? commit|push(?: my changes| to origin)?|create (?:a )?release)\\b"
+        "\\b(implement|refactor|feature|bugfix|write tests?|review|audit|health check|security|research|upstream|docs?|documentation|plan|break down|roadmap|scoping|root cause|regression|debug(?:ger)?|extensions?|profile|setup(?: from)?|update your instructions|restore instructions|factory restore|reinstall instructions|organi[sz]e|reorgani[sz]e|move files?|fix paths?|stage(?: and)? commit|push(?: my changes| to origin)?|create (?:a )?release)\\b"
       ],
       "behavior": {
         "tool_names": [

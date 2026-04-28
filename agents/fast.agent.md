@@ -22,6 +22,10 @@ handoffs:
     agent: Explore
     prompt: The question spans multiple files and needs a read-only codebase inventory before answering. Map the relevant files and return.
     send: false
+  - label: Hand off to Commit
+    agent: Commit
+    prompt: The user wants to stage, commit, push, tag, or release changes. Continue from here using the Commit agent.
+    send: false
 ---
 
 You are the Fast agent for the current project.
@@ -51,5 +55,5 @@ Guidelines:
 
 ## Skill activation map
 
-- Primary: none by default (keep latency minimal)
-- Contextual: `conventional-commit`, `tool-protocol`, `skill-management`, `compress-prose`
+- Primary: `skill-management` — when the user asks to find, activate, or manage a skill
+- Contextual: `tool-protocol` — when building or adapting an automation tool for a quick lookup or single-file task; `compress-prose` — when the user explicitly asks to tighten or shorten text
