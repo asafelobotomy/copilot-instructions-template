@@ -133,7 +133,7 @@ Before acting on any medium-to-complex task:
 - `template/copilot-instructions.md` must contain ≥ 3 `{{PLACEHOLDER}}` tokens (CI enforced).
 - `.github/copilot-instructions.md` *(this file)* must contain **zero** `{{}}` tokens (CI enforced).
 - Parity: `.github/instructions/` and `.github/prompts/` must stay in sync with `template/instructions/` and `template/prompts/`. CI enforces.
-- Version source of truth: `VERSION.md`. Version bumps are done locally. Bump `VERSION.md` and all `x-release-please-version` markers together, then verify with `bash scripts/release/verify-version-references.sh`. CI creates a GitHub release when `VERSION.md` changes.
+- Version source of truth: `VERSION.md`. Version bumps are done locally. Bump `VERSION.md` and all `x-release-please-version` markers together, then verify with `bash scripts/release/verify-version-references.sh`. Commit and **push the commit only — do not push a local git tag**. CI detects the new version in `VERSION.md`, creates the `vX.Y.Z` tag, and publishes the GitHub Release automatically. Pushing the tag manually bypasses CI and requires a manual `gh release create` to recover.
 - `workspace-index.json` must stay in sync: `bash scripts/workspace/sync-workspace-index.sh --write` then commit.
 
 ## File Inventory

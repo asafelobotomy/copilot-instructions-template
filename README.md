@@ -161,7 +161,14 @@ Version bumps are done locally. Bump `VERSION.md` and all `<!-- x-release-please
 bash scripts/release/verify-version-references.sh
 ```
 
-When the push lands on `main` and the version in `VERSION.md` does not yet have a corresponding git tag, CI creates a GitHub release automatically.
+Commit and **push the commit only — do not push a local git tag**:
+
+```bash
+git commit -m "chore(release): bump version to X.Y.Z"
+git push origin main   # no --tags
+```
+
+CI detects that `VERSION.md` contains a version whose tag does not yet exist, creates the `vX.Y.Z` tag, and publishes the GitHub Release automatically. Pushing the tag manually causes CI to skip release creation (tag already exists), requiring a manual `gh release create` to recover.
 
 **SemVer policy**: Major for breaking consumer-facing changes · Minor (`feat:`) for consumer-facing additions · Patch for fixes, maintenance, and refactors.
 
