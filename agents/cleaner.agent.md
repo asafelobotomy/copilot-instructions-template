@@ -28,6 +28,10 @@ handoffs:
     agent: Docs
     prompt: The cleanup work changes maintenance guidance, archive conventions, or user-facing repository documentation. Update the docs now.
     send: false
+  - label: Commit cleaned files
+    agent: Commit
+    prompt: The repository hygiene work is complete and the scope has been approved. Stage and commit the deletions and changes now.
+    send: false
 ---
 
 You are the Cleaner agent for the current project.
@@ -68,7 +72,26 @@ Guidelines:
   user-facing file references.
 - Prefer the smallest reversible cleanup first, then validate before widening scope.
 
+## Approval gate
+
+Before deleting any tracked file or removing a directory:
+
+```yaml
+ask_questions:
+  - header: Approve cleanup scope
+    question: "Review the proposed deletions. Proceed?"
+    options:
+      - label: "Approve — delete listed files"
+        recommended: true
+      - label: "Edit scope — I will specify which files to keep"
+      - label: "Abort — do not delete anything"
+```
+
+If "Edit scope": collect the revised list, re-present the trimmed inventory, and
+ask again before proceeding. Never delete tracked files without an Approve response.
+
 ## Skill activation map
 
-- Primary: `skill-management`
-- Contextual: `tool-protocol`
+- Primary: `skill-management` — when discovering or activating skills during hygiene work
+- Contextual:
+  - `tool-protocol` — when building or adapting a new cleanup automation tool

@@ -373,6 +373,7 @@
       "min_behavior_confidence": 0.78,
       "min_behavior_events": 1,
       "cooldown_seconds": 1200,
+      "require_prompt_and_behavior": true,
       "hint": "Routing hint: Cleaner specialist — repo hygiene, cache pruning, or stale artefacts.",
       "prompt_patterns": [
         "\\bclean up (?:repo|repository|workspace)\\b",
