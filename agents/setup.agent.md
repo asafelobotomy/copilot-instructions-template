@@ -24,6 +24,10 @@ handoffs:
     agent: Extensions
     prompt: Setup or update work has reached the VS Code extension and profile configuration step. Audit extensions, verify profile isolation, and sync recommendations.
     send: false
+  - label: Organise file structure
+    agent: Organise
+    prompt: Setup or update work requires file moves, path repair, or directory normalisation. Complete the structural cleanup and return.
+    send: false
 ---
 
 You are the Setup agent for the current project.
@@ -304,6 +308,5 @@ version. Offer the Audit health-check handoff.
 
 ## Skill activation map
 
-- Primary: `skill-management`
-- Contextual: `extension-review`, `mcp-management`, `plugin-management`,
-  `fix-ci-failure`, `tool-protocol`
+- Primary: `skill-management` — when the user asks to find, activate, or manage a skill during setup or update
+- Contextual: `extension-review` — when §2.11/§2.11a or the Extensions handoff requires auditing or recommending VS Code extensions; `mcp-management` — when §2.10 MCP config or E22a server selection is in scope; `plugin-management` — when evaluating or registering starter-kit or agent plugins; `fix-ci-failure` — when `copilot-setup-steps.yml` CI is failing post-install; `tool-protocol` — when building or adapting an automation tool to assist with setup or update steps
