@@ -20,6 +20,10 @@ handoffs:
     agent: Researcher
     prompt: Research the current upstream template version, recent changes, and migration notes before applying this setup or update.
     send: false
+  - label: Manage extensions and profiles
+    agent: Extensions
+    prompt: Setup or update work has reached the VS Code extension and profile configuration step. Audit extensions, verify profile isolation, and sync recommendations.
+    send: false
 ---
 
 You are the Setup agent for the current project.

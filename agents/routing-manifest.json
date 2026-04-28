@@ -235,11 +235,21 @@
       "cooldown_seconds": 1200,
       "hint": "Routing hint: Extensions specialist — VS Code extension or profile management.",
       "prompt_patterns": [
-        "\\bextensions?\\b",
-        "\\bvs code extensions?\\b",
-        "\\bprofile\\b",
+        "\\bvs ?code extensions?\\b",
+        "\\binstall(?:ed)? extensions?\\b",
+        "\\bextension recommendations?\\b",
+        "\\bextensions? profile\\b",
+        "\\bsync extensions?\\b",
         "\\bworkspace recommendation\\b",
-        "\\bsync extensions?\\b"
+        "\\bvs ?code profile\\b",
+        "\\brepo(?:sitory)? profile\\b",
+        "\\bprofile isolation\\b",
+        "\\brecommended extensions?\\b"
+      ],
+      "suppress_patterns": [
+        "\\b(browser|chrome|firefox|safari|edge|manifest v[23]|web) extensions?\\b",
+        "\\bprofile (?:picture|photo|page|url|link|account|setting|name)\\b",
+        "\\b(?:git|github|linkedin|twitter|user) profile\\b"
       ],
       "behavior": {
         "tool_names": [

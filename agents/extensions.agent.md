@@ -24,6 +24,10 @@ handoffs:
     agent: Organise
     prompt: Extension or workspace configuration work requires structural changes — file moves, path updates, or directory layout fixes.
     send: false
+  - label: Research extension compatibility
+    agent: Researcher
+    prompt: Evaluate unfamiliar extension publishers, compare extension functionality, or verify compatibility before making recommendations.
+    send: false
 ---
 
 You are the Extensions agent for the current project.
@@ -209,5 +213,10 @@ For full profile support, install the companion extension:
 
 ## Skill activation map
 
-- Primary: `extension-review`, `plugin-management`
-- Contextual: `mcp-management`, `tool-protocol`
+- Primary:
+  - `skill-management` — when discovering or activating skills during extension work
+  - `extension-review` — always on; the core audit workflow for this agent
+  - `plugin-management` — when managing agent plugins alongside extension work
+- Contextual:
+  - `mcp-management` — when configuring or verifying MCP servers as part of workspace setup
+  - `tool-protocol` — when building or adapting a new extension management automation tool
