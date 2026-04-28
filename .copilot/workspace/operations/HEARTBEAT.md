@@ -43,11 +43,11 @@ Run each check; prepend `[!]` to Pulse if any fails:
 
 ## Retrospective
 
-Retrospective runs autonomously via the `asafelobotomy_session_reflect` extension tool. If it is already loaded, call it directly. Otherwise try `tool_search` once. If that is unavailable, run `python3 .github/hooks/scripts/session_reflect_fallback.py` instead when that file exists. Do not prompt the user.
+Retrospective runs autonomously via the `mcp_heartbeat_session_reflect` MCP tool. If it is already loaded, call it directly. Otherwise try `tool_search` once. If that is unavailable, run `python3 .github/hooks/scripts/session_reflect_fallback.py` instead when that file exists. Do not prompt the user.
 
-The PostToolUse hook instructs you to call `asafelobotomy_session_reflect` when a significant task is detected (one strong signal: 8+ modified files or 30+ minutes active; or two supporting signals: 5+ modified files, 15+ minutes, context compaction). On clients that fire the Stop hook (Claude Code / CLI), the Stop handler provides a blocking fallback for the same check.
+The PostToolUse hook instructs you to call `mcp_heartbeat_session_reflect` when a significant task is detected (one strong signal: 8+ modified files or 30+ minutes active; or two supporting signals: 5+ modified files, 15+ minutes, context compaction). On clients that fire the Stop hook (Claude Code / CLI), the Stop handler provides a blocking fallback for the same check.
 
-When `asafelobotomy_session_reflect` returns, process its output silently:
+When `mcp_heartbeat_session_reflect` returns, process its output silently:
 
 - **Execution insights** → persist to *SOUL.md* if non-trivial
 - **Coverage gaps** → persist to *MEMORY.md* if incomplete
@@ -59,7 +59,7 @@ When a lesson first lands in built-in repo memory, decide during heartbeat wheth
 
 The `session_reflect` path records completion automatically by setting the session sentinel and writing a `session_reflect` completion event. No manual sentinel management is needed.
 
-If both `asafelobotomy_session_reflect` and `session_reflect_fallback.py` are unavailable, briefly self-review: execution accuracy, scope completeness, and anything worth persisting to identity files, then rerun `asafelobotomy_session_reflect` once a supported path is available.
+If both `mcp_heartbeat_session_reflect` and `session_reflect_fallback.py` are unavailable, briefly self-review: execution accuracy, scope completeness, and anything worth persisting to identity files, then rerun `mcp_heartbeat_session_reflect` once a supported path is available.
 
 <!-- Add custom retrospective questions below this line -->
 

@@ -191,7 +191,7 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
   path repair, or repository reshaping, and `Cleaner` for stale artefact,
   archive, and cache cleanup.
 - Tool Protocol: activate `skills/tool-protocol/SKILL.md` before building any script.
-- Heartbeat: `.copilot/workspace/operations/HEARTBEAT.md` — run at session start. Health digest emits on meaningful phase transitions and overlay changes, not a fixed tool-call cadence. On significant sessions (8+ files or 30+ active minutes), the PostToolUse hook instructs the model to call `asafelobotomy_session_reflect` autonomously. The Stop hook provides a blocking fallback on clients that support it (Claude Code / CLI). Silent when healthy.
+- Heartbeat: `.copilot/workspace/operations/HEARTBEAT.md` — run at session start. Health digest emits on meaningful phase transitions and overlay changes, not a fixed tool-call cadence. On significant sessions (8+ files or 30+ active minutes), the PostToolUse hook instructs the model to call `mcp_heartbeat_session_reflect` autonomously. The Stop hook provides a blocking fallback on clients that support it (Claude Code / CLI). Silent when healthy.
 
 ## User Preferences
 
@@ -220,7 +220,7 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 - **Tool Protocol**: Check `.copilot/tools/INDEX.md` before building. Follow `skills/tool-protocol/SKILL.md`.
 - **Skill Protocol**: Skills loaded on demand from `skills/`. Follow `skills/skill-management/SKILL.md`.
 - **MCP Protocol**: Config in `.vscode/mcp.json`. Always-on: filesystem, git. Credentials-required: github, fetch.
-- **Extension Protocol**: The `asafelobotomy.copilot-extension` provides LM tools directly (not via MCP). Exact callable names: `asafelobotomy_session_reflect`. Call them directly if already loaded; otherwise try `tool_search` once. If the tool is still unavailable, follow the documented local fallback. Declare unavailable only after the direct and deferred-load paths fail — never pre-emptively assume they are inactive. Diary tools (`write_diary`, `read_diaries`) are exposed via the MCP heartbeat server (`mcp_heartbeat_write_diary`, `mcp_heartbeat_read_diaries`) — not as extension LM tools.
+- **Extension Protocol**: The `asafelobotomy.copilot-extension` provides LM tools directly (not via MCP). No confirmed callable names remain — `session_reflect`, `write_diary`, and `read_diaries` are all exposed via the MCP heartbeat server (`mcp_heartbeat_session_reflect`, `mcp_heartbeat_write_diary`, `mcp_heartbeat_read_diaries`). Use those MCP names directly. If unavailable, try `tool_search` once, then fall back to the documented local fallback. Declare unavailable only after both paths fail.
 - **Delegation Protocol**: See **Skills and Agents** for the full specialist-first delegation policy.
 - **Subagent depth**: max 3. Stop and surface to user if reached. Subagents inherit all protocols including the Structured Thinking Discipline and anti-loop rules.
 

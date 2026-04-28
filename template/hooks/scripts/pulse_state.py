@@ -30,11 +30,11 @@ DEFAULT_POLICY = {
             "min_emit_spacing_seconds": 120,
         },
         "messages": {
-            "session_start_guidance": "Run HEARTBEAT.md checks. Call asafelobotomy_session_reflect if thresholds trigger.",
+            "session_start_guidance": "Run HEARTBEAT.md checks. Call mcp_heartbeat_session_reflect if thresholds trigger.",
             "explicit_system": "Heartbeat: run HEARTBEAT.md checks.",
-            "post_tool_reflect_instruction": "Call asafelobotomy_session_reflect, then continue. If unavailable, try tool_search once. Otherwise run python3 .github/hooks/scripts/session_reflect_fallback.py if it exists. If both fail, review scope and identity files manually.",
-            "stop_reflect_instruction": "Call asafelobotomy_session_reflect before stopping. If unavailable, try tool_search once. Otherwise run python3 .github/hooks/scripts/session_reflect_fallback.py if it exists.",
-            "accepted_reason": "User retro: run asafelobotomy_session_reflect, persist, stop. If unavailable, try tool_search once. Otherwise run python3 .github/hooks/scripts/session_reflect_fallback.py if it exists.",
+            "post_tool_reflect_instruction": "Call mcp_heartbeat_session_reflect, then continue. If unavailable, try tool_search once. Otherwise run python3 .github/hooks/scripts/session_reflect_fallback.py if it exists. If both fail, review scope and identity files manually.",
+            "stop_reflect_instruction": "Call mcp_heartbeat_session_reflect before stopping. If unavailable, try tool_search once. Otherwise run python3 .github/hooks/scripts/session_reflect_fallback.py if it exists.",
+            "accepted_reason": "User retro: run mcp_heartbeat_session_reflect, persist, stop. If unavailable, try tool_search once. Otherwise run python3 .github/hooks/scripts/session_reflect_fallback.py if it exists.",
         },
     }
 }
