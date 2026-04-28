@@ -113,11 +113,18 @@
       "cooldown_seconds": 1200,
       "hint": "Routing hint: Review specialist — code review or architecture critique.",
       "prompt_patterns": [
-        "\\breview\\b",
         "\\bcode review\\b",
         "\\bpr review\\b",
+        "\\breview (?:pr|pull request)\\b",
         "\\barchitectural review\\b",
-        "\\bfindings\\b"
+        "\\bformal (?:code )?review\\b",
+        "\\breview (?:my )?(?:latest )?changes?\\b",
+        "\\breview (?:this )?(?:file|module|function|component|class)\\b",
+        "\\breview (?:my )?staged changes?\\b"
+      ],
+      "suppress_patterns": [
+        "\\breview (?:my|the|a|this) (?:plan|goals?|notes?|presentation|contract|proposal|meeting|brief)\\b",
+        "\\b(?:I|we|they)(?:'(?:ve|d))? (?:already )?reviewed\\b"
       ],
       "behavior": {
         "tool_names": [

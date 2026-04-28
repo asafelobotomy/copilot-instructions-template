@@ -29,6 +29,14 @@ handoffs:
     agent: Docs
     prompt: The review identified missing or unclear documentation. Update the relevant docs without changing runtime behavior.
     send: false
+  - label: Reorganise affected paths
+    agent: Organise
+    prompt: The review surfaced structural or path-placement issues. Reorganise the affected files to match the intended repository layout.
+    send: false
+  - label: Clean up stale artefacts
+    agent: Cleaner
+    prompt: The review surfaced stale artefacts, dead files, or cache clutter. Clean them up without touching active source files.
+    send: false
 ---
 
 You are the Review agent for the current project.
@@ -58,5 +66,9 @@ Guidelines:
 
 ## Skill activation map
 
-- Primary: `lean-pr-review`, `skill-management`
-- Contextual: `test-coverage-review`, `issue-triage`, `fix-ci-failure`
+- Primary:
+  - `lean-pr-review` — always on; the core Lean/Kaizen review workflow for this agent
+  - `skill-management` — when discovering or activating skills during review work
+- Contextual:
+  - `test-coverage-review` — when the review scope includes test gap analysis or coverage concerns
+  - `issue-triage` — when a review finding maps to an open issue that requires classification or structured response
