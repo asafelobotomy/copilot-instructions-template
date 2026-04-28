@@ -59,11 +59,11 @@ Based on `MODELS.md`, GPT-5 mini appears as:
 - **Primary** in `commit` (low-complexity git lifecycle operations — no extension tools needed)
 - **Last fallback** in `coding`, `organise`, `cleaner`, `setup`, `researcher`, `docs`
 
-Agents that call `asafelobotomy_session_reflect` via `tool_search` are principally those using the main/default Researcher or Code agent (Claude Sonnet 4.6 is primary in both). GPT-5 mini only reaches these code paths as a last resort when all higher-capability models are unavailable.
+Agents that call `mcp_heartbeat_session_reflect` via `tool_search` are principally those using the main/default Researcher or Code agent (Claude Sonnet 4.6 is primary in both). GPT-5 mini only reaches these code paths as a last resort when all higher-capability models are unavailable.
 
 ### 7. GPT-5.4 mini and tool_search
 
-GPT-5.4 mini appears as **second choice** (after Claude Haiku 4.5) in both `fast` and `explore` agents. These agents do not themselves call `asafelobotomy_session_reflect`, but the Researcher/Code agents that use `tool_search` extensively almost never reach GPT-5.4 mini. GPT-5.4 mini is well-positioned for the tool-heavy tasks where it appears.
+GPT-5.4 mini appears as **second choice** (after Claude Haiku 4.5) in both `fast` and `explore` agents. These agents do not themselves call `mcp_heartbeat_session_reflect`, but the Researcher/Code agents that use `tool_search` extensively almost never reach GPT-5.4 mini. GPT-5.4 mini is well-positioned for the tool-heavy tasks where it appears.
 
 ## Gaps / Further research needed
 
@@ -78,7 +78,7 @@ GPT-5.4 mini appears as **second choice** (after Claude Haiku 4.5) in both `fast
 
 1. **Keep GPT-5 mini in `commit`** (primary) — commit operations do not invoke extension tools; the model is fit for purpose.
 2. **Keep GPT-5 mini as last fallback** in agents where it currently occupies that position — it only runs if all higher-capability models are unavailable, and at that tier a degraded experience is acceptable.
-3. **Do not promote GPT-5 mini** to a position where it is primary in any agent that routinely calls deferred extension tools (e.g., `asafelobotomy_session_reflect` via `tool_search`). No current agent does this.
+3. **Do not promote GPT-5 mini** to a position where it is primary in any agent that routinely calls deferred extension tools (e.g., `mcp_heartbeat_session_reflect` via `tool_search`). No current agent does this.
 4. **If empirical failures are observed** (model skips `tool_search` and calls extension tools directly resulting in silent failures), the targeted fix is to remove GPT-5 mini from the specific failing agent's fallback list, not a repo-wide sweep.
 
 ### Should GPT-5.4 mini be retained?

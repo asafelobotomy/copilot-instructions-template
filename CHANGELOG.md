@@ -11,6 +11,17 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ## [0.7.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v0.6.2...v0.7.0) (2026-04-27)
 
+### Removed
+
+* **mcp:** remove Playwright MCP (`@playwright/mcp`) from default template config; use Path A (browser tools) or Path B (Playwright CLI) instead — Path C now opt-in only ([7fe3fea](https://github.com/asafelobotomy/copilot-instructions-template/commit/7fe3fea))
+* **mcp:** replace `duckduckgo-search` MCP placeholder with `duckduckgo-mcp-server` (`uvx`); add as default web search provider ([7fe3fea](https://github.com/asafelobotomy/copilot-instructions-template/commit/7fe3fea))
+
+### Fixed
+
+* **mcp:** add missing `github` server entry to `.vscode/mcp.json` (disabled by default); update MCP Protocol tier note in developer instructions ([bf62716](https://github.com/asafelobotomy/copilot-instructions-template/commit/bf62716))
+* **hooks:** harden `pulse.sh` stdio contract; fix `pulse_runtime.py` importability (move module-level execution into `main()`); fix `save-context.ps1` priority-row selection parity with shell version; wrap `session_reflect_fallback.py` loader in error-safe try/except; fix `mcp-npx.sh` SC2012 lint warning ([01e7967](https://github.com/asafelobotomy/copilot-instructions-template/commit/01e7967))
+* **agents:** remove stale `playwright` and `gitkraken` entries from `mcp-servers:` allowlists in 6 agents; replace GitKraken-specific tool calls in `commit.agent.md` body with `mcp_git_*` / `mcp_github_*` equivalents; remove literal `{{...}}` tokens from agent prose; split `llms.txt` Skills catalog into Developer and Plugin sections; add `mcp-servers:` ID validation to agent frontmatter validator; add `llms.txt` link-target existence check to cross-reference validator ([9d1e549](https://github.com/asafelobotomy/copilot-instructions-template/commit/9d1e549))
+
 ### Added
 
 * **hooks:** extract `guard-policy.json` (13 blocked + 11 caution + 6 readonly-write patterns) as single source for guard-destructive logic

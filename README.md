@@ -103,7 +103,7 @@ If the Setup agent does not appear, search the Extensions view for `@agentPlugin
 | `skill-management` | Discover, activate, and manage agent skills |
 | `test-coverage-review` | Audit coverage gaps and recommend local tests plus CI workflows |
 | `tool-protocol` | Find, build, or adapt automation tools |
-| `webapp-testing` | Set up browser testing with VS Code tools or Playwright |
+| `webapp-testing` | Set up browser testing — browser tools (interactive) or Playwright CLI (CI); Playwright MCP removed in v0.7.0 |
 
 ---
 
