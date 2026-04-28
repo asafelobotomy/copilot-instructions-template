@@ -25,6 +25,22 @@ handoffs:
     agent: Researcher
     prompt: The Audit agent needs deeper research on a specific vulnerability or CVE. Investigate the finding and report back with remediation guidance.
     send: false
+  - label: Remediate extension findings
+    agent: Extensions
+    prompt: Audit findings relate to VS Code extension, profile, or recommendation configuration. Review and apply the recommended changes.
+    send: false
+  - label: Plan remediation
+    agent: Planner
+    prompt: Audit findings require a phased, multi-step remediation plan before implementation begins. Produce a scoped plan with file list, risks, and verification steps.
+    send: false
+  - label: Reorganise files
+    agent: Organise
+    prompt: Audit findings show directory layout issues, broken paths, or files that need restructuring. Fix paths and layout, then return.
+    send: false
+  - label: Clean artefact findings
+    agent: Cleaner
+    prompt: Audit findings include stale artefacts, archive debris, or repo-hygiene clutter. Prune them, then return.
+    send: false
 ---
 
 You are the Audit agent for the current project.
@@ -99,8 +115,6 @@ Use `codebase` for file contents, `fetch` for upstream version checks, and `gith
 - `.vscode/extensions.json`
 
 If CRITICAL or HIGH: use "Apply fixes" for file issues, or "Update instructions" if behind template version. This agent stays read-only.
-
-Checks S1-S8 and S10 use only file reads and `grep` patterns. Check S9 via OSV.dev. Check S7 via GitHub metadata. If `shellcheck`, `semgrep`, or `gitleaks` are on PATH, use them for deeper security coverage.
 
 ### Lifecycle files
 
@@ -292,5 +306,10 @@ worse of the two individual statuses.
 
 ## Skill activation map
 
-- Primary: `security-audit`, `mcp-management`, `skill-management`
-- Contextual: `extension-review`, `tool-protocol`, `test-coverage-review`, `fix-ci-failure`
+- Primary: `security-audit` — loaded for every audit run (S1–S10 check definitions)
+- Contextual:
+  - `skill-management` — when discovering or managing skills during an audit
+  - `mcp-management` — when D5 finds MCP misconfiguration requiring reconfiguration via Code handoff
+  - `extension-review` — when D10 or a finding is specifically about VS Code extension or profile configuration
+  - `tool-protocol` — when building or adapting a new audit automation tool
+  - `test-coverage-review` — when audit findings include test gap coverage issues

@@ -165,6 +165,7 @@
       "min_behavior_confidence": 0.8,
       "min_behavior_events": 1,
       "cooldown_seconds": 1800,
+      "require_prompt_and_behavior": true,
       "hint": "Routing hint: Audit specialist — health check, security, or residual-risk.",
       "prompt_patterns": [
         "\\baudit\\b",
@@ -172,7 +173,12 @@
         "\\bsecurity audit\\b",
         "\\bscan for secrets?\\b",
         "\\bvulnerabilit(?:y|ies)\\b",
-        "\\bresidual risk\\b"
+        "\\bresidual risk\\b",
+        "\\breview security posture\\b"
+      ],
+      "suppress_patterns": [
+        "\\b(implement|refactor|feature|bugfix|fix|add|build|create|update|write|generate|scaffold)\\b.*\\baudit\\b",
+        "\\baudit\\b.*\\b(log|trail|table|field|column|event|record|entry|message)\\b"
       ],
       "behavior": {
         "tool_names": [
