@@ -80,31 +80,11 @@
         }
       }
     },
-    "playwright": {
+    "duckduckgo": {
       "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest",
-        "--headless",
-        "--browser=chromium"
-      ],
-      "disabled": true,
-      "sandboxEnabled": true,
-      "sandbox": {
-        "filesystem": {
-          "allowWrite": [
-            "${workspaceFolder}",
-            "${userHome}/.npm",
-            "${userHome}/.cache/ms-playwright"
-          ],
-          "denyRead": [
-            "${userHome}/.ssh",
-            "${userHome}/.gnupg",
-            "${userHome}/.aws"
-          ]
-        }
-      }
+      "command": "uvx",
+      "args": ["duckduckgo-mcp-server"],
+      "disabled": true
     }
   }
 }

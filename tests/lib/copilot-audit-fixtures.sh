@@ -288,7 +288,7 @@ TEST_FRAMEWORK=bash
 SETUP_DATE=2026-04-04
 -->
 <!-- install-metadata
-MCP_AVAILABLE=github,fetch,context7,heartbeat,sequential-thinking,playwright
+MCP_AVAILABLE=github,fetch,context7,heartbeat,sequential-thinking,duckduckgo
 MCP_ENABLED=github
 INSTRUCTION_STUBS=api.instructions.md
 STARTER_KITS_MATCHED=python
@@ -343,7 +343,7 @@ TEST_FRAMEWORK=bash
 SETUP_DATE=2026-04-04
 -->
 <!-- install-metadata
-MCP_AVAILABLE=github,fetch,context7,heartbeat,sequential-thinking,playwright
+MCP_AVAILABLE=github,fetch,context7,heartbeat,sequential-thinking,duckduckgo
 MCP_ENABLED=github
 INSTRUCTION_STUBS=api.instructions.md
 STARTER_KITS_MATCHED=python

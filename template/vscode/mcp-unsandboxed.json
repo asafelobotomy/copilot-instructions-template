@@ -30,15 +30,10 @@
       "url": "https://mcp.context7.com/mcp",
       "disabled": true
     },
-    "playwright": {
+    "duckduckgo": {
       "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest",
-        "--headless",
-        "--browser=chromium"
-      ],
+      "command": "uvx",
+      "args": ["duckduckgo-mcp-server"],
       "disabled": true
     },
     "heartbeat": {

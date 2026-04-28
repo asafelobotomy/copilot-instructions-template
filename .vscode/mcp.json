@@ -105,30 +105,12 @@
 				}
 			}
 		},
-		"playwright": {
+		"duckduckgo": {
 			"type": "stdio",
-			"command": "npx",
+			"command": "uvx",
 			"args": [
-				"-y",
-				"@playwright/mcp@latest",
-				"--headless",
-				"--browser=chromium"
-			],
-			"sandboxEnabled": true,
-			"sandbox": {
-				"filesystem": {
-					"allowWrite": [
-						"${workspaceFolder}",
-						"${userHome}/.npm",
-						"${userHome}/.cache/ms-playwright"
-					],
-					"denyRead": [
-						"${userHome}/.ssh",
-						"${userHome}/.gnupg",
-						"${userHome}/.aws"
-					]
-				}
-			}
+				"duckduckgo-mcp-server"
+			]
 		}
 	}
 }
