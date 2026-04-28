@@ -420,9 +420,9 @@ Key rules (always loaded):
 Each specialist agent may record significant findings in a diary file under `.copilot/workspace/knowledge/diaries/`.
 
 - Diary files: `.copilot/workspace/knowledge/diaries/{agent-name}.md`
-- Write trigger: call `asafelobotomy_write_diary(agent_name, finding)` explicitly when you discover a durable insight worth sharing across sessions. The extension tool handles dedup, timestamping, and a 30-line cap.
-- Read: call `asafelobotomy_read_diaries(agent_name)` for one agent or `asafelobotomy_read_diaries()` for all.
-- `asafelobotomy_write_diary` and `asafelobotomy_read_diaries` are extension LM tools. If they are not already loaded, try `tool_search` once. If that is unavailable, edit the diary files directly. Diary files at `.copilot/workspace/knowledge/diaries/` remain human-readable and git-tracked independently of the tool.
+- Write trigger: call `mcp_heartbeat_write_diary(agent_name, finding)` explicitly when you discover a durable insight worth sharing across sessions. The MCP tool handles dedup, timestamping, and a 30-line cap.
+- Read: call `mcp_heartbeat_read_diaries(agent_name)` for one agent or `mcp_heartbeat_read_diaries()` for all.
+- `mcp_heartbeat_write_diary` and `mcp_heartbeat_read_diaries` are deferred MCP tools. If they are not already loaded, try `tool_search` once. If that is unavailable, edit the diary files directly. Diary files at `.copilot/workspace/knowledge/diaries/` remain human-readable and git-tracked independently of the tool.
 
 ---
 
