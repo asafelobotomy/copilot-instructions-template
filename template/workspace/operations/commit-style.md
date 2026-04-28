@@ -67,6 +67,14 @@ sign-off: false
 
 Set `true` to append `Signed-off-by: Name <email>` using the git config identity.
 
+## Pull strategy
+
+```yaml
+pull-strategy: merge
+```
+
+Options: `merge` | `rebase`. Set `rebase` to use `git pull --rebase` by default.
+
 ## Squash policy
 
 ```yaml

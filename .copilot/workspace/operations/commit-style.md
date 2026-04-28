@@ -52,6 +52,14 @@ auto-close-issue: false
 sign-off: false
 ```
 
+## Pull strategy
+
+```yaml
+pull-strategy: merge
+```
+
+Options: `merge` | `rebase`
+
 ## Squash policy
 
 ```yaml
