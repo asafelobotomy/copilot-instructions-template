@@ -339,12 +339,22 @@
       "cooldown_seconds": 1200,
       "hint": "Routing hint: Planner specialist — scoped execution planning.",
       "prompt_patterns": [
-        "\\bplan\\b",
-        "\\bbreak down\\b",
+        "\\bbreak(?:ing)? (?:this |it )?down\\b",
         "\\bexecution plan\\b",
         "\\btask breakdown\\b",
         "\\broadmap\\b",
-        "\\bscoping\\b"
+        "\\bscop(?:e|ing)\\b",
+        "\\bscoped plan\\b",
+        "\\bplan (?:this|the|a) (?:feature|task|refactor|migration|rollout|change|work)\\b",
+        "\\bplan (?:the|this|a) \\w+\\b",
+        "\\bwhat (?:are )?the steps\\b"
+      ],
+      "suppress_patterns": [
+        "\\b(?:deploy(?:ment)?|release|sprint|project|action|test|ci|build) plan\\b",
+        "\\bplan (?:to|on) (?:implement|add|build|fix|create|use)\\b",
+        "\\b(?:the|my|a|this|that|our|their) plan (?:is|was|will|would|could|should)\\b",
+        "\\bfollow (?:the|this|a) plan\\b",
+        "\\bplan (?:the|this|a) (?:sprint|week|day|month|quarter|meeting|event|session|presentation)\\b"
       ],
       "behavior": {
         "tool_names": [

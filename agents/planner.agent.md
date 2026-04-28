@@ -54,5 +54,6 @@ Guidelines:
 
 ## Skill activation map
 
-- Primary: `skill-management`
-- Contextual: `create-adr`
+- Primary: `skill-management` — when discovering or activating skills during planning work
+- Contextual:
+  - `create-adr` — when the plan output should be persisted as a formal Architectural Decision Record
