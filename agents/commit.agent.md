@@ -3,7 +3,6 @@ name: Commit
 description: Full git lifecycle — stage, commit, push, pull, rebase, merge, branch, stash, tag, release, and PR creation — applying the consumer's commit-style preferences from .copilot/workspace/operations/commit-style.md
 argument-hint: "Say 'commit my changes', 'push changes', 'pull and rebase', 'create a branch', 'stash my changes', 'create a PR', 'tag this version', or 'create a release'"
 model:
-  - GPT-5 mini
   - GPT-5.2
   - Claude Sonnet 4.6
 tools: [agent, editFiles, runCommands, codebase, githubRepo, askQuestions]

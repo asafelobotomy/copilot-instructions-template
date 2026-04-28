@@ -2,7 +2,7 @@
 # purpose:  Add governance context when a subagent starts
 # when:     SubagentStart
 # inputs:   JSON via stdin with subagent details (agent_type, agent_id)
-# outputs:  JSON with additionalContext
+# outputs:  JSON with hookSpecificOutput.additionalContext
 # risk:     safe
 # ESCALATION: none
 set -euo pipefail

@@ -2,7 +2,7 @@
 # purpose:  Save workspace context before compaction
 # when:     PreCompact
 # inputs:   JSON via stdin with trigger field
-# outputs:  JSON with additionalContext summarizing saved state
+# outputs:  JSON with hookSpecificOutput.additionalContext summarizing saved state
 # risk:     safe
 # ESCALATION: none
 

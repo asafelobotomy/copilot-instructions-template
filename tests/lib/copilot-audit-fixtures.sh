@@ -287,6 +287,13 @@ THREE_CHECK_COMMAND=echo "no three-check configured"
 TEST_FRAMEWORK=bash
 SETUP_DATE=2026-04-04
 -->
+<!-- install-metadata
+MCP_AVAILABLE=github,fetch,context7,heartbeat,sequential-thinking,playwright
+MCP_ENABLED=github
+INSTRUCTION_STUBS=api.instructions.md
+STARTER_KITS_MATCHED=python
+STARTER_KITS_INSTALLED=python@1.0.0
+-->
 MD
 }
 
@@ -334,6 +341,13 @@ TYPE_CHECK_COMMAND=echo "no type check configured"
 THREE_CHECK_COMMAND=echo "no three-check configured"
 TEST_FRAMEWORK=bash
 SETUP_DATE=2026-04-04
+-->
+<!-- install-metadata
+MCP_AVAILABLE=github,fetch,context7,heartbeat,sequential-thinking,playwright
+MCP_ENABLED=github
+INSTRUCTION_STUBS=api.instructions.md
+STARTER_KITS_MATCHED=python
+STARTER_KITS_INSTALLED=python@1.0.0
 -->
 MD
 }
@@ -653,3 +667,125 @@ OWNERSHIP_MODE=invalid-value
 MD
 }
 
+mutate_consumer_version_file_missing_install_metadata() {
+  mutate_consumer_layout
+  # Overwrite with a valid version file that lacks the install-metadata block
+  write_sandbox_file ".github/copilot-version.md" <<'MD'
+<!-- markdownlint-disable-file MD041 -->
+5.4.0
+Applied: 2026-04-04
+Updated: 2026-04-04
+<!-- section-fingerprints
+§1=aaaaaaaaaaaa
+-->
+<!-- file-manifest
+.github/agents/code.agent.md=bbbbbbbbbbbb
+.github/agents/routing-manifest.json=bbbbbbbbbbbb
+.github/hooks/copilot-hooks.json=bbbbbbbbbbbb
+.github/hooks/scripts/session-start.sh=bbbbbbbbbbbb
+.github/instructions/api.instructions.md=bbbbbbbbbbbb
+.github/prompts/commit.prompt.md=bbbbbbbbbbbb
+.github/skills/my-skill/SKILL.md=bbbbbbbbbbbb
+.github/workflows/copilot-setup-steps.yml=bbbbbbbbbbbb
+.vscode/settings.json=bbbbbbbbbbbb
+.vscode/extensions.json=bbbbbbbbbbbb
+.copilot/workspace/identity/BOOTSTRAP.md=bbbbbbbbbbbb
+.copilot/workspace/operations/HEARTBEAT.md=bbbbbbbbbbbb
+.copilot/workspace/identity/IDENTITY.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/MEMORY.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/RESEARCH.md=bbbbbbbbbbbb
+.copilot/workspace/identity/SOUL.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/TOOLS.md=bbbbbbbbbbbb
+.copilot/workspace/knowledge/USER.md=bbbbbbbbbbbb
+.copilot/workspace/operations/commit-style.md=bbbbbbbbbbbb
+.copilot/workspace/operations/workspace-index.json=bbbbbbbbbbbb
+.github/starter-kits/python/.claude-plugin/plugin.json=bbbbbbbbbbbb
+.github/starter-kits/python/commands/python-debug.md=bbbbbbbbbbbb
+-->
+<!-- setup-answers
+PROJECT_NAME=Sandbox
+LANGUAGE=Python
+RUNTIME=Python
+PACKAGE_MANAGER=pip
+TEST_COMMAND=bash tests/run-all.sh
+TYPE_CHECK_COMMAND=echo "no type check configured"
+THREE_CHECK_COMMAND=echo "no three-check configured"
+TEST_FRAMEWORK=bash
+SETUP_DATE=2026-04-04
+-->
+MD
+}
+
+# ── S2: skill description > 1024 chars ────────────────────────────────────────
+mutate_s2_description_too_long() {
+  local long_desc
+  long_desc=$(python3 -c "print('x' * 1025)")
+  write_sandbox_file "skills/my-skill/SKILL.md" <<SKILL
+---
+name: my-skill
+description: "${long_desc}"
+---
+# My Skill
+SKILL
+}
+
+# ── I2: template/copilot-instructions.md > 800 lines ─────────────────────────
+mutate_i2_template_too_long() {
+  {
+    echo "# Template"
+    echo "{{REPO_OWNER}} {{REPO_NAME}} {{LANGUAGE}}"
+    echo "The parent/default agent follows this protocol too: if a request matches a named specialist workflow, delegate to the matching agent instead of absorbing the specialist workflow inline."
+    echo "Do not keep specialist work inline because it seems small, quick, or manageable."
+    echo "Trust the selected specialist to complete the task unless you know it is outside the specialist scope, allow-list, or capabilities, or the specialist reports a concrete blocker."
+    echo "Preferred specialist map: \`Explore\` for read-only repo scans."
+    python3 -c "
+for i in range(800):
+    print(f'<!-- padding line {i} -->')
+"
+  } | write_sandbox_file "template/copilot-instructions.md"
+}
+
+# ── I3: instruction stub without YAML frontmatter ─────────────────────────────
+mutate_i3_missing_frontmatter() {
+  write_sandbox_file ".github/instructions/nofrontmatter.instructions.md" <<'INST'
+This file has no frontmatter block.
+Use REST conventions.
+INST
+}
+
+# ── M4: stdio MCP server without sandboxEnabled ───────────────────────────────
+mutate_m4_stdio_no_sandbox() {
+  write_sandbox_file ".vscode/mcp.json" <<'JSON'
+{
+  "servers": {
+    "git": {
+      "command": "uvx",
+      "args": ["mcp-server-git"]
+    },
+    "custom-tool": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["my-custom-mcp-server"]
+    }
+  }
+}
+JSON
+}
+
+# ── P1: prompt file missing required 'agent' field ────────────────────────────
+mutate_p1_missing_agent_field() {
+  write_sandbox_file ".github/prompts/commit.prompt.md" <<'PROMPT'
+---
+description: Commit helper
+---
+Write a commit message.
+PROMPT
+}
+
+# ── SH2: hook script without set -euo pipefail ───────────────────────────────
+mutate_sh2_missing_pipefail() {
+  write_sandbox_file "hooks/scripts/no-strict.sh" <<'SH'
+#!/usr/bin/env bash
+echo '{}'
+SH
+}

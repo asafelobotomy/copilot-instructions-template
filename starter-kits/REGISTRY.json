@@ -1,9 +1,10 @@
 {
-  "schemaVersion": "1.1",
+  "schemaVersion": "1.2",
   "description": "Machine-readable index mapping stack detection signals to starter-kit plugins.",
   "kits": [
     {
       "name": "python",
+      "version": "1.0.0",
       "displayName": "Python Starter Kit",
       "description": "pytest/unittest patterns, type checking, venv/poetry guidance, security practices",
       "featured": true,
@@ -28,6 +29,7 @@
     },
     {
       "name": "typescript",
+      "version": "1.0.0",
       "displayName": "TypeScript Starter Kit",
       "description": "ESLint/Prettier patterns, Jest/Vitest testing, type safety, module conventions",
       "featured": true,
@@ -52,6 +54,7 @@
     },
     {
       "name": "cpp",
+      "version": "1.0.0",
       "displayName": "C++ Starter Kit",
       "description": "CMake patterns, memory safety, clang-tidy/format, modern C++ conventions",
       "featured": false,
@@ -75,6 +78,7 @@
     },
     {
       "name": "rust",
+      "version": "1.0.0",
       "displayName": "Rust Starter Kit",
       "description": "Cargo/clippy patterns, unsafe review, crate conventions, error handling",
       "featured": false,
@@ -97,6 +101,7 @@
     },
     {
       "name": "go",
+      "version": "1.0.0",
       "displayName": "Go Starter Kit",
       "description": "Go testing patterns, golangci-lint, module management, idiomatic Go conventions",
       "featured": false,
@@ -119,6 +124,7 @@
     },
     {
       "name": "java",
+      "version": "1.0.0",
       "displayName": "Java Starter Kit",
       "description": "Maven/Gradle patterns, JUnit testing, Spring Boot conventions, dependency management",
       "featured": false,
@@ -141,6 +147,7 @@
     },
     {
       "name": "docker",
+      "version": "1.0.0",
       "displayName": "Docker Starter Kit",
       "description": "Dockerfile best practices, compose patterns, image security, multi-stage builds",
       "featured": false,
@@ -162,6 +169,7 @@
     },
     {
       "name": "react",
+      "version": "1.0.0",
       "displayName": "React Starter Kit",
       "description": "Component testing, accessibility, hooks patterns, state management, Next.js conventions",
       "featured": false,

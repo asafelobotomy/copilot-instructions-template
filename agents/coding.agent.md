@@ -8,7 +8,6 @@ model:
   - GPT-5.2
   - Grok Code Fast 1
   - Claude Sonnet 4.6
-  - GPT-5 mini
 tools: [agent, editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
 mcp-servers: [filesystem, git, github, fetch, context7, playwright]
 user-invocable: true

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Direct session_reflect fallback runner.
 
-# purpose: Invoke session_reflect directly when the heartbeat MCP tool is installed but not surfaced in the active tool layer.
-# when: Use only after normal MCP tool invocation is unavailable; do not use this when session_reflect is already callable as a tool.
+# purpose: Invoke session_reflect directly through the heartbeat server implementation when the extension or deferred-tool path is unavailable.
+# when: Use only after direct tool invocation and deferred loading are unavailable; do not use this when session_reflect is already callable as a tool.
 # inputs: --root <path> optional workspace root, --script <path> optional heartbeat server path.
 # outputs: JSON session_reflect payload on stdout.
 # risk: safe

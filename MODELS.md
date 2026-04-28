@@ -18,6 +18,12 @@ Edit this file to change assignments; `sync-models.sh` propagates only the
 primary-model and thinking-effort summary table within `llms.txt`
 automatically.
 
+Runtime note: repo-controlled usage excludes `GPT-5 mini` because VS Code
+currently rejects deferred-tool loading on that model with
+`Tool 'tool_search' is not supported with gpt-5-mini-2025-08-07`, and this
+repo relies on deferred-tool flows in both agent lineups and workspace tool
+sampling.
+
 The `model:` list in each `.agent.md` file is ordered: VS Code Copilot picks the
 first available model and falls back down the list. Edit this file to change any
 assignment, then propagate with:
@@ -80,7 +86,6 @@ Grok Code Fast 1 is the code-specialized cost-efficient fallback (0.25×).
 - GPT-5.2
 - Grok Code Fast 1
 - Claude Sonnet 4.6
-- GPT-5 mini
 
 ## organise
 
@@ -92,7 +97,6 @@ from the Copilot base + LTS coding model.
 - GPT-5.3-Codex
 - GPT-5.2-Codex
 - Claude Sonnet 4.6
-- GPT-5 mini
 
 ## cleaner
 
@@ -104,7 +108,6 @@ full breadth of general implementation.
 - GPT-5.3-Codex
 - GPT-5.2-Codex
 - Claude Sonnet 4.6
-- GPT-5 mini
 
 ## audit
 
@@ -123,12 +126,11 @@ Anthopic reasoning fallback; Gemini 3.1 Pro for long-context cross-file analysis
 Quick questions, syntax lookups, and lightweight single-file edits. Haiku 4.5
 is the quality-speed sweet spot (0.33×); GPT-5.4 mini (0.33×) handles
 tool-heavy lightweight tasks; Grok Code Fast 1 (0.25×) for code-specific
-queries; Raptor mini and GPT-5 mini are free alternatives.
+queries; Raptor mini is the free alternative.
 
 - Claude Haiku 4.5
 - GPT-5.4 mini
 - Grok Code Fast 1
-- GPT-5 mini
 - Raptor mini
 - GPT-4.1
 
@@ -149,9 +151,8 @@ Template lifecycle — first-time setup, upstream updates, backup restore, and f
 Requires interactive question capability (never use Codex/autonomous models).
 
 - Claude Sonnet 4.6
-- Claude Sonnet 4.5
+- GPT-5.4 mini
 - GPT-5.2
-- GPT-5 mini
 
 ## explore
 
@@ -163,7 +164,6 @@ for simple lookups.
 - Claude Haiku 4.5
 - GPT-5.4 mini
 - Grok Code Fast 1
-- GPT-5 mini
 - Raptor mini
 - Claude Sonnet 4.6
 
@@ -186,15 +186,14 @@ Gemini 2.5 Pro is the GA Gemini fallback.
 - Claude Sonnet 4.5
 - Gemini 3.1 Pro
 - Gemini 2.5 Pro
-- GPT-5 mini
 
 ## commit
 
 Stage, commit, push, tag, and manage releases. Low-context operations; fast
-models preferred. GPT-5 mini is primary (0x multiplier, sufficient for commit
-message formatting); GPT-5.2 is the capability fallback.
+models preferred. GPT-5.2 is primary because it avoids the repo-wide
+deferred-tool incompatibility on GPT-5 mini while staying fit for low-context
+git operations; Claude Sonnet 4.6 is the quality fallback.
 
-- GPT-5 mini
 - GPT-5.2
 - Claude Sonnet 4.6
 
@@ -215,7 +214,6 @@ Documentation generation, migration notes, README work, and user-facing guides.
 
 - Claude Sonnet 4.6
 - GPT-5.2
-- GPT-5 mini
 
 ## debugger
 

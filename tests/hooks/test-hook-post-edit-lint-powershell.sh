@@ -30,6 +30,25 @@ output=$(run_ps_script "$POST_LINT" "{\"tool_name\":\"edit_file\",\"tool_input\"
 status=$?
 assert_success "post-edit-lint edit payload exits zero" "$status"
 assert_contains "post-edit-lint edit payload continues" "$output" '"continue": true'
+
+echo ""
+
+echo "3. post-edit-lint.ps1 formatter failures emit hookSpecificOutput.additionalContext"
+TMP_DIR=$(mktemp -d "$REPO_ROOT/.tmp-post-edit-lint-ps1.XXXXXX"); CLEANUP_DIRS+=("$TMP_DIR")
+TMP_GO="$TMP_DIR/test.go"
+touch "$TMP_GO"
+cat > "$TMP_DIR/gofmt" <<'EOF'
+#!/usr/bin/env bash
+echo "synthetic gofmt failure" >&2
+exit 1
+EOF
+chmod +x "$TMP_DIR/gofmt"
+output=$(PATH="$TMP_DIR:$PATH" run_ps_script "$POST_LINT" "{\"tool_name\":\"write_to_file\",\"tool_input\":{\"filePath\":\"$TMP_GO\"}}")
+status=$?
+assert_success "post-edit-lint formatter failure exits zero" "$status"
+assert_contains "post-edit-lint formatter failure keeps continue=true" "$output" '"continue": true'
+assert_contains "post-edit-lint formatter failure uses hookSpecificOutput" "$output" '"hookSpecificOutput"'
+assert_contains "post-edit-lint formatter failure includes additionalContext" "$output" '"additionalContext"'
 echo ""
 
 finish_tests

@@ -43,7 +43,7 @@ Run each check; prepend `[!]` to Pulse if any fails:
 
 ## Retrospective
 
-Retrospective runs autonomously via the `asafelobotomy_session_reflect` extension tool (deferred LM tool — use tool_search to load it if not yet loaded). Do not prompt the user.
+Retrospective runs autonomously via the `asafelobotomy_session_reflect` extension tool. If it is already loaded, call it directly. Otherwise try `tool_search` once. If that is unavailable, run `python3 .github/hooks/scripts/session_reflect_fallback.py` instead when that file exists. Do not prompt the user.
 
 The PostToolUse hook instructs you to call `asafelobotomy_session_reflect` when a significant task is detected (one strong signal: 8+ modified files or 30+ minutes active; or two supporting signals: 5+ modified files, 15+ minutes, context compaction). On clients that fire the Stop hook (Claude Code / CLI), the Stop handler provides a blocking fallback for the same check.
 
@@ -57,9 +57,9 @@ When `asafelobotomy_session_reflect` returns, process its output silently:
 
 When a lesson first lands in built-in repo memory, decide during heartbeat whether it should stay repo-local or be promoted into MEMORY.md for team-wide durability.
 
-The extension tool records completion automatically by setting the session sentinel and writing a `session_reflect` completion event. No manual sentinel management is needed.
+The `session_reflect` path records completion automatically by setting the session sentinel and writing a `session_reflect` completion event. No manual sentinel management is needed.
 
-If the `asafelobotomy_session_reflect` extension tool is unavailable, briefly self-review: execution accuracy, scope completeness, and anything worth persisting to identity files, then rerun `asafelobotomy_session_reflect` once the extension is available.
+If both `asafelobotomy_session_reflect` and `session_reflect_fallback.py` are unavailable, briefly self-review: execution accuracy, scope completeness, and anything worth persisting to identity files, then rerun `asafelobotomy_session_reflect` once a supported path is available.
 
 <!-- Add custom retrospective questions below this line -->
 
@@ -80,8 +80,8 @@ If the `asafelobotomy_session_reflect` extension tool is unavailable, briefly se
 
 | Date | Session ID | Trigger | Result | Actions taken |
 |------|------------|---------|--------|---------------|
-| 2026-04-16 | local-dadf28a1 | Task completion — heartbeat MCP removal | PASS | `asafelobotomy_session_reflect` was unavailable through this chat bridge after deferred load, so fallback review was used. Verified scope/accuracy, refreshed MEMORY test baseline to 1046 assertions / 42 suites, and confirmed full suite green after heartbeat MCP removal. |
+| 2026-04-28 | local-835b6fba | session_reflect — P3/P4/P6/P7/P9/P10 implementation | PASS | 14 files edited: install-metadata schema (context.py, checks_version.py, fixtures, setup agent §2.13), MCP delta update step, A18 plugin-authoring opt-in (interview.md, manifests.md, setup agent §2.7), REGISTRY.json schemaVersion 1.2 + per-kit version, workspace-index regen. 42/42 suites green, audit HEALTHY. Diary entry written. |
+| 2026-04-28 | local-835b6fba | session_reflect | PASS | Ran session_reflect via local fallback runner after stop-hook block. No additional SOUL/MEMORY/USER updates needed. Targeted validation remained green for agent contracts, model sync, hook pulse, and policy checks. |
+| 2026-04-28 | local-04e35182 | session_reflect — MCP + interview + stubs improvements | PASS | 6 files: added sequential-thinking MCP (dev+template), created consumer plugin-components.instructions.md, fixed E22/E22a interview questions (heartbeat+sequential-thinking), updated manifests.md MCP blocks+stubs table. 8/8 contract tests green. Plan produced for P3/P4/P6/P7/P9/P10. |
 | 2026-04-16 | local-dadf28a1 | session_reflect — Extension tool naming + deferred load | PASS | 1 commit (306dbb4): exact callable names (asafelobotomy_*), deferred tool_search load instruction, Extension Protocol entry in dev instructions, corrected MCP→extension label in both HEARTBEAT.md files. 45/45 suites green. |
 | 2026-04-16 | local-dadf28a1 | session_reflect — Diary system + commit agent | PASS | 2 commits: commit-agent 7 fixes; diary system separation (agent_type field, remove hook auto-write, add write_diary+read_diaries MCP tools, 7 new tests). 45/45 suites green. MEMORY test baseline updated (222→284). SOUL diary-explicit lesson added. |
-| 2026-04-16 | local-f54c1675 | session_reflect — Review+debug today's 23 commits | PASS | Fixed 5 review findings: pulse.sh python3/python fallback+existence guard (HIGH); template SPATIAL_VOCAB MD055/MD056 disable; RESEARCH.md MD028+MD034; HEARTBEAT.md template MD028; manifests.md §9→§14 fingerprint. 44/44 suites green. |
-| 2026-04-16 | ps-sess-1 | session_reflect — Refactor #1 heartbeat canonicalization | PASS | Canonicalized heartbeat/routing to Python-only; deleted 4 PS1 files (-1,835 LOC); pulse.ps1 now thin Python proxy; 44/44 suites green. Repo memory updated. |

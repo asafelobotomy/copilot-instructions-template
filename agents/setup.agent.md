@@ -4,9 +4,8 @@ description: Template lifecycle — post-install personalisation wizard, upstrea
 argument-hint: Say "set up this project", "update your instructions", "factory restore instructions", "force check instruction updates", or "restore instructions from backup"
 model:
   - Claude Sonnet 4.6
-  - Claude Sonnet 4.5
+  - GPT-5.4 mini
   - GPT-5.2
-  - GPT-5 mini
 tools: [agent, editFiles, fetch, githubRepo, codebase, askQuestions, runCommands, search]
 mcp-servers: [filesystem, git, github, context7]
 user-invocable: true
@@ -128,6 +127,9 @@ Apply E24 to the Thinking Effort Configuration table in §10:
 § Path instruction stubs. Copy matching stubs from
 `${CLAUDE_PLUGIN_ROOT}/template/instructions/` to `.github/instructions/`.
 Validate no `{{PLACEHOLDER}}` tokens remain after token replacement.
+`plugin-components.instructions.md` is gated on S6 = All-local **and** A18 ≠
+No; install it only when those conditions are met. Record the installed stub
+filenames in the `<!-- install-metadata -->` INSTRUCTION_STUBS field.
 
 **§ 2.8 — Prompt stubs** (A17 conditional): Copy from
 `${CLAUDE_PLUGIN_ROOT}/template/prompts/` to `.github/prompts/`.
@@ -137,9 +139,11 @@ Validate no `{{PLACEHOLDER}}` tokens remain after token replacement.
 `.github/workflows/copilot-setup-steps.yml`. Populate runtime tokens and remove
 unused runtime sections.
 
-**§ 2.10 — MCP config** (E22 only): Read and write
-`${CLAUDE_PLUGIN_ROOT}/template/vscode/mcp.json` to `.vscode/mcp.json`. Enable
-optional servers per E22a. Run sandbox detection on Linux first.
+**§ 2.10 — MCP config** (E22 only): Run sandbox detection on Linux first (see
+manifests.md § MCP server configs). For `standard` distros read
+`${CLAUDE_PLUGIN_ROOT}/template/vscode/mcp.json`; for `immutable` distros read
+`${CLAUDE_PLUGIN_ROOT}/template/vscode/mcp-unsandboxed.json`. Write result to
+`.vscode/mcp.json`. Enable optional servers per E22a.
 
 **§ 2.11 — VS Code settings** (E18 only): Merge keys from
 `${CLAUDE_PLUGIN_ROOT}/template/vscode/settings.json` into `.vscode/settings.json`
@@ -186,6 +190,12 @@ fingerprints and file-manifest hashes (see manifests.md § Version file
 template). Record the S6 ownership mode and per-surface decisions in the
 `<!-- ownership-mode -->` block. Write `.github/copilot-version.md` with
 version, date, ownership mode, fingerprints, manifest, and setup-answers.
+Also write the `<!-- install-metadata -->` block: set `MCP_AVAILABLE` to all
+template optional server IDs (from `template/vscode/mcp.json`), `MCP_ENABLED`
+to enabled server IDs per E22a, `INSTRUCTION_STUBS` to installed stub
+filenames, `STARTER_KITS_MATCHED` to detected kit names, and
+`STARTER_KITS_INSTALLED` to installed kit names with version (e.g.
+`python@1.0.0`). Leave empty-string values for surfaces not applicable.
 
 **§ 2.14 — Claude compatibility file** (E23 only): Copy
 `${CLAUDE_PLUGIN_ROOT}/template/CLAUDE.md` to project root, replacing all
@@ -237,11 +247,41 @@ version. Offer the Audit health-check handoff.
   `plugin-backed`, skip local agent/skill/hook overwrites (plugin handles
   delivery). When `all-local`, overwrite from plugin copies (no user tokens).
   Offer to switch ownership mode during update if the user asks.
-- **Companion files**: re-copy instruction stubs, prompts, VS Code config, and
-  workspace stubs under the same conditions used at setup time.
+- **Companion files**: Re-evaluate manifests.md § Path instruction stubs,
+  prompt stubs, VS Code config, MCP availability, and workspace stubs against
+  the current repo state and recorded install-metadata. Install newly eligible
+  stubs (including stub types added since the last install, such as
+  `plugin-components.instructions.md`) after confirmation. Use the same
+  eligibility conditions as at setup time.
+- **MCP delta**: After re-copying `.vscode/mcp.json`, compute new optional
+  servers. Read `MCP_AVAILABLE` from the `<!-- install-metadata -->` block
+  (fall back to current `.vscode/mcp.json` keys for legacy installs without
+  metadata). Compare against optional server IDs in
+  `${CLAUDE_PLUGIN_ROOT}/template/vscode/mcp.json` (all servers except
+  `filesystem` and `git`). If `new_servers = template_optional − MCP_AVAILABLE`
+  is non-empty, present a single `ask_questions` multi-select:
+  "New MCP servers are available since your last install: {list}. Enable any?"
+  Enable selected servers (set `disabled: false`); leave others disabled. Do
+  not re-prompt for servers already known. Special case: do not offer
+  `heartbeat` unless `.github/hooks/scripts/mcp-heartbeat-server.py` exists
+  locally — route that through the hook-install decision path first.
+- **Starter-kit re-detection**: Re-run stack detection against the current
+  project state using `starter-kits/REGISTRY.json`. Compute
+  `new_matches = matched_kits − STARTER_KITS_MATCHED` (kits now detected that
+  were not present at last install). Also compute `upgradable = kits where
+  installed_version != registry_version` using `STARTER_KITS_INSTALLED` and
+  the current `version` field in each registry entry. If either set is
+  non-empty, present a single `ask_questions` prompt: "New or updatable starter
+  kits detected: {list}. Install/update?" Install selected kits and update
+  `STARTER_KITS_MATCHED` and `STARTER_KITS_INSTALLED` in install-metadata.
 - Use `ask_questions` for all decisions: update path (U/S/C), per-section
-  choices (A/B/C), and guardrail conflict resolutions.
+  choices (A/B/C), guardrail conflict resolutions, and MCP delta selections.
 - Update `.github/copilot-version.md` fingerprints and version after writes.
+  Also refresh the `<!-- install-metadata -->` block: recompute `MCP_AVAILABLE`
+  and `MCP_ENABLED` from the written `.vscode/mcp.json`, update
+  `INSTRUCTION_STUBS` to reflect current `.github/instructions/` contents, and
+  update `STARTER_KITS_MATCHED` and `STARTER_KITS_INSTALLED` from re-detection
+  results. If the block is absent (legacy install), write it fresh.
 
 ## Shared constraints
 

@@ -198,6 +198,16 @@
 | URL | Summary | Date | Tags |
 |-----|---------|------|------|
 | <https://github.com/googleapis/release-please> | release-please README — releasable units (feat/fix/deps only), path config (single dir), release-as commit footer, monorepo manifest | 2026-03-30 | release, semver, changelog |
+
+## tool_search / Deferred Tool Support by Model — 2026-04-28
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/model-release-status.yml> | (re-fetched) GPT-5 mini and GPT-5.4 mini both GA with agent_mode/ask_mode/edit_mode all true; no tool-calling restrictions | 2026-04-28 | models, agent-mode, tool-support |
+| <https://docs.github.com/en/copilot/reference/ai-models/model-comparison> | (re-fetched 2026-04-28) GPT-5.4 mini explicitly recommended for "Agentic software development / codebase exploration and grep-style tools"; GPT-5 mini is general-purpose only | 2026-04-28 | models, tool-use, agentic |
+| <https://code.visualstudio.com/docs/copilot/concepts/tools> | Tools overview: built-in, MCP, extension types; no model-specific tool restrictions documented | 2026-04-28 | tools, concepts, models |
+| <https://code.visualstudio.com/api/extension-guides/ai/tools> | Extension LM tools guide: `contributes.languageModelTools`, `when` clause for availability — availability gated on VS Code context not model family | 2026-04-28 | extension-api, lm-tools, deferred |
+| <https://code.visualstudio.com/updates/v1_117> | v1.117 (Apr 22 2026): BYOK for Business/Enterprise; incremental chat rendering; terminal improvements — no tool_search or deferred tool mentions | 2026-04-28 | release-notes, models |
 | <https://raw.githubusercontent.com/googleapis/release-please/main/docs/manifest-releaser.md> | Manifest config — exclude-paths per package, release-as per package, skip-github-release, force-tag-creation | 2026-03-30 | release, manifest |
 | <https://raw.githubusercontent.com/googleapis/release-please/main/docs/customizing.md> | Customising releases — single-path subdirectory scoping via `path`, versioning strategies, extra-files, pull-request-title-pattern | 2026-03-30 | release, customisation |
 | <https://github.com/googleapis/release-please-action> | Action inputs — release-as (direct input), skip-github-release, skip-github-pull-request, config-file, manifest-file | 2026-03-30 | release, actions |

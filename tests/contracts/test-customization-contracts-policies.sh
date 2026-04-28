@@ -866,4 +866,42 @@ for plugin_root, spec in plugin_specs.items():
 '
 echo ""
 
+echo "16. Update mode documents MCP delta detection and install-metadata persistence"
+assert_python "setup agent update mode covers MCP delta step and install-metadata refresh" '
+setup_text = (root / "agents/setup.agent.md").read_text(encoding="utf-8")
+required = [
+    "MCP delta",
+    "MCP_AVAILABLE",
+    "new_servers",
+    "install-metadata",
+    "mcp-heartbeat-server.py",
+]
+for needle in required:
+    if needle not in setup_text:
+        raise SystemExit("agents/setup.agent.md update mode missing MCP delta guidance: " + needle)
+'
+echo ""
+
+echo "17. Interview Tier S includes A18 plugin-authoring opt-in question"
+assert_python "interview.md Tier S includes A18 question with S6 gate and plugin-authoring options" '
+interview = (root / "template/setup/interview.md").read_text(encoding="utf-8")
+required = [
+    "A18",
+    "Plugin authoring conventions",
+    "S6 = All-local",
+    "Yes (install when relevant)",
+    "Ask when newly available on update",
+]
+for needle in required:
+    if needle not in interview:
+        raise SystemExit("template/setup/interview.md Tier S missing A18 requirement: " + needle)
+manifests = (root / "template/setup/manifests.md").read_text(encoding="utf-8")
+if "A18" not in manifests:
+    raise SystemExit("template/setup/manifests.md stubs table missing A18 condition for plugin-components.instructions.md")
+setup = (root / "agents/setup.agent.md").read_text(encoding="utf-8")
+if "A18" not in setup:
+    raise SystemExit("agents/setup.agent.md \u00a72.7 missing A18 gate for plugin-components.instructions.md")
+'
+echo ""
+
 finish_tests

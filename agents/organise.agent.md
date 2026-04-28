@@ -6,7 +6,6 @@ model:
   - GPT-5.3-Codex
   - GPT-5.2-Codex
   - Claude Sonnet 4.6
-  - GPT-5 mini
 tools: [agent, editFiles, runCommands, codebase, search]
 mcp-servers: [filesystem, git]
 user-invocable: false

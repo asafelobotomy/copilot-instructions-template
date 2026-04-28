@@ -58,4 +58,21 @@ touch "$TMPFILE_ALT"
 output=$(printf '{"tool_name": "edit_file", "tool_input": {"file": "%s"}}' "$TMPFILE_ALT" | bash "$SCRIPT" 2>/dev/null)
 assert_matches "alternate file key continues" "$output" '"continue": true'
 
+echo ""
+
+echo "7. Formatter failures emit hookSpecificOutput.additionalContext"
+TMPDIR_FMT=$(mktemp -d "$REPO_ROOT/.tmp-post-edit-lint.XXXXXX"); CLEANUP_DIRS+=("$TMPDIR_FMT")
+TMPFILE_GO="$TMPDIR_FMT/test.go"
+touch "$TMPFILE_GO"
+cat > "$TMPDIR_FMT/gofmt" <<'EOF'
+#!/usr/bin/env bash
+echo "synthetic gofmt failure" >&2
+exit 1
+EOF
+chmod +x "$TMPDIR_FMT/gofmt"
+output=$(printf '{"tool_name": "write_to_file", "tool_input": {"filePath": "%s"}}' "$TMPFILE_GO" | PATH="$TMPDIR_FMT:$PATH" bash "$SCRIPT" 2>/dev/null)
+assert_matches "formatter failure keeps continue=true" "$output" '"continue": ?true'
+assert_matches "formatter failure uses hookSpecificOutput" "$output" '"hookSpecificOutput"'
+assert_matches "formatter failure includes additionalContext" "$output" '"additionalContext"'
+
 finish_tests

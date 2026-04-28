@@ -2,7 +2,7 @@
 # purpose:  Add project context to each new agent session
 # when:     SessionStart
 # inputs:   JSON via stdin
-# outputs:  JSON with additionalContext
+# outputs:  JSON with hookSpecificOutput.additionalContext
 # risk:     safe
 # ESCALATION: none
 set -euo pipefail

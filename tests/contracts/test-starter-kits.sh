@@ -14,13 +14,13 @@ echo ""
 echo "1. REGISTRY.json is valid JSON with required schema"
 assert_python "REGISTRY.json schema is valid" '
 registry = json.loads((root / "starter-kits/REGISTRY.json").read_text(encoding="utf-8"))
-if registry.get("schemaVersion") != "1.1":
+if registry.get("schemaVersion") != "1.2":
     raise SystemExit("missing or wrong schemaVersion")
 kits = registry.get("kits")
 if not isinstance(kits, list) or len(kits) == 0:
     raise SystemExit("kits must be a non-empty list")
 for kit in kits:
-    for field in ("name", "displayName", "description", "featured", "tags", "detect", "files"):
+    for field in ("name", "displayName", "version", "description", "featured", "tags", "detect", "files"):
         if field not in kit:
             raise SystemExit("kit " + kit.get("name", "?") + " missing field: " + field)
     if not isinstance(kit["featured"], bool):

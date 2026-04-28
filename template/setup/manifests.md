@@ -16,7 +16,7 @@ inventory of supporting upstream sources so `AGENTS.md` and
 | Protocol | Canonical behaviour file | Supporting upstream sources |
 |----------|--------------------------|-----------------------------|
 | Setup | `agents/setup.agent.md` | `template/copilot-instructions.md`, `template/setup/interview.md`, `template/setup/manifests.md`, `template/workspace/operations/workspace-index.json`, `template/copilot-setup-steps.yml`, `template/vscode/settings.json`, `template/vscode/extensions.json`, `starter-kits/REGISTRY.json` |
-| Update, backup restore, and factory restore | `agents/setup.agent.md` | `VERSION.md`, `CHANGELOG.md`, `template/copilot-instructions.md`, `template/setup/manifests.md` |
+| Update, backup restore, and factory restore | `agents/setup.agent.md` | `VERSION.md`, `CHANGELOG.md`, `template/copilot-instructions.md`, `template/setup/manifests.md`, `template/setup/interview.md`, `template/workspace/operations/workspace-index.json`, `template/vscode/mcp.json`, `starter-kits/REGISTRY.json` |
 
 ---
 
@@ -54,6 +54,7 @@ For each stub, evaluate the `condition` before installing. A condition `exists:G
 | `config.instructions.md` | `exists:**/*.config.*` OR `exists:**/.eslintrc*` OR `exists:**/.prettierrc*` OR `exists:**/.stylelintrc*` OR language detected as JavaScript/TypeScript/Python |
 | `docs.instructions.md` | `exists:**/*.md` (true for almost every project) |
 | `terminal.instructions.md` | `exists:**/*` (install for every non-empty project; terminal discipline applies regardless of source language) |
+| `plugin-components.instructions.md` | S6 = All-local **and** A18 ≠ No |
 
 Fetch pattern: `${CLAUDE_PLUGIN_ROOT}/template/instructions/{name}`
 
@@ -144,138 +145,11 @@ else
 fi
 ```
 
-- `standard` (Linux and macOS): use **sandboxed** config
-- `immutable` (Fedora Atomic, Bazzite, NixOS etc.): use **unsandboxed** config
+- `standard` (Linux and macOS): write `template/vscode/mcp.json` → `.vscode/mcp.json`
+- `immutable` (Fedora Atomic, Bazzite, NixOS etc.): write `template/vscode/mcp-unsandboxed.json` → `.vscode/mcp.json`
 
-### Sandboxed config (default)
-
-```json
-{
-  "sandbox": {
-    "filesystem": {
-      "allowWrite": ["${userHome}/.npm"]
-    }
-  },
-  "servers": {
-    "filesystem": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"],
-      "sandboxEnabled": true,
-      "sandbox": {
-        "network": {
-          "allowedDomains": ["registry.npmjs.org", "npmjs.org"]
-        },
-        "filesystem": {
-          "allowWrite": ["${workspaceFolder}", "${userHome}/.npm"],
-          "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
-        }
-      }
-    },
-    "git": {
-      "type": "stdio",
-      "command": "uvx",
-      "args": ["mcp-server-git", "--repository", "${workspaceFolder}"]
-    },
-    "github": {
-      "type": "http",
-      "url": "https://api.githubcopilot.com/mcp/",
-      "disabled": true
-    },
-    "fetch": {
-      "type": "stdio",
-      "command": "uvx",
-      "env": {
-        "CLAUDE_TMPDIR": "${userHome}/.cache/uv",
-        "TMPDIR": "${userHome}/.cache/uv"
-      },
-      "args": ["--with", "httpx[socks]>=0.28", "mcp-server-fetch"],
-      "disabled": true
-    },
-    "context7": {
-      "type": "http",
-      "url": "https://mcp.context7.com/mcp",
-      "disabled": true
-    },
-    "playwright": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest",
-        "--headless",
-        "--browser=chromium"
-      ],
-      "disabled": true,
-      "sandboxEnabled": true,
-      "sandbox": {
-        "filesystem": {
-          "allowWrite": [
-            "${workspaceFolder}",
-            "${userHome}/.npm",
-            "${userHome}/.cache/ms-playwright"
-          ],
-          "denyRead": [
-            "${userHome}/.ssh",
-            "${userHome}/.gnupg",
-            "${userHome}/.aws"
-          ]
-        }
-      }
-    }
-  }
-}
-```
-
-### Unsandboxed config (immutable Linux distros)
-
-```json
-{
-  "servers": {
-    "filesystem": {
-      "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"]
-    },
-    "git": {
-      "type": "stdio",
-      "command": "uvx",
-      "args": ["mcp-server-git", "--repository", "${workspaceFolder}"]
-    },
-    "github": {
-      "type": "http",
-      "url": "https://api.githubcopilot.com/mcp/",
-      "disabled": true
-    },
-    "fetch": {
-      "type": "stdio",
-      "command": "uvx",
-      "env": {
-        "CLAUDE_TMPDIR": "${userHome}/.cache/uv",
-        "TMPDIR": "${userHome}/.cache/uv"
-      },
-      "args": ["--with", "httpx[socks]>=0.28", "mcp-server-fetch"],
-      "disabled": true
-    },
-    "context7": {
-      "type": "http",
-      "url": "https://mcp.context7.com/mcp",
-      "disabled": true
-    },
-    "playwright": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@playwright/mcp@latest",
-        "--headless",
-        "--browser=chromium"
-      ],
-      "disabled": true
-    }
-  }
-}
-```
+Full server configs: `${CLAUDE_PLUGIN_ROOT}/template/vscode/mcp.json` (sandboxed) and
+`${CLAUDE_PLUGIN_ROOT}/template/vscode/mcp-unsandboxed.json` (unsandboxed).
 
 ### Optional and stack-specific servers (E22 = B)
 
@@ -286,6 +160,8 @@ Enable from base config when selected in E22a:
 | `github` | User selected GitHub integration |
 | `fetch` | User selected web/docs retrieval |
 | `context7` | User selected third-party library docs |
+| `heartbeat` | User selected session health and retrospective reflection |
+| `sequential-thinking` | User selected structured step-by-step reasoning |
 | `playwright` | User selected browser automation for agent-driven website navigation |
 
 Add for detected dependencies:
@@ -300,6 +176,7 @@ Add for detected dependencies:
 | AWS | Search MCP Marketplace | varies |
 
 ---
+
 
 ## VS Code settings (§ 2.11)
 
@@ -414,6 +291,14 @@ HOOKS=plugin|local
 
 <!-- setup-answers
 PLACEHOLDER=value (one per resolved token)
+-->
+
+<!-- install-metadata
+MCP_AVAILABLE=<comma-separated IDs of all configured optional servers>
+MCP_ENABLED=<comma-separated IDs of enabled optional servers>
+INSTRUCTION_STUBS=<comma-separated filenames of installed instruction stubs>
+STARTER_KITS_MATCHED=<comma-separated names of stack-matched kits>
+STARTER_KITS_INSTALLED=<comma-separated name@version of installed kits>
 -->
 ```
 

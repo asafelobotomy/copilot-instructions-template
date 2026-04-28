@@ -2,7 +2,7 @@
 # purpose:  Auto-format files after agent edits them
 # when:     PostToolUse
 # inputs:   JSON via stdin with tool_name and tool_input
-# outputs:  JSON with additionalContext if formatting fails
+# outputs:  JSON with hookSpecificOutput.additionalContext if formatting fails
 # risk:     safe
 
 Set-StrictMode -Version 1
@@ -84,7 +84,7 @@ foreach ($filepath in $files) {
 
 if ($lintNotes) {
     $escaped = $lintNotes.Trim() -replace '\\', '\\' -replace '"', '\"'
-    "{`"continue`": true, `"additionalContext`": `"$escaped`"}"
+    "{`"continue`": true, `"hookSpecificOutput`": {`"hookEventName`": `"PostToolUse`", `"additionalContext`": `"$escaped`"}}"
 } else {
     '{"continue": true}'
 }

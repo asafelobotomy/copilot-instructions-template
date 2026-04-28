@@ -2,7 +2,7 @@
 # purpose:  Block dangerous terminal commands before execution
 # when:     PreToolUse
 # inputs:   JSON via stdin with tool_name and tool_input
-# outputs:  JSON with permissionDecision (allow/deny/ask)
+# outputs:  JSON with hookSpecificOutput.permissionDecision and optional additionalContext
 # risk:     safe
 # ESCALATION: ask
 #

@@ -62,6 +62,24 @@
       "url": "https://mcp.context7.com/mcp",
       "disabled": true
     },
+    "sequential-thinking": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
+      "disabled": true,
+      "sandboxEnabled": true,
+      "sandbox": {
+        "network": {
+          "allowedDomains": ["registry.npmjs.org", "npmjs.org"]
+        },
+        "filesystem": {
+          "allowWrite": ["${userHome}/.npm"]
+        }
+      }
+    },
     "playwright": {
       "type": "stdio",
       "command": "npx",

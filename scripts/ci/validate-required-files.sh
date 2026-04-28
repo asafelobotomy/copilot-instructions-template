@@ -50,6 +50,7 @@ required_files=(
   "template/prompts/review-file.prompt.md"
   "template/prompts/onboard-commit-style.prompt.md"
   "template/vscode/mcp.json"
+  "template/vscode/mcp-unsandboxed.json"
   "template/vscode/settings.json"
   "template/vscode/extensions.json"
   "template/workspace/identity/IDENTITY.md"

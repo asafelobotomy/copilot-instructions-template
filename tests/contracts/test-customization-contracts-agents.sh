@@ -355,4 +355,30 @@ for required in {"Docs", "Cleaner"}:
 '
 echo ""
 
+echo "8. Agent model lists exclude GPT-5 mini because deferred tools reject it"
+assert_python "agent model lists do not advertise GPT-5 mini" '
+for path in sorted((root / "agents").glob("*.agent.md")):
+    text = path.read_text(encoding="utf-8")
+    end = text.find("\n---\n", 4)
+    if end == -1:
+        raise SystemExit("unterminated frontmatter in " + path.name)
+    fm = text[4:end]
+    if re.search(r"^\s*-\s*GPT-5 mini\s*$", fm, re.M):
+        raise SystemExit(path.name + " must not include GPT-5 mini; tool_search is unsupported on that model")
+'
+echo ""
+
+echo "9. Repo MCP sampling excludes GPT-5 mini"
+assert_python "workspace settings do not sample MCP tools on GPT-5 mini" '
+data = json.loads((root / ".vscode/settings.json").read_text(encoding="utf-8"))
+sampling = data.get("chat.mcp.serverSampling") or {}
+for key, value in sampling.items():
+    if not isinstance(value, dict):
+        raise SystemExit("chat.mcp.serverSampling entry must be an object: " + str(key))
+    allowed = value.get("allowedModels") or []
+    if "copilot/gpt-5-mini" in allowed:
+        raise SystemExit(str(key) + " must not allow copilot/gpt-5-mini")
+'
+echo ""
+
 finish_tests

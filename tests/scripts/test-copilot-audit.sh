@@ -300,5 +300,61 @@ assert_contains "V1 flags invalid OWNERSHIP_MODE" "$CASE_OUTPUT" '"check_id": "V
 assert_contains "V1 reports OWNERSHIP_MODE error" "$CASE_OUTPUT" "OWNERSHIP_MODE must be 'plugin-backed' or 'all-local'"
 echo ""
 
+# ── 35. V1 — missing install-metadata block is WARN (not HIGH) ───────────────
+echo "35. V1: missing install-metadata block is WARN — legacy install degrades gracefully"
+run_audit_case json mutate_consumer_version_file_missing_install_metadata consumer
+assert_success "exits 0 on missing install-metadata (WARN only)" "$CASE_STATUS"
+assert_contains "V1 reports WARN for missing install-metadata" "$CASE_OUTPUT" '"severity": "WARN"'
+assert_contains "V1 references install-metadata block" "$CASE_OUTPUT" 'install-metadata'
+echo ""
+
+# ── 32. S2 — skill description exceeds 1024-char agentskills limit ───────────
+echo "32. S2: skill description > 1024 chars triggers HIGH"
+run_audit_case json mutate_s2_description_too_long
+assert_failure "exits non-zero on oversized description" "$CASE_STATUS"
+assert_contains "S2 HIGH for long description" "$CASE_OUTPUT" '"check_id": "S2"'
+assert_contains "S2 agentskills limit mentioned" "$CASE_OUTPUT" 'agentskills limit'
+echo ""
+
+# ── 33. I2 — template file exceeds 800-line hard limit ────────────────────────
+echo "33. I2: template file > 800 lines triggers CRITICAL"
+run_audit_case json mutate_i2_template_too_long
+assert_failure "exits non-zero on oversized template" "$CASE_STATUS"
+assert_contains "I2 CRITICAL for line count" "$CASE_OUTPUT" '"check_id": "I2"'
+assert_contains "I2 mentions line limit" "$CASE_OUTPUT" '800'
+echo ""
+
+# ── 36. I3 — instruction stub missing YAML frontmatter ───────────────────────
+echo "36. I3: instruction stub without frontmatter triggers HIGH"
+run_audit_case json mutate_i3_missing_frontmatter
+assert_failure "exits non-zero on missing frontmatter" "$CASE_STATUS"
+assert_contains "I3 HIGH for missing frontmatter" "$CASE_OUTPUT" '"check_id": "I3"'
+assert_contains "I3 mentions No YAML frontmatter" "$CASE_OUTPUT" 'No YAML frontmatter'
+echo ""
+
+# ── 37. M4 — stdio MCP server without sandboxEnabled ─────────────────────────
+echo "37. M4: stdio server without sandboxEnabled triggers WARN (DEGRADED)"
+run_audit_case json mutate_m4_stdio_no_sandbox
+assert_success "exits 0 on WARN-only M4" "$CASE_STATUS"
+assert_contains "M4 WARN degrades status" "$CASE_OUTPUT" '"status": "DEGRADED"'
+assert_contains "M4 mentions sandboxEnabled" "$CASE_OUTPUT" 'sandboxEnabled'
+echo ""
+
+# ── 38. P1 — prompt file missing 'agent' field ───────────────────────────────
+echo "38. P1: prompt file missing agent field triggers HIGH"
+run_audit_case json mutate_p1_missing_agent_field
+assert_failure "exits non-zero on missing agent field" "$CASE_STATUS"
+assert_contains "P1 HIGH for missing agent" "$CASE_OUTPUT" '"check_id": "P1"'
+assert_contains "P1 mentions agent field" "$CASE_OUTPUT" "Missing 'agent' field"
+echo ""
+
+# ── 39. SH2 — hook script without set -euo pipefail ─────────────────────────
+echo "39. SH2: hook script without set -euo pipefail triggers WARN (DEGRADED)"
+run_audit_case json mutate_sh2_missing_pipefail
+assert_success "exits 0 on WARN-only SH2" "$CASE_STATUS"
+assert_contains "SH2 WARN degrades status" "$CASE_OUTPUT" '"status": "DEGRADED"'
+assert_contains "SH2 mentions pipefail" "$CASE_OUTPUT" 'pipefail'
+echo ""
+
 # ── Summary ───────────────────────────────────────────────────────────────────
 finish_tests

@@ -32,7 +32,7 @@
 
 ---
 
-## Tier S additional questions (A6–A17)
+## Tier S additional questions (A6–A18)
 
 **Batch 3 (A6–A9)**:
 
@@ -76,6 +76,13 @@
 - **A17 — Prompt commands**: Should I scaffold VS Code slash command prompts?
   Options: Yes (install all prompts) | No | Ask about each
 
+**Batch 6 (A18)** *(asked when S6 = All-local)*:
+
+- **A18 — Plugin authoring conventions**: Should I install instruction stubs covering
+  conventions for authoring agents, skills, hooks, and plugin manifests?
+  Options: Yes (install when relevant) | No | Ask when newly available on update
+  Condition: Ask only when S6 = All-local.
+
 ---
 
 ## Tier F additional questions (E16–E18, E20–E24)
@@ -101,12 +108,13 @@
 - **E21 — Verification trust**: Which directories get auto-approve vs. pause-and-confirm?
   Options: All auto | Sensitive dirs require confirmation | Ask me to define
 
-- **E22 — MCP servers**: Should I configure Model Context Protocol servers?
+- **E22 — MCP servers**: Should I configure Model Context Protocol servers? (If yes, you'll select which optional servers to enable next.)
   Options: A — No (skip MCP entirely) | B — Yes (configure core MCP servers and optional selections)
 
 - **E22a — Optional MCP servers**: Which optional MCP servers should I enable?
-  Options: GitHub | Fetch | Context7 | Playwright | None
+  Options: GitHub | Fetch | Context7 | Heartbeat | Sequential-Thinking | Playwright | None
   Ask only when E22 = B. Multi-select allowed. Default: None (keep core only: filesystem, git).
+  Note: Heartbeat enables session health reflection and retrospective prompting via MCP. Sequential-Thinking enables structured step-by-step reasoning for complex tasks.
 
 **Batch 8 (E23–E24)**:
 

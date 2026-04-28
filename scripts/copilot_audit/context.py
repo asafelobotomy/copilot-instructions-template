@@ -188,6 +188,33 @@ class AuditContext:
         return result
 
     @cached_property
+    def consumer_install_metadata(self) -> dict[str, str]:
+        """Parse the install-metadata block from .github/copilot-version.md.
+
+        Returns a dict with keys like MCP_AVAILABLE, MCP_ENABLED,
+        INSTRUCTION_STUBS, STARTER_KITS_MATCHED, STARTER_KITS_INSTALLED.
+        Returns an empty dict for legacy installs that lack the block.
+        """
+        version_path = self.root / ".github" / "copilot-version.md"
+        if not version_path.is_file():
+            return {}
+        text = self.read_text(version_path)
+        start = text.find("<!-- install-metadata")
+        if start == -1:
+            return {}
+        end = text.find("-->", start)
+        if end == -1:
+            return {}
+        block = text[start:end]
+        result: dict[str, str] = {}
+        for line in block.splitlines()[1:]:
+            line = line.strip()
+            if "=" in line:
+                key, _, value = line.partition("=")
+                result[key.strip()] = value.strip()
+        return result
+
+    @cached_property
     def workspace_index_file(self) -> pathlib.Path:
         return self.root / ".copilot" / "workspace" / "operations" / "workspace-index.json"
 

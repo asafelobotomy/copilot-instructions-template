@@ -226,4 +226,22 @@ def check_v1_copilot_version_metadata(root: pathlib.Path | AuditContext) -> Chec
                     result.findings.append(Finding("V1", rel, HIGH,
                                                    f"setup-answers missing key for enabled surface {rel_path}: {key}"))
 
+    install_meta_payload = _comment_block_payload(text, "<!-- install-metadata")
+    if not install_meta_payload:
+        result.findings.append(Finding("V1", rel, WARN,
+                                       "Missing install-metadata block — MCP server and stub history "
+                                       "cannot be reconstructed; run an update to generate it"))
+    elif "=" not in install_meta_payload:
+        result.findings.append(Finding("V1", rel, WARN,
+                                       "install-metadata block is empty"))
+    else:
+        _parse_mapping_block(
+            install_meta_payload,
+            check_id="V1",
+            rel=rel,
+            result=result,
+            block_name="install-metadata",
+            key_pattern=SETUP_ANSWER_RE,
+        )
+
     return result

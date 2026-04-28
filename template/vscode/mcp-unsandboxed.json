@@ -1,0 +1,68 @@
+{
+  "servers": {
+    "filesystem": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"]
+    },
+    "git": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-server-git", "--repository", "${workspaceFolder}"]
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "disabled": true
+    },
+    "fetch": {
+      "type": "stdio",
+      "command": "uvx",
+      "env": {
+        "CLAUDE_TMPDIR": "${userHome}/.cache/uv",
+        "TMPDIR": "${userHome}/.cache/uv"
+      },
+      "args": ["--with", "httpx[socks]>=0.28", "mcp-server-fetch"],
+      "disabled": true
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "disabled": true
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--headless",
+        "--browser=chromium"
+      ],
+      "disabled": true
+    },
+    "heartbeat": {
+      "type": "stdio",
+      "command": "uvx",
+      "env": {
+        "HEARTBEAT_WORKSPACE": "${workspaceFolder}",
+        "CLAUDE_TMPDIR": "${userHome}/.cache/uv/.copilot-tmp",
+        "TMPDIR": "${userHome}/.cache/uv/.copilot-tmp"
+      },
+      "args": [
+        "--from",
+        "mcp[cli]",
+        "mcp",
+        "run",
+        "${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py"
+      ],
+      "disabled": true
+    },
+    "sequential-thinking": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "disabled": true
+    }
+  }
+}

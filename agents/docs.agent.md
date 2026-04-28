@@ -5,7 +5,6 @@ argument-hint: Describe the documentation work — e.g. "document the audit work
 model:
   - Claude Sonnet 4.6
   - GPT-5.2
-  - GPT-5 mini
 tools: [agent, editFiles, codebase, search, runCommands]
 mcp-servers: [filesystem, git, fetch, context7, playwright]
 user-invocable: true

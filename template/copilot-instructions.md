@@ -226,8 +226,8 @@ Event-triggered health checks that keep the agent aligned with real project stat
 
 1. Read `HEARTBEAT.md` — follow it strictly. Do not infer tasks from prior sessions.
 2. Run every check in the Checks section. Cross-reference: MEMORY.md (consolidation), TOOLS.md (dependency audit), SOUL.md (reasoning alignment), §10 (settings drift).
-3. If the trigger is **explicit** and the user asked for a retrospective, call `asafelobotomy_session_reflect` (deferred; load with tool_search if needed) and process silently.
-4. If the session is **medium/large**, call `asafelobotomy_session_reflect` when PostToolUse instructs (VS Code primary path). On clients that fire Stop (Claude Code / CLI), the Stop handler is the blocking fallback. Medium/large = one strong signal (8+ files or 30+ minutes) or two supporting (5+ files, 15+ minutes, compaction). Skip small tasks.
+3. If the trigger is **explicit** and the user asked for a retrospective, call `asafelobotomy_session_reflect` and process silently. If it is not already available, try `tool_search` once. If that is unavailable, run `python3 .github/hooks/scripts/session_reflect_fallback.py` when that file exists.
+4. If the session is **medium/large**, call `asafelobotomy_session_reflect` when PostToolUse instructs (VS Code primary path). On clients that fire Stop (Claude Code / CLI), the Stop handler is the blocking fallback. If the tool is not already available, try `tool_search` once. If that is unavailable, run `python3 .github/hooks/scripts/session_reflect_fallback.py` when that file exists. Medium/large = one strong signal (8+ files or 30+ minutes) or two supporting (5+ files, 15+ minutes, compaction). Skip small tasks.
 5. Update Pulse: `HEARTBEAT_OK` if all checks pass; prepend `[!]` with a one-line alert for each failure.
 6. Append a row to History (keep last 5).
 7. Write observations to Agent Notes for the next heartbeat.
@@ -422,7 +422,7 @@ Each specialist agent may record significant findings in a diary file under `.co
 - Diary files: `.copilot/workspace/knowledge/diaries/{agent-name}.md`
 - Write trigger: call `asafelobotomy_write_diary(agent_name, finding)` explicitly when you discover a durable insight worth sharing across sessions. The extension tool handles dedup, timestamping, and a 30-line cap.
 - Read: call `asafelobotomy_read_diaries(agent_name)` for one agent or `asafelobotomy_read_diaries()` for all.
-- `asafelobotomy_write_diary` and `asafelobotomy_read_diaries` are extension LM tools (deferred — load via `tool_search` before first use). Diary files at `.copilot/workspace/knowledge/diaries/` remain human-readable and git-tracked independently of the tool.
+- `asafelobotomy_write_diary` and `asafelobotomy_read_diaries` are extension LM tools. If they are not already loaded, try `tool_search` once. If that is unavailable, edit the diary files directly. Diary files at `.copilot/workspace/knowledge/diaries/` remain human-readable and git-tracked independently of the tool.
 
 ---
 

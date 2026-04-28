@@ -6,7 +6,6 @@ model:
   - Claude Haiku 4.5
   - GPT-5.4 mini
   - Grok Code Fast 1
-  - GPT-5 mini
   - Raptor mini
   - GPT-4.1
 tools: [agent, codebase, editFiles, runCommands, search]

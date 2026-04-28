@@ -2,7 +2,7 @@
 # purpose:  Auto-format files after agent edits them
 # when:     PostToolUse
 # inputs:   JSON via stdin with tool_name and tool_input
-# outputs:  JSON with additionalContext if formatting fails
+# outputs:  JSON with hookSpecificOutput.additionalContext if formatting fails
 # risk:     safe
 set -euo pipefail
 
@@ -82,7 +82,7 @@ while IFS= read -r filepath; do
 done <<< "$FILES"
 
 if [[ -n "$LINT_NOTES" ]]; then
-  python3 -c "import sys,json; print(json.dumps({'continue':True,'additionalContext':sys.argv[1]}))" "$LINT_NOTES"
+  python3 -c "import sys,json; print(json.dumps({'continue':True,'hookSpecificOutput':{'hookEventName':'PostToolUse','additionalContext':sys.argv[1]}}))" "$LINT_NOTES"
 else
   echo '{"continue": true}'
 fi

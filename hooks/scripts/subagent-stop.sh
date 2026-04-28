@@ -2,7 +2,7 @@
 # purpose:  Mark subagent completion
 # when:     SubagentStop
 # inputs:   JSON via stdin with subagent details (agent_type, agent_id, stop_hook_active)
-# outputs:  JSON with additionalContext
+# outputs:  JSON with hookSpecificOutput.additionalContext
 # risk:     safe
 # ESCALATION: none
 set -euo pipefail

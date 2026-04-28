@@ -192,6 +192,7 @@ output=$(run_pulse "$TMPDIR_ACCEPT" stop '{"stop_hook_active": false}')
 assert_matches "accepted stop blocks for retrospective" "$output" '"decision": "block"'
 assert_matches "accepted stop explains retrospective run" "$output" 'session_reflect'
 assert_matches "accepted stop mentions direct fallback helper" "$output" 'session_reflect_fallback.py'
+assert_matches "accepted stop mentions tool_search fallback" "$output" 'tool_search'
 echo ""
 
 echo "11. stop trigger passes when retrospective is complete"
