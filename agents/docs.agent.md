@@ -50,5 +50,7 @@ Guidelines:
 
 ## Skill activation map
 
-- Primary: `skill-management`
-- Contextual: `create-adr`, `skill-creator`, `compress-prose`
+- Primary: `skill-management` — when discovering or activating skills during documentation work
+- Contextual:
+  - `create-adr` — when documenting a significant architectural decision that warrants a formal ADR
+  - `compress-prose` — when tightening an existing doc for brevity without changing meaning

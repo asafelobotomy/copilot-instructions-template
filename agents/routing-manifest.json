@@ -347,9 +347,15 @@
       "prompt_patterns": [
         "\\bdocument(?:ation)?\\b",
         "\\bupdate (?:the )?(?:readme|docs?)\\b",
-        "\\bwrite (?:a )?(?:readme|guide|migration note)\\b",
+        "\\bwrite (?:(?:a|the) )?(?:readme|guide|migration note|docs?)\\b",
         "\\bwalkthrough\\b",
-        "\\buser-facing docs?\\b"
+        "\\buser-facing docs?\\b",
+        "\\bmigration notes?\\b",
+        "\\bdraft (?:the )?changelog\\b",
+        "\\bwrite (?:a )?changelog entry\\b"
+      ],
+      "suppress_patterns": [
+        "\\b(write (?:a )?test|add (?:a )?test|update (?:the )?(?:schema|database|migration script)|implement|refactor|bugfix)\\b"
       ],
       "behavior": {
         "tool_names": [
