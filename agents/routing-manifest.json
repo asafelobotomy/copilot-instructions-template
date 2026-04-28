@@ -58,7 +58,8 @@
         "\\bfeature\\b",
         "\\badd (?:pagination|support|workflow|behavior|tests?)\\b",
         "\\bwrite (?:or update )?tests?\\b",
-        "\\bbugfix\\b"
+        "\\bbugfix\\b",
+        "\\bfix\\b"
       ],
       "suppress_patterns": [
         "\\b(review|audit|health check|security|research|upstream|docs?|documentation|readme|plan|break down|roadmap|scoping|root cause|regression|debug(?:ger)?|extensions?|profile|setup(?: from)?|update your instructions|restore instructions|factory restore|reinstall instructions|organi[sz]e|reorgani[sz]e|move files?|fix paths?)\\b"

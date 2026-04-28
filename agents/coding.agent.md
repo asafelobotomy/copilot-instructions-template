@@ -38,6 +38,14 @@ handoffs:
     agent: Debugger
     prompt: Investigate the failure or regression in scope. Identify the likely root cause and the minimal fix path before editing.
     send: false
+  - label: Organise files
+    agent: Organise
+    prompt: File restructuring, path repair, or directory reshaping is needed alongside this implementation. Fix the layout, then return the implementation context.
+    send: false
+  - label: Clean up artefacts
+    agent: Cleaner
+    prompt: Stale files, caches, or archive debris generated during this implementation need to be pruned before the work is complete.
+    send: false
 ---
 
 You are the Coding agent for the current project.
@@ -72,5 +80,15 @@ Guidelines:
 
 ## Skill activation map
 
-- Primary: `tool-protocol`, `skill-management`, `mcp-management`
-- Contextual: `webapp-testing`, `test-coverage-review`, `fix-ci-failure`, `conventional-commit`, `create-adr`, `agentic-workflows`, `mcp-builder`, `skill-creator`, `compress-prose`
+- Primary: `tool-protocol` — check before building any new automation or script
+- Contextual:
+  - `skill-management` — when creating, discovering, or activating a skill
+  - `mcp-management` — when configuring, updating, or troubleshooting MCP servers
+  - `webapp-testing` — when adding or debugging browser or UI test coverage
+  - `test-coverage-review` — when auditing or improving test coverage across a module
+  - `fix-ci-failure` — for simple, locally reproducible CI failures; escalate to `Debugger` when root cause is unclear
+  - `create-adr` — when a significant design decision needs formal documentation
+  - `agentic-workflows` — when setting up or modifying GitHub Actions with Copilot agents
+  - `mcp-builder` — when scaffolding or registering a new MCP server
+  - `skill-creator` — when building a new reusable skill
+  - `compress-prose` — when tightening documentation or inline comments alongside code changes
