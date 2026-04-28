@@ -36,7 +36,7 @@ if "Audit" not in text:
 required = [
     "## Preflight workflow",
     "Activate the `commit-preflight` skill",
-    "ask_questions` for ALL user-facing decisions",
+    "askQuestions` for ALL user-facing decisions",
     "Do NOT install dependencies silently",
     "Use `Audit` when the user requests a deeper security or health check before",
     "## Skill activation map",
@@ -147,7 +147,7 @@ checks = {
     "agents/setup.agent.md": [
         "${CLAUDE_PLUGIN_ROOT}",
         "template/setup/manifests.md",
-        "ask_questions",
+        "askQuestions",
     ],
     "template/setup/manifests.md": [
         "## Protocol sources",

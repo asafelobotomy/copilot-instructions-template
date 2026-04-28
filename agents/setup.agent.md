@@ -72,16 +72,16 @@ repo, not a consumer project.
 - **§ 0c** — Note whether `CHANGELOG.md` exists.
 - **§ 0d** — Interview: read questions from
   `${CLAUDE_PLUGIN_ROOT}/template/setup/interview.md`. Present tier selection
-  (Q / S / F / Skip) with `ask_questions`, then batch questions in the groups
-  defined in that file (max 4 per `ask_questions` call). Never skip or
+  (Q / S / F / Skip) with `askQuestions`, then batch questions in the groups
+  defined in that file (max 4 per `askQuestions` call). Never skip or
   auto-complete questions.
 - **§ 0e** — Show pre-flight summary (files to create/archive), then confirm
-  with `ask_questions` before writing anything.
+  with `askQuestions` before writing anything.
 
 Behaviour rules:
 
-- Use `ask_questions` for **ALL** user-facing decisions. Batch max 4 per call.
-  Fall back to numbered lists in chat when `ask_questions` is unavailable.
+- Use `askQuestions` for **ALL** user-facing decisions. Batch max 4 per call.
+  Fall back to numbered lists in chat when `askQuestions` is unavailable.
 - Stop immediately on any file-read failure and report the path.
 - Prefer small incremental writes over large one-shot changes.
 
@@ -155,7 +155,7 @@ manifests.md § MCP server configs). For `standard` distros read
 `${CLAUDE_PLUGIN_ROOT}/starter-kits/REGISTRY.json`. Match detected stack against
 `kits[].detect` conditions. Present featured matches first (`featured: true`),
 then remaining matches alphabetically. Use `tags` and the kit description to
-explain why each match is relevant in `ask_questions`. Copy matched
+explain why each match is relevant in `askQuestions`. Copy matched
 kits from `${CLAUDE_PLUGIN_ROOT}/starter-kits/<kit-name>/` to
 `.github/starter-kits/<kit-name>/`. Register in `.vscode/settings.json` under
 `chat.pluginLocations`.
@@ -226,7 +226,7 @@ version. Offer the Audit health-check handoff.
   reinstall.
 - Execute the full §0–§5 procedure after the purge, treating the project as a
   clean install from plugin sources.
-- Use `ask_questions` for the factory-restore confirmation and the fresh setup
+- Use `askQuestions` for the factory-restore confirmation and the fresh setup
   decisions that follow.
 
 ## Update mode
@@ -259,7 +259,7 @@ version. Offer the Audit health-check handoff.
   metadata). Compare against optional server IDs in
   `${CLAUDE_PLUGIN_ROOT}/template/vscode/mcp.json` (all servers except
   `filesystem` and `git`). If `new_servers = template_optional − MCP_AVAILABLE`
-  is non-empty, present a single `ask_questions` multi-select:
+  non-empty, present a single `askQuestions` multi-select:
   "New MCP servers are available since your last install: {list}. Enable any?"
   Enable selected servers (set `disabled: false`); leave others disabled. Do
   not re-prompt for servers already known. Special case: do not offer
@@ -271,10 +271,10 @@ version. Offer the Audit health-check handoff.
   were not present at last install). Also compute `upgradable = kits where
   installed_version != registry_version` using `STARTER_KITS_INSTALLED` and
   the current `version` field in each registry entry. If either set is
-  non-empty, present a single `ask_questions` prompt: "New or updatable starter
+  non-empty, present a single `askQuestions` prompt: "New or updatable starter
   kits detected: {list}. Install/update?" Install selected kits and update
   `STARTER_KITS_MATCHED` and `STARTER_KITS_INSTALLED` in install-metadata.
-- Use `ask_questions` for all decisions: update path (U/S/C), per-section
+- Use `askQuestions` for all decisions: update path (U/S/C), per-section
   choices (A/B/C), guardrail conflict resolutions, and MCP delta selections.
 - Update `.github/copilot-version.md` fingerprints and version after writes.
   Also refresh the `<!-- install-metadata -->` block: recompute `MCP_AVAILABLE`

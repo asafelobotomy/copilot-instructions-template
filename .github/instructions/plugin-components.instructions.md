@@ -6,6 +6,18 @@ description: "Conventions for authoring agents, skills, hooks, and plugin manife
 
 # Plugin Component Instructions
 
+## Tool naming in agent and skill bodies
+
+VS Code's interactive question UI tool is `askQuestions` (camelCase). The fully qualified runtime name is `vscode_askQuestions`.
+
+| Context | Correct form |
+|---------|-------------|
+| `tools:` frontmatter array | `askQuestions` |
+| Inline prose reference | `` `askQuestions` `` |
+| Tool invocation (system / API) | `vscode_askQuestions` |
+
+**Never write `ask_questions` (snake_case)** — this form does not exist in VS Code's tool API (GA as `askQuestions` since v1.110).
+
 ## Agents (`agents/*.agent.md`)
 
 - Every agent must have: `name`, `description`, `argument-hint`, `model` (list), `tools`, `agents` (delegation allow-list).

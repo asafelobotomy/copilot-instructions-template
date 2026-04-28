@@ -10,7 +10,7 @@ This file is read by AI agents (GitHub Copilot and compatible agents) to underst
 
 The Setup agent handles first-time setup, updates, backup restore, and factory restore as a unified interactive wizard.
 
-Use the canonical trigger phrases below. The Setup agent runs inside VS Code and uses interactive ask_questions blocks to guide users through personalization. It does not fetch external files — the plugin delivers all necessary template assets at installation time.
+Use the canonical trigger phrases below. The Setup agent runs inside VS Code and uses interactive `askQuestions` calls to guide users through personalization. It does not fetch external files — the plugin delivers all necessary template assets at installation time.
 
 ## Delegation policy
 
