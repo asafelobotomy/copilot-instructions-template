@@ -50,4 +50,10 @@ if [[ ! -f "$RUNTIME_SCRIPT" ]]; then
   exit 0
 fi
 
-printf '%s' "$INPUT" | "$PYTHON_CMD" "$RUNTIME_SCRIPT" "$TRIGGER"
+exit_code=0
+output=$(printf '%s' "$INPUT" | "$PYTHON_CMD" "$RUNTIME_SCRIPT" "$TRIGGER" 2>/dev/null) || exit_code=$?
+if [[ $exit_code -ne 0 ]] || [[ -z "$output" ]]; then
+  echo '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse: python runtime failed; heartbeat skipped."}}'
+else
+  printf '%s\n' "$output"
+fi

@@ -76,13 +76,21 @@ def main() -> int:
         return 1
 
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    try:
+        spec.loader.exec_module(module)
+    except Exception as exc:
+        print(json.dumps({"error": f"failed to load heartbeat server: {exc}"}))
+        return 1
 
     if not hasattr(module, "session_reflect"):
         print(json.dumps({"error": "heartbeat server does not export session_reflect"}))
         return 1
 
-    payload = module.session_reflect()
+    try:
+        payload = module.session_reflect()
+    except Exception as exc:
+        print(json.dumps({"error": f"session_reflect raised: {exc}"}))
+        return 1
     print(json.dumps(payload))
     return 0
 

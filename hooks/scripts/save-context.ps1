@@ -66,6 +66,20 @@ function Get-TriggerLabel {
     return ''
 }
 
+function Get-RowPriority {
+    param([string[]]$Cells, [string[]]$HeaderCells)
+    for ($i = 0; $i -lt $HeaderCells.Count; $i++) {
+        $hl = $HeaderCells[$i].ToLower()
+        if (($hl -eq 'priority' -or $hl -eq 'impact') -and $i -lt $Cells.Count) {
+            $val = $Cells[$i].ToLower().Trim()
+            if ($val -in @('p1', 'critical', 'high'))     { return 0 }
+            if ($val -in @('p2', 'notable', 'medium'))    { return 1 }
+            if ($val -in @('p3', 'informational', 'low')) { return 2 }
+        }
+    }
+    return 5
+}
+
 function Get-MemorySummary {
     if (-not (Test-Path '.copilot/workspace/knowledge/MEMORY.md')) {
         return ''
@@ -92,17 +106,20 @@ function Get-MemorySummary {
             }
 
             if ($block.Count -ge 3) {
-                $rows = @()
+                $headerCells = @($block[0].Trim('|').Split('|') | ForEach-Object { $_.Trim() })
+                $scoredRows = @()
                 foreach ($row in $block[2..($block.Count - 1)]) {
                     $cells = @($row.Trim('|').Split('|') | ForEach-Object { $_.Trim() })
                     $meaningful = @($cells | Where-Object { $_ -and $_ -ne '*(to be discovered)*' })
                     if ($meaningful.Count -gt 0) {
-                        $rows += ,@($cells)
+                        $score = Get-RowPriority -Cells $cells -HeaderCells $headerCells
+                        $scoredRows += [PSCustomObject]@{ Score = $score; Cells = $cells }
                     }
                 }
 
-                if ($rows.Count -gt 0) {
-                    $preview = (@($rows[-1] | Where-Object { $_ }) -join ' | ')
+                if ($scoredRows.Count -gt 0) {
+                    $best = ($scoredRows | Sort-Object Score)[0].Cells
+                    $preview = (@($best | Where-Object { $_ }) -join ' | ')
                     if ($preview.Length -gt 160) {
                         $preview = $preview.Substring(0, 160)
                     }

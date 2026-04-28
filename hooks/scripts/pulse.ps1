@@ -63,7 +63,7 @@ try {
             $parsedOutput = $rawOutput | ConvertFrom-Json -Depth 100
             $parsedOutput | ConvertTo-Json -Compress -Depth 100
         } catch {
-            $rawOutput
+            '{"continue":true,"hookSpecificOutput":{"additionalContext":"Pulse: python runtime returned non-JSON; heartbeat skipped."}}'
         }
     }
 } catch {

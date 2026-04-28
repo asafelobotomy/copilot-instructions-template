@@ -12,10 +12,14 @@ if [[ -n "${NPX_BIN:-}" ]] && [[ -x "$NPX_BIN" ]]; then
 fi
 
 # Probe standard locations (covers Ubuntu, Arch, Fedora, nvm, fnm, Homebrew)
+_nvm_node_dir=""
+if [[ -d "$HOME/.nvm/versions/node" ]]; then
+  _nvm_node_dir=$(find "$HOME/.nvm/versions/node" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -V | tail -1 || true)
+fi
 for candidate in \
   "$(command -v npx 2>/dev/null || true)" \
   "$HOME/.local/share/fnm/aliases/default/bin/npx" \
-  "$HOME/.nvm/versions/node/$(ls "$HOME/.nvm/versions/node/" 2>/dev/null | sort -V | tail -1)/bin/npx" \
+  "${_nvm_node_dir:+${_nvm_node_dir}/bin/npx}" \
   "/opt/homebrew/bin/npx" \
   "/home/linuxbrew/.linuxbrew/bin/npx" \
   "$HOME/.linuxbrew/bin/npx" \
