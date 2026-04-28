@@ -91,10 +91,11 @@ make_fixture "$TMP"
 # Run without --log-file; TMPDIR override must determine the log location.
 output=$(ROOT_DIR="$TMP" TMPDIR="$SAFE_TMPDIR" bash "$SCRIPT" 2>&1)
 status=$?
-expected_log="$SAFE_TMPDIR/copilot-run-all.log"
+# Extract the actual log path from output (mktemp produces a unique suffix)
+actual_log=$(printf '%s\n' "$output" | grep '^LOG_FILE=' | head -1 | sed 's/^LOG_FILE=//')
 assert_success "wrapper exits zero with default log path" "$status"
-assert_contains "log path is derived from TMPDIR" "$output" "LOG_FILE=$expected_log"
-assert_file_exists "log file created under TMPDIR" "$expected_log"
+assert_contains "log path is derived from TMPDIR" "$actual_log" "$SAFE_TMPDIR/copilot-run-all."
+assert_file_exists "log file created under TMPDIR" "$actual_log"
 echo ""
 
 finish_tests

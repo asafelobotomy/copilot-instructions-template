@@ -8,7 +8,7 @@
 set -euo pipefail
 
 ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/../.." && pwd)}"
-LOG_FILE="${LOG_FILE:-${TMPDIR:-/tmp}/copilot-run-all.log}"
+LOG_FILE="${LOG_FILE:-}"
 TAIL_LINES="${TAIL_LINES:-120}"
 
 usage() {
@@ -42,6 +42,8 @@ done
   echo "tail-lines must be a non-negative integer: $TAIL_LINES" >&2
   exit 1
 }
+
+[[ -n "$LOG_FILE" ]] || LOG_FILE=$(mktemp "${TMPDIR:-/tmp}/copilot-run-all.XXXXXXXX.log")
 
 mkdir -p "$(dirname "$LOG_FILE")"
 
