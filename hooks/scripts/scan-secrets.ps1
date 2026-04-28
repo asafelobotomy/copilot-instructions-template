@@ -1,8 +1,8 @@
 #!/usr/bin/env pwsh
 # purpose:  Scan modified files for leaked secrets
 # when:     Stop
-# inputs:   JSON via stdin
-# outputs:  JSON continuation signal on stdout; diagnostics on stderr
+# inputs:   JSON via stdin; only stop_hook_active is inspected
+# outputs:  JSON hook response on stdout; diagnostics on stderr; may block Stop
 # risk:     read-only
 # ESCALATION: block
 # STOP LOOP: if stop_hook_active is true in the Stop payload, do not re-enter blocking Stop logic.
