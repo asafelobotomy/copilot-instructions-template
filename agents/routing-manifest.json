@@ -1,7 +1,7 @@
 {
   "version": 1,
   "default_cooldown_seconds": 900,
-  "notes": "Stage 4 routing pass: all base agents are active; Setup remains guarded, while Fast and Code require prompt-plus-behavior confirmation.",
+  "notes": "Full audit pass complete (2026-04-28): all 14 agents active; Setup/Code/Fast/Audit/Cleaner/Debugger require prompt-plus-behavior confirmation; Commit now guarded with require_prompt_and_behavior, full git-lifecycle coverage, and suppress_patterns for non-git false positives.",
   "agents": [
     {
       "name": "Setup",
@@ -66,7 +66,7 @@
         "\\bfix\\b"
       ],
       "suppress_patterns": [
-        "\\b(review|audit|health check|security|research|upstream|docs?|documentation|readme|plan|break down|roadmap|scoping|root cause|regression|debug(?:ger)?|extensions?|profile|setup(?: from)?|update your instructions|restore instructions|factory restore|reinstall instructions|organi[sz]e|reorgani[sz]e|move files?|fix paths?)\\b"
+        "\\b(review|audit|health check|security|research|upstream|docs?|documentation|readme|plan|break down|roadmap|scoping|root cause|regression|debug(?:ger)?|extensions?|profile|setup(?: from)?|update your instructions|restore instructions|factory restore|reinstall instructions|organi[sz]e|reorgani[sz]e|move files?|fix (?:(?:the|a) )?(?:broken )?paths?)\\b"
       ],
       "behavior": {
         "tool_names": [
@@ -326,13 +326,37 @@
       "min_behavior_confidence": 0.75,
       "min_behavior_events": 1,
       "cooldown_seconds": 900,
+      "require_prompt_and_behavior": true,
       "hint": "Routing hint: Commit specialist — git lifecycle (stage/commit/push/tag).",
       "prompt_patterns": [
         "\\bstage(?: and)? commit\\b",
         "\\bcommit(?: message| my changes)?\\b",
         "\\bpush(?: my changes| to origin)?\\b",
         "\\btag(?: this version| as v)?\\b",
-        "\\bcreate (?:a )?release\\b"
+        "\\bcreate (?:a )?release\\b",
+        "\\bpull(?: and)? rebase\\b",
+        "\\bfetch upstream\\b",
+        "\\bsync (?:my )?branch\\b",
+        "\\brebase (?:on|from|onto) (?:main|master|develop|base|origin)\\b",
+        "\\bcontinue rebase\\b",
+        "\\bmerge (?:main|master|develop|my branch|(?:a |the )?branch)\\b",
+        "\\bcreate (?:a )?(?:pr|pull request|(?:new )?branch)\\b",
+        "\\bopen (?:a )?pull request\\b",
+        "\\bupdate (?:the )?(?:pr|pull request)\\b",
+        "\\bswitch(?: to)? (?:a )?branch\\b",
+        "\\blist branches?\\b",
+        "\\bdelete (?:this|the|a) branch\\b",
+        "\\bstash my changes\\b",
+        "\\bpop stash\\b",
+        "\\bshow stashes?\\b",
+        "\\bresolve(?: merge)? conflicts?\\b",
+        "\\bfix (?:the )?(?:merge )?conflicts?\\b",
+        "\\bcommit (?:style|preferences?)\\b"
+      ],
+      "suppress_patterns": [
+        "\\bcommit (?:to|yourself)\\b",
+        "\\b(?:html|xml|css|jsx|tsx|template|web|blade|svelte) tags?\\b",
+        "\\btag (?:cloud|name|line|attribute|element|selector|anchor)\\b"
       ],
       "behavior": {
         "tool_names": [
