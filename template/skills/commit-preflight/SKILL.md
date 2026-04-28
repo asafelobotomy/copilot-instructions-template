@@ -6,7 +6,7 @@ compatibility: ">=1.4"
 
 # Commit Preflight
 
-> Skill metadata: version "1.0"; license MIT; tags [commit, preflight, ci, workflow, git]; compatibility ">=1.4"; recommended tools [codebase, runCommands, editFiles, askQuestions].
+> Skill metadata: version "1.1"; license MIT; tags [commit, preflight, ci, workflow, git]; compatibility ">=1.4"; recommended tools [codebase, runCommands, editFiles, askQuestions].
 
 Inspect active workflows before commit/push and clear locally reproducible failures before the Commit agent proceeds.
 
@@ -69,7 +69,19 @@ Inspect active workflows before commit/push and clear locally reproducible failu
 
 7. Repair in-scope failures only. If fix requires out-of-scope files, ask before widening. Rerun affected checks after each repair.
 
-8. Decide proceed/block. All pass → concise summary. Skipped checks → `askQuestions` for residual risk. Any required check failing → block with exact blocker.
+8. Decide proceed/block. All pass → concise summary. Any required check failing → block with exact blocker. Skipped checks or partial failures → use `askQuestions` for residual-risk acceptance:
+
+   ```yaml
+   header: "Preflight Residual Risk"
+   question: "Some checks were skipped or produced warnings. How would you like to proceed?"
+   allowFreeformInput: false
+   options:
+     - label: "Accept risk and continue"
+       description: "Proceed to commit/push with the identified gaps noted"
+     - label: "Abort — fix first"
+       description: "Stop here; address the skipped checks before committing"
+       recommended: true
+   ```
 
 9. Summary: executed checks, skipped checks (with reason), auto-fixed files, proceed/block verdict.
 
@@ -78,4 +90,5 @@ Inspect active workflows before commit/push and clear locally reproducible failu
 - Workflow-backed checks discovered from `.github/workflows/`
 - Dependencies probed before install; installs approved via `askQuestions`
 - Auto-fixes stayed in scope or were re-approved
+- Commit agent received clear pass, block, or residual-risk outcome
 - Commit agent received clear pass, block, or residual-risk outcome
