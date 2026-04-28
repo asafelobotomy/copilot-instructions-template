@@ -406,13 +406,18 @@
       "min_behavior_confidence": 0.8,
       "min_behavior_events": 1,
       "cooldown_seconds": 1200,
+      "require_prompt_and_behavior": true,
       "hint": "Routing hint: Debugger specialist — root-cause and regression diagnosis.",
       "prompt_patterns": [
         "\\bdebug(?:ger)?\\b",
         "\\broot cause\\b",
         "\\bregression\\b",
         "\\bfailing test\\b",
-        "\\bdiagnos(?:e|is)\\b"
+        "\\bdiagnos(?:e|is)\\b",
+        "\\bstack trace\\b"
+      ],
+      "suppress_patterns": [
+        "\\b(add debug(?:ging)?|add logging|configure (?:the )?debugger|attach (?:the )?debugger|implement debug|add tracing)\\b"
       ],
       "behavior": {
         "tool_names": [

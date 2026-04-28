@@ -25,6 +25,10 @@ handoffs:
     agent: Audit
     prompt: This debugging path may involve a security or health issue. Run a focused audit on the affected surface.
     send: false
+  - label: Plan the fix path
+    agent: Planner
+    prompt: The diagnosis reveals a multi-component fix. Produce a scoped execution plan before implementation begins.
+    send: false
 ---
 
 You are the Debugger agent for the current project.
@@ -44,5 +48,6 @@ Guidelines:
 
 ## Skill activation map
 
-- Primary: `skill-management`
-- Contextual: `fix-ci-failure`, `test-coverage-review`
+- Primary: `skill-management` — when discovering or activating skills during the diagnostic session
+- Contextual:
+  - `test-coverage-review` — when the root cause reveals systemic test coverage gaps that should be audited
