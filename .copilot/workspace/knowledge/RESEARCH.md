@@ -48,6 +48,18 @@
 | URL | Summary | Date | Tags |
 |-----|---------|------|------|
 | <https://code.visualstudio.com/docs/copilot/agents/memory> | Canonical memory tool docs: scopes (user/repo/session), storage (local, GitHub Copilot Chat extension), settings (`github.copilot.chat.tools.memory.enabled`, `github.copilot.chat.copilotMemory.enabled`), no path redirect setting | 2026-04-09 | memory, agents, storage |
+
+## MCP Servers — Web Access and Search
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://github.com/microsoft/playwright-mcp> | Playwright MCP — full browser automation via accessibility tree; ~20 core tools; README explicitly recommends CLI+SKILLS over MCP for coding agents | 2026-04-28 | mcp, playwright, browser |
+| <https://github.com/modelcontextprotocol/servers/blob/main/src/fetch/README.md> | mcp-server-fetch — single `fetch` tool, URL→Markdown; no search capability | 2026-04-28 | mcp, fetch, reference |
+| <https://github.com/exa-labs/exa-mcp-server> | Exa MCP — `web_search_exa` + `web_fetch_exa` tools; remote HTTP server at mcp.exa.ai; API key required; neural search excellent for technical docs | 2026-04-28 | mcp, search, exa |
+| <https://github.com/brave/brave-search-mcp-server> | Brave Search MCP (official, replaces archived `@modelcontextprotocol/server-brave-search`); tools: `brave_web_search`, `brave_news_search`, `brave_image_search`, `brave_video_search`, `brave_summarizer`; API key required; 2,000 free queries/month | 2026-04-28 | mcp, search, brave |
+| <https://github.com/nickclyde/duckduckgo-mcp-server> | DuckDuckGo MCP — `search` + `fetch_content` tools; no API key required; uvx install; rate-limited 30 req/min | 2026-04-28 | mcp, search, duckduckgo, free |
+| <https://github.com/tavily-ai/tavily-mcp> | Tavily MCP — `tavily-search`, `tavily-extract`, `tavily-map`, crawl tools; API key required; 1,000 free credits/month; remote at mcp.tavily.com | 2026-04-28 | mcp, search, tavily |
+| <https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-websearchforcopilot> | vscode-websearchforcopilot — VS Code extension adding `@websearch` participant and `#websearch` LM tool; powered by Tavily; API key required; NOT an MCP server | 2026-04-28 | vscode, extension, search, tavily |
 | <https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/model-release-status.yml> | Canonical GA/preview/closing-down status for all Copilot models; all modes (agent/ask/edit) per model | 2026-04-14 | models, release-status |
 | <https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/model-deprecation-history.yml> | Full retirement history with dates and successor models; GPT-5.1 retires 2026-04-15 | 2026-04-14 | models, deprecation |
 | <https://raw.githubusercontent.com/github/docs/main/data/tables/copilot/model-multipliers.yml> | Premium request multipliers per model for paid and free plans | 2026-04-14 | models, billing, multipliers |
