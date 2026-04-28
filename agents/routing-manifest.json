@@ -207,7 +207,11 @@
         "\\bfind (?:all|where|which)\\b",
         "\\binventory\\b",
         "\\bsearch (?:the )?(?:repo|codebase|workspace)\\b",
-        "\\bwhere is\\b"
+        "\\bwhere is\\b",
+        "\\bhow does\\b"
+      ],
+      "suppress_patterns": [
+        "\\b(implement|add|create|build|refactor|fix|debug|write|delete|remove|deploy)(?:\\s+(?:a|an|the))? explore\\b"
       ],
       "behavior": {
         "tool_names": [

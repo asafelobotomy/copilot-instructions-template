@@ -25,6 +25,10 @@ handoffs:
     agent: Docs
     prompt: The research is complete. Draft or update project documentation to reflect the findings and recommendations.
     send: false
+  - label: Explore local usage
+    agent: Explore
+    prompt: A read-only inventory of local callers, file patterns, or implementation context is needed to complete this research. Explore and return the relevant findings.
+    send: false
 ---
 
 You are the Researcher agent for this repository.

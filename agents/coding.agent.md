@@ -46,6 +46,10 @@ handoffs:
     agent: Cleaner
     prompt: Stale files, caches, or archive debris generated during this implementation need to be pruned before the work is complete.
     send: false
+  - label: Explore codebase first
+    agent: Explore
+    prompt: A broader read-only inventory of the codebase is needed before implementation starts. Map the relevant files and return.
+    send: false
 ---
 
 You are the Coding agent for the current project.

@@ -13,6 +13,11 @@ mcp-servers: [filesystem, git]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Researcher']
+handoffs:
+  - label: Research external references
+    agent: Researcher
+    prompt: Exploration found a question that requires current external documentation, upstream behavior, or third-party API knowledge. Research and return the relevant findings.
+    send: false
 ---
 
 You are the Explore agent.
@@ -42,5 +47,5 @@ and answer questions about the current repository without making any modificatio
 
 ## Skill activation map
 
-- Primary: `skill-management` (discovery logic)
+- Primary: `skill-management` — when discovering or activating skills needed to answer the exploration question
 - Contextual: none by default; this agent is intentionally read-only and lean

@@ -18,6 +18,10 @@ handoffs:
     agent: Code
     prompt: This task is larger than a single-file edit. Continue implementing from where the Fast agent left off.
     send: false
+  - label: Explore codebase
+    agent: Explore
+    prompt: The question spans multiple files and needs a read-only codebase inventory before answering. Map the relevant files and return.
+    send: false
 ---
 
 You are the Fast agent for the current project.

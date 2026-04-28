@@ -16,6 +16,10 @@ handoffs:
     agent: Docs
     prompt: The file moves are complete. Update the relevant documentation, migration guides, and user-facing references to reflect the new paths and structure.
     send: false
+  - label: Explore file dependencies
+    agent: Explore
+    prompt: A read-only inventory of callers and affected file clusters is needed before moving files. Map the dependency surface and return.
+    send: false
 ---
 
 You are the Organise agent for this repository.
