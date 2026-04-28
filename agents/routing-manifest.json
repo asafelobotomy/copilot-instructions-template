@@ -87,9 +87,16 @@
       "prompt_patterns": [
         "\\b(?:organize|organise|reorganize|reorganise)\\b",
         "\\bmove files?\\b",
-        "\\bfix paths?\\b",
-        "\\brestructure\\b",
-        "\\brename (?:folders?|directories|files?)\\b"
+        "\\bfix (?:(?:the|a) )?(?:broken )?paths?\\b",
+        "\\brepo(?:sitory)? (?:layout|structure|reshape)\\b",
+        "\\brename (?:(?:the|a|some) )?(?:folders?|directories|files?)\\b",
+        "\\bpath (?:repair|update|fix)\\b",
+        "\\bfile (?:moves?|relocation)\\b"
+      ],
+      "suppress_patterns": [
+        "\\brestructure (?:the )?(?:code|class|function|module|auth|api|service|logic|component|layer)\\b",
+        "\\brefactor\\b",
+        "\\bmove (?:files? )?(?:to|from) (?:staging|prod|production|server|remote|s3|bucket)\\b"
       ],
       "behavior": {
         "tool_names": [

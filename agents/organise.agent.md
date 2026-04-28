@@ -20,6 +20,10 @@ handoffs:
     agent: Explore
     prompt: A read-only inventory of callers and affected file clusters is needed before moving files. Map the dependency surface and return.
     send: false
+  - label: Continue with implementation
+    agent: Code
+    prompt: The structural reorganisation is complete. Continue with any semantic implementation or non-structural work that was deferred during the file moves.
+    send: false
 ---
 
 You are the Organise agent for this repository.
@@ -61,5 +65,6 @@ Guidelines:
 
 ## Skill activation map
 
-- Primary: `skill-management`
-- Contextual: `tool-protocol`
+- Primary: `skill-management` — when discovering or activating skills during structural reorganisation work
+- Contextual:
+  - `tool-protocol` — when building or adapting an automation tool to assist with file moves or path repair
