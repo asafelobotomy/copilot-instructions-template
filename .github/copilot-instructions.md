@@ -50,7 +50,7 @@ This repo has two distinct layers that must never be mixed:
 
 Run deterministic targeted suites during intermediate phases when the repo has a reliable path-to-test mapping. Run `bash tests/run-all.sh` only when the selector emits `run_full_suite_at_completion: true` or `should_run_full_suite_early: true`, or when no reliable targeted mapping exists for a broad multi-surface change. Do not rerun the full suite between intermediate steps just to be safe.
 
-**`execution_subagent` cwd**: The subagent does not inherit the current shell directory. Always embed the absolute repo path inside the command string (`cd /mnt/SteamLibrary/git/copilot-instructions-template && <cmd>`), not just in the prose description. For single final-gate commands where full output matters, use `run_in_terminal` instead.
+**Subagent cwd**: The `runSubagent` tool does not inherit the current shell directory. Always embed the absolute repo path inside the command string (e.g. `cd /absolute/path/to/repo && <cmd>`). For single final-gate commands where full output matters, use `run_in_terminal` instead.
 
 ## Coding Conventions
 
@@ -66,9 +66,9 @@ Run deterministic targeted suites during intermediate phases when the repo has a
 
 **Terminal discipline**: See `.github/instructions/terminal.instructions.md` (loaded automatically for shell files). The following rules apply regardless of file type:
 
-- Prefer `execution_subagent` or synchronous `run_in_terminal` over async+poll for any command that will finish on its own. Reserve async sessions for genuinely persistent processes (servers, watchers).
+- Prefer synchronous `run_in_terminal` over async+poll for any command that will finish on its own. Reserve async sessions for genuinely persistent processes (servers, watchers).
 - `get_terminal_output` and `send_to_terminal` accept `id` for async `run_in_terminal` sessions and `terminalId` for visible foreground terminals. `kill_terminal` still accepts only the async `id` UUID.
-- If `get_terminal_output` returns "command not found", the call used an invalid ID. Discard the result and re-run with `execution_subagent` or synchronous `run_in_terminal`.
+- If `get_terminal_output` returns "command not found", the call used an invalid ID. Discard the result and re-run with synchronous `run_in_terminal`.
 - Background terminal notifications are enabled by default, so polling loops and sleep-based checks are wasted work.
 
 ## PDCA Cycle

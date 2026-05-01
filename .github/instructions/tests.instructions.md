@@ -9,7 +9,7 @@ description: "Conventions for test and spec files — naming, structure, mocking
 - Testing framework: bash (custom shell test scripts)
 - During iterative work, run the narrowest relevant targeted tests first. Prefer `bash scripts/harness/select-targeted-tests.sh <paths...>` to choose the phase checks from changed paths.
 - Run `bash tests/run-all.sh` once only when the full task is complete, or earlier only if a targeted failure required broader re-verification.
-- Name test files to mirror the source file they cover (e.g. `utils.ts` → `utils.test.ts`).
+- Name test files to mirror the source file they cover (e.g. `guard-destructive.sh` → `test-guard-destructive.sh`).
 - Each test should have a clear arrange/act/assert structure.
 - Prefer testing behaviour over implementation details — avoid asserting internal state.
 - Mock external dependencies; do not mock the module under test.

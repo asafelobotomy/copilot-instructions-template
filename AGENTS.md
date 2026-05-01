@@ -45,7 +45,7 @@ trigger design is wrong.
 
 - **Plugin installation**: The template is installed as a VS Code Agent Plugin via `Chat: Install Plugin` or by searching "copilot-instructions-template" in Extensions → Plugin Marketplace.
 - **Setup wizard**: The Setup agent (`agents/setup.agent.md`) runs the personalization flow after plugin installation.
-- **Agent source location**: `${CLAUDE_PLUGIN_ROOT}/agents/` (plugin-scoped; downloaded at install time).
+- **Agent source location**: `${CLAUDE_PLUGIN_ROOT}/agents/` (Claude-format plugin) or the `agents` field in `plugin.json` (VS Code plugin format); downloaded at install time.
 - **Consumer installation location**: `${workspaceFolder}/.github/agents/` (personalised agents copied by Setup wizard).
 - **Canonical inventory**: `.copilot/workspace/operations/workspace-index.json` (developer workspace) or `template/workspace/operations/workspace-index.json` (template baseline).
 

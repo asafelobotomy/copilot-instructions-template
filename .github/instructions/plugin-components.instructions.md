@@ -1,6 +1,6 @@
 ---
 name: Plugin Components
-applyTo: "agents/**,skills/**,hooks/**,plugin.json"
+applyTo: "agents/**,skills/**,hooks/**,plugin.json,.plugin/**,.claude-plugin/**"
 description: "Conventions for authoring agents, skills, hooks, and plugin manifests in this repo"
 ---
 
