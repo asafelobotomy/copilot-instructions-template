@@ -42,39 +42,34 @@
 
 ## Skills
 
+- [skills/accessibility-review/SKILL.md](skills/accessibility-review/SKILL.md): WCAG 2.1 AA accessibility audit and fixes.
 - [skills/agentic-workflows/SKILL.md](skills/agentic-workflows/SKILL.md): GitHub Actions workflows with Copilot coding agents.
+- [skills/api-design/SKILL.md](skills/api-design/SKILL.md): REST/GraphQL API design and OpenAPI review.
+- [skills/changelog-entry/SKILL.md](skills/changelog-entry/SKILL.md): Generate CHANGELOG entries from commits or diffs.
 - [skills/commit-preflight/SKILL.md](skills/commit-preflight/SKILL.md): CI-aware preflight checks before commit or push.
 - [skills/compress-prose/SKILL.md](skills/compress-prose/SKILL.md): Shorten prose without losing required meaning.
 - [skills/conventional-commit/SKILL.md](skills/conventional-commit/SKILL.md): Conventional Commit message composition.
 - [skills/create-adr/SKILL.md](skills/create-adr/SKILL.md): Architectural Decision Records.
+- [skills/dependency-update/SKILL.md](skills/dependency-update/SKILL.md): Update dependencies and run vulnerability scan.
+- [skills/docker-scaffold/SKILL.md](skills/docker-scaffold/SKILL.md): Scaffold production-ready Dockerfile and docker-compose.yml.
+- [skills/env-config/SKILL.md](skills/env-config/SKILL.md): .env management, startup validation, and secrets separation.
 - [skills/extension-review/SKILL.md](skills/extension-review/SKILL.md): VS Code extension auditing.
 - [skills/fix-ci-failure/SKILL.md](skills/fix-ci-failure/SKILL.md): CI failure diagnosis and repair.
 - [skills/issue-triage/SKILL.md](skills/issue-triage/SKILL.md): Issue severity, waste labels, and response drafting.
 - [skills/lean-pr-review/SKILL.md](skills/lean-pr-review/SKILL.md): Lean PR review workflow.
 - [skills/mcp-builder/SKILL.md](skills/mcp-builder/SKILL.md): Scaffold and register MCP servers.
 - [skills/mcp-management/SKILL.md](skills/mcp-management/SKILL.md): Configure and manage MCP servers.
+- [skills/onboarding-docs/SKILL.md](skills/onboarding-docs/SKILL.md): Generate README, CONTRIBUTING, and dev setup validation.
+- [skills/performance-profiling/SKILL.md](skills/performance-profiling/SKILL.md): Profile hot paths and apply targeted optimizations.
 - [skills/plugin-management/SKILL.md](skills/plugin-management/SKILL.md): Discover, install, and manage agent plugins.
+- [skills/refactor-extract/SKILL.md](skills/refactor-extract/SKILL.md): Systematically extract functions, classes, or modules safely.
 - [skills/security-audit/SKILL.md](skills/security-audit/SKILL.md): Security review workflow.
 - [skills/skill-creator/SKILL.md](skills/skill-creator/SKILL.md): Create a new agent skill.
 - [skills/skill-management/SKILL.md](skills/skill-management/SKILL.md): Discover and manage skills.
+- [skills/tech-debt-audit/SKILL.md](skills/tech-debt-audit/SKILL.md): Catalog TODOs, dead code, complexity hotspots, and deprecated APIs.
 - [skills/test-coverage-review/SKILL.md](skills/test-coverage-review/SKILL.md): Coverage review and test-gap analysis.
 - [skills/tool-protocol/SKILL.md](skills/tool-protocol/SKILL.md): Search before building automation.
 - [skills/webapp-testing/SKILL.md](skills/webapp-testing/SKILL.md): Browser testing with VS Code tools or Playwright.
-
-## Developer-only skills
-
-These skills exist in `.github/skills/` in this developer repo and are not part of the plugin `skills/` tree delivered to consumers.
-
-- [.github/skills/accessibility-review/SKILL.md](.github/skills/accessibility-review/SKILL.md): WCAG 2.1 AA accessibility audit and fixes.
-- [.github/skills/api-design/SKILL.md](.github/skills/api-design/SKILL.md): REST/GraphQL API design and OpenAPI review.
-- [.github/skills/changelog-entry/SKILL.md](.github/skills/changelog-entry/SKILL.md): Generate CHANGELOG entries from commits or diffs.
-- [.github/skills/dependency-update/SKILL.md](.github/skills/dependency-update/SKILL.md): Update dependencies and run vulnerability scan.
-- [.github/skills/docker-scaffold/SKILL.md](.github/skills/docker-scaffold/SKILL.md): Scaffold production-ready Dockerfile and docker-compose.yml.
-- [.github/skills/env-config/SKILL.md](.github/skills/env-config/SKILL.md): .env management, startup validation, and secrets separation.
-- [.github/skills/onboarding-docs/SKILL.md](.github/skills/onboarding-docs/SKILL.md): Generate README, CONTRIBUTING, and dev setup validation.
-- [.github/skills/performance-profiling/SKILL.md](.github/skills/performance-profiling/SKILL.md): Profile hot paths and apply targeted optimizations.
-- [.github/skills/refactor-extract/SKILL.md](.github/skills/refactor-extract/SKILL.md): Systematically extract functions, classes, or modules safely.
-- [.github/skills/tech-debt-audit/SKILL.md](.github/skills/tech-debt-audit/SKILL.md): Catalog TODOs, dead code, complexity hotspots, and deprecated APIs.
 
 ## Consumer instruction stubs and prompts
 
