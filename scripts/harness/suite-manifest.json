@@ -59,6 +59,12 @@
       "ciLabel": "Hook behavior | heartbeat_clock_summary.py"
     },
     {
+      "id": "hook-mcp-run-tests",
+      "path": "tests/hooks/test-mcp-run-tests.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | mcp-heartbeat-server run_tests"
+    },
+    {
       "id": "hook-pulse-paths",
       "path": "tests/hooks/test-pulse-paths.sh",
       "phase": "hooks",

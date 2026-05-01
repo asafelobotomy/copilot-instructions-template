@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
-"""Heartbeat MCP server — session reflection and diary tools.
+"""Heartbeat MCP server — session reflection, diary, and test-runner tools.
 
-Provides `session_reflect` (reads heartbeat state, computes session metrics,
-returns structured reflection prompts), `write_diary` and `read_diaries`
-(persist and retrieve per-agent workspace insights).
+Provides:
+- `session_reflect`: reads heartbeat state, computes session metrics,
+  returns structured reflection prompts
+- `write_diary` / `read_diaries`: persist and retrieve per-agent insights
+- `run_tests`: runs the repo's bash test suites via the suite-manifest
+  harness; accepts targeted suite paths or runs the full suite
+
 Output is compact (~200 tokens) so the model can process it silently
 and surface only actionable findings to the user.
 
@@ -22,6 +26,7 @@ from mcp_heartbeat_lib import (  # noqa: E402
     DIARIES_DIR,
     HEARTBEAT_MD_PATH,
     EVENTS_PATH,
+    ROOT,
     STATE_PATH,
     WORKSPACE,
     append_event,
@@ -38,7 +43,11 @@ from mcp_heartbeat_lib import (  # noqa: E402
 ensure_writable_tempdir()
 
 import datetime  # noqa: E402
+import json  # noqa: E402
+import shutil  # noqa: E402
+import subprocess  # noqa: E402
 import time  # noqa: E402
+from typing import Optional  # noqa: E402
 
 from mcp.server.fastmcp import FastMCP  # noqa: E402
 
@@ -212,6 +221,151 @@ def read_diaries(agent_name: str = "") -> dict:
         return {"agent": agent_name, "entries": lines}
 
     return {"diaries": read_diary_summaries(max_entries=3)}
+
+
+# ---------------------------------------------------------------------------
+# Tool: run_tests
+# ---------------------------------------------------------------------------
+
+_SUITE_MANIFEST_REL = "scripts/harness/suite-manifest.json"
+_SUITE_MANIFEST_PY_REL = "scripts/harness/suite-manifest.py"
+
+
+def _load_suite_manifest(workspace: Path) -> dict:
+    manifest_path = workspace / _SUITE_MANIFEST_REL
+    if not manifest_path.is_file():
+        raise FileNotFoundError(f"suite manifest not found: {manifest_path}")
+    return json.loads(manifest_path.read_text(encoding="utf-8"))
+
+
+def _command_available(command: str) -> bool:
+    return shutil.which(command) is not None
+
+
+def _phase_skip_reason(phase: dict, workspace: Path) -> Optional[str]:
+    req = phase.get("optionalRequirement")
+    if not isinstance(req, dict):
+        return None
+    command = str(req.get("command", ""))
+    label = str(req.get("label", command))
+    probe_args = [str(a) for a in req.get("probeArgs", [])]
+    if not _command_available(command):
+        return f"missing {label}"
+    if probe_args:
+        result = subprocess.run(
+            [command, *probe_args],
+            cwd=workspace,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+        if result.returncode != 0:
+            return f"{label} non-functional"
+    return None
+
+
+def _run_single_suite(suite_path: str, workspace: Path) -> dict:
+    """Run one bash suite; return {status, elapsed_s, output_tail}."""
+    start = time.monotonic()
+    result = subprocess.run(
+        ["bash", suite_path],
+        cwd=workspace,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    elapsed = round(time.monotonic() - start, 1)
+    output = (result.stdout + result.stderr).strip()
+    # Keep last 8 lines to stay within token budget.
+    tail = "\n".join(output.splitlines()[-8:]) if output else ""
+    status = "passed" if result.returncode == 0 else "failed"
+    return {"suite": suite_path, "status": status, "elapsed_s": elapsed, "output_tail": tail}
+
+
+@mcp.tool()
+def run_tests(
+    files: Optional[list[str]] = None,
+    mode: str = "targeted",
+) -> dict:
+    """Run the repo's bash test suites via the suite-manifest harness.
+
+    Prefer this tool over running terminal commands to execute tests.
+    Runs one or more targeted suites, or the full suite when mode is "full".
+    Returns a structured summary with per-suite pass/fail status.
+
+    Args:
+        files: Repo-relative paths to specific suite scripts to run
+               (e.g. ["tests/scripts/test-suite-manifest.sh"]).
+               If empty or omitted, behaviour depends on mode.
+        mode:  "targeted" — run only the suites listed in `files` (required).
+               "full"     — run all suites in all phases via suite-manifest.
+    """
+    workspace = ROOT
+
+    manifest = _load_suite_manifest(workspace)
+    phases: list[dict] = manifest.get("phases", [])
+    suites: list[dict] = manifest.get("suites", [])
+
+    phases_by_id = {str(p["id"]): p for p in phases}
+    suite_by_path = {str(s["path"]): s for s in suites}
+
+    details: list[dict] = []
+    skipped: list[str] = []
+
+    if mode == "full" or not files:
+        # Full run: iterate phases in order, respect optionalRequirement.
+        suites_by_phase: dict[str, list[dict]] = {str(p["id"]): [] for p in phases}
+        for s in suites:
+            suites_by_phase[str(s["phase"])].append(s)
+
+        for phase in phases:
+            phase_id = str(phase["id"])
+            skip_reason = _phase_skip_reason(phase, workspace)
+            if skip_reason is not None:
+                phase_suites = [str(s["path"]) for s in suites_by_phase[phase_id]]
+                skipped.extend(phase_suites)
+                continue
+            for s in suites_by_phase[phase_id]:
+                details.append(_run_single_suite(str(s["path"]), workspace))
+    else:
+        # Targeted run: run exactly the requested suites.
+        for f in files:
+            # Normalise: strip leading "./" or workspace prefix.
+            rel = f.replace(str(workspace) + "/", "").lstrip("./")
+            suite_entry = suite_by_path.get(rel)
+            if suite_entry is None:
+                details.append({
+                    "suite": rel,
+                    "status": "error",
+                    "elapsed_s": 0,
+                    "output_tail": f"suite path not found in manifest: {rel}",
+                })
+                continue
+            phase = phases_by_id.get(str(suite_entry["phase"]), {})
+            skip_reason = _phase_skip_reason(phase, workspace)
+            if skip_reason is not None:
+                skipped.append(rel)
+                continue
+            details.append(_run_single_suite(rel, workspace))
+
+    passed = sum(1 for d in details if d["status"] == "passed")
+    failed_list = [d["suite"] for d in details if d["status"] not in ("passed", "error")]
+    errors = [d["suite"] for d in details if d["status"] == "error"]
+    total = len(details)
+
+    return {
+        "summary": {
+            "total": total,
+            "passed": passed,
+            "failed": len(failed_list),
+            "errors": len(errors),
+            "skipped": len(skipped),
+            "all_passed": total > 0 and passed == total,
+        },
+        "failed_suites": failed_list,
+        "skipped_suites": skipped,
+        "details": details,
+    }
 
 
 if __name__ == "__main__":
