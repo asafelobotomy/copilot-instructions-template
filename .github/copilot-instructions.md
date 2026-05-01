@@ -116,7 +116,7 @@ Before acting on any medium-to-complex task:
 - **3-strike rule**: same tool call unhelpful 3 times → reformulate or ask user.
 - **No circular re-reads**: do not re-read unchanged files within the same task.
 - **Monotonic progress**: each step must produce new information or output.
-- **Scope lock**: do not expand scope mid-task. Note new work for follow-up.
+- **Scope lock**: do not expand scope mid-task. Note new work for follow-up. Each new user message establishes a fresh scope; a prior plan does not carry forward unless the user explicitly continues it. **Adjacent-work test**: is this change strictly necessary for the stated request to succeed? "Useful", "related", and "while we're here" do not pass.
 - **Time-box exploration**: max 5 tool calls per sub-question. Surface gaps to user.
 
 ## Baselines

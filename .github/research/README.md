@@ -18,6 +18,7 @@ in `.github/research/` first.
 ## Active working set
 
 - [mcp-web-search-2026-04-28.md](./mcp-web-search-2026-04-28.md)
+- [agent-scope-control-2026-05-01.md](./agent-scope-control-2026-05-01.md)
 - [tool-search-model-support-2026-04-28.md](./tool-search-model-support-2026-04-28.md)
 
 ## Archive index

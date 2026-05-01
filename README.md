@@ -139,18 +139,14 @@ The plugin wires eight lifecycle events. In plugin-backed mode, these run from [
 
 ## Daily commands
 
-| What you want | Tell Copilot |
-|---------------|-------------|
-| Update to latest plugin version | *"Update your instructions"* |
-| Restore a broken installation | *"Factory restore instructions"* |
-| Check heartbeat / session state | *"Check your heartbeat"* |
-| Run a retrospective | *"Run retrospective"* |
-| Commit staged changes | *"Commit my changes"* |
-| Create a pull request | *"Create a PR"* |
-| Configure MCP servers | *"Configure MCP servers"* |
-| Install a starter kit | *"Install a starter kit"* |
+Common examples:
 
-See [AGENTS.md](AGENTS.md) for the full trigger phrase list.
+- Update the install: *"Update your instructions"*
+- Restore from scratch: *"Factory restore instructions"*
+- Commit current work: *"Commit my changes"*
+- Open a PR: *"Create a PR"*
+
+See [AGENTS.md](AGENTS.md) for the full trigger phrase list, including heartbeat, retrospective, MCP, starter-kit, and quick-action routes.
 
 ---
 

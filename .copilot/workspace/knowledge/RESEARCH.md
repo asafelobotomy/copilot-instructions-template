@@ -77,6 +77,19 @@
 |-----|---------|------|------|
 | <https://code.visualstudio.com/docs/copilot/customization/agent-plugins> | Agent plugins (preview): install from Git URL, workspace recommendations, enabledPlugins + extraKnownMarketplaces, plugin.json structure, hooks.json and .mcp.json in plugin root | 2026-04-12 | plugins, distribution, bootstrap |
 
+## Agent Scope Control and Bounded Initiative — 2026-05-01
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://www.anthropic.com/engineering/building-effective-agents> | Anthropic: three core agent principles — simplicity, transparency, ACI. Explicit stopping conditions and checkpoints. "Task terminates upon completion." | 2026-05-01 | agents, scope, anthropic |
+| <https://claudebeat.ai/articles/2026/01/2026-01-01.html> | Summary of Anthropic Jan 2026 model spec refresh — introduces "minimal footprint": request only necessary permissions, prefer reversible actions, pause when uncertainty ≥ consequence | 2026-05-01 | agents, scope, anthropic, model-spec |
+| <https://www.mindstudio.ai/blog/anthropic-vs-openai-vs-google-agent-strategy> | Comparative analysis of agent autonomy philosophies — Anthropic: minimal footprint + prefer reversible; OpenAI: guardrails SDK; Google: platform depth | 2026-05-01 | agents, scope, comparison |
+| <https://raw.githubusercontent.com/microsoft/vscode/main/.github/copilot-instructions.md> | VS Code repo copilot-instructions.md — canonical example; cleanup rule ("remove any temporary files at end of task"), do-not-duplicate rule, MANDATORY completion gate | 2026-05-01 | copilot-instructions, example |
+| <https://code.visualstudio.com/docs/copilot/customization/custom-instructions> | VS Code custom instructions docs — types (always-on vs file-based), format, applyTo, when to use each type; no specific scope-control language | 2026-05-01 | vscode, custom-instructions, reference |
+| <https://code.claude.com/docs/en/best-practices.md> | Claude Code best practices — Plan Mode, scope-the-task patterns, CLAUDE.md authoring guide (concise, YAGNI-compatible), hooks vs instructions distinction | 2026-05-01 | claude-code, best-practices, scope |
+| <https://code.claude.com/docs/en/memory.md> | Claude Code memory — CLAUDE.md vs auto memory; "treat like code: prune regularly"; warn about bloated files causing instruction loss | 2026-05-01 | claude-code, memory, instructions |
+| <https://raw.githubusercontent.com/PatrickJS/awesome-cursorrules/main/README.md> | Awesome CursorRules index — community `.cursorrules` files; mostly tech/style conventions; no established scope-control vocabulary | 2026-05-01 | cursor, cursorrules, reference |
+
 ## Risk-Based Test Selection — 2026-04-12
 
 | URL | Summary | Date | Tags |

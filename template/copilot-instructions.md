@@ -89,7 +89,7 @@ Before acting on any medium-to-complex task, apply this decision sequence to avo
 - **3-strike rule**: if the same tool call or search returns unhelpful results three times, stop and reformulate the approach or ask the user for guidance.
 - **No circular re-reads**: do not re-read a file within the same task unless you have made changes to it since the last read.
 - **Monotonic progress**: each step must produce new information or new output. If a step produces nothing new, skip it and move to the next.
-- **Scope lock**: once Plan is set, do not expand scope mid-task. If new work is discovered, note it for a follow-up task.
+- **Scope lock**: once Plan is set, do not expand scope mid-task. If new work is discovered, note it for a follow-up task. Each new user message establishes a fresh scope; a prior plan does not carry forward unless the user explicitly continues it. **Adjacent-work test**: is this change strictly necessary for the stated request to succeed? "Useful", "related", and "while we're here" do not pass.
 - **Time-box exploration**: limit exploratory searches to 5 tool calls per sub-question. If the answer is not found, surface the gap to the user.
 
 ---
