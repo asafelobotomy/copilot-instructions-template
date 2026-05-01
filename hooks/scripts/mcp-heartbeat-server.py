@@ -264,16 +264,29 @@ def _phase_skip_reason(phase: dict, workspace: Path) -> Optional[str]:
     return None
 
 
+SUITE_TIMEOUT_S: int = 120
+
+
 def _run_single_suite(suite_path: str, workspace: Path) -> dict:
     """Run one bash suite; return {status, elapsed_s, output_tail}."""
     start = time.monotonic()
-    result = subprocess.run(
-        ["bash", suite_path],
-        cwd=workspace,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    try:
+        result = subprocess.run(
+            ["bash", suite_path],
+            cwd=workspace,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=SUITE_TIMEOUT_S,
+        )
+    except subprocess.TimeoutExpired:
+        elapsed = round(time.monotonic() - start, 1)
+        return {
+            "suite": suite_path,
+            "status": "error",
+            "elapsed_s": elapsed,
+            "output_tail": f"timed out after {SUITE_TIMEOUT_S}s",
+        }
     elapsed = round(time.monotonic() - start, 1)
     output = (result.stdout + result.stderr).strip()
     # Keep last 8 lines to stay within token budget.

@@ -162,5 +162,6 @@
   ],
   "python.testing.unittestEnabled": false,
   "python.testing.pytestEnabled": true,
-  "asafelobotomy.profileName": "copilotinstructions"
+  "asafelobotomy.profileName": "copilotinstructions",
+  "chat.agent.sandbox.enabled": false
 }
