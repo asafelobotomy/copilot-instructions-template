@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # tests/lib/test-helpers.sh -- shared assertions for shell-based test suites.
 
+set -uo pipefail
 init_test_context() {
   local script_path="$1"
   PASS=0
@@ -14,7 +15,7 @@ init_test_context() {
 pass_note() {
   local desc="$1"
   echo "  PASS: ${desc}"
-  ((PASS++))
+  PASS=$((PASS + 1))
 }
 
 fail_note() {
@@ -25,7 +26,7 @@ fail_note() {
     printf '%s\n' "$details"
     FAIL_LINES+=("$details")
   fi
-  ((FAIL++))
+  FAIL=$((FAIL + 1))
 }
 
 assert_success() {
@@ -150,8 +151,11 @@ make_git_sandbox() {
 CLEANUP_DIRS=()
 
 cleanup_dirs() {
+  local d
   for d in "${CLEANUP_DIRS[@]:-}"; do
-    [[ -n "$d" ]] && rm -rf "$d"
+    if [[ -n "$d" ]]; then
+      rm -rf "$d"
+    fi
   done
 }
 

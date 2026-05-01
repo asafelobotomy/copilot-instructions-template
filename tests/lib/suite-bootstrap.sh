@@ -12,6 +12,7 @@
 #   - REPO_ROOT and TESTS_ROOT are set
 
 # Resolve the caller's script path (BASH_SOURCE[1] when this file is sourced)
+set -uo pipefail
 _bootstrap_caller="${BASH_SOURCE[1]:-$0}"
 
 # shellcheck source=test-helpers.sh

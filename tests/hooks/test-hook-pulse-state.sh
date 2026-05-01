@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 echo "15. session_start captures git baseline"
 TMPDIR_BASE=$(make_git_sandbox); CLEANUP_DIRS+=("$TMPDIR_BASE")
 printf '.copilot/\n' >> "$TMPDIR_BASE/.git/info/exclude"

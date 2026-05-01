@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 echo "25. user_prompt captures high-confidence Commit route candidate"
 TMPDIR_ROUTE_COMMIT=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_ROUTE_COMMIT")
 mkdir -p "$TMPDIR_ROUTE_COMMIT/.copilot/workspace/identity" "$TMPDIR_ROUTE_COMMIT/.copilot/workspace/knowledge/diaries" "$TMPDIR_ROUTE_COMMIT/.copilot/workspace/operations" "$TMPDIR_ROUTE_COMMIT/.copilot/workspace/runtime"

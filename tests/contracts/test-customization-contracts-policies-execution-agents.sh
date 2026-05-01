@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 echo "11. Agent allow-lists stay minimal and workflow-aligned"
 assert_python "agent allow-lists match documented delegation policy" '
 def parse_tools_or_agents(frontmatter, field):

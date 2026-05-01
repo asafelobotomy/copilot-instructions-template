@@ -80,7 +80,8 @@ Flag: `[HIGH]` if absent or malformed. `[WARN]` if fingerprint tracking is absen
 ### D7 — Workspace memory files
 
 Check each file under `.copilot/workspace/` exists and is non-empty.
-Flag: `[HIGH]` if `HEARTBEAT.md` or `IDENTITY.md` missing. `[WARN]` for others.
+Exempt transient files from the non-empty check: any file matching `*.lock` or living under `.copilot/workspace/runtime/` or `.copilot/workspace/.tmp/` is a transient heartbeat artifact and may legitimately be zero-byte during or between sessions.
+Flag: `[HIGH]` if `HEARTBEAT.md` or `IDENTITY.md` missing. `[WARN]` for others (excluding transient files).
 
 ### D8 — AGENTS.md
 

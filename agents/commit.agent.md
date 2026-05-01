@@ -75,7 +75,7 @@ to widen the fix scope beyond the proposed commit.
 8. Use `Audit` when the user requests a deeper security or health check before push or release, or when preflight leaves material residual risk.
 9. Use `Debugger` when a push or CI check fails and the root cause needs diagnosis before the commit scope can be fixed.
 10. Use `Organise` when branch cleanup or file restructuring is needed before committing.
-11. Use `Cleaner` when stale caches, generated artefacts, or dead files should be removed before the commit scope is clean.
+11. Use `Cleaner` when stale caches, generated artefacts, archive debris, or dead files should be removed before the commit scope is clean.
 
 ## Multi-commit mode gate
 

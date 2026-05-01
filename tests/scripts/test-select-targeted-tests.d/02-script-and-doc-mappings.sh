@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 #!/usr/bin/env bash
 
 echo "12. Selector root manifest and shard files map back to the selector suite"

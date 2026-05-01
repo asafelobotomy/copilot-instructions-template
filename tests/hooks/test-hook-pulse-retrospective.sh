@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 echo "1. session_start initializes sentinel and state"
 TMPDIR_START=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_START")
 mkdir -p "$TMPDIR_START/.copilot/workspace/identity" "$TMPDIR_START/.copilot/workspace/knowledge/diaries" "$TMPDIR_START/.copilot/workspace/operations" "$TMPDIR_START/.copilot/workspace/runtime"

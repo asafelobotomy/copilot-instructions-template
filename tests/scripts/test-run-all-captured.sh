@@ -15,7 +15,7 @@ make_fixture() {
   mkdir -p "$root/tests"
   cat > "$root/tests/run-all.sh" <<'EOF'
 #!/usr/bin/env bash
-set -euo pipefail
+set -uo pipefail
 for line in one two three four five six; do
   echo "$line"
 done
@@ -28,7 +28,7 @@ make_failure_fixture() {
   mkdir -p "$root/tests"
   cat > "$root/tests/run-all.sh" <<'EOF'
 #!/usr/bin/env bash
-set -euo pipefail
+set -uo pipefail
 echo "about to fail"
 echo "failing line"
 exit 7

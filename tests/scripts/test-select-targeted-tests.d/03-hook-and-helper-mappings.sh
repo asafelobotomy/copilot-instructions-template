@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 #!/usr/bin/env bash
 
 echo "25. scan-secrets.ps1 maps to its dedicated PowerShell suite"

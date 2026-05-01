@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 echo "1. Commit agent integrates preflight and install confirmation"
 assert_python "commit agent has preflight workflow and askQuestions support" '
 path = root / "agents/commit.agent.md"

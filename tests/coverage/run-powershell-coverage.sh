@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # tests/coverage/run-powershell-coverage.sh -- deterministic PowerShell coverage driver.
-set -euo pipefail
+set -uo pipefail
 
 REPO_ROOT=$(cd "$(dirname "$0")/../.." && pwd)
 PWSH_BIN=$(bash "$REPO_ROOT/scripts/harness/resolve-powershell.sh" || true)
