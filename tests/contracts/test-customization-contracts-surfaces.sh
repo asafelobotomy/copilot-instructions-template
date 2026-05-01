@@ -40,6 +40,13 @@ for path in (root / ".github/prompts").glob("*.prompt.md"):
         raise SystemExit(f"deprecated mode key in {path.name}")
     if "terminal" in frontmatter:
         raise SystemExit(f"deprecated terminal tool key in {path.name}")
+
+for rel in (".github/prompts/context-map.prompt.md", "template/prompts/context-map.prompt.md"):
+    text = (root / rel).read_text(encoding="utf-8")
+    end = text.find("\n---\n", 4)
+    frontmatter = text[4:end]
+    if "tools: [codebase]" not in frontmatter:
+        raise SystemExit(f"context-map prompt must stay read-only in {rel}")
 '
 echo ""
 

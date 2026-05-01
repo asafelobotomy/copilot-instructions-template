@@ -47,13 +47,18 @@ This repo now ships plugin manifests for all three currently relevant surfaces: 
 
 ## Install
 
+Use the plugin marketplace route from **Setup routes** above as the default path.
+For the full plugin workflow, manual bootstrap path, and ownership-mode choices, see [SETUP.md](SETUP.md).
+
+Quick start:
+
 1. Open VS Code → open the Chat panel → click **Chat: Install Plugin**
 2. Search **copilot-instructions-template** and install
 3. Tell Copilot:
 
    > *"Set up this project"*
 
-The Setup agent runs an interactive personalisation wizard. It asks a few questions, then writes your `.github/copilot-instructions.md`, copies agents and skills into `.github/`, installs hooks and MCP config, and creates a workspace scaffold. No manual file copying or URL fetching required.
+The Setup agent runs the interactive personalisation wizard. It asks a few questions, then writes `.github/copilot-instructions.md`, installs the selected companion surfaces, and creates the workspace scaffold. No manual file copying is required.
 
 If the plugin marketplace entry is unavailable, follow the manual Copilot bootstrap path in [SETUP.md](SETUP.md).
 

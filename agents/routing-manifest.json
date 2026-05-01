@@ -460,6 +460,10 @@
         "\\bremove stale files?\\b",
         "\\bprune (?:caches?|archives?)\\b",
         "\\brepo hygiene\\b",
+        "\\bstale (?:artefacts?|artifacts?)\\b",
+        "\\bdead files?\\b",
+        "\\barchive (?:clutter|debris)\\b",
+        "\\bcache clutter\\b",
         "\\bdelete old (?:files?|artifacts?)\\b",
         "\\btidy old artefacts?\\b"
       ],

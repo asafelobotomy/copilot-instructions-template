@@ -45,6 +45,15 @@ jobs:
       - name: All required template files present
         run: bash scripts/ci/validate-required-files.sh
 
+      - name: Consumer-surface parity (template ↔ .github)
+        run: bash scripts/ci/validate-consumer-surface-parity.sh
+
+      - name: Shared root-skill sync (skills ↔ template/.github)
+        run: bash scripts/ci/validate-shared-skill-sync.sh
+
+      - name: No committed generated artefacts
+        run: bash scripts/ci/validate-no-generated-artifacts.sh
+
       - name: workspace-index.json is in sync
         run: bash scripts/workspace/sync-workspace-index.sh --check
 

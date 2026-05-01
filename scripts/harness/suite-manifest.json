@@ -209,6 +209,24 @@
       "ciLabel": "Script behavior | validate-required-files.sh"
     },
     {
+      "id": "script-validate-consumer-surface-parity",
+      "path": "tests/scripts/test-validate-consumer-surface-parity.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | validate-consumer-surface-parity.sh"
+    },
+    {
+      "id": "script-validate-shared-skill-sync",
+      "path": "tests/scripts/test-validate-shared-skill-sync.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | validate-shared-skill-sync.sh"
+    },
+    {
+      "id": "script-validate-no-generated-artifacts",
+      "path": "tests/scripts/test-validate-no-generated-artifacts.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | validate-no-generated-artifacts.sh"
+    },
+    {
       "id": "script-validate-cross-references",
       "path": "tests/scripts/test-validate-cross-references.sh",
       "phase": "scripts",

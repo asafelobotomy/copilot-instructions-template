@@ -79,7 +79,6 @@ Common keyboard interaction patterns:
 ### 4. ARIA usage review
 
 ARIA rules:
-
 - Use native HTML elements before ARIA — `<button>` is better than `<div role="button">`
 - `aria-label` / `aria-labelledby` required on all elements with `role=` that lack visible text
 - `aria-expanded` on toggles (menu buttons, accordions)
@@ -105,7 +104,6 @@ Common ARIA mistakes to fix:
 ### 5. Colour contrast
 
 WCAG 2.1 AA minimum ratios:
-
 - **Normal text** (< 18pt / 14pt bold): **4.5:1**
 - **Large text** (≥ 18pt / 14pt bold): **3:1**
 - **UI components and graphical objects**: **3:1**
@@ -150,7 +148,6 @@ Test with at least one screen reader:
 | Android | TalkBack | Chrome |
 
 Key checks:
-
 - Page has a descriptive `<title>`
 - `<main>`, `<nav>`, `<header>`, `<footer>` landmarks present
 - Headings create a logical document outline (`h1 → h2 → h3`, no skips)

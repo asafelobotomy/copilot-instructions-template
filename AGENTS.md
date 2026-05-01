@@ -99,6 +99,7 @@ invocation.
 | Commit (PR) | *"Create a PR"* / *"Open a pull request"* / *"Update the PR"* |
 | Commit (tag/release) | *"Tag this version"* / *"Create a release"* / *"Tag as v..."* |
 | Commit style onboarding | *"Set up my commit style"* / *"Onboard commit preferences"* / *"Configure commit style"* |
+| Quick question / tiny edit | *"Quick question"* / *"What does this regex match?"* / *"Fix the typo in ..."* / *"Single-file edit"* / *"What's the wc -l of ...?"* |
 | Implement / refactor | *"Implement ..."* / *"Add ..."* / *"Refactor ..."* / *"Fix the bug in ..."* |
 | Code review | *"Review my changes"* / *"Review this file"* / *"Architectural review of ..."* |
 | Explore codebase | *"Explore ..."* / *"Find where ..."* / *"How does ... work?"* |

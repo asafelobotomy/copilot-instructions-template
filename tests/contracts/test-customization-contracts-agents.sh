@@ -32,6 +32,143 @@ for agent_name, required_tool in (("researcher", "fetch"), ("explore", "codebase
 researcher_text = (root / "agents/researcher.agent.md").read_text(encoding="utf-8")
 if "RESEARCH.md" not in researcher_text:
     raise SystemExit("researcher.agent.md body must reference RESEARCH.md")
+
+researcher_end = researcher_text.find("\n---\n", 4)
+if researcher_end == -1:
+    raise SystemExit("unterminated frontmatter in researcher.agent.md")
+researcher_fm = researcher_text[4:researcher_end]
+for needle in ["fetch", "webSearch", "editFiles", "runCommands"]:
+    if needle not in researcher_fm:
+        raise SystemExit("researcher.agent.md missing required tool: " + needle)
+for needle in [
+    ".github/research/<topic>-<YYYY-MM-DD>.md",
+    "**No code implementation** — produce findings; hand off to Code.",
+    "**No test execution** — `runCommands` is limited to read-only exploration",
+    "**No file deletion** — only append to `RESEARCH.md`; never remove rows.",
+    "**No git operations** — do not commit or push.",
+]:
+    if needle not in researcher_text:
+        raise SystemExit("researcher.agent.md missing research constraint: " + needle)
+
+explore_text = (root / "agents/explore.agent.md").read_text(encoding="utf-8")
+explore_end = explore_text.find("\n---\n", 4)
+if explore_end == -1:
+    raise SystemExit("unterminated frontmatter in explore.agent.md")
+explore_fm = explore_text[4:explore_end]
+if "editFiles" in explore_fm:
+    raise SystemExit("explore.agent.md must stay read-only and omit editFiles")
+if "runCommands" not in explore_fm:
+    raise SystemExit("explore.agent.md must keep runCommands for read-only terminal inspection")
+for needle in [
+    "**Read-only strictly** — never use `editFiles`.",
+    "read-only: `grep`, `find`, `cat`, `wc`, `ls`, `sed -n`.",
+    "without making any modifications.",
+]:
+    if needle not in explore_text:
+        raise SystemExit("explore.agent.md missing read-only guidance: " + needle)
+
+planner_text = (root / "agents/planner.agent.md").read_text(encoding="utf-8")
+planner_end = planner_text.find("\n---\n", 4)
+if planner_end == -1:
+    raise SystemExit("unterminated frontmatter in planner.agent.md")
+planner_fm = planner_text[4:planner_end]
+if "editFiles" in planner_fm:
+    raise SystemExit("planner.agent.md must stay read-only and omit editFiles")
+if "runCommands" not in planner_fm:
+    raise SystemExit("planner.agent.md must keep runCommands for read-only inspection during planning")
+for needle in [
+    "Stay read-only. Do not modify files.",
+    "Use `Explore` when the task needs a broader read-only inventory before the plan is credible.",
+    "Use `Code` only after the plan is concrete enough to implement without widening scope.",
+]:
+    if needle not in planner_text:
+        raise SystemExit("planner.agent.md missing planning constraint: " + needle)
+
+review_text = (root / "agents/review.agent.md").read_text(encoding="utf-8")
+review_end = review_text.find("\n---\n", 4)
+if review_end == -1:
+    raise SystemExit("unterminated frontmatter in review.agent.md")
+review_fm = review_text[4:review_end]
+if "editFiles" in review_fm:
+    raise SystemExit("review.agent.md must stay read-only and omit editFiles")
+if "runCommands" not in review_fm:
+    raise SystemExit("review.agent.md must keep runCommands for read-only inspection during review")
+for needle in [
+    "This is a read-only role — do not modify files unless explicitly instructed.",
+    "Prefer `Cleaner` over general `Code` when a finding is mainly stale artefact,",
+    "Prefer `Organise` over general `Code` when a finding is primarily about",
+]:
+    if needle not in review_text:
+        raise SystemExit("review.agent.md missing review constraint: " + needle)
+
+docs_text = (root / "agents/docs.agent.md").read_text(encoding="utf-8")
+docs_end = docs_text.find("\n---\n", 4)
+if docs_end == -1:
+    raise SystemExit("unterminated frontmatter in docs.agent.md")
+docs_fm = docs_text[4:docs_end]
+for needle in ["editFiles", "codebase", "search", "runCommands"]:
+    if needle not in docs_fm:
+        raise SystemExit("docs.agent.md missing required docs tool: " + needle)
+for needle in [
+    "Prefer documentation files, guides, prompts, instructions, and user-facing examples over code changes.",
+    "Use `Code` when the requested documentation cannot be made truthful without implementation changes.",
+    "Do not silently change runtime behavior while doing docs-only work.",
+]:
+    if needle not in docs_text:
+        raise SystemExit("docs.agent.md missing docs constraint: " + needle)
+
+debugger_text = (root / "agents/debugger.agent.md").read_text(encoding="utf-8")
+debugger_end = debugger_text.find("\n---\n", 4)
+if debugger_end == -1:
+    raise SystemExit("unterminated frontmatter in debugger.agent.md")
+debugger_fm = debugger_text[4:debugger_end]
+if "editFiles" in debugger_fm:
+    raise SystemExit("debugger.agent.md must stay diagnosis-first and omit editFiles")
+if "runCommands" not in debugger_fm:
+    raise SystemExit("debugger.agent.md must keep runCommands for reproduction and inspection")
+for needle in [
+    "Your role: diagnose problems before implementation starts.",
+    "Use `Code` only after the diagnosis is specific enough to implement without guessing.",
+    "Do not mix diagnosis with broad refactoring.",
+]:
+    if needle not in debugger_text:
+        raise SystemExit("debugger.agent.md missing debugger constraint: " + needle)
+
+fast_text = (root / "agents/fast.agent.md").read_text(encoding="utf-8")
+fast_end = fast_text.find("\n---\n", 4)
+if fast_end == -1:
+    raise SystemExit("unterminated frontmatter in fast.agent.md")
+fast_fm = fast_text[4:fast_end]
+for needle in ["editFiles", "runCommands", "search", "codebase"]:
+    if needle not in fast_fm:
+        raise SystemExit("fast.agent.md missing required fast-path tool: " + needle)
+for needle in [
+    "If the question expands beyond a single file but stays read-only, use",
+    "If the user is asking to stage, commit, push, tag, or release changes, use",
+    "Do not run the full PDCA cycle for simple edits — just make the change and",
+]:
+    if needle not in fast_text:
+        raise SystemExit("fast.agent.md missing fast-path constraint: " + needle)
+
+setup_text = (root / "agents/setup.agent.md").read_text(encoding="utf-8")
+setup_end = setup_text.find("\n---\n", 4)
+if setup_end == -1:
+    raise SystemExit("unterminated frontmatter in setup.agent.md")
+setup_fm = setup_text[4:setup_end]
+for needle in ["editFiles", "fetch", "askQuestions", "runCommands", "search"]:
+    if needle not in setup_fm:
+        raise SystemExit("setup.agent.md missing required setup tool: " + needle)
+if "disable-model-invocation: true" not in setup_fm:
+    raise SystemExit("setup.agent.md must keep disable-model-invocation: true")
+for needle in [
+    "All template content and companion data files are",
+    "available locally; no network fetch is required.",
+    "Use `askQuestions` for **ALL** user-facing decisions.",
+    "If the output contains",
+    "Do not modify files in `asafelobotomy/copilot-instructions-template` — all",
+]:
+    if needle not in setup_text:
+        raise SystemExit("setup.agent.md missing setup constraint: " + needle)
 '
 echo ""
 
@@ -352,6 +489,28 @@ public_visible = {
 for required in {"Docs", "Cleaner"}:
     if required not in public_visible:
         raise SystemExit(f"routing manifest must expose {required} in the picker")
+'
+
+assert_python "Cleaner routing covers documented hygiene vocabulary" '
+manifest = json.loads((root / "agents/routing-manifest.json").read_text(encoding="utf-8"))
+cleaner = next(
+    (entry for entry in manifest.get("agents", []) if isinstance(entry, dict) and entry.get("name") == "Cleaner"),
+    None,
+)
+if cleaner is None:
+    raise SystemExit("routing manifest missing Cleaner entry")
+
+patterns = cleaner.get("prompt_patterns") or []
+joined = " ".join(patterns)
+required = [
+    r"\bstale (?:artefacts?|artifacts?)\b",
+    r"\bdead files?\b",
+    r"\barchive (?:clutter|debris)\b",
+    r"\bcache clutter\b",
+]
+for needle in required:
+    if needle not in joined:
+        raise SystemExit("Cleaner prompt_patterns missing documented hygiene route: " + needle)
 '
 echo ""
 

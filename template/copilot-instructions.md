@@ -75,35 +75,22 @@ Apply to every non-trivial change.
 
 ### Structured Thinking Discipline
 
-Before acting on any medium-to-complex task, apply this decision sequence to avoid
-loop traps and wasted tokens:
+Before acting on any medium-to-complex task, apply this decision sequence to avoid loop traps and wasted tokens:
 
-1. **Frame** — state the problem in one sentence. If you cannot, the task needs
-   decomposition before proceeding.
-2. **Intent-Gate** — if the prompt is ambiguous, compound, or lacks scope, ask
-  one clarifying question before acting. Never start execution on a prompt
-  that could plausibly mean two different things.
-3. **Gather** — identify the minimum information needed to act. Search once with
-   broad terms; do not repeat the same search with minor variations.
-4. **Decide** — choose an approach and commit. If two approaches seem equal, pick
-   either and move forward. Do not oscillate.
-5. **Act** — implement the chosen approach in one pass. Do not re-read files you
-   have already read unless the content has changed.
-6. **Verify** — check the result once. If it fails, diagnose the root cause before
-   retrying. Never retry the same action expecting a different result.
+1. **Frame** — state the problem in one sentence. If you cannot, the task needs decomposition before proceeding.
+2. **Intent-Gate** — if the prompt is ambiguous, compound, or lacks scope, ask one clarifying question before acting. Never start execution on a prompt that could plausibly mean two different things.
+3. **Gather** — identify the minimum information needed to act. Search once with broad terms; do not repeat the same search with minor variations.
+4. **Decide** — choose an approach and commit. If two approaches seem equal, pick either and move forward. Do not oscillate.
+5. **Act** — implement the chosen approach in one pass. Do not re-read files you have already read unless the content has changed.
+6. **Verify** — check the result once. If it fails, diagnose the root cause before retrying. Never retry the same action expecting a different result.
 
 **Anti-loop rules** (apply to all agents and subagents):
 
-- **3-strike rule**: if the same tool call or search returns unhelpful results
-  three times, stop and reformulate the approach or ask the user for guidance.
-- **No circular re-reads**: do not re-read a file within the same task unless
-  you have made changes to it since the last read.
-- **Monotonic progress**: each step must produce new information or new output.
-  If a step produces nothing new, skip it and move to the next.
-- **Scope lock**: once Plan is set, do not expand scope mid-task. If new work
-  is discovered, note it for a follow-up task.
-- **Time-box exploration**: limit exploratory searches to 5 tool calls per
-  sub-question. If the answer is not found, surface the gap to the user.
+- **3-strike rule**: if the same tool call or search returns unhelpful results three times, stop and reformulate the approach or ask the user for guidance.
+- **No circular re-reads**: do not re-read a file within the same task unless you have made changes to it since the last read.
+- **Monotonic progress**: each step must produce new information or new output. If a step produces nothing new, skip it and move to the next.
+- **Scope lock**: once Plan is set, do not expand scope mid-task. If new work is discovered, note it for a follow-up task.
+- **Time-box exploration**: limit exploratory searches to 5 tool calls per sub-question. If the answer is not found, surface the gap to the user.
 
 ---
 
@@ -259,35 +246,18 @@ Agent-scoped hooks: individual agents can define a `hooks:` section in their `.a
 
 When spawning subagents:
 
-- The parent/default agent follows this protocol too: if a request matches a
-  named specialist workflow, delegate to the matching agent instead of
-  absorbing the specialist workflow inline.
-- Do not keep specialist work inline because it seems small, quick, or
-  manageable.
-- Trust the selected specialist to complete the task unless you know it is
-  outside the specialist scope, allow-list, or capabilities, or the specialist
-  reports a concrete blocker.
+- The parent/default agent follows this protocol too: if a request matches a named specialist workflow, delegate to the matching agent instead of absorbing the specialist workflow inline.
+- Do not keep specialist work inline because it seems small, quick, or manageable.
+- Trust the selected specialist to complete the task unless you know it is outside the specialist scope, allow-list, or capabilities, or the specialist reports a concrete blocker.
 - Each `.github/agents/*.agent.md` declares an `agents:` allow-list restricting which subagents it may invoke. Respect these boundaries.
 - Keep allow-lists narrow. Add a subagent only when the agent body defines a concrete workflow for using it. Do not keep speculative delegates "just in case".
-- Preferred specialist map: `Explore` for read-only repo scans, `Researcher`
-  for current external docs, `Review` for formal code review or architectural
-  critique, `Audit` for health, security, or residual-risk checks, `Docs` for
-  documentation and migration-note work, `Extensions` for VS Code extension,
-  profile, or workspace recommendation work, `Commit` for staging, commits,
-  pushes, tags, or releases, `Setup` for template bootstrap, instruction
-  update, backup restore, or factory restore work, `Organise` for file moves,
-  path repair, or repository reshaping, and `Cleaner` for stale artefact,
-  archive, and cache cleanup.
+- Preferred specialist map: `Explore` for read-only repo scans, `Researcher` for current external docs, `Review` for formal code review or architectural critique, `Audit` for health, security, or residual-risk checks, `Docs` for documentation and migration-note work, `Extensions` for VS Code extension, profile, or workspace recommendation work, `Commit` for staging, commits, pushes, tags, or releases, `Setup` for template bootstrap, instruction update, backup restore, or factory restore work, `Organise` for file moves, path repair, or repository reshaping, and `Cleaner` for stale artefact, archive, and cache cleanup.
 - Pass the full contents of this file as system context.
 - Set `max_depth = {{SUBAGENT_MAX_DEPTH}}`. Stop and surface to user if reached.
 - Subagent output must include: files changed, LOC delta, test result, any baseline breaches.
 - Subagents inherit §3 (Structured Thinking), §11 (Tools), §12 (Skills), §13 (MCP), §14 (Workspace Knowledge) — all anti-loop rules apply at every depth.
-- **Prompt clarity**: when spawning a subagent, the prompt must include: (a) the
-  specific deliverable expected, (b) the format of the response, and (c) explicit
-  stop conditions. Vague prompts cause subagent loops.
-- **Fail fast**: if a subagent cannot make progress within 10 tool calls, it must
-  return what it has found so far with a clear statement of what blocked it.
-  Do not let subagents spin.
+- **Prompt clarity**: when spawning a subagent, the prompt must include: (a) the specific deliverable expected, (b) the format of the response, and (c) explicit stop conditions. Vague prompts cause subagent loops.
+- **Fail fast**: if a subagent cannot make progress within 10 tool calls, it must return what it has found so far with a clear statement of what blocked it. Do not let subagents spin.
 
 ### Organization-Level Agents
 
@@ -336,7 +306,7 @@ Resolved values and project-specific overrides. Populated during setup; updated 
 The Graduated Trust Model assigns verification behaviour based on path patterns. Higher-trust paths allow Copilot to act with less friction; lower-trust paths require explicit approval.
 
 | Trust tier | Default paths | Verification behaviour |
-|-----------|--------------|----------------------|
+|-----------|---------------|-----------------------|
 | High | `tests/`, `__tests__/`, `*.test.*`, `*.spec.*`, `docs/`, `*.md` | Auto-approve: Copilot acts freely. Changes are summarised after the fact. |
 | Standard | `src/`, `lib/`, `app/`, `packages/` | Review: Copilot describes the planned change and waits for approval before writing. |
 | Guarded | `*.config.*`, `.*rc`, `.github/`, `.env*`, `Dockerfile`, `docker-compose*` | Pause: Copilot stops, explains the change in detail, and waits for explicit "go ahead" before any modification. |
@@ -359,17 +329,13 @@ Recommended thinking effort levels per agent role (set in VS Code model picker):
 | Setup, Extensions | **Medium** | Mechanical/structured tasks; adaptive reasoning sufficient |
 | Fast, Explore | **Low** | Speed over depth for lookups and navigation |
 
-> Override: open the model picker → click `>` next to the model → select effort
-> level. The setting persists per model across conversations. See `MODELS.md` in
-> the template repo for detailed per-agent rationale.
+> Override: open the model picker → click `>` next to the model → select effort level. The setting persists per model across conversations. See `MODELS.md` in the template repo for detailed per-agent rationale.
 
 ---
 
 ## §11 — Tool Protocol
 
-> **Parallel execution**: When multiple independent tool calls are needed (reading N files,
-> running N searches, fetching N URLs), execute all in one parallel batch. Never sequence
-> independent tool calls — check for data dependencies first, then parallelize everything else.
+> **Parallel execution**: When multiple independent tool calls are needed (reading N files, running N searches, fetching N URLs), execute all in one parallel batch. Never sequence independent tool calls — check for data dependencies first, then parallelize everything else.
 
 When a task requires automation or scripting, activate the **tool-protocol** skill (`.github/skills/tool-protocol/SKILL.md`) and follow its decision tree: Find → Built-in → Search → Compose → Build → Evaluate reusability.
 

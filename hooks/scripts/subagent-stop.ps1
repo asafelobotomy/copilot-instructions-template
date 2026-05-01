@@ -6,6 +6,7 @@
 # risk:     safe
 # ESCALATION: none
 
+Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $input_json = [Console]::In.ReadToEnd()

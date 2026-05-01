@@ -66,7 +66,6 @@ Replace the original code with a call to the extracted unit. Keep the original i
 ### 5. Run the characterisation tests
 
 Tests must pass unchanged. If they fail:
-
 - The interface did not match — fix the extracted unit
 - There was hidden coupling — resolve before proceeding (do not work around it)
 

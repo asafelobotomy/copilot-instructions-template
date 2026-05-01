@@ -74,7 +74,7 @@ High cyclomatic complexity = likely debt:
 | JS/TS | `complexity` ESLint rule | ≥10 = high |
 | Go | `gocyclo -over 10 .` | ≥10 = high |
 | Java | Checkstyle `CyclomaticComplexity` | ≥10 = high |
-| Any | Functions >50 lines are a smell | — |
+| Any | Functions >50 lines are a smell |
 
 ### 5. Check test coverage gaps
 
@@ -104,7 +104,6 @@ Produce a prioritized table:
 | P3 | `OrderService.processAll()` complexity 18 | `services/order.java:203` | Complexity | — | L | Med |
 
 Priority tiers:
-
 - **P1**: Security-adjacent, blocks feature work, or referenced by multiple active TODOs
 - **P2**: Dead code or deprecated APIs actively in the call path
 - **P3**: Complexity + coverage gaps, stale non-critical TODOs

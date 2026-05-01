@@ -133,7 +133,7 @@ Create `.mcp.json` at plugin root (uses `mcpServers` key, not `servers`):
 }
 ```
 
-Use `${CLAUDE_PLUGIN_ROOT}` for all path references. Plugin MCP servers start on enable and are implicitly trusted.
+For Claude-format plugins, use `${CLAUDE_PLUGIN_ROOT}`. For OpenPlugin plugins, replace it with `${PLUGIN_ROOT}`. Copilot-format plugins do not currently document a plugin-root token in VS Code, so prefer Claude or OpenPlugin format when the server path must resolve inside the plugin directory. Plugin MCP servers start on enable and are implicitly trusted.
 
 ## Verify
 

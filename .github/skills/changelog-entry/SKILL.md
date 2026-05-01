@@ -87,7 +87,6 @@ Format:
 ```
 
 Rules:
-
 - Omit empty sections
 - Each bullet starts with `* **scope**:` (optional scope in bold) then a user-readable description
 - Write in terms of **what the user can do differently**, not what line of code changed

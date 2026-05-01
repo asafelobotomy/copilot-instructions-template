@@ -91,4 +91,3 @@ Inspect active workflows before commit/push and clear locally reproducible failu
 - Dependencies probed before install; installs approved via `askQuestions`
 - Auto-fixes stayed in scope or were re-approved
 - Commit agent received clear pass, block, or residual-risk outcome
-- Commit agent received clear pass, block, or residual-risk outcome

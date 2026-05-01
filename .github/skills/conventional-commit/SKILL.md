@@ -6,7 +6,7 @@ compatibility: ">=1.4"
 
 # Conventional Commit
 
-> Skill metadata: version "1.1"; license MIT; tags [git, commit, conventional-commits, changelog, versioning]; compatibility ">=1.4"; recommended tools [codebase, runCommands].
+> Skill metadata: version "1.2"; license MIT; tags [git, commit, conventional-commits, changelog, versioning]; compatibility ">=1.4"; recommended tools [codebase, runCommands].
 
 Write a well-structured commit message following the [Conventional Commits](https://www.conventionalcommits.org/) specification.
 
@@ -59,24 +59,34 @@ Write a well-structured commit message following the [Conventional Commits](http
    <footer>
    ```
 
-8. **Wait for approval** — Present the message and wait. Do not run `git commit` until the user approves or modifies the message.
+8. **Approval gate** — Use `askQuestions` before committing. If called from the Commit agent, the agent's approval gate (commit workflow step 6) runs instead; skip this step in that context.
 
-9. **Execute** — Once the user approves, run:
-
-   ```bash
-   git commit -m "<subject>" -m "<body>"
+   ```yaml
+   header: "Commit: <type>(<scope>): <subject>"
+   question: "Approve this commit message, or type an edited version below."
+   allowFreeformInput: true
+   options:
+     - label: "Approve as-is"
+       recommended: true
+     - label: "Skip this commit"
+       description: "Leave these files staged but do not commit them now"
+     - label: "Abort"
+       description: "Stop here without committing"
    ```
 
-   For multi-line messages with footers, use a heredoc or a temporary file to avoid shell escaping issues:
+   - **Approve as-is**: proceed with the displayed message.
+   - **Freeform text**: treat as the replacement message and proceed.
+   - **Skip this commit** / **Abort**: stop; do not run `git commit`.
+
+9. **Execute** — Once approved, prefer `mcp_git_git_commit` for multi-line messages (handles newlines safely). When using the terminal, write the message to a temp file and use `git commit -F <tmpfile>`, then remove the file. Do NOT use `git commit -m "subject\n\nbody"` — shell newline escaping is unreliable across platforms.
 
    ```bash
-   git commit -F - <<'EOF'
-   <type>(<scope>): <subject>
+   # Subject only
+   git commit -m "<type>(<scope>): <subject>"
 
-   <body>
-
-   <footer>
-   EOF
+   # Subject + body/footer via temp file
+   tmp=$(mktemp); printf '%s\n\n%s\n\n%s' "<subject>" "<body>" "<footer>" > "$tmp"
+   git commit -F "$tmp"; rm -f "$tmp"
    ```
 
    Confirm the commit was created: `git log --oneline -1`

@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # scripts/ci/validate-test-output.sh -- verify all test scripts emit mandatory result output.
-# Every tests/**/test-*.sh must call finish_tests or contain an explicit Results: echo.
+# Every standalone tests/**/test-*.sh entrypoint must call finish_tests or
+# contain an explicit Results: echo. Sourced shard files may share the naming
+# convention but rely on a wrapper suite for result reporting.
 # Exit 0: all compliant. Exit 1: one or more scripts missing result reporting.
 set -euo pipefail
 
@@ -9,6 +11,9 @@ FAIL=0
 COUNT=0
 
 while IFS= read -r f; do
+  if [[ "$(head -n 1 "$f")" != '#!/usr/bin/env bash' ]]; then
+    continue
+  fi
   name=$(basename "$f")
   COUNT=$((COUNT + 1))
   if ! grep -qE 'finish_tests|echo.*Results' "$f"; then
