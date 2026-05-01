@@ -1,0 +1,39 @@
+{
+  "comment": "Guard-destructive policy tables. Each entry specifies 'bash' (POSIX ERE, used with grep -qiE) and 'powershell' (.NET regex, used with -imatch) variants. Edit this file to add, remove, or tune patterns; guard-destructive.sh and guard-destructive.ps1 load it at runtime with fallback to hardcoded defaults when absent.",
+  "blocked": [
+    {"id": "rm_rf_root",     "bash": "rm -rf /([^a-zA-Z0-9._-]|$)",             "powershell": "rm\\s+-rf\\s+/([^a-zA-Z0-9._-]|$)"},
+    {"id": "rm_rf_home",     "bash": "rm -rf ~([^a-zA-Z0-9._/-]|$)",            "powershell": "rm\\s+-rf\\s+~([^a-zA-Z0-9._/-]|$)"},
+    {"id": "rm_rf_dot",      "bash": "rm -rf \\.([[:space:]]|$)",                "powershell": "rm\\s+-rf\\s+\\.($|\\s)"},
+    {"id": "drop_table",     "bash": "DROP TABLE",                               "powershell": "DROP\\s+TABLE"},
+    {"id": "drop_database",  "bash": "DROP DATABASE",                            "powershell": "DROP\\s+DATABASE"},
+    {"id": "truncate_table", "bash": "TRUNCATE TABLE",                           "powershell": "TRUNCATE\\s+TABLE"},
+    {"id": "delete_where_1", "bash": "DELETE FROM .* WHERE 1",                  "powershell": "DELETE\\s+FROM\\s+.+\\s+WHERE\\s+1"},
+    {"id": "mkfs",           "bash": "mkfs\\.",                                   "powershell": "mkfs\\."},
+    {"id": "dd_block_dev",   "bash": "dd if=.* of=/dev/",                        "powershell": "dd\\s+if=.+of=/dev/"},
+    {"id": "fork_bomb",      "bash": ":\\(\\)\\{:[|]:&\\};:",                    "powershell": ":\\(\\)\\{:\\|:&\\};:"},
+    {"id": "chmod_777_root", "bash": "chmod -R 777 /([^a-zA-Z0-9._-]|$)",       "powershell": "chmod\\s+-R\\s+777\\s+/([^a-zA-Z0-9._-]|$)"},
+    {"id": "curl_pipe_sh",   "bash": "curl .*[|].*sh",                           "powershell": "curl\\s+.+\\|\\s*sh"},
+    {"id": "wget_pipe_sh",   "bash": "wget .*[|].*sh",                           "powershell": "wget\\s+.+\\|\\s*sh"}
+  ],
+  "caution": [
+    {"id": "rm_rf",          "bash": "rm -rf",                                   "powershell": "rm\\s+-rf"},
+    {"id": "rm_r",           "bash": "rm -r ",                                   "powershell": "rm\\s+-r\\s+"},
+    {"id": "chmod_777",      "bash": "chmod -R 777",                             "powershell": "chmod\\s+-R\\s+777"},
+    {"id": "drop",           "bash": "DROP ",                                    "powershell": "DROP\\s+"},
+    {"id": "delete_from",    "bash": "DELETE FROM",                              "powershell": "DELETE\\s+FROM"},
+    {"id": "git_push_force", "bash": "git push.*--force",                        "powershell": "git\\s+push.*--force"},
+    {"id": "git_reset_hard", "bash": "git reset --hard",                         "powershell": "git\\s+reset\\s+--hard"},
+    {"id": "git_clean_fd",   "bash": "git clean -fd",                            "powershell": "git\\s+clean\\s+-fd"},
+    {"id": "npm_publish",    "bash": "npm publish",                              "powershell": "npm\\s+publish"},
+    {"id": "cargo_publish",  "bash": "cargo publish",                            "powershell": "cargo\\s+publish"},
+    {"id": "pip_install",    "bash": "pip install --",                           "powershell": "pip\\s+install\\s+--"}
+  ],
+  "readonly_write": [
+    {"id": "mutating_cmds",  "bash": "(^|[;&|][[:space:]]*)(mkdir|touch|cp|mv|truncate|install)[[:space:]]",                               "powershell": "(^|[;&|]\\s*)(mkdir|touch|cp|mv|truncate|install)\\s"},
+    {"id": "in_place_edit",  "bash": "(^|[;&|][[:space:]]*)(sed[[:space:]]+-i|perl[[:space:]]+-i|tee[[:space:]])",                         "powershell": "(^|[;&|]\\s*)(sed\\s+-i|perl\\s+-i|tee\\s)"},
+    {"id": "redirect_write", "bash": "(^|[;&|][[:space:]]*)(echo|printf).*>+",                                                             "powershell": "(^|[;&|]\\s*)(echo|printf).*>+"},
+    {"id": "git_mutate",     "bash": "(^|[;&|][[:space:]]*)(git[[:space:]]+(add|commit|push|reset|checkout|switch|merge|rebase|cherry-pick|revert|tag|stash))", "powershell": "(^|[;&|]\\s*)(git\\s+(add|commit|push|reset|checkout|switch|merge|rebase|cherry-pick|revert|tag|stash))"},
+    {"id": "pkg_mutate",     "bash": "(^|[;&|][[:space:]]*)((npm|pnpm|yarn|bun)[[:space:]]+(install|add|remove|update|upgrade|publish))",  "powershell": "(^|[;&|]\\s*)((npm|pnpm|yarn|bun)\\s+(install|add|remove|update|upgrade|publish))"},
+    {"id": "pip_mutate",     "bash": "(^|[;&|][[:space:]]*)(pip|uv[[:space:]]+pip)[[:space:]]+install",                                    "powershell": "(^|[;&|]\\s*)(pip|uv\\s+pip)\\s+install"}
+  ]
+}

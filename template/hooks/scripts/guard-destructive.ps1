@@ -1,0 +1,221 @@
+#!/usr/bin/env pwsh
+# purpose:  Block dangerous terminal commands before execution
+# when:     PreToolUse
+# inputs:   JSON via stdin with tool_name and tool_input
+# outputs:  JSON with hookSpecificOutput.permissionDecision and optional additionalContext
+# risk:     safe
+# ESCALATION: ask
+
+Set-StrictMode -Version 1
+$ErrorActionPreference = 'Continue'
+$input_json = $input | Out-String
+
+try {
+    $data = $input_json | ConvertFrom-Json
+} catch {
+    '{"continue": true}'; exit 0
+}
+
+$toolName = $data.tool_name ?? ''
+$toolNameLower = $toolName.ToLowerInvariant()
+$toolNameCanon = ($toolNameLower -replace '[_-]', '')
+
+# Only guard terminal/command tools plus create_and_run_task, which nests its
+# executable command under tool_input.task.command.
+if ($toolName -notmatch 'terminal|command|bash|shell' -and $toolNameCanon -ne 'createandruntask') {
+    '{"continue": true}'; exit 0
+}
+
+# Read-only terminal observer tools do not execute commands and therefore
+# legitimately omit tool_input.command.
+if ($toolNameCanon -in @('getterminaloutput', 'terminallastcommand', 'terminalselection', 'killterminal')) {
+    '{"continue": true}'; exit 0
+}
+# Read-only terminal observation tools — never execute commands, always allow
+# get_terminal_output / getTerminalOutput only reads stdout from an existing session
+# run_vscode_command / vscode_run_command invokes VS Code UI commands, not shell commands
+if ($toolName -imatch 'get_terminal_output|getterminaloutput|terminal_last_command|terminalselection|run_vscode_command|vscode_run_command') {
+    '{"continue": true}'; exit 0
+}
+$ti = $data.tool_input
+$command = ''
+if ($null -ne $ti -and $ti.command -is [string]) {
+    $command = $ti.command
+}
+
+if ($toolNameCanon -eq 'createandruntask' -and $null -ne $ti.task) {
+    $task = $ti.task
+    if ($task.command -is [string]) {
+        $parts = @($task.command)
+        if ($task.args -is [System.Collections.IEnumerable]) {
+            foreach ($arg in $task.args) {
+                if ($arg -is [string] -and $arg) {
+                    $parts += $arg
+                }
+            }
+        }
+        $command = ($parts | Where-Object { $_ }) -join ' '
+    }
+}
+
+if ([string]::IsNullOrWhiteSpace($command)) {
+    [PSCustomObject]@{
+        hookSpecificOutput = [PSCustomObject]@{
+            hookEventName            = 'PreToolUse'
+            permissionDecision       = 'ask'
+            permissionDecisionReason = 'Missing tool_input.command. Manual confirmation.'
+        }
+    } | ConvertTo-Json -Depth 5
+    exit 0
+}
+
+# ── Load policy patterns from guard-policy.json ──────────────────────────────
+$guardPolicyPath = Join-Path (Split-Path -Parent $PSCommandPath) 'guard-policy.json'
+$blockedPatterns      = @()
+$cautionPatterns      = @()
+$readonlyWritePatterns = @()
+
+if (Test-Path $guardPolicyPath) {
+    try {
+        $policy = Get-Content $guardPolicyPath -Raw | ConvertFrom-Json
+        $blockedPatterns       = @($policy.blocked       | Where-Object { $_.powershell } | ForEach-Object { $_.powershell })
+        $cautionPatterns       = @($policy.caution       | Where-Object { $_.powershell } | ForEach-Object { $_.powershell })
+        $readonlyWritePatterns = @($policy.readonly_write | Where-Object { $_.powershell } | ForEach-Object { $_.powershell })
+    } catch { <# fall through to hardcoded defaults #> }
+}
+
+# Fallback when guard-policy.json is absent or unreadable
+if ($blockedPatterns.Count -eq 0) {
+    $blockedPatterns = @(
+        'rm\s+-rf\s+/([^a-zA-Z0-9._-]|$)',
+        'rm\s+-rf\s+~([^a-zA-Z0-9._/-]|$)',
+        'rm\s+-rf\s+\.($|\s)',
+        'DROP\s+TABLE',
+        'DROP\s+DATABASE',
+        'TRUNCATE\s+TABLE',
+        'DELETE\s+FROM\s+.+\s+WHERE\s+1',
+        'mkfs\.',
+        'dd\s+if=.+of=/dev/',
+        ':\(\)\{:\|:&\};:',
+        'chmod\s+-R\s+777\s+/([^a-zA-Z0-9._-]|$)',
+        'curl\s+.+\|\s*sh',
+        'wget\s+.+\|\s*sh'
+    )
+}
+
+function Test-ReadonlyPatternSearch {
+    param(
+        [string]$InputCommand
+    )
+
+    $trimmed = $InputCommand.Trim()
+    if ($trimmed -notmatch '^(rg|grep|findstr)\b' -and $trimmed -notmatch '^git\s+grep\b') {
+        return $false
+    }
+
+    if ($InputCommand -match '&&|\|\||;|[<>]|\s\|\s' -or $InputCommand.Contains('$(') -or $InputCommand.Contains('`')) {
+        return $false
+    }
+
+    return $true
+}
+
+if (Test-ReadonlyPatternSearch -InputCommand $command) {
+    '{"continue": true}'
+    exit 0
+}
+
+foreach ($pattern in $blockedPatterns) {
+    if ($command -imatch $pattern) {
+        [PSCustomObject]@{
+            hookSpecificOutput = [PSCustomObject]@{
+                hookEventName           = 'PreToolUse'
+                permissionDecision      = 'deny'
+                permissionDecisionReason = "Blocked: destructive pattern '$pattern'"
+            }
+        } | ConvertTo-Json -Depth 5
+        exit 0
+    }
+}
+
+# Caution patterns — require user confirmation
+if ($cautionPatterns.Count -eq 0) {
+    $cautionPatterns = @(
+        'rm\s+-rf',
+        'rm\s+-r\s+',
+        'chmod\s+-R\s+777',
+        'DROP\s+',
+        'DELETE\s+FROM',
+        'git\s+push.*--force',
+        'git\s+reset\s+--hard',
+        'git\s+clean\s+-fd',
+        'npm\s+publish',
+        'cargo\s+publish',
+        'pip\s+install\s+--'
+    )
+}
+
+foreach ($pattern in $cautionPatterns) {
+    if ($command -imatch $pattern) {
+        $preview = if ($command.Length -gt 200) { $command.Substring(0,200) } else { $command }
+        [PSCustomObject]@{
+            hookSpecificOutput = [PSCustomObject]@{
+                hookEventName           = 'PreToolUse'
+                permissionDecision      = 'ask'
+                permissionDecisionReason = "Caution pattern '$pattern'. Confirm."
+                additionalContext       = "Command: '$preview'"
+            }
+        } | ConvertTo-Json -Depth 5
+        exit 0
+    }
+}
+
+# Read-only agent guardrails — Audit, Review, and Explore should not perform
+# mutating terminal operations without explicit user approval.
+$agentName = ''
+try {
+    $candidates = @(
+        $data.agentName,
+        $data.agent_name,
+        $data.context.agentName,
+        $data.context.agent_name,
+        $data.session.agentName,
+        $data.session.agent_name
+    )
+    foreach ($c in $candidates) {
+        if ($c -is [string] -and $c.Trim()) {
+            $agentName = $c.Trim()
+            break
+        }
+    }
+} catch { $agentName = '' }
+
+if ($agentName -match '^(Audit|Review|Explore)$') {
+    if ($readonlyWritePatterns.Count -eq 0) {
+        $readonlyWritePatterns = @(
+            '(^|[;&|]\s*)(mkdir|touch|cp|mv|truncate|install)\s',
+            '(^|[;&|]\s*)(sed\s+-i|perl\s+-i|tee\s)',
+            '(^|[;&|]\s*)(echo|printf).*>+',
+            '(^|[;&|]\s*)(git\s+(add|commit|push|reset|checkout|switch|merge|rebase|cherry-pick|revert|tag|stash))',
+            '(^|[;&|]\s*)((npm|pnpm|yarn|bun)\s+(install|add|remove|update|upgrade|publish))',
+            '(^|[;&|]\s*)(pip|uv\s+pip)\s+install'
+        )
+    }
+
+    foreach ($rwp in $readonlyWritePatterns) {
+        if ($command -imatch $rwp) {
+            $preview = if ($command.Length -gt 200) { $command.Substring(0,200) } else { $command }
+            [PSCustomObject]@{
+                hookSpecificOutput = [PSCustomObject]@{
+                    hookEventName           = 'PreToolUse'
+                    permissionDecision      = 'ask'
+                    permissionDecisionReason = "$agentName is read-only. Confirm mutation."
+                    additionalContext       = "Command '$preview' mutates state. Use Code or confirm."
+                }
+            } | ConvertTo-Json -Depth 5
+            exit 0
+        }
+    }
+}
+
+'{"continue": true}'

@@ -1,0 +1,261 @@
+#!/usr/bin/env pwsh
+# purpose:  Save workspace context before compaction
+# when:     PreCompact
+# inputs:   JSON via stdin with trigger field
+# outputs:  JSON with hookSpecificOutput.additionalContext summarizing saved state
+# risk:     safe
+# ESCALATION: none
+
+Set-StrictMode -Version 1
+$ErrorActionPreference = 'Continue'
+$inputJson = $input | Out-String
+$summaryLines = @()
+
+function Get-PythonCommand {
+    foreach ($candidate in @('python3', 'python', 'py')) {
+        if (Get-Command $candidate -ErrorAction SilentlyContinue) {
+            return $candidate
+        }
+    }
+    return $null
+}
+
+function Get-ClockSummary {
+    $statePath = '.copilot/workspace/runtime/state.json'
+    $eventsPath = '.copilot/workspace/runtime/.heartbeat-events.jsonl'
+    if (-not (Test-Path $statePath) -and -not (Test-Path $eventsPath)) {
+        return ''
+    }
+
+    $pythonCommand = Get-PythonCommand
+    if ($null -eq $pythonCommand) {
+        return ''
+    }
+
+    $helperPath = Join-Path $PSScriptRoot 'heartbeat_clock_summary.py'
+    if (-not (Test-Path $helperPath)) {
+        return ''
+    }
+
+    if ($pythonCommand -eq 'py') {
+        $output = & py -3 $helperPath 2>$null
+        if (-not $output) {
+            $output = & py $helperPath 2>$null
+        }
+    } else {
+        $output = & $pythonCommand $helperPath 2>$null
+    }
+
+    return ($output | Out-String).Trim()
+}
+
+function Get-TriggerLabel {
+    param([string]$InputJson)
+
+    if (-not $InputJson.Trim()) {
+        return ''
+    }
+
+    try {
+        $payload = $InputJson | ConvertFrom-Json
+        if ($payload.trigger -is [string]) {
+            return $payload.trigger.Trim()
+        }
+    } catch {}
+
+    return ''
+}
+
+function Get-RowPriority {
+    param([string[]]$Cells, [string[]]$HeaderCells)
+    for ($i = 0; $i -lt $HeaderCells.Count; $i++) {
+        $hl = $HeaderCells[$i].ToLower()
+        if (($hl -eq 'priority' -or $hl -eq 'impact') -and $i -lt $Cells.Count) {
+            $val = $Cells[$i].ToLower().Trim()
+            if ($val -in @('p1', 'critical', 'high'))     { return 0 }
+            if ($val -in @('p2', 'notable', 'medium'))    { return 1 }
+            if ($val -in @('p3', 'informational', 'low')) { return 2 }
+        }
+    }
+    return 5
+}
+
+function Get-MemorySummary {
+    if (-not (Test-Path '.copilot/workspace/knowledge/MEMORY.md')) {
+        return ''
+    }
+
+    $lines = @(Get-Content '.copilot/workspace/knowledge/MEMORY.md' -ErrorAction SilentlyContinue)
+    $entries = @()
+    $currentSection = ''
+
+    for ($index = 0; $index -lt $lines.Count; ) {
+        $trimmed = $lines[$index].Trim()
+
+        if ($trimmed.StartsWith('## ')) {
+            $currentSection = $trimmed.Substring(3).Trim()
+            $index += 1
+            continue
+        }
+
+        if ($currentSection -and $trimmed.StartsWith('|')) {
+            $block = @()
+            while ($index -lt $lines.Count -and $lines[$index].TrimStart().StartsWith('|')) {
+                $block += $lines[$index].Trim()
+                $index += 1
+            }
+
+            if ($block.Count -ge 3) {
+                $headerCells = @($block[0].Trim('|').Split('|') | ForEach-Object { $_.Trim() })
+                $scoredRows = @()
+                foreach ($row in $block[2..($block.Count - 1)]) {
+                    $cells = @($row.Trim('|').Split('|') | ForEach-Object { $_.Trim() })
+                    $meaningful = @($cells | Where-Object { $_ -and $_ -ne '*(to be discovered)*' })
+                    if ($meaningful.Count -gt 0) {
+                        $score = Get-RowPriority -Cells $cells -HeaderCells $headerCells
+                        $scoredRows += [PSCustomObject]@{ Score = $score; Cells = $cells }
+                    }
+                }
+
+                if ($scoredRows.Count -gt 0) {
+                    $best = ($scoredRows | Sort-Object Score)[0].Cells
+                    $preview = (@($best | Where-Object { $_ }) -join ' | ')
+                    if ($preview.Length -gt 160) {
+                        $preview = $preview.Substring(0, 160)
+                    }
+                    $entries += "${currentSection}: $preview"
+                }
+            }
+
+            continue
+        }
+
+        $index += 1
+    }
+
+    if (-not $entries) {
+        $fallback = @()
+        foreach ($line in $lines) {
+            $trimmed = $line.Trim()
+            if (-not $trimmed) {
+                continue
+            }
+            if ($trimmed.StartsWith('#') -or $trimmed.StartsWith('|') -or $trimmed.StartsWith('<!--') -or $trimmed.StartsWith('*(')) {
+                continue
+            }
+            if ($trimmed -match '^[\-\|\s]+$') {
+                continue
+            }
+            if ($trimmed.StartsWith('- ')) {
+                $trimmed = $trimmed.Substring(2).Trim()
+            }
+            if ($trimmed -notmatch ':' -and -not $line.TrimStart().StartsWith('- ')) {
+                continue
+            }
+            $fallback += $trimmed
+        }
+
+        if ($fallback.Count -gt 0) {
+            $entries = @($fallback | Select-Object -Last 3)
+        }
+    }
+
+    $summary = (@($entries | Select-Object -First 3) -join ' || ')
+    if ($summary.Length -gt 500) {
+        $summary = $summary.Substring(0, 500)
+    }
+    return $summary
+}
+
+function Get-SoulSummary {
+    if (-not (Test-Path '.copilot/workspace/identity/SOUL.md')) {
+        return ''
+    }
+
+    $lines = @(Get-Content '.copilot/workspace/identity/SOUL.md' -ErrorAction SilentlyContinue)
+    $entries = @($lines | ForEach-Object { $_.Trim() } | Where-Object { $_.StartsWith('- ') } | ForEach-Object { $_.Substring(2).Trim() })
+
+    if (-not $entries) {
+        $entries = @(
+            $lines | ForEach-Object { $_.Trim() } | Where-Object {
+                $_ -and -not $_.StartsWith('#') -and -not $_.StartsWith('<!--') -and -not $_.StartsWith('*(')
+            } | Select-Object -First 3
+        )
+    }
+
+    $summary = (@($entries | Select-Object -First 5) -join ' || ')
+    if ($summary.Length -gt 400) {
+        $summary = $summary.Substring(0, 400)
+    }
+    return $summary
+}
+
+function Add-SummaryLine {
+    param(
+        [string]$Label,
+        [string]$Value
+    )
+
+    if (-not [string]::IsNullOrWhiteSpace($Value)) {
+        $script:summaryLines += "- ${Label}: $Value"
+    }
+}
+
+$trigger = Get-TriggerLabel -InputJson $inputJson
+Add-SummaryLine -Label 'Trigger' -Value $trigger
+
+# Heartbeat pulse
+if (Test-Path '.copilot/workspace/operations/HEARTBEAT.md') {
+    $pulse = (Select-String -Path '.copilot/workspace/operations/HEARTBEAT.md' -Pattern 'HEARTBEAT' |
+              Select-Object -First 1).Line
+    Add-SummaryLine -Label 'Heartbeat' -Value $pulse
+}
+
+$clockSummary = Get-ClockSummary
+Add-SummaryLine -Label 'Clock' -Value $clockSummary
+
+$memorySummary = Get-MemorySummary
+Add-SummaryLine -Label 'Memory entries' -Value $memorySummary
+
+$soulSummary = Get-SoulSummary
+Add-SummaryLine -Label 'SOUL cues' -Value $soulSummary
+
+# Intent phase from pulse state (task-state recovery after compaction)
+$statePath = '.copilot/workspace/runtime/state.json'
+if ((Test-Path $statePath) -and (Get-PythonCommand)) {
+    try {
+        $stateContent = Get-Content $statePath -Raw | ConvertFrom-Json
+        $intentPhase = $stateContent.intent_phase
+        if ($intentPhase -and $intentPhase -ne 'quiet') {
+            Add-SummaryLine -Label 'Intent' -Value $intentPhase
+        }
+    } catch {}
+}
+
+# Git status snapshot
+try {
+    $gitStatus = & git status --porcelain 2>$null | Select-Object -First 10
+    if ($gitStatus) {
+        $modifiedCount = ($gitStatus | Measure-Object).Count
+        Add-SummaryLine -Label 'Git' -Value "$modifiedCount modified files"
+    }
+} catch {}
+
+if ($summaryLines.Count -eq 0) {
+    '{"continue": true}'
+    exit 0
+}
+
+if ($summaryLines) {
+    $summary = "Workspace snapshot:`n" + ($summaryLines -join "`n")
+    if ($summary.Length -gt 2000) { $summary = $summary.Substring(0,2000) }
+
+    [PSCustomObject]@{
+        hookSpecificOutput = [PSCustomObject]@{
+            hookEventName     = 'PreCompact'
+            additionalContext = $summary
+        }
+    } | ConvertTo-Json -Depth 5
+} else {
+    '{"continue": true}'
+}
