@@ -25,6 +25,21 @@ Thumbs.db
 *.orig
 *~
 
+# JetBrains IDE
+.idea
+
+# Personal shell / dotfile artefacts (leaked by dotfile managers or stow)
+.bash_profile
+.bashrc
+.profile
+.zprofile
+.zshrc
+.ripgreprc
+.gitconfig
+
+# Git internal file — repo uses no submodules; empty .gitmodules is noise
+.gitmodules
+
 # Python bytecode cache
 __pycache__/
 *.pyc
