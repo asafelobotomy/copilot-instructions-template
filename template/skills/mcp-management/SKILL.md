@@ -34,6 +34,7 @@ Commands: `MCP: Open Workspace Configuration`, `MCP: Open User Configuration`
 | Always-on | filesystem, git | Every project | Enabled by default |
 | External | github, fetch | GitHub/web access needed | `github` uses VS Code OAuth; `fetch` needs no creds |
 | Documentation | context7 | Third-party libraries | HTTP remote, free tier, optional API key |
+| Optional | sequential-thinking | Complex planning or architecture tasks requiring explicit thought branching | Disabled by default; enable per-workspace or at user level |
 
 ## Available servers
 
@@ -44,6 +45,7 @@ Commands: `MCP: Open Workspace Configuration`, `MCP: Open User Configuration`
 | `github/github-mcp-server` | Credentials | **HTTP remote** (`https://api.githubcopilot.com/mcp/`) | GitHub API — issues, PRs, repos, Actions, CI/CD, security alerts, Dependabot |
 | `mcp-server-fetch` | Credentials | **`uvx`** (stdio, Python) | HTTP fetch for web content and APIs |
 | `@upstash/context7-mcp` | Documentation | **HTTP remote** (`https://mcp.context7.com/mcp`) | Live, version-specific library documentation — prevents hallucinated or outdated APIs |
+| `@modelcontextprotocol/server-sequential-thinking` | Optional | **`npx`** (stdio) | Explicit step-by-step reasoning — externalizes thought trees with revisable steps for complex planning and architecture decisions |
 
 > **Removed (v3.2.0):** `@modelcontextprotocol/server-memory` — replaced by VS Code's built-in memory tool (`/memories/`). **Archived:** `@modelcontextprotocol/server-github` (npm) — replaced by `github/github-mcp-server` HTTP remote.
 
@@ -60,9 +62,22 @@ Not included in base template. Add to `.vscode/mcp.json` by stack:
 
 Discover servers: `code.visualstudio.com/mcp` · `registry.modelcontextprotocol.io` · `glama.ai` · `smithery.ai`
 
-### Sequential Thinking (optional)
+### Sequential Thinking
 
-`@modelcontextprotocol/server-sequential-thinking` (`npx`) — structured step-by-step reasoning. Consider adding to **user-level** `mcp.json` rather than workspace config.
+`@modelcontextprotocol/server-sequential-thinking` (`npx`, stdio) provides an explicit reasoning scratchpad: structured steps with revisable thoughts, branch tracking, and persistent reasoning state across tool calls.
+
+**Tool name**: `mcp_sequential-th_sequentialthinking`
+
+**When to invoke** — the external tool adds value beyond the built-in Structured Thinking Discipline when:
+
+- A planning task requires explicit thought-tree branching or backtracking to earlier reasoning states
+- Architectural decisions need auditable, revisable steps visible in the chat UI for human review
+- Multi-step problem decomposition must survive context switches (reasoning state persists server-side across tool calls)
+- You want a shareable reasoning trace (e.g. for pairing or handoff)
+
+**When the built-in discipline is sufficient**: standard single-turn implementation tasks, and any task where internal chain-of-thought is adequate and no external audit trail is needed.
+
+**Deployment**: workspace `.vscode/mcp.json` when the reasoning pattern is relevant to the team; user-level `mcp.json` for personal workflows where committing the server to the workspace would be noise.
 
 ## MCP capabilities (GA since v1.102)
 
