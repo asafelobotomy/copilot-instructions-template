@@ -197,4 +197,42 @@ assert_contains "failure summary is printed" "$output" "## FAILED (1 of 1 suites
 assert_contains "failed suite path is listed" "$output" "tests/scripts/failing-suite.sh"
 echo ""
 
+echo "8. SIGINT during run-local prints partial summary and exits 130"
+TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
+make_success_fixture "$TMP"
+# Replace the pass-suite with one that sends SIGINT to the parent Python process
+cat > "$TMP/tests/scripts/pass-suite.sh" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+echo "pass-suite"
+EOF
+chmod +x "$TMP/tests/scripts/pass-suite.sh"
+# Append an interrupter suite that fires SIGINT at the manifest runner's PID
+cat >> "$TMP/scripts/harness/suite-manifest.json" <<'EOF_UNUSED'
+EOF_UNUSED
+# Build a fixture that has one passing suite then one that SIGINTs the runner
+cat > "$TMP/scripts/harness/suite-manifest.json" <<'EOF'
+{
+  "schemaVersion": "1.0",
+  "description": "interrupt-fixture",
+  "phases": [{ "id": "scripts", "label": "Script Behavior" }],
+  "suites": [
+    { "id": "pass-suite", "path": "tests/scripts/pass-suite.sh", "phase": "scripts", "ciLabel": "pass" },
+    { "id": "interrupt-suite", "path": "tests/scripts/interrupt-suite.sh", "phase": "scripts", "ciLabel": "interrupt" }
+  ]
+}
+EOF
+cat > "$TMP/tests/scripts/interrupt-suite.sh" <<'EOF'
+#!/usr/bin/env bash
+# Send SIGINT to the parent process group so the Python harness catches it.
+kill -INT "$(ps -o ppid= -p $$)" 2>/dev/null || true
+sleep 2
+EOF
+chmod +x "$TMP/tests/scripts/interrupt-suite.sh"
+interrupt_output=$(python3 "$SCRIPT" run-local --root "$TMP" 2>&1) || interrupt_rc=$?
+interrupt_rc=${interrupt_rc:-0}
+assert_contains "interrupted run prints partial summary" "$interrupt_output" "INTERRUPTED"
+assert_contains "interrupted run shows completed count" "$interrupt_output" "completed 1 suites"
+echo ""
+
 finish_tests

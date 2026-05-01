@@ -205,12 +205,25 @@ def cmd_run_suite(root: pathlib.Path, suite_path: str) -> int:
     return run_command(["bash", suite_path], root)
 
 
+def _print_run_summary(total_suites: int, failed_suites: int, failed_list: list[str], interrupted: bool = False) -> None:
+    print("")
+    if interrupted:
+        passed = total_suites - failed_suites
+        print(f"## INTERRUPTED (completed {total_suites} suites: {passed} passed, {failed_suites} failed)")
+    elif failed_suites > 0:
+        print(f"## FAILED ({failed_suites} of {total_suites} suites)")
+    else:
+        print(f"All {total_suites} test suites passed.")
+    for failed in failed_list:
+        print(f"  - {failed}")
+
+
 def cmd_run_local(root: pathlib.Path) -> int:
     manifest, _ = load_manifest(root)
     phases, suites, phases_by_id = validate_manifest(manifest, root)
     suites_by_phase: dict[str, list[dict[str, object]]] = {str(phase["id"]): [] for phase in phases}
     for suite in suites:
-        suites_by_phase[str(suite["phase"])] .append(suite)
+        suites_by_phase[str(suite["phase"])].append(suite)
 
     failed_suites = 0
     failed_list: list[str] = []
@@ -225,39 +238,36 @@ def cmd_run_local(root: pathlib.Path) -> int:
         failed_list.append(PRE_FLIGHT_SCRIPT)
     print("")
 
-    for phase in phases:
-        label = str(phase["label"])
-        print("")
-        print(f"## {label}")
-        skip_reason = requirement_skip_reason(phase, root)
-        if skip_reason is not None:
-            print(skip_reason)
-            continue
+    try:
+        for phase in phases:
+            label = str(phase["label"])
+            print("")
+            print(f"## {label}")
+            skip_reason = requirement_skip_reason(phase, root)
+            if skip_reason is not None:
+                print(skip_reason)
+                continue
 
-        for suite in suites_by_phase[str(phase["id"])]:
-            suite_path = str(suite["path"])
-            total_suites += 1
-            print(f"==> {suite_path}")
-            sys.stdout.flush()
-            start = time.monotonic()
-            rc = run_command(["bash", suite_path], root)
-            elapsed = int(time.monotonic() - start)
-            if rc == 0:
-                print(f"  ({elapsed}s)")
-            else:
-                print(f"  ({elapsed}s) FAILED")
-                failed_suites += 1
-                failed_list.append(suite_path)
+            for suite in suites_by_phase[str(phase["id"])]:
+                suite_path = str(suite["path"])
+                print(f"==> {suite_path}")
+                sys.stdout.flush()
+                start = time.monotonic()
+                rc = run_command(["bash", suite_path], root)
+                elapsed = int(time.monotonic() - start)
+                total_suites += 1
+                if rc == 0:
+                    print(f"  ({elapsed}s)")
+                else:
+                    print(f"  ({elapsed}s) FAILED")
+                    failed_suites += 1
+                    failed_list.append(suite_path)
+    except KeyboardInterrupt:
+        _print_run_summary(total_suites, failed_suites, failed_list, interrupted=True)
+        return 130
 
-    print("")
-    if failed_suites > 0:
-        print(f"## FAILED ({failed_suites} of {total_suites} suites)")
-        for failed in failed_list:
-            print(f"  - {failed}")
-        return 1
-
-    print(f"All {total_suites} test suites passed.")
-    return 0
+    _print_run_summary(total_suites, failed_suites, failed_list)
+    return 1 if failed_suites > 0 else 0
 
 
 def add_root_argument(parser: argparse.ArgumentParser) -> None:
