@@ -6,7 +6,7 @@
   "counts": {
     "agents": 14,
     "agentSupportFiles": 1,
-    "skillsRepo": 28,
+    "skillsRepo": 30,
     "skillsTemplate": 0,
     "hookScriptsShell": 11,
     "hookScriptsPowerShell": 8,
@@ -61,7 +61,9 @@
       "onboarding-docs",
       "performance-profiling",
       "refactor-extract",
-      "tech-debt-audit"
+      "tech-debt-audit",
+      "audit-procedures",
+      "git-workflows"
     ],
     "template": []
   },

@@ -172,11 +172,15 @@ for needle in [
 '
 echo ""
 
-echo "2. Audit agent defines D11-D13 upstream baseline checks"
+echo "2. Audit agent defines D11-D13 upstream baseline checks (via audit-procedures skill)"
 assert_python "audit has D11 upstream version check" '
-text = (root / "agents/audit.agent.md").read_text(encoding="utf-8")
+# D11-D14 definitions live in the audit-procedures skill (loaded on demand)
+agent_text = (root / "agents/audit.agent.md").read_text(encoding="utf-8")
+if "audit-procedures" not in agent_text:
+    raise SystemExit("audit.agent.md must reference the audit-procedures skill for D1-D14 definitions")
+text = (root / "skills/audit-procedures/SKILL.md").read_text(encoding="utf-8")
 if "### D11" not in text:
-    raise SystemExit("audit.agent.md missing D11 check definition")
+    raise SystemExit("audit-procedures skill missing D11 check definition")
 if "VERSION.md" not in text:
     raise SystemExit("D11 must reference VERSION.md for upstream comparison")
 if "raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/VERSION.md" not in text:
@@ -184,9 +188,9 @@ if "raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/V
 '
 
 assert_python "audit has D12 fingerprint integrity check" '
-text = (root / "agents/audit.agent.md").read_text(encoding="utf-8")
+text = (root / "skills/audit-procedures/SKILL.md").read_text(encoding="utf-8")
 if "### D12" not in text:
-    raise SystemExit("audit.agent.md missing D12 check definition")
+    raise SystemExit("audit-procedures skill missing D12 check definition")
 if "section-fingerprints" not in text:
     raise SystemExit("D12 must reference section-fingerprints block")
 if "sha256sum" not in text:
@@ -194,9 +198,9 @@ if "sha256sum" not in text:
 '
 
 assert_python "audit has D13 companion file completeness check" '
-text = (root / "agents/audit.agent.md").read_text(encoding="utf-8")
+text = (root / "skills/audit-procedures/SKILL.md").read_text(encoding="utf-8")
 if "### D13" not in text:
-    raise SystemExit("audit.agent.md missing D13 check definition")
+    raise SystemExit("audit-procedures skill missing D13 check definition")
 if "workspace-index.json" not in text:
     raise SystemExit("D13 must reference workspace-index.json as canonical inventory")
 if "raw.githubusercontent.com/asafelobotomy/copilot-instructions-template/main/.copilot/workspace/operations/workspace-index.json" not in text:
@@ -232,7 +236,7 @@ for needle in required:
 '
 
 assert_python "audit D4 and D14 mention delegation matrix enforcement" '
-text = " ".join((root / "agents/audit.agent.md").read_text(encoding="utf-8").split())
+text = " ".join((root / "skills/audit-procedures/SKILL.md").read_text(encoding="utf-8").split())
 required = [
     "### D4 — Agent file validity and delegation policy",
     "specialist delegation allow-lists match the repo policy",
@@ -247,18 +251,18 @@ required = [
 ]
 for needle in required:
     if needle not in text:
-        raise SystemExit("audit.agent.md missing delegation audit detail: " + needle)
+        raise SystemExit("audit-procedures skill missing delegation audit detail: " + needle)
 '
 
 assert_python "audit D6 and D9 cover version metadata and pluginLocations" '
-text = (root / "agents/audit.agent.md").read_text(encoding="utf-8")
+text = (root / "skills/audit-procedures/SKILL.md").read_text(encoding="utf-8")
 for needle in [
     "file-manifest",
     "setup-answers",
     "chat.pluginLocations",
 ]:
     if needle not in text:
-        raise SystemExit("audit.agent.md missing updated health-check detail: " + needle)
+        raise SystemExit("audit-procedures skill missing health-check detail: " + needle)
 '
 
 assert_python "verbatim-delivered agents use workspace-neutral identity wording" '
