@@ -8,7 +8,7 @@ model:
   - Gemini 3.1 Pro
   - GPT-5.2
 tools: [agent, codebase, githubRepo, runCommands, search]
-mcp-servers: [filesystem, git, github, fetch, context7, sequential-thinking]
+mcp-servers: [filesystem, git, github, fetch, context7, sequential-thinking, heartbeat]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Audit', 'Organise', 'Docs', 'Debugger', 'Cleaner']

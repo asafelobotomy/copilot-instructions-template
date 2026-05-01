@@ -9,7 +9,7 @@ model:
   - Grok Code Fast 1
   - Claude Sonnet 4.6
 tools: [agent, editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
-mcp-servers: [filesystem, git, github, fetch, context7, duckduckgo, sequential-thinking]
+mcp-servers: [filesystem, git, github, fetch, context7, duckduckgo, sequential-thinking, heartbeat]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Commit', 'Organise', 'Planner', 'Docs', 'Debugger', 'Cleaner']
@@ -63,6 +63,7 @@ Guidelines:
 - Full PDCA cycle is mandatory for every non-trivial change.
 - Run the three-check ritual before marking any task done.
 - Write or update tests alongside every change — never after.
+- Run tests via `mcp_heartbeat_run_tests` (preferred): pass targeted suite paths in `files` for intermediate checks or `mode="full"` for full-suite gates. Use `runCommands` with `bash` only when the MCP tool is unavailable.
 - Apply the Structured Thinking Discipline (§3) before starting any complex task.
   Frame the problem → gather minimal context → decide → act → verify. If stuck
   after 3 attempts at the same approach, reformulate or ask the user.

@@ -40,7 +40,9 @@ This repo has two distinct layers that must never be mixed:
 
 | Task | Command |
 |------|---------|
-| Run all tests | `bash tests/run-all.sh` |
+| Run tests (targeted, preferred) | `mcp_heartbeat_run_tests(files=[...], mode="targeted")` |
+| Run tests (full, preferred) | `mcp_heartbeat_run_tests(mode="full")` |
+| Run all tests (terminal fallback) | `bash tests/run-all.sh` |
 | Run all tests (captured) | `bash scripts/harness/run-all-captured.sh` |
 | Select targeted tests | `bash scripts/harness/select-targeted-tests.sh <paths...>` |
 | Type check | `echo "no type check configured"` |
@@ -219,7 +221,7 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 
 - **Tool Protocol**: Check `.copilot/tools/INDEX.md` before building. Follow `skills/tool-protocol/SKILL.md`.
 - **Skill Protocol**: Skills loaded on demand from `skills/`. Follow `skills/skill-management/SKILL.md`.
-- **MCP Protocol**: Config in `.vscode/mcp.json`. Tiers — Always-on: `filesystem`, `git`. Project tools (enabled in dev): `heartbeat` (session reflect + diary), `fetch`, `context7`, `duckduckgo`, `sequential-thinking` (call `mcp_sequential-th_sequentialthinking` for complex planning tasks, architectural decisions, or any task requiring explicit thought branching, backtracking, or a shareable reasoning trace; use the built-in Structured Thinking Discipline for standard single-turn work). Credentials-required (disabled by default): `github` (GitHub API — issues, PRs, Actions, Dependabot; enable when VS Code OAuth access is needed).
+- **MCP Protocol**: Config in `.vscode/mcp.json`. Tiers — Always-on: `filesystem`, `git`. Project tools (enabled in dev): `heartbeat` (session reflect + diary + `run_tests` — call `mcp_heartbeat_run_tests` to run targeted or full test suites; prefer over `runCommands` + bash for all test invocations), `fetch`, `context7`, `duckduckgo`, `sequential-thinking` (call `mcp_sequential-th_sequentialthinking` for complex planning tasks, architectural decisions, or any task requiring explicit thought branching, backtracking, or a shareable reasoning trace; use the built-in Structured Thinking Discipline for standard single-turn work). Credentials-required (disabled by default): `github` (GitHub API — issues, PRs, Actions, Dependabot; enable when VS Code OAuth access is needed).
 - **Extension Protocol**: The `asafelobotomy.copilot-extension` provides LM tools directly (not via MCP). No confirmed callable names remain — `session_reflect`, `write_diary`, and `read_diaries` are all exposed via the MCP heartbeat server (`mcp_heartbeat_session_reflect`, `mcp_heartbeat_write_diary`, `mcp_heartbeat_read_diaries`). Use those MCP names directly. If unavailable, try `tool_search` once, then fall back to the documented local fallback. Declare unavailable only after both paths fail.
 - **Delegation Protocol**: See **Skills and Agents** for the full specialist-first delegation policy.
 - **Subagent depth**: max 3. Stop and surface to user if reached. Subagents inherit all protocols including the Structured Thinking Discipline and anti-loop rules.

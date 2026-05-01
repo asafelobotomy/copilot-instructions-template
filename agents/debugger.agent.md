@@ -8,7 +8,7 @@ model:
   - Gemini 3.1 Pro
   - GPT-5.2
 tools: [agent, codebase, search, runCommands]
-mcp-servers: [filesystem, git, fetch, context7, duckduckgo, sequential-thinking]
+mcp-servers: [filesystem, git, fetch, context7, duckduckgo, sequential-thinking, heartbeat]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Researcher', 'Audit', 'Planner']
@@ -39,6 +39,7 @@ Guidelines:
 
 - Focus on reproduction, symptom isolation, root cause, and the smallest credible fix path.
 - Prefer targeted commands and targeted tests over broad full-suite runs while triaging.
+- Use `mcp_heartbeat_run_tests` to run test suites for reproduction and regression checks: pass targeted suite paths in `files` for focused runs or `mode="full"` for a full sweep. Fall back to `runCommands` with `bash` only when the MCP tool is unavailable.
 - Use `runCommands` for reproduction, stack traces, failing tests, and diff inspection.
 - Use `Researcher` when the failure depends on current external docs, release notes, or API behavior.
 - Use `Audit` when the likely cause involves security posture, secrets, shell hardening, or unsafe configuration.
