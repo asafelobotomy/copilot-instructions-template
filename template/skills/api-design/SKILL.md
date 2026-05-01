@@ -38,7 +38,7 @@ Ask if not obvious:
 
 Nouns, not verbs. Collections and items:
 
-```
+```text
 GET    /orders          → list orders
 POST   /orders          → create order
 GET    /orders/{id}     → get order
@@ -48,7 +48,7 @@ DELETE /orders/{id}     → delete order
 
 Nested resources only one level deep:
 
-```
+```text
 GET /orders/{id}/items  ✓
 GET /orders/{id}/items/{itemId}/details  ✗  (flatten to /order-items/{id})
 ```
@@ -94,6 +94,7 @@ Consistent error responses prevent client surprises.
 ```
 
 Standard status codes:
+
 - `200 OK` — success with body
 - `201 Created` — resource created (`Location` header required)
 - `204 No Content` — success, no body

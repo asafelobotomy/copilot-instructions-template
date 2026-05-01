@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 echo "6. Task completion and testing policy distinguish targeted vs full-suite gates"
 assert_python "instruction files define phase testing vs final completion semantics" '
 required_by_file = {

@@ -10,8 +10,6 @@ source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
 trap cleanup_dirs EXIT
 
-SERVER="$REPO_ROOT/hooks/scripts/mcp-heartbeat-server.py"
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

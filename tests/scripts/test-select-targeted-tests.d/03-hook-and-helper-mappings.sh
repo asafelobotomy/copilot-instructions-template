@@ -1,5 +1,4 @@
 # shellcheck shell=bash
-#!/usr/bin/env bash
 
 echo "25. scan-secrets.ps1 maps to its dedicated PowerShell suite"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "hooks/scripts/scan-secrets.ps1")

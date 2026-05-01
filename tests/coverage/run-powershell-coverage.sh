@@ -29,7 +29,7 @@ run_hook "$TEMPLATE_HOOKS/session-start.ps1" '{}'
 TMP_NPM=$(mktemp -d)
 printf '{"name":"coverage-project","version":"1.2.3"}\n' > "$TMP_NPM/package.json"
 (
-  cd "$TMP_NPM"
+  cd "$TMP_NPM" || exit
   run_hook "$TEMPLATE_HOOKS/session-start.ps1" '{}'
 )
 rm -rf "$TMP_NPM"
@@ -47,7 +47,7 @@ run_hook "$TEMPLATE_HOOKS/guard-destructive.ps1" '{"tool_name":"bash","tool_inpu
 
 TMP_RETRO=$(mktemp -d)
 (
-  cd "$TMP_RETRO"
+  cd "$TMP_RETRO" || exit
   run_hook "$TEMPLATE_HOOKS/enforce-retrospective.ps1" '{"stop_hook_active": false}'
 )
 rm -rf "$TMP_RETRO"
@@ -56,7 +56,7 @@ TMP_HB=$(mktemp -d)
 mkdir -p "$TMP_HB/.copilot/workspace/identity" "$TMP_HB/.copilot/workspace/knowledge/diaries" "$TMP_HB/.copilot/workspace/operations" "$TMP_HB/.copilot/workspace/runtime"
 touch "$TMP_HB/.copilot/workspace/operations/HEARTBEAT.md"
 (
-  cd "$TMP_HB"
+  cd "$TMP_HB" || exit
   run_hook "$TEMPLATE_HOOKS/enforce-retrospective.ps1" '{"stop_hook_active": false}'
 )
 rm -rf "$TMP_HB"
@@ -67,7 +67,7 @@ printf 'HEARTBEAT_OK\n' > "$TMP_CTX/.copilot/workspace/operations/HEARTBEAT.md"
 printf 'recent memory entry\n' > "$TMP_CTX/.copilot/workspace/knowledge/MEMORY.md"
 printf 'heuristic: verify before commit\n' > "$TMP_CTX/.copilot/workspace/identity/SOUL.md"
 (
-  cd "$TMP_CTX"
+  cd "$TMP_CTX" || exit
   run_hook "$TEMPLATE_HOOKS/save-context.ps1" '{}'
 )
 rm -rf "$TMP_CTX"
