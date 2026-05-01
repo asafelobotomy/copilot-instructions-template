@@ -16,4 +16,4 @@ if [[ $# -lt 1 ]]; then
   exit 1
 fi
 
-exec python3 "$(dirname "$0")/select_targeted_tests.py" "$ROOT_DIR" "$MAP_FILE" "$SUITE_MANIFEST_PATH" "$@"
+exec python3 "$(dirname "$0")/select-targeted-tests.py" "$ROOT_DIR" "$MAP_FILE" "$SUITE_MANIFEST_PATH" "$@"
