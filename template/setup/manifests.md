@@ -155,13 +155,13 @@ Full server configs: `${CLAUDE_PLUGIN_ROOT}/template/vscode/mcp.json` (sandboxed
 
 Enable from base config when selected in E22a:
 
+> **Always enabled** (no selection required): `heartbeat` and `sequential-thinking` are enabled by default in the base config. `heartbeat` requires hook scripts to be installed (A16 = Yes or plugin-backed mode); if hooks are skipped it fails softly without breaking other functionality.
+
 | Server | When to enable |
 |--------|----------------|
 | `github` | User selected GitHub integration |
 | `fetch` | User selected web/docs retrieval |
 | `context7` | User selected third-party library docs |
-| `heartbeat` | User selected session health and retrospective reflection |
-| `sequential-thinking` | User selected structured step-by-step reasoning |
 | `playwright` | User selected browser automation for agent-driven website navigation |
 
 Add for detected dependencies:

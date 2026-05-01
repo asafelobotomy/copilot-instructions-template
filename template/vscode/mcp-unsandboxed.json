@@ -50,14 +50,12 @@
         "mcp",
         "run",
         "${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py"
-      ],
-      "disabled": true
+      ]
     },
     "sequential-thinking": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
-      "disabled": true
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
     }
   }
 }

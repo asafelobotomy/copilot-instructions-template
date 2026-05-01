@@ -9,7 +9,7 @@ model:
   - Grok Code Fast 1
   - Claude Sonnet 4.6
 tools: [agent, editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
-mcp-servers: [filesystem, git, github, fetch, context7, duckduckgo]
+mcp-servers: [filesystem, git, github, fetch, context7, duckduckgo, sequential-thinking]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Commit', 'Organise', 'Planner', 'Docs', 'Debugger', 'Cleaner']
@@ -66,6 +66,7 @@ Guidelines:
 - Apply the Structured Thinking Discipline (§3) before starting any complex task.
   Frame the problem → gather minimal context → decide → act → verify. If stuck
   after 3 attempts at the same approach, reformulate or ask the user.
+- For architectural decisions or multi-service changes requiring auditable, revisable reasoning steps, call `mcp_sequential-th_sequentialthinking`.
 - Use `Planner` when the request is large, ambiguous, or needs a scoped execution plan before implementation.
 - Use `Debugger` when the main task is to diagnose a failure, regression, or unclear root cause before editing.
 - Use `Docs` when the work is primarily documentation, migration guidance, or user-facing technical explanation rather than product behavior.

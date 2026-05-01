@@ -8,7 +8,7 @@ model:
   - Gemini 3.1 Pro
   - GPT-5.2
 tools: [agent, codebase, search, runCommands]
-mcp-servers: [filesystem, git, fetch, context7, duckduckgo]
+mcp-servers: [filesystem, git, fetch, context7, duckduckgo, sequential-thinking]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Researcher', 'Audit', 'Planner']
@@ -45,6 +45,7 @@ Guidelines:
 - Use `Code` only after the diagnosis is specific enough to implement without guessing.
 - Use `Planner` when the diagnosis reveals a multi-component fix that benefits from a scoped execution plan before implementation begins.
 - Do not mix diagnosis with broad refactoring.
+- For complex multi-hypothesis diagnosis where explicit thought branching and step revision improve root-cause accuracy, call `mcp_sequential-th_sequentialthinking`.
 
 ## Skill activation map
 

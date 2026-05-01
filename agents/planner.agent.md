@@ -8,7 +8,7 @@ model:
   - Gemini 3.1 Pro
   - GPT-5.2
 tools: [agent, codebase, search, runCommands]
-mcp-servers: [filesystem, git]
+mcp-servers: [filesystem, git, sequential-thinking]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Explore', 'Researcher', 'Debugger', 'Docs']
@@ -51,6 +51,7 @@ Guidelines:
 - Use `Docs` when the plan output should be persisted as a structured guide or ADR.
 - Use `Code` only after the plan is concrete enough to implement without widening scope.
 - Do not pad the plan with generic best practices. Keep it executable.
+- For plans requiring explicit thought-tree branching or auditable revisable reasoning steps, call `mcp_sequential-th_sequentialthinking` to externalize the reasoning before producing the output plan.
 
 ## Skill activation map
 

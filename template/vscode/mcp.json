@@ -54,8 +54,7 @@
         "mcp",
         "run",
         "${workspaceFolder}/.github/hooks/scripts/mcp-heartbeat-server.py"
-      ],
-      "disabled": true
+      ]
     },
     "context7": {
       "type": "http",
@@ -69,7 +68,6 @@
         "-y",
         "@modelcontextprotocol/server-sequential-thinking"
       ],
-      "disabled": true,
       "sandboxEnabled": true,
       "sandbox": {
         "network": {

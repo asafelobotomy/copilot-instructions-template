@@ -8,7 +8,7 @@ model:
   - Gemini 3.1 Pro
   - GPT-5.2
 tools: [agent, codebase, runCommands, githubRepo, fetch, search, webSearch]
-mcp-servers: [filesystem, git, github, fetch, duckduckgo]
+mcp-servers: [filesystem, git, github, fetch, duckduckgo, sequential-thinking]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Setup', 'Researcher', 'Extensions', 'Organise', 'Planner', 'Cleaner']
@@ -64,6 +64,7 @@ Do not modify any files — diagnosis only. Surface findings and use handoffs fo
 - Apply the Structured Thinking Discipline (§3): run each check sequentially.
   If a check requires data from a prior check, reuse it — do not re-read or
   re-fetch. If a fetch fails, flag it and move to the next check.
+- For multi-domain audit paths where findings across health and security checks require explicit thought branching, call `mcp_sequential-th_sequentialthinking`.
 
 ## Mode detection
 

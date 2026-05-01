@@ -368,7 +368,7 @@ Key rules (always loaded):
 - **Sandbox stdio servers**: set `"sandboxEnabled": true` in `mcp.json` for locally-running `npx`-based stdio servers (macOS/Linux). Do not sandbox `uvx`-based servers — the VS Code sandbox proxy intercepts PyPI network access during the launcher phase and triggers repeated domain-approval prompts. The M4 audit check enforces this by exempting `command == "uvx"` servers automatically. Sandboxed servers auto-approve tool calls.
 - The MCP `memory` server has been removed — VS Code's built-in memory tool (`/memories/`) provides superior persistent storage with three scopes (user, session, repository)
 - Never hardcode secrets — use `${input:}` or `${env:}` variable syntax
-- If `sequential-thinking` is configured, call `mcp_sequential-th_sequentialthinking` for complex planning tasks, architectural decisions, or tasks requiring explicit thought-tree branching and step revision. For standard single-turn work, the built-in Structured Thinking Discipline (§3) is sufficient.
+- Call `mcp_sequential-th_sequentialthinking` for complex planning tasks, architectural decisions, or tasks requiring explicit thought-tree branching and step revision. For standard single-turn work, the built-in Structured Thinking Discipline (§3) is sufficient.
 - **Monorepo discovery**: enable `chat.useCustomizationsInParentRepositories` to auto-discover instructions, prompts, agents, skills, and hooks from a parent Git repository root when opening a subfolder. Requires the parent folder to be trusted.
 - **Troubleshooting**: if customizations fail to load, select the ellipsis (…) menu in the Chat view → *Show Agent Debug Logs* to diagnose which files were discovered and which were rejected.
 

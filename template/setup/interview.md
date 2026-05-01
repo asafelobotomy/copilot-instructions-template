@@ -112,9 +112,8 @@
   Options: A — No (skip MCP entirely) | B — Yes (configure core MCP servers and optional selections)
 
 - **E22a — Optional MCP servers**: Which optional MCP servers should I enable?
-  Options: GitHub | Fetch | Context7 | Heartbeat | Sequential-Thinking | Playwright | None
-  Ask only when E22 = B. Multi-select allowed. Default: None (keep core only: filesystem, git).
-  Note: Heartbeat enables session health reflection and retrospective prompting via MCP. Sequential-Thinking enables structured step-by-step reasoning for complex tasks.
+  Options: GitHub | Fetch | Context7 | Playwright | None
+  Ask only when E22 = B. Multi-select allowed. Default: None (keep core only: filesystem, git, heartbeat, sequential-thinking).
 
 **Batch 8 (E23–E24)**:
 

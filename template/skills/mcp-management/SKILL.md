@@ -34,7 +34,7 @@ Commands: `MCP: Open Workspace Configuration`, `MCP: Open User Configuration`
 | Always-on | filesystem, git | Every project | Enabled by default |
 | External | github, fetch | GitHub/web access needed | `github` uses VS Code OAuth; `fetch` needs no creds |
 | Documentation | context7 | Third-party libraries | HTTP remote, free tier, optional API key |
-| Optional | sequential-thinking | Complex planning or architecture tasks requiring explicit thought branching | Disabled by default; enable per-workspace or at user level |
+| Default | sequential-thinking | Complex planning or architecture tasks requiring explicit thought branching | Enabled by default in project templates; can be moved to user-level `mcp.json` for personal workflows |
 
 ## Available servers
 
@@ -77,7 +77,7 @@ Discover servers: `code.visualstudio.com/mcp` · `registry.modelcontextprotocol.
 
 **When the built-in discipline is sufficient**: standard single-turn implementation tasks, and any task where internal chain-of-thought is adequate and no external audit trail is needed.
 
-**Deployment**: workspace `.vscode/mcp.json` when the reasoning pattern is relevant to the team; user-level `mcp.json` for personal workflows where committing the server to the workspace would be noise.
+**Deployment**: workspace `.vscode/mcp.json` — enabled by default in project templates. Move to user-level `mcp.json` for personal workflows where committing the server to the workspace would be noise.
 
 ## MCP capabilities (GA since v1.102)
 

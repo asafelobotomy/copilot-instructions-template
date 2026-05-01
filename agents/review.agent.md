@@ -8,7 +8,7 @@ model:
   - Gemini 3.1 Pro
   - GPT-5.2
 tools: [agent, codebase, githubRepo, runCommands, search]
-mcp-servers: [filesystem, git, github, fetch, context7]
+mcp-servers: [filesystem, git, github, fetch, context7, sequential-thinking]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Audit', 'Organise', 'Docs', 'Debugger', 'Cleaner']
@@ -57,6 +57,7 @@ Guidelines:
 - Reference specific file paths and line numbers for every finding.
 - Structure output per finding: [severity] | [file:line] | [waste category] | [description]
 - Severity levels: critical | major | minor | advisory
+- For architectural or cross-cutting reviews where structured reasoning needs to be revisable mid-analysis, call `mcp_sequential-th_sequentialthinking`.
 
 <examples>
 `[critical] | [src/auth.ts:42] | [W7 Defects] | SQL query built by string concatenation — injection risk; use parameterised queries`
