@@ -368,5 +368,127 @@ def run_tests(
     }
 
 
+# ---------------------------------------------------------------------------
+# Tool: run_check
+# ---------------------------------------------------------------------------
+
+# Allow-list of safe commands (linters, formatters, read-only git).
+_SAFE_CMDS: frozenset[str] = frozenset({
+    "shellcheck", "markdownlint", "markdownlint-cli2", "jq", "yamllint",
+})
+_SAFE_GIT_SUBCMDS: frozenset[str] = frozenset({
+    "diff", "diff-index", "log", "show", "status", "branch",
+    "ls-files", "rev-parse", "describe",
+})
+
+
+@mcp.tool()
+def run_check(
+    command: str,
+    args: Optional[list[str]] = None,
+    cwd: str = "",
+) -> dict:
+    """Run a safe lint/check command and return structured output.
+
+    Only commands in the pre-approved allow-list are permitted:
+    shellcheck, markdownlint, markdownlint-cli2, jq, yamllint, and
+    read-only git subcommands (diff, log, show, status, branch, ls-files,
+    rev-parse, describe).
+
+    Args:
+        command: Command to run (must be in allow-list).
+        args:    Arguments to pass to the command.
+        cwd:     Working directory (defaults to repo root).
+    """
+    args = list(args or [])
+    if command == "git":
+        sub = args[0] if args else ""
+        if sub not in _SAFE_GIT_SUBCMDS:
+            return {"error": f"git subcommand not in allow-list: {sub!r}"}
+    elif command not in _SAFE_CMDS:
+        return {"error": f"command not in allow-list: {command!r}"}
+    if not _command_available(command):
+        return {"error": f"command not found: {command}"}
+    work_dir = Path(cwd).resolve() if cwd else ROOT
+    result = subprocess.run(
+        [command, *args],
+        cwd=work_dir,
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=60,
+    )
+    return {
+        "ok": result.returncode == 0,
+        "exit_code": result.returncode,
+        "stdout": result.stdout.strip(),
+        "stderr": result.stderr.strip(),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Tool: run_grep
+# ---------------------------------------------------------------------------
+
+
+@mcp.tool()
+def run_grep(
+    pattern: str,
+    path: str = ".",
+    is_regex: bool = False,
+    include_glob: str = "",
+    max_results: int = 50,
+) -> dict:
+    """Search for text or a regex pattern in repo files using ripgrep.
+
+    Returns structured match results with file path, line number, and
+    matched content. Faster than semantic search for exact-text or
+    regex queries and requires no index build.
+
+    Args:
+        pattern:      Text or regex pattern to search for.
+        path:         Repo-relative path to search in (default: repo root).
+        is_regex:     Treat pattern as a regular expression (default: false).
+        include_glob: Limit search to files matching this glob (e.g. "*.md").
+        max_results:  Maximum number of matches to return (default: 50).
+    """
+    if not pattern:
+        return {"error": "pattern is required"}
+    if not _command_available("rg"):
+        return {"error": "ripgrep (rg) not available; install via package manager"}
+    search_root = (ROOT / path).resolve()
+    cmd: list[str] = ["rg", "--json"]
+    if not is_regex:
+        cmd.append("--fixed-strings")
+    if include_glob:
+        cmd += ["--glob", include_glob]
+    cmd += [pattern, str(search_root)]
+
+    result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    matches: list[dict] = []
+    for line in result.stdout.splitlines():
+        if len(matches) >= max_results:
+            break
+        try:
+            obj = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if obj.get("type") != "match":
+            continue
+        data = obj["data"]
+        matches.append({
+            "file": data["path"]["text"],
+            "line": data["line_number"],
+            "content": data["lines"]["text"].rstrip(),
+        })
+
+    return {
+        "pattern": pattern,
+        "matches": matches,
+        "total_matches": len(matches),
+        "truncated": len(matches) == max_results,
+    }
+
+
 if __name__ == "__main__":
     mcp.run()

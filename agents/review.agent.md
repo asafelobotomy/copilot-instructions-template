@@ -7,7 +7,7 @@ model:
   - Claude Sonnet 4.6
   - Gemini 3.1 Pro
   - GPT-5.2
-tools: [agent, codebase, githubRepo, runCommands, search]
+tools: [agent, codebase, githubRepo, githubTextSearch, runCommands, search]
 mcp-servers: [filesystem, git, github, fetch, context7, sequential-thinking, heartbeat]
 user-invocable: true
 disable-model-invocation: false

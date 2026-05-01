@@ -65,6 +65,12 @@
       "ciLabel": "Hook behavior | mcp-heartbeat-server run_tests"
     },
     {
+      "id": "hook-mcp-run-check-grep",
+      "path": "tests/hooks/test-mcp-run-check-grep.sh",
+      "phase": "hooks",
+      "ciLabel": "Hook behavior | mcp-heartbeat-server run_check + run_grep"
+    },
+    {
       "id": "hook-pulse-paths",
       "path": "tests/hooks/test-pulse-paths.sh",
       "phase": "hooks",

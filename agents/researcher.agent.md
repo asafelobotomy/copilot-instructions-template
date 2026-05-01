@@ -7,7 +7,7 @@ model:
   - Claude Sonnet 4.5
   - Gemini 3.1 Pro
   - Gemini 2.5 Pro
-tools: [agent, fetch, webSearch, codebase, search, editFiles, runCommands]
+tools: [agent, fetch, webSearch, codebase, search, githubRepo, githubTextSearch, editFiles, runCommands]
 mcp-servers: [fetch, context7, filesystem, github, duckduckgo]
 user-invocable: false
 disable-model-invocation: false
