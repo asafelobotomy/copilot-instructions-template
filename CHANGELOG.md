@@ -9,6 +9,22 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ## [Unreleased]
 
+## [0.9.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v0.8.0...v0.9.0) (2026-05-01)
+
+### Added
+
+* **skills:** extract `git-workflows` skill from `commit.agent.md` — contains all per-operation git workflow procedures (commit, push, tag/release, branch, sync, stash, merge-conflict, PR) with MCP tool preferences ([3f80da1](https://github.com/asafelobotomy/copilot-instructions-template/commit/3f80da1))
+* **skills:** extract `audit-procedures` skill from `audit.agent.md` — contains full D1–D14 health check definitions with thresholds and flag levels ([3f80da1](https://github.com/asafelobotomy/copilot-instructions-template/commit/3f80da1))
+* **ci:** add CodeQL analysis workflow (`.github/workflows/codeql.yml`) analyzing Python on push/PR to main and weekly schedule ([e311b6b](https://github.com/asafelobotomy/copilot-instructions-template/commit/e311b6b))
+
+### Fixed
+
+* **agents:** trim `commit.agent.md` (330→129 lines) and `audit.agent.md` (316→196 lines); both now delegate procedure detail to their respective skills ([3f80da1](https://github.com/asafelobotomy/copilot-instructions-template/commit/3f80da1))
+* **security:** pin `markdownlint-cli2` to exact version `0.22.1` in `package.json` (removes floating `^` range) ([e311b6b](https://github.com/asafelobotomy/copilot-instructions-template/commit/e311b6b))
+* **tests:** add `# shellcheck shell=bash` directive to 9 sourced shard files; fix `test-helpers.sh` arithmetic increment and `cleanup_dirs` to be safe under `set -e` callers ([e311b6b](https://github.com/asafelobotomy/copilot-instructions-template/commit/e311b6b))
+* **audit-procedures:** D7 check now exempts zero-byte `*.lock` files under `.copilot/workspace/runtime/` and `.tmp/` (transient heartbeat mutex artifacts) ([e311b6b](https://github.com/asafelobotomy/copilot-instructions-template/commit/e311b6b))
+* **mcp:** disable VS Code agent sandbox and add per-suite timeout to `mcp_heartbeat_run_tests` ([78a8702](https://github.com/asafelobotomy/copilot-instructions-template/commit/78a8702))
+
 ## [0.8.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v0.7.0...v0.8.0) (2026-04-28)
 
 ### Added

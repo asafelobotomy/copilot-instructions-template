@@ -5,7 +5,7 @@
 
   **A versioned VS Code agent plugin that keeps AI developer behaviour consistent across all your projects.**
 
-  [![Version](https://img.shields.io/badge/version-0.8.0-blue)](CHANGELOG.md) <!-- x-release-please-version -->
+  [![Version](https://img.shields.io/badge/version-0.9.0-blue)](CHANGELOG.md) <!-- x-release-please-version -->
   [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE.md)
   [![Agents](https://img.shields.io/badge/agents-14-purple)](agents/)
   [![Skills](https://img.shields.io/badge/skills-18-teal)](skills/)
@@ -154,7 +154,7 @@ See [AGENTS.md](AGENTS.md) for the full trigger phrase list, including heartbeat
 
 ### Version
 
-Current template version: **0.8.0** <!-- x-release-please-version --> — see [CHANGELOG.md](CHANGELOG.md).
+Current template version: **0.9.0** <!-- x-release-please-version --> — see [CHANGELOG.md](CHANGELOG.md).
 
 Version bumps are done locally. Bump `VERSION.md` and all `<!-- x-release-please-version -->` markers together, then verify:
 
