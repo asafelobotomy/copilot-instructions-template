@@ -6,7 +6,7 @@ model:
   - GPT-5.2
   - Claude Sonnet 4.6
 tools: [agent, editFiles, runCommands, codebase, githubRepo, askQuestions]
-mcp-servers: [filesystem, git, github]
+mcp-servers: [filesystem, git, github, heartbeat]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Review', 'Audit', 'Debugger', 'Organise', 'Cleaner']

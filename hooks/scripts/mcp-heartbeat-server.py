@@ -709,14 +709,14 @@ def suggest_delegation(
                        avoid self-routing in sub-agent delegation.
     """
     if not task or not task.strip():
-        return {"error": "task description is required"}
+        return {"match": False, "recommendation": "No specialist match — handle inline.", "error": "task description is required"}
 
     task_lower = task.lower()
 
     try:
         manifest = json.loads(_ROUTING_MANIFEST_PATH.read_text(encoding="utf-8"))
     except (FileNotFoundError, json.JSONDecodeError) as exc:
-        return {"error": f"could not load routing manifest: {exc}"}
+        return {"match": False, "recommendation": "No specialist match — handle inline.", "error": f"could not load routing manifest: {exc}"}
 
     agents = manifest.get("agents", [])
     matches: list[dict] = []
@@ -726,31 +726,39 @@ def suggest_delegation(
         # Skip if this is the calling agent (avoid self-routing).
         if calling_agent and name.lower() == calling_agent.lower():
             continue
-        # Skip inactive routes.
-        if agent.get("route", "active") != "active":
+        # Skip inactive routes only (active and guarded are both eligible).
+        route = agent.get("route", "active")
+        if route not in ("active", "guarded"):
             continue
 
         prompt_patterns: list[str] = agent.get("prompt_patterns", [])
         suppress_patterns: list[str] = agent.get("suppress_patterns", [])
 
         # Check if any suppress pattern fires — if so, skip.
-        suppressed = any(
-            re.search(p, task_lower, re.IGNORECASE) for p in suppress_patterns
-        )
+        try:
+            suppressed = any(
+                re.search(p, task_lower, re.IGNORECASE) for p in suppress_patterns
+            )
+        except re.error:
+            suppressed = False
         if suppressed:
             continue
 
         # Count how many prompt_patterns match (for ranking).
-        hit_count = sum(
-            1 for p in prompt_patterns
-            if re.search(p, task_lower, re.IGNORECASE)
-        )
+        try:
+            hit_count = sum(
+                1 for p in prompt_patterns
+                if re.search(p, task_lower, re.IGNORECASE)
+            )
+        except re.error:
+            hit_count = 0
         if hit_count > 0:
             matches.append({
                 "name": name,
                 "summary": agent.get("summary", ""),
                 "hint": agent.get("hint", ""),
                 "hit_count": hit_count,
+                "route": route,
                 "visibility": agent.get("visibility", ""),
             })
 
@@ -760,13 +768,14 @@ def suggest_delegation(
             "recommendation": "No specialist match — handle inline.",
         }
 
-    # Sort by hit count descending; pick the top match.
+    # Sort by hit count descending; break ties by manifest order (stable sort).
     matches.sort(key=lambda m: m["hit_count"], reverse=True)
     top = matches[0]
 
     return {
         "match": True,
         "agent": top["name"],
+        "route": top["route"],
         "summary": top["summary"],
         "hint": top["hint"],
         "delegate_instruction": (

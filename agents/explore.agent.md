@@ -9,7 +9,7 @@ model:
   - Raptor mini
   - Claude Sonnet 4.6
 tools: [agent, codebase, search, runCommands]
-mcp-servers: [filesystem, git]
+mcp-servers: [filesystem, git, heartbeat]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Researcher']

@@ -17,6 +17,7 @@
       "hint": "Routing hint: Setup specialist — lifecycle setup/update/restore.",
       "prompt_patterns": [
         "setup from asafelobotomy/copilot-instructions-template",
+        "\\binstall (?:the )?copilot-instructions-template plugin\\b",
         "\\bset up this project\\b",
         "\\bupdate your instructions\\b",
         "\\bcheck for instruction updates\\b",
@@ -456,7 +457,9 @@
       "require_prompt_and_behavior": true,
       "hint": "Routing hint: Cleaner specialist — repo hygiene, cache pruning, or stale artefacts.",
       "prompt_patterns": [
-        "\\bclean up (?:repo|repository|workspace)\\b",          "\\bclean up (?:stale|old|dead|archive)\\b",        "\\bremove stale files?\\b",
+        "\\bclean up (?:repo|repository|workspace)\\b",
+        "\\bclean up (?:stale|old|dead|archive)\\b",
+        "\\bremove stale files?\\b",
         "\\bprune (?:caches?|archives?)\\b",
         "\\brepo hygiene\\b",
         "\\bstale (?:artefacts?|artifacts?)\\b",
@@ -497,7 +500,8 @@
         "\\bregression\\b",
         "\\bfailing test\\b",
         "\\bdiagnos(?:e|is)\\b",
-        "\\bstack trace\\b"
+        "\\bstack trace\\b",
+        "\\bwhy is .{0,60} failing\\b"
       ],
       "suppress_patterns": [
         "\\b(add debug(?:ging)?|add logging|configure (?:the )?debugger|attach (?:the )?debugger|implement debug|add tracing)\\b"
