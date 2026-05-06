@@ -8,7 +8,7 @@
     "filesystem": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"],
+      "args": ["-y", "@modelcontextprotocol/server-filesystem@2026.1.14", "${workspaceFolder}"],
       "sandboxEnabled": true,
       "sandbox": {
         "network": {
@@ -16,14 +16,35 @@
         },
         "filesystem": {
           "allowWrite": ["${workspaceFolder}", "${userHome}/.npm"],
-          "denyRead": ["${userHome}/.ssh", "${userHome}/.gnupg", "${userHome}/.aws"]
+          "denyRead": [
+            "${userHome}/.ssh",
+            "${userHome}/.gnupg",
+            "${userHome}/.aws",
+            "${userHome}/.netrc",
+            "${userHome}/.docker",
+            "${userHome}/.kube",
+            "${userHome}/.config",
+            "${userHome}/.bash_history",
+            "${userHome}/.zsh_history",
+            "${userHome}/.local/share/keyrings"
+          ]
         }
       }
     },
     "git": {
       "type": "stdio",
       "command": "uvx",
-      "args": ["mcp-server-git", "--repository", "${workspaceFolder}"]
+      "env": {
+        "GIT_MCP_REPOSITORY": "${workspaceFolder}",
+        "CLAUDE_TMPDIR": "${userHome}/.cache/uv",
+        "TMPDIR": "${userHome}/.cache/uv"
+      },
+      "args": [
+        "--from", "mcp[cli]",
+        "--with", "gitpython>=3.1.50,<3.2",
+        "mcp", "run",
+        "${workspaceFolder}/.github/hooks/scripts/mcp-git-server.py"
+      ]
     },
     "github": {
       "type": "http",
@@ -37,7 +58,7 @@
         "CLAUDE_TMPDIR": "${userHome}/.cache/uv",
         "TMPDIR": "${userHome}/.cache/uv"
       },
-      "args": ["--with", "httpx[socks]>=0.28", "mcp-server-fetch"],
+      "args": ["mcp-server-fetch==2025.4.7"],
       "disabled": true
     },
     "heartbeat": {
@@ -81,7 +102,7 @@
     "duckduckgo": {
       "type": "stdio",
       "command": "uvx",
-      "args": ["duckduckgo-mcp-server"],
+      "args": ["duckduckgo-mcp-server==0.3.0"],
       "disabled": true
     }
   }

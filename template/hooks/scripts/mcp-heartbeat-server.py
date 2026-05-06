@@ -44,14 +44,27 @@ ensure_writable_tempdir()
 
 import datetime  # noqa: E402
 import json  # noqa: E402
+import os  # noqa: E402
+import re  # noqa: E402
+import signal  # noqa: E402
 import shutil  # noqa: E402
 import subprocess  # noqa: E402
+import tempfile  # noqa: E402
 import time  # noqa: E402
+from concurrent.futures import ThreadPoolExecutor, as_completed  # noqa: E402
 from typing import Optional  # noqa: E402
 
 from mcp.server.fastmcp import FastMCP  # noqa: E402
 
 mcp = FastMCP("Heartbeat")
+
+
+def _safe_int(val: object, default: int = 0) -> int:
+    """Coerce *val* to int; return *default* on any failure."""
+    try:
+        return int(val) if val is not None else default
+    except (TypeError, ValueError):
+        return default
 
 
 # ---------------------------------------------------------------------------
@@ -71,20 +84,20 @@ def session_reflect() -> dict:
     state = load_state()
     now = int(time.time())
 
-    session_start = int(state.get("session_start_epoch") or 0)
+    session_start = _safe_int(state.get("session_start_epoch"))
     session_duration_s = max(0, now - session_start) if session_start else 0
 
-    active_s = int(state.get("active_work_seconds") or 0)
-    tw_start = int(state.get("task_window_start_epoch") or 0)
-    last_tool = int(state.get("last_raw_tool_epoch") or 0)
+    active_s = _safe_int(state.get("active_work_seconds"))
+    tw_start = _safe_int(state.get("task_window_start_epoch"))
+    last_tool = _safe_int(state.get("last_raw_tool_epoch"))
     if tw_start > 0 and last_tool >= tw_start:
         active_s += max(0, last_tool - tw_start)
 
     delta_files = max(
         0,
-        git_modified_count() - int(state.get("session_start_git_count") or 0),
+        git_modified_count() - _safe_int(state.get("session_start_git_count")),
     )
-    edit_count = int(state.get("copilot_edit_count") or 0)
+    edit_count = _safe_int(state.get("copilot_edit_count"))
     effective_files = delta_files if delta_files > 0 else edit_count
     compactions = sum(
         1 for ev in session_events(state, 50) if ev.get("trigger") == "compaction"
@@ -170,10 +183,14 @@ def write_diary(agent_name: str, finding: str) -> dict:
         return {"error": "finding is empty after trimming"}
 
     agent_lower = agent_name.lower()
+    if not re.fullmatch(r"[a-z0-9_-]+", agent_lower):
+        return {"error": "agent_name must contain only letters, digits, hyphens, and underscores"}
     diary_file = DIARIES_DIR / f"{agent_lower}.md"
 
-    if diary_file.exists() and finding in diary_file.read_text(encoding="utf-8"):
-        return {"status": "skipped", "reason": "duplicate", "agent": agent_name}
+    if diary_file.exists():
+        existing_lines = diary_file.read_text(encoding="utf-8").splitlines()
+        if any(finding in line for line in existing_lines if line.startswith("- ")):
+            return {"status": "skipped", "reason": "duplicate", "agent": agent_name}
 
     DIARIES_DIR.mkdir(parents=True, exist_ok=True)
     if not diary_file.exists():
@@ -210,6 +227,8 @@ def read_diaries(agent_name: str = "") -> dict:
     """
     if agent_name:
         agent_lower = agent_name.lower()
+        if not re.fullmatch(r"[a-z0-9_-]+", agent_lower):
+            return {"error": "agent_name must contain only letters, digits, hyphens, and underscores"}
         diary_file = DIARIES_DIR / f"{agent_lower}.md"
         if not diary_file.exists():
             return {"agent": agent_name, "entries": [], "note": "no diary yet"}
@@ -228,7 +247,124 @@ def read_diaries(agent_name: str = "") -> dict:
 # ---------------------------------------------------------------------------
 
 _SUITE_MANIFEST_REL = "scripts/harness/suite-manifest.json"
-_SUITE_MANIFEST_PY_REL = "scripts/harness/suite-manifest.py"
+
+# Ordered candidates for stack detection. Each entry is (indicator_file_or_cmd,
+# label, shell_command). The first whose indicator exists wins.
+_STACK_TEST_CANDIDATES: list[tuple[str, str, str]] = [
+    # file-indicator       label           shell command
+    ("Cargo.toml",        "cargo test",   "cargo test"),
+    ("go.mod",            "go test",      "go test ./..."),
+    ("pyproject.toml",    "pytest",       "python3 -m pytest"),
+    ("setup.py",          "pytest",       "python3 -m pytest"),
+    ("requirements.txt",  "pytest",       "python3 -m pytest"),
+    ("package.json",      "npm test",     "npm test"),
+    ("Makefile",          "make test",    "make test"),
+    ("tests/run-all.sh",  "bash harness", "bash tests/run-all.sh"),
+    ("test",              "bash test/",   "bash test/run.sh"),
+]
+
+
+def _detect_test_command(workspace: Path) -> Optional[str]:
+    """Return a shell command string for the detected stack, or None."""
+    for indicator, _label, cmd in _STACK_TEST_CANDIDATES:
+        if indicator == "package.json":
+            pkg = workspace / "package.json"
+            if not pkg.exists():
+                continue
+            try:
+                scripts_test = (
+                    json.loads(pkg.read_text(encoding="utf-8"))
+                    .get("scripts", {})
+                    .get("test", "")
+                )
+            except (json.JSONDecodeError, OSError):
+                continue
+            # Skip the default npm placeholder or missing test script
+            if not scripts_test or "no test specified" in scripts_test:
+                continue
+            return cmd
+        if (workspace / indicator).exists():
+            return cmd
+    return None
+
+
+def _run_generic_command(cmd: str, workspace: Path, env: dict) -> dict:
+    """Run an arbitrary shell command and return a run_tests-shaped dict."""
+    start = time.monotonic()
+    log_path: Optional[Path] = None
+    timed_out = False
+    try:
+        fd, log_str = tempfile.mkstemp(suffix=".log", prefix="mcp-generic-test-")
+        os.close(fd)
+        log_path = Path(log_str)
+        with log_path.open("w", encoding="utf-8", errors="replace") as log_fh:
+            proc = subprocess.Popen(
+                cmd,
+                shell=True,
+                cwd=workspace,
+                stdin=subprocess.DEVNULL,
+                stdout=log_fh,
+                stderr=subprocess.STDOUT,
+                env=env,
+                start_new_session=True,
+            )
+            try:
+                proc.wait(timeout=600)
+            except subprocess.TimeoutExpired:
+                timed_out = True
+                pgid: Optional[int] = None
+                try:
+                    pgid = os.getpgid(proc.pid)
+                except OSError:
+                    pass
+                if pgid is not None:
+                    try:
+                        os.killpg(pgid, signal.SIGTERM)
+                    except (ProcessLookupError, OSError):
+                        pass
+                try:
+                    proc.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    if pgid is not None:
+                        try:
+                            os.killpg(pgid, signal.SIGKILL)
+                        except (ProcessLookupError, OSError):
+                            pass
+                    proc.wait()
+        elapsed = round(time.monotonic() - start, 1)
+        output = log_path.read_text(encoding="utf-8", errors="replace").strip()
+    finally:
+        if log_path is not None:
+            try:
+                log_path.unlink(missing_ok=True)
+            except OSError:
+                pass
+
+    lines = output.splitlines()
+    tail = "\n".join(lines[-20:]) if lines else ""
+    if timed_out:
+        status = "error"
+        output_tail = f"timed out after 600s\n{tail}"
+        all_passed = False
+    else:
+        status = "passed" if proc.returncode == 0 else "failed"
+        output_tail = tail
+        all_passed = proc.returncode == 0
+
+    return {
+        "summary": {
+            "total": 1,
+            "passed": 1 if all_passed else 0,
+            "failed": 0 if all_passed or status == "error" else 1,
+            "errors": 1 if status == "error" else 0,
+            "skipped": 0,
+            "all_passed": all_passed,
+        },
+        "failed_suites": [] if all_passed else [cmd],
+        "skipped_suites": [],
+        "details": [{"suite": cmd, "status": status,
+                     "elapsed_s": elapsed, "output_tail": output_tail}],
+    }
 
 
 def _load_suite_manifest(workspace: Path) -> dict:
@@ -252,47 +388,153 @@ def _phase_skip_reason(phase: dict, workspace: Path) -> Optional[str]:
     if not _command_available(command):
         return f"missing {label}"
     if probe_args:
-        result = subprocess.run(
-            [command, *probe_args],
-            cwd=workspace,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            check=False,
-        )
-        if result.returncode != 0:
-            return f"{label} non-functional"
+        try:
+            result = subprocess.run(
+                [command, *probe_args],
+                cwd=workspace,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=False,
+                timeout=10,
+            )
+            if result.returncode != 0:
+                return f"{label} non-functional"
+        except subprocess.TimeoutExpired:
+            return f"{label} probe timed out"
     return None
 
 
 SUITE_TIMEOUT_S: int = 120
+_PARALLEL_MAX_WORKERS: int = 6
 
 
-def _run_single_suite(suite_path: str, workspace: Path) -> dict:
-    """Run one bash suite; return {status, elapsed_s, output_tail}."""
+def _run_single_suite(suite_path: str, workspace: Path, env: Optional[dict] = None) -> dict:
+    """Run one bash suite; return {suite, status, elapsed_s, output_tail}.
+
+    Uses a temp file + start_new_session=True + pgid kill on timeout — the same
+    pattern as _run_full_via_harness — so that grandchild processes cannot hold a
+    pipe open past the deadline.
+    """
     start = time.monotonic()
+    log_path: Optional[Path] = None
+    timed_out = False
     try:
-        result = subprocess.run(
-            ["bash", suite_path],
-            cwd=workspace,
-            capture_output=True,
-            text=True,
-            check=False,
-            timeout=SUITE_TIMEOUT_S,
-        )
-    except subprocess.TimeoutExpired:
+        fd, log_str = tempfile.mkstemp(suffix=".log", prefix="mcp-suite-")
+        os.close(fd)
+        log_path = Path(log_str)
+        with log_path.open("w", encoding="utf-8", errors="replace") as log_fh:
+            proc = subprocess.Popen(
+                ["bash", suite_path],
+                cwd=workspace,
+                stdin=subprocess.DEVNULL,
+                stdout=log_fh,
+                stderr=subprocess.STDOUT,
+                env=env,
+                start_new_session=True,
+            )
+            try:
+                proc.wait(timeout=SUITE_TIMEOUT_S)
+            except subprocess.TimeoutExpired:
+                timed_out = True
+                pgid: Optional[int] = None
+                try:
+                    pgid = os.getpgid(proc.pid)
+                except OSError:
+                    pass
+                if pgid is not None:
+                    try:
+                        os.killpg(pgid, signal.SIGTERM)
+                    except (ProcessLookupError, OSError):
+                        pass
+                try:
+                    proc.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    if pgid is not None:
+                        try:
+                            os.killpg(pgid, signal.SIGKILL)
+                        except (ProcessLookupError, OSError):
+                            pass
+                    proc.wait()
         elapsed = round(time.monotonic() - start, 1)
+        output = log_path.read_text(encoding="utf-8", errors="replace").strip()
+    finally:
+        if log_path is not None:
+            try:
+                log_path.unlink(missing_ok=True)
+            except OSError:
+                pass
+    if timed_out:
         return {
             "suite": suite_path,
             "status": "error",
             "elapsed_s": elapsed,
             "output_tail": f"timed out after {SUITE_TIMEOUT_S}s",
         }
-    elapsed = round(time.monotonic() - start, 1)
-    output = (result.stdout + result.stderr).strip()
-    # Keep last 8 lines to stay within token budget.
-    tail = "\n".join(output.splitlines()[-8:]) if output else ""
-    status = "passed" if result.returncode == 0 else "failed"
+    lines = output.splitlines()
+    status = "passed" if proc.returncode == 0 else "failed"
+    # More context for failures; minimal for passes.
+    tail_n = 15 if status == "failed" else 5
+    tail = "\n".join(lines[-tail_n:]) if lines else ""
     return {"suite": suite_path, "status": status, "elapsed_s": elapsed, "output_tail": tail}
+
+
+def _run_full_via_harness(workspace: Path, env: dict) -> dict:
+    """Run the full suite by reading the manifest and running all eligible
+    suites in parallel — same code path as targeted mode, no external
+    bash/python3 subprocess chain required.
+    """
+    manifest = _load_suite_manifest(workspace)
+    phases: list[dict] = manifest.get("phases", [])
+    suites: list[dict] = manifest.get("suites", [])
+    phases_by_id = {str(p["id"]): p for p in phases}
+
+    to_run: list[str] = []
+    skipped: list[str] = []
+    for suite in suites:
+        rel = str(suite["path"])
+        phase = phases_by_id.get(str(suite["phase"]), {})
+        skip_reason = _phase_skip_reason(phase, workspace)
+        if skip_reason is not None:
+            skipped.append(f"{rel}: {skip_reason}")
+        else:
+            to_run.append(rel)
+
+    details: list[dict] = []
+    if to_run:
+        workers = min(len(to_run), _PARALLEL_MAX_WORKERS)
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = {
+                pool.submit(_run_single_suite, path, workspace, env): path
+                for path in to_run
+            }
+            for fut in as_completed(futures):
+                path = futures[fut]
+                try:
+                    details.append(fut.result())
+                except Exception as exc:  # noqa: BLE001
+                    details.append({"suite": path, "status": "error",
+                                    "elapsed_s": 0,
+                                    "output_tail": f"unexpected error: {exc}"})
+
+    passed = sum(1 for d in details if d["status"] == "passed")
+    failed_list = [d["suite"] for d in details if d["status"] == "failed"]
+    errors = [d["suite"] for d in details if d["status"] == "error"]
+    total = len(details)
+    all_passed = total > 0 and passed == total
+
+    return {
+        "summary": {
+            "total": total,
+            "passed": passed,
+            "failed": len(failed_list),
+            "errors": len(errors),
+            "skipped": len(skipped),
+            "all_passed": all_passed,
+        },
+        "failed_suites": failed_list,
+        "skipped_suites": skipped,
+        "details": [d for d in details if d["status"] != "passed"],
+    }
 
 
 @mcp.tool()
@@ -315,7 +557,64 @@ def run_tests(
     """
     workspace = ROOT
 
-    manifest = _load_suite_manifest(workspace)
+    # Create a shared PWSH_CACHE_FILE so all suite subprocesses share the
+    # PowerShell binary probe result, matching the behaviour of tests/run-all.sh.
+    pwsh_cache = tempfile.NamedTemporaryFile(delete=False)
+    pwsh_cache.close()
+    env = {**os.environ, "PWSH_CACHE_FILE": pwsh_cache.name}
+    try:
+        return _run_tests_impl(workspace, files, mode, env)
+    finally:
+        try:
+            Path(pwsh_cache.name).unlink(missing_ok=True)
+        except OSError:
+            pass
+
+
+def _run_tests_impl(
+    workspace: Path,
+    files: Optional[list[str]],
+    mode: str,
+    env: dict,
+) -> dict:
+    # Repos without the suite-manifest harness fall back to stack detection.
+    try:
+        manifest = _load_suite_manifest(workspace)
+    except FileNotFoundError:
+        cmd = _detect_test_command(workspace)
+        if cmd is None:
+            return {
+                "summary": {"total": 0, "passed": 0, "failed": 0, "errors": 1,
+                            "skipped": 0, "all_passed": False},
+                "failed_suites": [],
+                "skipped_suites": [],
+                "details": [{"suite": "auto-detect", "status": "error",
+                             "elapsed_s": 0,
+                             "output_tail": "no suite manifest and no recognised "
+                                            "test stack found in workspace"}],
+            }
+        try:
+            return _run_generic_command(cmd, workspace, env)
+        except Exception as exc:  # noqa: BLE001
+            return {
+                "summary": {"total": 0, "passed": 0, "failed": 0, "errors": 1,
+                            "skipped": 0, "all_passed": False},
+                "failed_suites": [],
+                "skipped_suites": [],
+                "details": [{"suite": cmd, "status": "error", "elapsed_s": 0,
+                             "output_tail": f"failed to launch test command: {exc}"}],
+            }
+    except json.JSONDecodeError as exc:
+        return {
+            "summary": {"total": 0, "passed": 0, "failed": 0, "errors": 1,
+                        "skipped": 0, "all_passed": False},
+            "failed_suites": [],
+            "skipped_suites": [],
+            "details": [{"suite": "suite-manifest", "status": "error",
+                         "elapsed_s": 0,
+                         "output_tail": f"corrupt suite manifest: {exc}"}],
+        }
+
     phases: list[dict] = manifest.get("phases", [])
     suites: list[dict] = manifest.get("suites", [])
 
@@ -326,40 +625,46 @@ def run_tests(
     skipped: list[str] = []
 
     if mode == "full" or not files:
-        # Full run: iterate phases in order, respect optionalRequirement.
-        suites_by_phase: dict[str, list[dict]] = {str(p["id"]): [] for p in phases}
-        for s in suites:
-            suites_by_phase[str(s["phase"])].append(s)
+        # Full run: use the manifest-parallel path.
+        return _run_full_via_harness(workspace, env)
 
-        for phase in phases:
-            phase_id = str(phase["id"])
-            skip_reason = _phase_skip_reason(phase, workspace)
-            if skip_reason is not None:
-                phase_suites = [str(s["path"]) for s in suites_by_phase[phase_id]]
-                skipped.extend(phase_suites)
-                continue
-            for s in suites_by_phase[phase_id]:
-                details.append(_run_single_suite(str(s["path"]), workspace))
-    else:
-        # Targeted run: run exactly the requested suites.
-        for f in files:
-            # Normalise: strip leading "./" or workspace prefix.
-            rel = f.replace(str(workspace) + "/", "").lstrip("./")
-            suite_entry = suite_by_path.get(rel)
-            if suite_entry is None:
-                details.append({
-                    "suite": rel,
-                    "status": "error",
-                    "elapsed_s": 0,
-                    "output_tail": f"suite path not found in manifest: {rel}",
-                })
-                continue
-            phase = phases_by_id.get(str(suite_entry["phase"]), {})
-            skip_reason = _phase_skip_reason(phase, workspace)
-            if skip_reason is not None:
-                skipped.append(rel)
-                continue
-            details.append(_run_single_suite(rel, workspace))
+    # Targeted run: validate paths, check phase requirements, then run in
+    # parallel (suites are independent bash processes).
+    to_run: list[str] = []
+    for f in files:
+        # Normalise: strip leading "./" or workspace prefix.
+        rel = f.replace(str(workspace) + "/", "").lstrip("./")
+        suite_entry = suite_by_path.get(rel)
+        if suite_entry is None:
+            details.append({
+                "suite": rel,
+                "status": "error",
+                "elapsed_s": 0,
+                "output_tail": f"suite path not found in manifest: {rel}",
+            })
+            continue
+        phase = phases_by_id.get(str(suite_entry["phase"]), {})
+        skip_reason = _phase_skip_reason(phase, workspace)
+        if skip_reason is not None:
+            skipped.append(rel)
+            continue
+        to_run.append(rel)
+
+    if to_run:
+        workers = min(len(to_run), _PARALLEL_MAX_WORKERS)
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            futures = {
+                pool.submit(_run_single_suite, path, workspace, env): path
+                for path in to_run
+            }
+            for fut in as_completed(futures):
+                path = futures[fut]
+                try:
+                    details.append(fut.result())
+                except Exception as exc:  # noqa: BLE001
+                    details.append({"suite": path, "status": "error",
+                                    "elapsed_s": 0,
+                                    "output_tail": f"unexpected error: {exc}"})
 
     passed = sum(1 for d in details if d["status"] == "passed")
     failed_list = [d["suite"] for d in details if d["status"] not in ("passed", "error")]
@@ -384,6 +689,9 @@ def run_tests(
 # ---------------------------------------------------------------------------
 # Tool: run_check
 # ---------------------------------------------------------------------------
+
+# Maximum characters returned from run_check stdout/stderr.
+_MAX_OUTPUT_CHARS: int = 8000
 
 # Allow-list of safe commands (linters, formatters, read-only git).
 _SAFE_CMDS: frozenset[str] = frozenset({
@@ -423,6 +731,8 @@ def run_check(
     if not _command_available(command):
         return {"error": f"command not found: {command}"}
     work_dir = Path(cwd).resolve() if cwd else ROOT
+    if not work_dir.is_relative_to(ROOT):
+        return {"error": f"cwd must be within the repo root: {cwd!r}"}
     result = subprocess.run(
         [command, *args],
         cwd=work_dir,
@@ -431,11 +741,15 @@ def run_check(
         check=False,
         timeout=60,
     )
+    stdout = result.stdout.strip()
+    stderr = result.stderr.strip()
+    truncated = len(stdout) > _MAX_OUTPUT_CHARS or len(stderr) > _MAX_OUTPUT_CHARS
     return {
         "ok": result.returncode == 0,
         "exit_code": result.returncode,
-        "stdout": result.stdout.strip(),
-        "stderr": result.stderr.strip(),
+        "stdout": stdout[:_MAX_OUTPUT_CHARS],
+        "stderr": stderr[:_MAX_OUTPUT_CHARS],
+        "truncated": truncated,
     }
 
 
@@ -467,9 +781,12 @@ def run_grep(
     """
     if not pattern:
         return {"error": "pattern is required"}
+    max_results = max(1, min(max_results, 500))
     if not _command_available("rg"):
         return {"error": "ripgrep (rg) not available; install via package manager"}
     search_root = (ROOT / path).resolve()
+    if not search_root.is_relative_to(ROOT):
+        return {"error": f"path must be within the repo root: {path!r}"}
     cmd: list[str] = ["rg", "--json"]
     if not is_regex:
         cmd.append("--fixed-strings")
@@ -477,7 +794,10 @@ def run_grep(
         cmd += ["--glob", include_glob]
     cmd += [pattern, str(search_root)]
 
-    result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, check=False, timeout=30)
+    except subprocess.TimeoutExpired:
+        return {"error": "ripgrep timed out after 30s", "pattern": pattern, "matches": []}
     matches: list[dict] = []
     for line in result.stdout.splitlines():
         if len(matches) >= max_results:

@@ -12,7 +12,7 @@
 			"command": "npx",
 			"args": [
 				"-y",
-				"@modelcontextprotocol/server-filesystem",
+				"@modelcontextprotocol/server-filesystem@2026.1.14",
 				"${workspaceFolder}"
 			],
 			"sandboxEnabled": true,
@@ -31,7 +31,14 @@
 					"denyRead": [
 						"${userHome}/.ssh",
 						"${userHome}/.gnupg",
-						"${userHome}/.aws"
+						"${userHome}/.aws",
+						"${userHome}/.netrc",
+						"${userHome}/.docker",
+						"${userHome}/.kube",
+						"${userHome}/.config",
+						"${userHome}/.bash_history",
+						"${userHome}/.zsh_history",
+						"${userHome}/.local/share/keyrings"
 					]
 				}
 			}
@@ -39,15 +46,24 @@
 		"git": {
 			"type": "stdio",
 			"command": "uvx",
+			"env": {
+				"GIT_MCP_REPOSITORY": "${workspaceFolder}",
+				"CLAUDE_TMPDIR": "${userHome}/.cache/uv",
+				"TMPDIR": "${userHome}/.cache/uv"
+			},
 			"args": [
-				"mcp-server-git",
-				"--repository",
-				"${workspaceFolder}"
+				"--from", "mcp[cli]",
+				"--with", "gitpython>=3.1.50,<3.2",
+				"mcp", "run",
+				"${workspaceFolder}/hooks/scripts/mcp-git-server.py"
 			]
 		},
 		"github": {
 			"type": "http",
-			"url": "https://api.githubcopilot.com/mcp/",
+			"url": "https://api.githubcopilot.com/mcp/readonly",
+			"headers": {
+				"X-MCP-Toolsets": "issues,pull_requests,actions,dependabot"
+			},
 			"disabled": true
 		},
 		"fetch": {
@@ -58,9 +74,7 @@
 				"TMPDIR": "${userHome}/.cache/uv"
 			},
 			"args": [
-				"--with",
-				"httpx[socks]>=0.28",
-				"mcp-server-fetch"
+				"mcp-server-fetch==2025.4.7"
 			]
 		},
 		"heartbeat": {
@@ -85,31 +99,24 @@
 		},
 		"sequential-thinking": {
 			"type": "stdio",
-			"command": "npx",
+			"command": "uvx",
+			"env": {
+				"CLAUDE_TMPDIR": "${userHome}/.cache/uv",
+				"TMPDIR": "${userHome}/.cache/uv"
+			},
 			"args": [
-				"-y",
-				"@modelcontextprotocol/server-sequential-thinking"
-			],
-			"sandboxEnabled": true,
-			"sandbox": {
-				"network": {
-					"allowedDomains": [
-						"registry.npmjs.org",
-						"npmjs.org"
-					]
-				},
-				"filesystem": {
-					"allowWrite": [
-						"${userHome}/.npm"
-					]
-				}
-			}
+				"--from",
+				"mcp[cli]",
+				"mcp",
+				"run",
+				"${workspaceFolder}/hooks/scripts/mcp-sequential-thinking-server.py"
+			]
 		},
 		"duckduckgo": {
 			"type": "stdio",
 			"command": "uvx",
 			"args": [
-				"duckduckgo-mcp-server"
+				"duckduckgo-mcp-server==0.3.0"
 			]
 		}
 	}
