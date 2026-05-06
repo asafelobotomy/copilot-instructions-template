@@ -2,7 +2,7 @@
 # tests/contracts/test-customization-contracts-surfaces.sh -- prompt, instruction, and skill contract checks.
 # Run: bash tests/contracts/test-customization-contracts-surfaces.sh
 # Exit 0: all checks passed. Exit 1: one or more checks failed.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"

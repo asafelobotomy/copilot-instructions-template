@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+set -euo pipefail
 echo "15. Plugin root-token guidance and root plugin hook surfaces stay format-aware"
 assert_python "plugin guidance distinguishes formats and root plugin surfaces stay wired" '
 import json

@@ -2,7 +2,7 @@
 # tests/scripts/test-verify-version-references.sh — unit tests for scripts/release/verify-version-references.sh
 # Run: bash tests/scripts/test-verify-version-references.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
@@ -66,8 +66,7 @@ echo ""
 # ── 2. Drift is detected instead of rewritten ──────────────────────────────────
 echo "2. Drift is reported instead of being rewritten"
 setup_sandbox "1.2.3" "0.0.0"
-output=$(run_script 2>&1)
-status=$?
+output=$(run_script 2>&1) && status=0 || status=$?
 assert_failure "drift exits non-zero" "$status"
 assert_contains "template drift is reported" "$output" "template/copilot-instructions.md"
 teardown_sandbox
@@ -77,8 +76,7 @@ echo ""
 echo "3. Missing release markers are reported"
 setup_sandbox "2.0.0" "2.0.0"
 printf 'Current template version: **2.0.0** — see CHANGELOG.md.\n' > "$SANDBOX/README.md"
-output=$(run_script 2>&1)
-status=$?
+output=$(run_script 2>&1) && status=0 || status=$?
 assert_failure "missing marker exits non-zero" "$status"
 assert_contains "missing marker is reported" "$output" "missing x-release-please-version marker in README.md"
 teardown_sandbox
@@ -117,8 +115,8 @@ echo ""
 echo "6. Missing VERSION.md exits non-zero"
 SANDBOX=$(mktemp -d)
 mkdir -p "$SANDBOX/.github"
-ROOT_DIR="$SANDBOX" bash "$SCRIPT" 2>/dev/null
-assert_failure "missing VERSION.md → exit non-zero" $?
+if ROOT_DIR="$SANDBOX" bash "$SCRIPT" 2>/dev/null; then _rc=0; else _rc=$?; fi
+assert_failure "missing VERSION.md → exit non-zero" "$_rc"
 teardown_sandbox
 echo ""
 
@@ -126,8 +124,8 @@ echo ""
 echo "7. Invalid semver 'not-a-version' exits non-zero"
 setup_sandbox "1.2.3" "1.2.3"
 echo "not-a-version" > "$SANDBOX/VERSION.md"
-run_script 2>/dev/null
-assert_failure "invalid semver → exit non-zero" $?
+if run_script 2>/dev/null; then _rc=0; else _rc=$?; fi
+assert_failure "invalid semver → exit non-zero" "$_rc"
 teardown_sandbox
 echo ""
 

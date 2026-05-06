@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+set -euo pipefail
 
 echo "25. scan-secrets.ps1 maps to its dedicated PowerShell suite"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "hooks/scripts/scan-secrets.ps1")

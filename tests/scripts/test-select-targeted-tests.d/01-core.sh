@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+set -euo pipefail
 
 echo "1. Invalid usage is rejected"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" 2>&1) || true

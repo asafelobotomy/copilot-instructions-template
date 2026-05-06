@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # tests/scripts/test-audit-release-settings.sh -- verify release governance audit behavior.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
@@ -65,8 +65,7 @@ cat > "$fixture_dir/repo.json" <<'EOF_REPO'
   "allow_squash_merge": true
 }
 EOF_REPO
-output=$(run_script "$fixture_dir" --repo asafelobotomy/copilot-instructions-template)
-status=$?
+output=$(run_script "$fixture_dir" --repo asafelobotomy/copilot-instructions-template) && status=0 || status=$?
 assert_failure "missing auto-merge exits non-zero" "$status"
 assert_contains "missing auto-merge is reported" "$output" "Repository auto-merge is disabled"
 assert_contains "failure result is reported" "$output" "Result: incompatible with the current lightweight release workflow"
@@ -96,8 +95,7 @@ cat > "$fixture_dir/workflow.json" <<'EOF_WORKFLOW'
   "default_workflow_permissions": "read"
 }
 EOF_WORKFLOW
-output=$(run_script "$fixture_dir" --repo asafelobotomy/copilot-instructions-template)
-status=$?
+output=$(run_script "$fixture_dir" --repo asafelobotomy/copilot-instructions-template) && status=0 || status=$?
 assert_failure "missing workflow approval permission exits non-zero" "$status"
 assert_contains "workflow permission error is reported" "$output" "GitHub Actions may not create and approve pull requests"
 echo ""

@@ -2,7 +2,7 @@
 # tests/scripts/test-validate-consumer-surface-parity.sh -- tests for scripts/ci/validate-consumer-surface-parity.sh
 # Run: bash tests/scripts/test-validate-consumer-surface-parity.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"

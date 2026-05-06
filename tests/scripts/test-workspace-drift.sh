@@ -2,7 +2,7 @@
 # tests/scripts/test-workspace-drift.sh -- tests for scripts/workspace/check-workspace-drift.sh
 # Run: bash tests/scripts/test-workspace-drift.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
@@ -38,8 +38,7 @@ cat > "$TMPDIR_CONTENT/operations/HEARTBEAT.md" <<'EOF'
 - Always append a History row when the trigger is Session start or Explicit.
 - Omit the History row whenever checks pass.
 EOF
-output=$(bash "$SCRIPT" "$TMPDIR_CONTENT" 2>/dev/null)
-status=$?
+output=$(bash "$SCRIPT" "$TMPDIR_CONTENT" 2>/dev/null) && status=0 || status=$?
 assert_failure "stale response lines exit 1" "$status"
 assert_matches "stale response lines report DRIFT_CONTENT" "$output" "^DRIFT_CONTENT"
 echo ""
@@ -52,16 +51,14 @@ cat > "$TMPDIR_DRIFT/operations/HEARTBEAT.md" <<'EOF'
 - Always append a History row if all checks pass.
 - Omit row if session start passes without alerts.
 EOF
-output=$(bash "$SCRIPT" "$TMPDIR_DRIFT" 2>/dev/null)
-status=$?
+output=$(bash "$SCRIPT" "$TMPDIR_DRIFT" 2>/dev/null) && status=0 || status=$?
 assert_failure "drifted sentinel exits 1" "$status"
 assert_matches "drifted sentinel reports DRIFT" "$output" "^DRIFT"
 echo ""
 
 echo "4. Workspace missing the file entirely exits 1 and reports MISSING_FILE"
 TMPDIR_MISSING=$(mktemp -d); CLEANUP_DIRS+=("$TMPDIR_MISSING")
-output=$(bash "$SCRIPT" "$TMPDIR_MISSING" 2>/dev/null)
-status=$?
+output=$(bash "$SCRIPT" "$TMPDIR_MISSING" 2>/dev/null) && status=0 || status=$?
 assert_failure "missing file exits 1" "$status"
 assert_matches "missing file reports MISSING_FILE" "$output" "^MISSING_FILE"
 echo ""

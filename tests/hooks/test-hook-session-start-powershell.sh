@@ -2,7 +2,7 @@
 # tests/hooks/test-hook-session-start-powershell.sh -- unit tests for session-start.ps1
 # Run: bash tests/hooks/test-hook-session-start-powershell.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/powershell-hook-test-helpers.sh
 source "$(dirname "$0")/../lib/powershell-hook-test-helpers.sh"

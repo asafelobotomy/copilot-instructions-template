@@ -2,7 +2,7 @@
 # tests/scripts/test-suite-manifest.sh -- tests for scripts/harness/suite-manifest.py
 # Run: bash tests/scripts/test-suite-manifest.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
@@ -16,21 +16,21 @@ make_success_fixture() {
 
   cat > "$root/scripts/ci/validate-test-output.sh" <<'EOF'
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 echo "validate-test-output OK"
 EOF
   chmod +x "$root/scripts/ci/validate-test-output.sh"
 
   cat > "$root/tests/scripts/pass-suite.sh" <<'EOF'
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 echo "pass-suite"
 EOF
   chmod +x "$root/tests/scripts/pass-suite.sh"
 
   cat > "$root/tests/hooks/skipped-suite.sh" <<'EOF'
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 echo "should-not-run"
 EOF
   chmod +x "$root/tests/hooks/skipped-suite.sh"
@@ -78,14 +78,14 @@ make_failure_fixture() {
 
   cat > "$root/scripts/ci/validate-test-output.sh" <<'EOF'
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 echo "validate-test-output OK"
 EOF
   chmod +x "$root/scripts/ci/validate-test-output.sh"
 
   cat > "$root/tests/scripts/failing-suite.sh" <<'EOF'
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 echo "about to fail"
 exit 9
 EOF
@@ -203,7 +203,7 @@ make_success_fixture "$TMP"
 # Replace the pass-suite with one that sends SIGINT to the parent Python process
 cat > "$TMP/tests/scripts/pass-suite.sh" <<'EOF'
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 echo "pass-suite"
 EOF
 chmod +x "$TMP/tests/scripts/pass-suite.sh"

@@ -2,7 +2,7 @@
 # tests/hooks/test-hook-post-edit-lint.sh -- unit tests for hooks/scripts/post-edit-lint.sh
 # Run: bash tests/hooks/test-hook-post-edit-lint.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"

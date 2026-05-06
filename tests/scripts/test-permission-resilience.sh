@@ -4,7 +4,7 @@
 # when permissions are degraded (e.g. after git checkout, archive extraction).
 # Run: bash tests/scripts/test-permission-resilience.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
@@ -100,7 +100,7 @@ done
 echo ""
 
 # ── 5. All hook scripts use strict mode ───────────────────────────────────────
-# Every script must contain either 'set -euo pipefail' or 'set -uo pipefail'.
+# Every script must contain either 'set -euo pipefail' or 'set -euo pipefail'.
 echo "5. All hook scripts use strict mode (set -euo pipefail or -uo pipefail)"
 for script in "${HOOK_SCRIPTS[@]}"; do
   # lib-hooks.sh is a sourced library, not a standalone script — exempt.
@@ -110,7 +110,7 @@ for script in "${HOOK_SCRIPTS[@]}"; do
   if grep -Eq 'set -[eu]*o pipefail' "$path"; then
     pass_note "$script strict mode"
   else
-    fail_note "$script strict mode" "     missing set -euo pipefail / set -uo pipefail"
+    fail_note "$script strict mode" "     missing set -euo pipefail / set -euo pipefail"
   fi
 done
 echo ""

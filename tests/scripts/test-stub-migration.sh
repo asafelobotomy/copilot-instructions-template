@@ -2,7 +2,7 @@
 # tests/scripts/test-stub-migration.sh -- unit tests for scripts/release/stub-migration.sh
 # Run: bash tests/scripts/test-stub-migration.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
@@ -45,21 +45,21 @@ echo ""
 
 echo "1. Missing tag argument exits non-zero"
 setup_sandbox
-(
+if (
   cd "$SANDBOX" || exit 1
   bash "$SCRIPT" >/dev/null 2>&1
-)
-assert_failure "missing tag exits non-zero" $?
+); then _rc=0; else _rc=$?; fi
+assert_failure "missing tag exits non-zero" "$_rc"
 teardown_sandbox
 echo ""
 
 echo "2. Missing MIGRATION.md exits non-zero"
 SANDBOX=$(mktemp -d)
-(
+if (
   cd "$SANDBOX" || exit 1
   bash "$SCRIPT" "v2.0.0" >/dev/null 2>&1
-)
-assert_failure "missing MIGRATION.md exits non-zero" $?
+); then _rc=0; else _rc=$?; fi
+assert_failure "missing MIGRATION.md exits non-zero" "$_rc"
 teardown_sandbox
 echo ""
 

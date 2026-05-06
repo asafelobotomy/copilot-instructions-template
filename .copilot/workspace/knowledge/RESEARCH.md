@@ -77,6 +77,24 @@
 |-----|---------|------|------|
 | <https://code.visualstudio.com/docs/copilot/customization/agent-plugins> | Agent plugins (preview): install from Git URL, workspace recommendations, enabledPlugins + extraKnownMarketplaces, plugin.json structure, hooks.json and .mcp.json in plugin root | 2026-04-12 | plugins, distribution, bootstrap |
 
+## A2A and Multi-Agent Communication Efficiency — 2026-05-01
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://a2a-protocol.org/latest/> | Official A2A Protocol docs hub — now Linux Foundation, 150+ organisations; Python/JS/Java/Go/C# SDKs | 2026-05-01 | a2a, multi-agent, protocol |
+| <https://a2a-protocol.org/latest/topics/key-concepts/> | A2A core concepts: Agent Card (identity+capabilities+skills+auth), Task, Message, Part, Artifact schemas | 2026-05-01 | a2a, agent-card, schema |
+| <https://a2a-protocol.org/latest/topics/agent-discovery/> | Agent Card discovery: well-known URI `/.well-known/agent-card.json`, registry, direct config; HTTP cache guidance | 2026-05-01 | a2a, discovery, caching |
+| <https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/> | Google A2A announcement (April 2025): design rationale, MCP complement, opacity principle | 2026-05-01 | a2a, google, announcement |
+| <https://www.ietf.org/archive/id/draft-aevum-agentcard-00.html> | IETF draft AgentCard (April 2026): ULID identity, dot-namespaced capabilities, MCP-compatible input/output schemas, energy pricing field | 2026-05-01 | a2a, agent-card, ietf, standard |
+| <https://www.anthropic.com/engineering/building-effective-agents> | Anthropic canonical guide: simplicity+transparency+ACI; 5 workflow patterns; tool docstrings as context compression | 2026-05-01 | anthropic, agents, workflow, patterns |
+| <https://www.anthropic.com/engineering/built-multi-agent-research-system> | Anthropic Research system: 90.2% gain, 15× tokens, 4-field delegation contracts, scaling heuristics, tool description improvement = 40% speed gain | 2026-05-01 | anthropic, multi-agent, production, orchestration |
+| <https://cuizhanming.com/anthropic-multi-agent-research-architecture/> | Detailed summary of Anthropic multi-agent Research architecture — orchestrator-worker, memory persistence, parallel tool calling | 2026-05-01 | anthropic, multi-agent, architecture |
+| <https://code.visualstudio.com/docs/copilot/agents/subagents> | VS Code Copilot subagent docs: context isolation, user-invocable/disable-model-invocation flags, agents allow-list, model selection cascade, coordinator-worker pattern | 2026-05-01 | vscode, subagents, context-isolation |
+| <https://developers.openai.com/cookbook/examples/orchestrating_agents> | OpenAI routines + handoffs: function-schema tool description, transfer_to_X pattern, Swarm primitives | 2026-05-01 | openai, swarm, handoff, agents |
+| <https://www.morphllm.com/prompt-compression> | Prompt compression survey: LLMLingua (20×), LLMLingua-2, LongLLMLingua (+21.4% accuracy at 4× fewer tokens), code vs prose asymmetry, context rot | 2026-05-01 | prompt-compression, llmlingua, context |
+| <https://arxiv.org/abs/2410.12388> | NAACL 2025 survey: hard vs soft prompt compression; taxonomy of techniques | 2026-05-01 | prompt-compression, survey, paper |
+| <https://microsoft.github.io/multi-agent-reference-architecture/docs/reference-architecture/Reference-Architecture.html> | Microsoft multi-agent ref arch: NLU→SLM→LLM classifier cascade, supervisor pattern, agent registry, structured outputs | 2026-05-01 | microsoft, semantic-kernel, architecture, orchestration |
+
 ## Agent Scope Control and Bounded Initiative — 2026-05-01
 
 | URL | Summary | Date | Tags |
@@ -517,3 +535,16 @@
 | <https://www.swebench.com/> | SWE-bench official leaderboard: current SOTA Claude 4.5 Opus 76.8% Verified; mini-SWE-agent 65% in 100 lines Python | 2026-04-12 | ai-agents, benchmark, swe-bench |
 | <https://arxiv.org/abs/2310.06770> | SWE-bench paper (ICLR 2024): 2294 GitHub issues in 12 Python repos; original Claude 2 scored 1.96%; test execution central to agent success | 2026-04-12 | ai-agents, benchmark, swe-bench |
 | <https://arxiv.org/pdf/2601.22832> | Meta JiTTesting paper: "Just-in-Time Catching Test Generation at Meta"; mutation-based LLM test generation for regressions | 2026-04-12 | ai-agents, testing, jit, paper |
+
+## VS Code Copilot Built-in Agent Tools — 2026-05-01
+
+| URL | Summary | Date | Tags |
+|-----|---------|------|------|
+| <https://code.visualstudio.com/docs/copilot/reference/copilot-vscode-features#_chat-tools> | Canonical v1.114 built-in tool table: full tool set hierarchy with `#edit`, `#execute`, `#search`, `#read`, `#web`, `#agent`, `#browser` tool sets and all individual tools | 2026-05-01 | tools, reference, built-in |
+| <https://code.visualstudio.com/docs/copilot/agents/agent-tools> | Tool approval flow, permission levels (Default/Bypass/Autopilot), URL pre/post approval, terminal sandboxing, auto-approve config, 128-tool limit | 2026-05-01 | tools, security, sandboxing |
+| <https://code.visualstudio.com/docs/copilot/customization/custom-agents> | Agent frontmatter schema including tools:, agents:, handoffs:, hooks:; legacy tool name → tool set mapping | 2026-05-01 | agents, customisation, frontmatter |
+| <https://code.visualstudio.com/docs/copilot/concepts/tools> | Tool type taxonomy: built-in (GitHub.copilot-chat extension) vs extension tools (LM Tools API) vs MCP tools | 2026-05-01 | tools, concepts, taxonomy |
+| <https://code.visualstudio.com/docs/copilot/reference/workspace-context> | `#codebase` now purely semantic (v1.114); single index state (no local vs remote distinction); GitHub/AzDO repos get instant remote index | 2026-05-01 | codebase, semantic-search, index |
+| <https://code.visualstudio.com/api/extension-guides/ai/ai-extensibility-overview> | AI extensibility options: LM tools (VS Code API access), MCP tools (cross-editor, no VS Code API), chat participants, Language Model API | 2026-05-01 | api, extensibility, mcp |
+| <https://code.visualstudio.com/api/extension-guides/ai/tools> | Language Model Tools API: `vscode.lm.registerTool()`, package.json `contributes.languageModelTools[]`, fine-grained approval API (v1.114 proposed) | 2026-05-01 | api, tools, extension |
+| <https://code.visualstudio.com/updates/v1_114> | v1.114 (2026-04-01): `#codebase` semantic-only, workspace search simplification, troubleshoot previous sessions, TypeScript 6.0, fine-grained tool approval proposed API | 2026-05-01 | release-notes, tools, v1_114 |

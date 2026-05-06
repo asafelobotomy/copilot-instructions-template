@@ -2,7 +2,7 @@
 # tests/scripts/test-validate-shared-skill-sync.sh -- tests for scripts/ci/validate-shared-skill-sync.sh
 # Run: bash tests/scripts/test-validate-shared-skill-sync.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"

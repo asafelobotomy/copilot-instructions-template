@@ -4,6 +4,7 @@
 # run_audit, and run_audit_md helpers.
 #
 # Requires: REPO_ROOT set by init_test_context; SCRIPT pointing to copilot_audit.py.
+set -euo pipefail
 
 setup_sandbox() {
   SANDBOX=$(mktemp -d)
@@ -182,12 +183,10 @@ run_audit_case() {
   fi
   if [[ "$format" == "md" ]]; then
     # shellcheck disable=SC2034
-    CASE_OUTPUT=$(run_audit_md "$profile")
+    if CASE_OUTPUT=$(run_audit_md "$profile"); then CASE_STATUS=0; else CASE_STATUS=$?; fi
   else
     # shellcheck disable=SC2034
-    CASE_OUTPUT=$(run_audit "$profile")
+    if CASE_OUTPUT=$(run_audit "$profile"); then CASE_STATUS=0; else CASE_STATUS=$?; fi
   fi
-  # shellcheck disable=SC2034
-  CASE_STATUS=$?
   teardown_sandbox
 }

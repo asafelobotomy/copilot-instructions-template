@@ -2,7 +2,7 @@
 # tests/contracts/test-customization-contracts-policies.sh -- commit, inventory, and allow-list contract checks.
 # Run: bash tests/contracts/test-customization-contracts-policies.sh
 # Exit 0: all checks passed. Exit 1: one or more checks failed.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"

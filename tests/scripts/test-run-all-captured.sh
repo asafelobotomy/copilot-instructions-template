@@ -2,7 +2,7 @@
 # tests/scripts/test-run-all-captured.sh -- tests for scripts/harness/run-all-captured.sh
 # Run: bash tests/scripts/test-run-all-captured.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
@@ -15,7 +15,7 @@ make_fixture() {
   mkdir -p "$root/tests"
   cat > "$root/tests/run-all.sh" <<'EOF'
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 for line in one two three four five six; do
   echo "$line"
 done
@@ -28,7 +28,7 @@ make_failure_fixture() {
   mkdir -p "$root/tests"
   cat > "$root/tests/run-all.sh" <<'EOF'
 #!/usr/bin/env bash
-set -uo pipefail
+set -euo pipefail
 echo "about to fail"
 echo "failing line"
 exit 7
@@ -70,8 +70,7 @@ echo "3. Failure preserves the wrapped exit code and still prints the log tail"
 TMP=$(mktemp -d); CLEANUP_DIRS+=("$TMP")
 make_failure_fixture "$TMP"
 LOG_FILE="$TMP/failing-run-all.log"
-output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --log-file "$LOG_FILE" --tail-lines 5 2>&1)
-status=$?
+output=$(ROOT_DIR="$TMP" bash "$SCRIPT" --log-file "$LOG_FILE" --tail-lines 5 2>&1) && status=0 || status=$?
 assert_failure "wrapper exits non-zero on failure" "$status"
 if [[ "$status" -eq 7 ]]; then
   pass_note "wrapped exit code is preserved"

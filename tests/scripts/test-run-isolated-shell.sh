@@ -2,7 +2,7 @@
 # tests/scripts/test-run-isolated-shell.sh -- tests for scripts/harness/run-isolated-shell.sh
 # Run: bash tests/scripts/test-run-isolated-shell.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
@@ -28,8 +28,7 @@ assert_contains "bash command form prints output" "$output" "bash-ok"
 echo ""
 
 echo "3. Bash strict mode stops on failure and preserves child exit code"
-output=$(bash "$SCRIPT" --shell bash --strict --command $'printf "before\\n"\nfalse\nprintf "after\\n"' 2>&1)
-command_rc=$?
+output=$(bash "$SCRIPT" --shell bash --strict --command $'printf "before\\n"\nfalse\nprintf "after\\n"' 2>&1) && command_rc=0 || command_rc=$?
 assert_failure "strict bash exits non-zero" "$command_rc"
 if [[ "$command_rc" -eq 1 ]]; then
   pass_note "strict bash preserves child exit code"
@@ -55,8 +54,7 @@ assert_contains "cwd form prints requested directory" "$output" "$tmpdir/nested"
 echo ""
 
 echo "5. Unsupported shells fail clearly"
-output=$(bash "$SCRIPT" --shell fish --command 'echo nope' 2>&1)
-command_rc=$?
+output=$(bash "$SCRIPT" --shell fish --command 'echo nope' 2>&1) && command_rc=0 || command_rc=$?
 assert_failure "unsupported shell exits non-zero" "$command_rc"
 assert_contains "unsupported shell is reported" "$output" "Unsupported shell: fish"
 echo ""
@@ -69,8 +67,7 @@ assert_contains "sh shell prints output" "$output" "sh-ok"
 echo ""
 
 echo "7. Strict sh mode stops on undefined variables"
-output=$(bash "$SCRIPT" --shell sh --strict --command $'printf "before\\n"\n: "$missing"\nprintf "after\\n"' 2>&1)
-command_rc=$?
+output=$(bash "$SCRIPT" --shell sh --strict --command $'printf "before\\n"\n: "$missing"\nprintf "after\\n"' 2>&1) && command_rc=0 || command_rc=$?
 assert_failure "strict sh exits non-zero" "$command_rc"
 assert_contains "strict sh prints output before failure" "$output" "before"
 if grep -Fq -- "after" <<< "$output"; then
@@ -108,8 +105,7 @@ echo ""
 
 echo "10. PowerShell strict mode stops on undefined variables"
 if [[ -n "$PWSH" ]]; then
-  output=$(bash "$SCRIPT" --shell pwsh --strict --command $'Write-Output "before"\n$missing\nWrite-Output "after"' 2>&1)
-  command_rc=$?
+  output=$(bash "$SCRIPT" --shell pwsh --strict --command $'Write-Output "before"\n$missing\nWrite-Output "after"' 2>&1) && command_rc=0 || command_rc=$?
   assert_failure "strict pwsh exits non-zero" "$command_rc"
   assert_contains "strict pwsh prints output before failure" "$output" "before"
   if grep -Fq -- "after" <<< "$output"; then

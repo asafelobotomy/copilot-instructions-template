@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # tests/lib/test-helpers.sh -- shared assertions for shell-based test suites.
 
-set -uo pipefail
+set -euo pipefail
 init_test_context() {
   local script_path="$1"
   PASS=0

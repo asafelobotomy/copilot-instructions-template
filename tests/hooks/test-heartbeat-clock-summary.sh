@@ -2,7 +2,7 @@
 # tests/hooks/test-heartbeat-clock-summary.sh -- unit tests for heartbeat_clock_summary.py
 # Run: bash tests/hooks/test-heartbeat-clock-summary.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"

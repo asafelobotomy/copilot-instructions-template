@@ -2,7 +2,7 @@
 # tests/lib/powershell-hook-test-helpers.sh -- shared helpers for PowerShell hook test suites.
 
 # shellcheck source=test-helpers.sh
-set -uo pipefail
+set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/test-helpers.sh"
 
 resolve_powershell_bin() {

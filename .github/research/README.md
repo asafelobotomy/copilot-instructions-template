@@ -20,6 +20,7 @@ in `.github/research/` first.
 - [mcp-web-search-2026-04-28.md](./mcp-web-search-2026-04-28.md)
 - [agent-scope-control-2026-05-01.md](./agent-scope-control-2026-05-01.md)
 - [tool-search-model-support-2026-04-28.md](./tool-search-model-support-2026-04-28.md)
+- [vscode-copilot-built-in-tools-2026-05-01.md](./vscode-copilot-built-in-tools-2026-05-01.md)
 
 ## Archive index
 

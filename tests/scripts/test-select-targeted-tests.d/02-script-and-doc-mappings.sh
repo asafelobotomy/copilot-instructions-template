@@ -1,4 +1,5 @@
 # shellcheck shell=bash
+set -euo pipefail
 
 echo "12. Selector root manifest and shard files map back to the selector suite"
 output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" "scripts/harness/targeted-test-map.json" "scripts/harness/targeted-test-map.d/00-selector-core.json")

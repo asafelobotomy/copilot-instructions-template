@@ -2,7 +2,7 @@
 # tests/scripts/test-select-targeted-tests.sh -- unit tests for scripts/harness/select-targeted-tests.sh
 # Run: bash tests/scripts/test-select-targeted-tests.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"

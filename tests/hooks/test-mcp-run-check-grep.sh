@@ -3,7 +3,7 @@
 #   run_grep MCP tools in hooks/scripts/mcp-heartbeat-server.py
 # Run: bash tests/hooks/test-mcp-run-check-grep.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"

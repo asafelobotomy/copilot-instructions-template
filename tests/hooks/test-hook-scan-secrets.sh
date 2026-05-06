@@ -2,7 +2,7 @@
 # tests/hooks/test-hook-scan-secrets.sh -- unit tests for hooks/scripts/scan-secrets.sh
 # Run: bash tests/hooks/test-hook-scan-secrets.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"

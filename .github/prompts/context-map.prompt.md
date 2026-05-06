@@ -12,7 +12,7 @@ Before implementing any changes, analyse the codebase and produce a context map 
 1. **Search** — Find all files directly related to the task (feature area, module name, keywords).
 2. **Trace dependencies** — For each file found, identify imports/exports and transitive callers.
 3. **Find tests** — Locate existing tests that cover the affected code.
-4. **Spot patterns** — Find similar implementations elsewhere in the codebase to follow as reference.
+4. **Spot patterns** — Find implementations in the codebase that perform similar functionality or follow the same design pattern to use as a reference.
 
 ## Output
 

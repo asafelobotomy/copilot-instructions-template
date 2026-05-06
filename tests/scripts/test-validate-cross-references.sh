@@ -2,7 +2,7 @@
 # tests/scripts/test-validate-cross-references.sh -- tests for scripts/ci/validate-cross-references.sh
 # Run: bash tests/scripts/test-validate-cross-references.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"

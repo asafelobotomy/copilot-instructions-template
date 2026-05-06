@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # tests/run-all.sh -- canonical local test entrypoint for the template repo.
-set -uo pipefail
+set -euo pipefail
 
 ROOT_DIR="${ROOT_DIR:-$(cd "$(dirname "$0")/.." && pwd)}"
 

@@ -2,7 +2,7 @@
 # tests/hooks/test-hook-subagent-start.sh -- unit tests for subagent-start.sh
 # Run: bash tests/hooks/test-hook-subagent-start.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"

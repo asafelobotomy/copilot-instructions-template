@@ -2,7 +2,7 @@
 # tests/scripts/test-sync-workspace-index.sh -- direct tests for scripts/workspace/sync-workspace-index.sh
 # Run: bash tests/scripts/test-sync-workspace-index.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"
@@ -131,8 +131,7 @@ echo "=== sync-workspace-index.sh direct tests ==="
 echo ""
 
 echo "1. Invalid mode is rejected"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" --wat 2>&1)
-status=$?
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" --wat 2>&1) && status=0 || status=$?
 assert_failure "invalid mode exits non-zero" "$status"
 assert_contains "invalid mode prints usage" "$output" "Usage: bash scripts/workspace/sync-workspace-index.sh"
 echo ""
@@ -140,8 +139,7 @@ echo ""
 echo "2. Missing workspace-index.json in check mode fails with repair hint"
 TMP_MISSING=$(mktemp -d); CLEANUP_DIRS+=("$TMP_MISSING")
 make_fixture "$TMP_MISSING"
-output=$(ROOT_DIR="$TMP_MISSING" bash "$SCRIPT" --check 2>&1)
-status=$?
+output=$(ROOT_DIR="$TMP_MISSING" bash "$SCRIPT" --check 2>&1) && status=0 || status=$?
 assert_failure "missing workspace-index exits non-zero" "$status"
 assert_contains "missing workspace-index is reported" "$output" "FAIL: missing"
 assert_contains "repair hint is printed" "$output" "Run: bash scripts/workspace/sync-workspace-index.sh --write"
@@ -150,8 +148,7 @@ echo ""
 echo "3. Write mode creates a valid canonical index"
 TMP_WRITE=$(mktemp -d); CLEANUP_DIRS+=("$TMP_WRITE")
 make_fixture "$TMP_WRITE"
-output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --write 2>&1)
-status=$?
+output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --write 2>&1) && status=0 || status=$?
 assert_success "write mode exits zero" "$status"
 assert_contains "write mode reports repo target" "$output" ".copilot/workspace/operations/workspace-index.json"
 assert_contains "write mode reports template target" "$output" "template/workspace/operations/workspace-index.json"
@@ -200,8 +197,7 @@ assert repo_data == template_data
 echo ""
 
 echo "4. Check mode passes when file is in sync"
-output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --check 2>&1)
-status=$?
+output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --check 2>&1) && status=0 || status=$?
 assert_success "check mode passes on synced file" "$status"
 assert_contains "check mode success message" "$output" "OK: workspace-index.json files are in sync"
 echo ""
@@ -218,25 +214,21 @@ with open(path, 'w', encoding='utf-8') as fh:
     json.dump(data, fh, indent=2)
     fh.write('\n')
 PY
-output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --check 2>&1)
-status=$?
+output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --check 2>&1) && status=0 || status=$?
 assert_failure "check mode fails on drift" "$status"
 assert_contains "drift message is printed" "$output" ".copilot/workspace/operations/workspace-index.json is out of sync"
 assert_contains "drift includes repair hint" "$output" "Run: bash scripts/workspace/sync-workspace-index.sh --write"
 echo ""
 
 echo "6. Write mode repairs the drifted file"
-output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --write 2>&1)
-status=$?
+output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --write 2>&1) && status=0 || status=$?
 assert_success "write repairs drift" "$status"
-output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --check 2>&1)
-status=$?
+output=$(ROOT_DIR="$TMP_WRITE" bash "$SCRIPT" --check 2>&1) && status=0 || status=$?
 assert_success "check passes after repair" "$status"
 echo ""
 
 echo "7. Real repo and template indices stay aligned"
-output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" --check 2>&1)
-status=$?
+output=$(ROOT_DIR="$REPO_ROOT" bash "$SCRIPT" --check 2>&1) && status=0 || status=$?
 assert_success "real repo indices are in sync" "$status"
 assert_contains "real repo reports both indices are in sync" "$output" "OK: workspace-index.json files are in sync"
 

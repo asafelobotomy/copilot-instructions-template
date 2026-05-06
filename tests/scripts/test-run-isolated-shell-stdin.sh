@@ -2,7 +2,7 @@
 # tests/scripts/test-run-isolated-shell-stdin.sh -- tests for scripts/harness/run-isolated-shell-stdin.sh
 # Run: bash tests/scripts/test-run-isolated-shell-stdin.sh
 # Exit 0: all tests passed. Exit 1: one or more failures.
-set -uo pipefail
+set -euo pipefail
 
 # shellcheck source=../lib/test-helpers.sh
 source "$(dirname "$0")/../lib/test-helpers.sh"

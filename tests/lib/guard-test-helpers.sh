@@ -9,7 +9,7 @@
 # ── Guard-destructive test helpers ─────────────────────────────────────────────
 # Require GUARD_SCRIPT to be set before calling.
 
-set -uo pipefail
+set -euo pipefail
 make_guard_input() {
   local tool_name="$1" command="$2"
   printf '{"tool_name": "%s", "tool_input": {"command": "%s"}}' "$tool_name" "$command"
