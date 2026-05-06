@@ -12,7 +12,10 @@
     },
     "github": {
       "type": "http",
-      "url": "https://api.githubcopilot.com/mcp/",
+      "url": "https://api.githubcopilot.com/mcp/readonly",
+      "headers": {
+        "X-MCP-Toolsets": "issues,pull_requests,actions,dependabot"
+      },
       "disabled": true
     },
     "fetch": {
@@ -22,7 +25,13 @@
         "CLAUDE_TMPDIR": "${userHome}/.cache/uv",
         "TMPDIR": "${userHome}/.cache/uv"
       },
-      "args": ["--with", "httpx[socks]>=0.28", "mcp-server-fetch"],
+      "args": [
+        "--from", "mcp[cli]",
+        "--with", "httpx>=0.27,<1",
+        "--with", "beautifulsoup4>=4.12",
+        "mcp", "run",
+        "${workspaceFolder}/.github/hooks/scripts/mcp-fetch-server.py"
+      ],
       "disabled": true
     },
     "docs": {
@@ -44,7 +53,17 @@
     "duckduckgo": {
       "type": "stdio",
       "command": "uvx",
-      "args": ["duckduckgo-mcp-server"],
+      "env": {
+        "CLAUDE_TMPDIR": "${userHome}/.cache/uv",
+        "TMPDIR": "${userHome}/.cache/uv"
+      },
+      "args": [
+        "--from", "mcp[cli]",
+        "--with", "httpx>=0.27,<1",
+        "--with", "beautifulsoup4>=4.12",
+        "mcp", "run",
+        "${workspaceFolder}/.github/hooks/scripts/mcp-duckduckgo-server.py"
+      ],
       "disabled": true
     },
     "heartbeat": {
@@ -65,8 +84,18 @@
     },
     "sequential-thinking": {
       "type": "stdio",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+      "command": "uvx",
+      "env": {
+        "CLAUDE_TMPDIR": "${userHome}/.cache/uv",
+        "TMPDIR": "${userHome}/.cache/uv"
+      },
+      "args": [
+        "--from",
+        "mcp[cli]",
+        "mcp",
+        "run",
+        "${workspaceFolder}/.github/hooks/scripts/mcp-sequential-thinking-server.py"
+      ]
     }
   }
 }

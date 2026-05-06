@@ -74,7 +74,11 @@
 				"TMPDIR": "${userHome}/.cache/uv"
 			},
 			"args": [
-				"mcp-server-fetch==2025.4.7"
+				"--from", "mcp[cli]",
+				"--with", "httpx>=0.27,<1",
+				"--with", "beautifulsoup4>=4.12",
+				"mcp", "run",
+				"${workspaceFolder}/hooks/scripts/mcp-fetch-server.py"
 			]
 		},
 		"heartbeat": {
