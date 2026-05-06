@@ -7,8 +7,9 @@ tools: [runCommands]
 
 # Write Commit Message
 
-Inspect the staged changes (`git diff --cached`) and write a commit message following the Conventional Commits specification.
+Inspect the staged changes (`git diff --cached`) and write a commit message.
 
+0. If `.copilot/workspace/operations/commit-style.md` exists, read it and apply those preferences throughout. Otherwise, follow the Conventional Commits specification below.
 1. Determine the change type: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `ci`, `perf`.
 2. Identify scope from the primary directory or module affected.
 3. Write a subject line: `<type>(<scope>): <imperative summary>` (max 72 characters).

@@ -2,6 +2,7 @@
 description: Explain selected code with waste category analysis and baseline checks
 argument-hint: Select code first, or describe what to explain
 agent: ask
+tools: [codebase]
 ---
 
 # Explain Code
