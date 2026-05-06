@@ -34,18 +34,22 @@ Commands: `MCP: Open Workspace Configuration`, `MCP: Open User Configuration`
 | Always-on | filesystem, git | Every project | Enabled by default |
 | External | github, fetch | GitHub/web access needed | `github` uses VS Code OAuth; `fetch` needs no creds |
 | Documentation | docs | Third-party libraries | Owned stdio server; queries DevDocs public API (devdocs.io) |
+| Web search | duckduckgo | Public web search/fetch | Owned stdio server; SSRF-protected |
+| Reasoning | sequential-thinking | Structured reasoning traces | Owned stdio server; in-memory state, no network |
 
 ## Available servers
 
 | Server | Tier | Transport | Purpose |
 |--------|------|-----------|---------|
 | `@modelcontextprotocol/server-filesystem` | Always-on | `npx` (stdio) | File operations within the workspace; supports OS-level sandboxing |
-| `mcp-server-git` | Always-on | **`uvx`** (stdio, Python) | Git history, diffs, and branch operations |
-| `github/github-mcp-server` | Credentials | **HTTP remote** (`https://api.githubcopilot.com/mcp/`) | GitHub API — issues, PRs, repos, Actions, CI/CD, security alerts, Dependabot |
-| `mcp-server-fetch` | Credentials | **`uvx`** (stdio, Python) | HTTP fetch for web content and APIs |
+| `mcp-git-server` (owned) | Always-on | **`uvx`** (stdio, Python) | Git history, diffs, and branch operations; repo locked to workspace root |
+| `github/github-mcp-server` | Credentials | **HTTP remote** (`https://api.githubcopilot.com/mcp/readonly`) | GitHub API — read-only by default; issues, PRs, Actions, Dependabot (toolset-restricted) |
+| `mcp-fetch-server` (owned) | External | **`uvx`** (stdio, Python) | SSRF-protected HTTP fetch — blocks loopback, private (RFC-1918), and link-local/IMDS ranges |
 | `mcp-docs-server` (owned) | Documentation | **`uvx`** (stdio, Python) | Library documentation from DevDocs (devdocs.io) — 794+ doc sets, all queries stay local |
+| `mcp-duckduckgo-server` (owned) | Web search | **`uvx`** (stdio, Python) | DuckDuckGo search + SSRF-protected page fetch; `max_results` clamped to 20 |
+| `mcp-sequential-thinking-server` (owned) | Reasoning | **`uvx`** (stdio, Python) | Stateful sequential reasoning; in-memory only, no network calls |
 
-> **Removed (v3.2.0):** `@modelcontextprotocol/server-memory` — replaced by VS Code's built-in memory tool (`/memories/`). **Archived:** `@modelcontextprotocol/server-github` (npm) — replaced by `github/github-mcp-server` HTTP remote.
+> **Removed (v3.2.0):** `@modelcontextprotocol/server-memory` — replaced by VS Code's built-in memory tool (`/memories/`). **Archived:** `@modelcontextprotocol/server-github` (npm) — replaced by `github/github-mcp-server` HTTP remote. **Archived:** `mcp-server-fetch` (upstream) — replaced by owned `mcp-fetch-server` with SSRF protection. **Archived:** `@modelcontextprotocol/server-sequential-thinking` (npx) — replaced by owned `mcp-sequential-thinking-server`.
 
 ## Stack-specific servers
 
@@ -62,7 +66,7 @@ Discover servers: `code.visualstudio.com/mcp` · `registry.modelcontextprotocol.
 
 ### Sequential Thinking (optional)
 
-`@modelcontextprotocol/server-sequential-thinking` (`npx`) — structured step-by-step reasoning. Consider adding to **user-level** `mcp.json` rather than workspace config.
+`mcp-sequential-thinking-server` (owned, `uvx`) — stateful sequential reasoning with thought branching, revision, and history. Included in the base template config; invoke via `mcp_sequential-th_sequentialthinking`. Use for complex planning tasks, architectural decisions, or any task requiring explicit thought backtracking.
 
 ## MCP capabilities (GA since v1.102)
 

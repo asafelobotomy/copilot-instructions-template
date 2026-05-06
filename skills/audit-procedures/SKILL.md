@@ -62,9 +62,9 @@ unexpected delegates in developer template repos.
 
 ### D5 — MCP configuration (.vscode/mcp.json)
 
-If present: verify `mcp-server-git`/`mcp-server-fetch` use `uvx` not `npx`. Verify no `@modelcontextprotocol/server-git` or `server-fetch` references (npm 404s).
+If present: verify owned servers (`mcp-git-server`, `mcp-fetch-server`, `mcp-duckduckgo-server`, `mcp-docs-server`, `mcp-sequential-thinking-server`) use `uvx` transport not `npx`. Verify no upstream references to `mcp-server-fetch`, `mcp-server-git`, `@modelcontextprotocol/server-sequential-thinking`, or `duckduckgo-mcp-server` (all replaced by owned copies). Verify `github` server uses `/readonly` URL with `X-MCP-Toolsets` header.
 
-Flag: `[CRITICAL]` npx usage. `[HIGH]` @modelcontextprotocol references.
+Flag: `[CRITICAL]` npx usage for owned servers. `[HIGH]` upstream server names still present. `[MED]` github server using full write URL.
 
 ### D6 — Version file
 
