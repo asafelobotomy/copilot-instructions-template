@@ -41,7 +41,7 @@
       },
       "args": [
         "--from", "mcp[cli]",
-        "--with", "gitpython>=3.1.50,<3.2",
+        "--with", "gitpython==3.1.50",
         "mcp", "run",
         "${workspaceFolder}/.github/hooks/scripts/mcp-git-server.py"
       ]
@@ -63,8 +63,8 @@
       },
       "args": [
         "--from", "mcp[cli]",
-        "--with", "httpx>=0.27,<1",
-        "--with", "beautifulsoup4>=4.12",
+        "--with", "httpx==0.28.1",
+        "--with", "beautifulsoup4==4.14.3",
         "mcp", "run",
         "${workspaceFolder}/.github/hooks/scripts/mcp-fetch-server.py"
       ],
@@ -95,8 +95,8 @@
       },
       "args": [
         "--from", "mcp[cli]",
-        "--with", "httpx>=0.27,<1",
-        "--with", "beautifulsoup4>=4.12",
+        "--with", "httpx==0.28.1",
+        "--with", "beautifulsoup4==4.14.3",
         "mcp", "run",
         "${workspaceFolder}/.github/hooks/scripts/mcp-docs-server.py"
       ],
@@ -122,8 +122,8 @@
       "command": "uvx",
       "args": [
         "--from", "mcp[cli]",
-        "--with", "httpx>=0.27,<1",
-        "--with", "beautifulsoup4>=4.12",
+        "--with", "httpx==0.28.1",
+        "--with", "beautifulsoup4==4.14.3",
         "mcp", "run",
         "${workspaceFolder}/.github/hooks/scripts/mcp-duckduckgo-server.py"
       ],
