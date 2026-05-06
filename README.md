@@ -5,10 +5,10 @@
 
   **A versioned VS Code agent plugin that keeps AI developer behaviour consistent across all your projects.**
 
-  [![Version](https://img.shields.io/badge/version-0.9.0-blue)](CHANGELOG.md) <!-- x-release-please-version -->
+  [![Version](https://img.shields.io/badge/version-0.10.0-blue)](CHANGELOG.md) <!-- x-release-please-version -->
   [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE.md)
   [![Agents](https://img.shields.io/badge/agents-14-purple)](agents/)
-  [![Skills](https://img.shields.io/badge/skills-18-teal)](skills/)
+  [![Skills](https://img.shields.io/badge/skills-30-teal)](skills/)
 </div>
 
 ---
@@ -20,7 +20,7 @@ A single VS Code agent plugin that installs a full AI developer workflow into an
 | Component | Count | Description |
 |-----------|------:|-------------|
 | Model-pinned agents | 14 | Specialist agents for every workflow stage |
-| Reusable skills | 18 | Domain-specific capability modules |
+| Reusable skills | 30 | Domain-specific capability modules |
 | Lifecycle hooks | 8 | Session, prompt, tool, compaction, and subagent lifecycle events |
 | Starter kits | 8 | Stack-specific bundles (Python, TypeScript, Go, Rust, Java, C++, React, Docker) |
 | MCP configuration | — | Pre-configured server set with sandbox policy |
@@ -91,24 +91,36 @@ If the Setup agent does not appear, search the Extensions view for `@agentPlugin
 
 | Skill | Purpose |
 |-------|---------|
+| `accessibility-review` | Review UI for WCAG 2.1 AA compliance, ARIA usage, keyboard navigation, and colour contrast |
 | `agentic-workflows` | Set up GitHub Actions workflows with Copilot coding agents |
+| `api-design` | Design or review a REST/GraphQL API — resource modelling, versioning, error contract, OpenAPI |
+| `audit-procedures` | Health check procedures D1–D14 for the Audit agent — structural validation, workspace integrity |
+| `changelog-entry` | Generate a CHANGELOG.md entry from staged changes or a commit range |
 | `commit-preflight` | Inspect CI workflows before commit and run matching local checks |
 | `compress-prose` | Tighten prose without losing required meaning |
 | `conventional-commit` | Write Conventional Commits spec messages with scope and body |
 | `create-adr` | Create Architectural Decision Records |
+| `dependency-update` | Update project dependencies, run vulnerability scan, and verify tests pass |
+| `docker-scaffold` | Scaffold a production-ready Dockerfile and docker-compose.yml |
+| `env-config` | Set up environment variable management — .env.example, startup validation, secrets separation |
 | `extension-review` | Audit VS Code extensions against the current project stack |
 | `fix-ci-failure` | Diagnose and fix failing CI pipelines |
+| `git-workflows` | Step-by-step git workflows for commit, push, tag, branch, sync, stash, and PR operations |
 | `issue-triage` | Classify severity, label waste, and draft structured responses |
 | `lean-pr-review` | Review pull requests with Lean waste categories and severity ratings |
 | `mcp-builder` | Scaffold and register new MCP servers |
 | `mcp-management` | Configure and manage MCP servers |
+| `onboarding-docs` | Generate README, CONTRIBUTING guide, dev environment setup, and new-developer checklist |
+| `performance-profiling` | Profile slow functions, identify N+1 queries and memory pressure, apply targeted optimisations |
 | `plugin-management` | Discover, install, and manage agent plugins |
+| `refactor-extract` | Systematically extract a function, class, or service — write tests before moving |
 | `security-audit` | OWASP Top 10, secret detection, injection patterns, supply chain checks |
 | `skill-creator` | Create new agent skills following the open standard |
 | `skill-management` | Discover, activate, and manage agent skills |
+| `tech-debt-audit` | Catalog technical debt — TODOs, deprecated APIs, dead code, complexity hotspots, missing tests |
 | `test-coverage-review` | Audit coverage gaps and recommend local tests plus CI workflows |
 | `tool-protocol` | Find, build, or adapt automation tools |
-| `webapp-testing` | Set up browser testing — browser tools (interactive) or Playwright CLI (CI); Playwright MCP removed in v0.7.0 |
+| `webapp-testing` | Set up browser testing — browser tools (interactive) or Playwright CLI (CI) |
 
 ---
 
@@ -154,7 +166,7 @@ See [AGENTS.md](AGENTS.md) for the full trigger phrase list, including heartbeat
 
 ### Version
 
-Current template version: **0.9.0** <!-- x-release-please-version --> — see [CHANGELOG.md](CHANGELOG.md).
+Current template version: **0.10.0** <!-- x-release-please-version --> — see [CHANGELOG.md](CHANGELOG.md).
 
 Version bumps are done locally. Bump `VERSION.md` and all `<!-- x-release-please-version -->` markers together, then verify:
 

@@ -9,6 +9,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/). Versions follow 
 
 ## [Unreleased]
 
+## [0.10.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v0.9.0...v0.10.0) (2026-05-06)
+
+### Added
+
+* **security:** replace all upstream MCP server packages with owned, SSRF-hardened Python implementations — `mcp-fetch-server.py`, `mcp-docs-server.py` (DevDocs), `mcp-duckduckgo-server.py`, `mcp-sequential-thinking-server.py`, and `mcp-git-server.py`; all delivered in three-copy parity (`hooks/scripts/`, `.github/hooks/scripts/`, `template/hooks/scripts/`) ([9b763dc](https://github.com/asafelobotomy/copilot-instructions-template/commit/9b763dc), [fd2d2ec](https://github.com/asafelobotomy/copilot-instructions-template/commit/fd2d2ec), [898d298](https://github.com/asafelobotomy/copilot-instructions-template/commit/898d298), [98abc01](https://github.com/asafelobotomy/copilot-instructions-template/commit/98abc01))
+* **tests:** add `test-mcp-servers.sh` (56 assertions) — syntax, three-copy parity, `__main__` guards, SSRF blocking, hostname allowlists, parameter clamping, pinned deps, and stdio transport ([a1de509](https://github.com/asafelobotomy/copilot-instructions-template/commit/a1de509))
+* **tests:** add `test-routing-manifest.sh` (10 assertions) — valid JSON, required keys, every agent mapped, regex validity, picker-visible routes in `AGENTS.md`, Cleaner vocabulary ([a1de509](https://github.com/asafelobotomy/copilot-instructions-template/commit/a1de509))
+
+### Fixed
+
+* **security:** harden all template MCP config files — add `mcp-unsandboxed.json` variant, pin all `--with` deps to exact versions, fix `mcp-unsandboxed.json` git entry to owned server ([9b763dc](https://github.com/asafelobotomy/copilot-instructions-template/commit/9b763dc), [e13aed2](https://github.com/asafelobotomy/copilot-instructions-template/commit/e13aed2))
+* **prompts:** add missing `tools` field to `explain.prompt.md`; add commit-style.md lookup step to `commit-msg.prompt.md` ([414f39f](https://github.com/asafelobotomy/copilot-instructions-template/commit/414f39f))
+* **tests:** add `-e` flag to `set -uo pipefail` across the entire test suite (70+ files) ([d3a39f1](https://github.com/asafelobotomy/copilot-instructions-template/commit/d3a39f1))
+* **tests:** extend `test-customization-contracts-surfaces.sh` with 4 new checks — prompt mode values, slug uniqueness, `mcp-unsandboxed.json` upstream packages, skill invocation guidance ([a1de509](https://github.com/asafelobotomy/copilot-instructions-template/commit/a1de509))
+* **skills:** update `mcp-management` and `audit-procedures` skills for owned server fleet ([0023601](https://github.com/asafelobotomy/copilot-instructions-template/commit/0023601))
+* **docs:** remove stale Playwright MCP note from `webapp-testing` entry in README skills table ([this release])
+* **docs:** fix README skills count badge and table — 18 → 30 skills, all 30 skills now listed ([this release])
+
 ## [0.9.0](https://github.com/asafelobotomy/copilot-instructions-template/compare/v0.8.0...v0.9.0) (2026-05-01)
 
 ### Added
