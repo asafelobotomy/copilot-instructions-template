@@ -173,4 +173,67 @@ for rel, review_ref, baseline_ref in required:
 '
 echo ""
 
+echo "9. All prompt files declare a valid agent: mode value"
+assert_python "prompt agent: fields use valid VS Code chat mode values" '
+import re
+# VS Code Copilot prompt frontmatter: agent: is a chat mode (ask|agent), not an agent file name
+valid_modes = {"ask", "agent"}
+for path in sorted((root / ".github/prompts").glob("*.prompt.md")):
+    text = path.read_text(encoding="utf-8")
+    end = text.find("\n---\n", 4)
+    if end == -1:
+        raise SystemExit("unterminated frontmatter in " + path.name)
+    fm = text[4:end]
+    m = re.search(r"^agent:\s*(.+)$", fm, re.MULTILINE)
+    if not m:
+        raise SystemExit("missing agent: field in " + path.name)
+    declared = m.group(1).strip()
+    if declared not in valid_modes:
+        raise SystemExit(path.name + " has invalid agent mode: " + repr(declared) + " (expected one of: " + str(valid_modes) + ")")
+'
+echo ""
+
+echo "10. Prompt file slugs are unique within .github/prompts/"
+assert_python "no duplicate prompt slugs" '
+names = [p.stem for p in (root / ".github/prompts").glob("*.prompt.md")]
+if len(names) != len(set(names)):
+    dupes = [n for n in names if names.count(n) > 1]
+    raise SystemExit("duplicate prompt slugs: " + str(dupes))
+'
+echo ""
+
+echo "11. mcp-unsandboxed.json has no upstream server packages"
+assert_python "mcp-unsandboxed.json uses no upstream mcp-server-* packages" '
+import json
+cfg = json.loads((root / "template/vscode/mcp-unsandboxed.json").read_text())
+upstream = ["mcp-server-git", "mcp-server-fetch", "@modelcontextprotocol/server-sequential-thinking", "duckduckgo-mcp-server"]
+raw = (root / "template/vscode/mcp-unsandboxed.json").read_text()
+for pkg in upstream:
+    if pkg in raw:
+        raise SystemExit("mcp-unsandboxed.json references upstream package: " + pkg)
+'
+echo ""
+
+echo "12. Skill SKILL.md files have invocation guidance"
+assert_python "every shared SKILL.md has When-to-use or Load-this-skill guidance" '
+missing = []
+for path in sorted((root / "skills").rglob("SKILL.md")):
+    text = path.read_text(encoding="utf-8")
+    # Task-oriented skills have "## When to use" or "Use this skill"
+    # Reference/procedure skills use "Load this skill" or "Invoke" guidance
+    has_guidance = (
+        "When to use" in text
+        or "When to activate" in text
+        or "Use this skill" in text
+        or "Load this skill" in text
+        or "Invoke this" in text
+        or "On-demand" in text
+    )
+    if not has_guidance:
+        missing.append(str(path.relative_to(root)))
+if missing:
+    raise SystemExit("SKILL.md files missing invocation guidance:\n  " + "\n  ".join(missing))
+'
+echo ""
+
 finish_tests

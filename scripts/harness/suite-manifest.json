@@ -269,6 +269,12 @@
       "ciLabel": "Script behavior | mcp-launchers"
     },
     {
+      "id": "script-mcp-servers",
+      "path": "tests/scripts/test-mcp-servers.sh",
+      "phase": "scripts",
+      "ciLabel": "Script behavior | owned MCP servers"
+    },
+    {
       "id": "script-workspace-drift",
       "path": "tests/scripts/test-workspace-drift.sh",
       "phase": "scripts",
@@ -309,6 +315,12 @@
       "path": "tests/contracts/test-starter-kits.sh",
       "phase": "contracts",
       "ciLabel": "Docs and contracts | starter-kits"
+    },
+    {
+      "id": "contract-routing-manifest",
+      "path": "tests/contracts/test-routing-manifest.sh",
+      "phase": "contracts",
+      "ciLabel": "Docs and contracts | routing manifest"
     }
   ]
 }
