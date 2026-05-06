@@ -9,8 +9,6 @@ source "$(dirname "$0")/../lib/test-helpers.sh"
 init_test_context "$0"
 
 MANIFEST="$REPO_ROOT/agents/routing-manifest.json"
-AGENTS_DIR="$REPO_ROOT/agents"
-AGENTS_MD="$REPO_ROOT/AGENTS.md"
 
 echo "=== Routing manifest integrity and alignment checks ==="
 echo ""
