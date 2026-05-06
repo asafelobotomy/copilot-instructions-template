@@ -9,7 +9,7 @@ model:
   - Grok Code Fast 1
   - Claude Sonnet 4.6
 tools: [agent, editFiles, runCommands, codebase, githubRepo, fetch, search, askQuestions]
-mcp-servers: [filesystem, git, github, fetch, context7, duckduckgo, sequential-thinking, heartbeat]
+mcp-servers: [filesystem, git, github, fetch, docs, duckduckgo, sequential-thinking, heartbeat]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Review', 'Audit', 'Researcher', 'Explore', 'Commit', 'Organise', 'Planner', 'Docs', 'Debugger', 'Cleaner']

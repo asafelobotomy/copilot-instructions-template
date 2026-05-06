@@ -10,7 +10,7 @@
     "skillsTemplate": 0,
     "hookScriptsShell": 11,
     "hookScriptsPowerShell": 8,
-    "hookScriptsPython": 14,
+    "hookScriptsPython": 15,
     "hookScriptsJson": 3
   },
   "agents": [
@@ -139,7 +139,8 @@
       "mcp-sequential-thinking-server.py",
       "mcp-git-server.py",
       "session_reflect_fallback.py",
-      "mcp-duckduckgo-server.py"
+      "mcp-duckduckgo-server.py",
+      "mcp-docs-server.py"
     ],
     "json": [
       "heartbeat-policy.json",

@@ -2,6 +2,7 @@
 # tests/lib/copilot-audit-fixtures.sh — mutate_* fixture functions for test-copilot-audit.sh
 # Sourced by the test file; requires copilot-audit-sandbox.sh to be loaded first.
 # shellcheck source=copilot-audit-sandbox.sh
+set -euo pipefail
 
 mutate_a1_missing_name() {
   write_sandbox_file "agents/bad.agent.md" <<'AGENT'
@@ -288,7 +289,7 @@ TEST_FRAMEWORK=bash
 SETUP_DATE=2026-04-04
 -->
 <!-- install-metadata
-MCP_AVAILABLE=github,fetch,context7,heartbeat,sequential-thinking,duckduckgo
+MCP_AVAILABLE=github,fetch,docs,heartbeat,sequential-thinking,duckduckgo
 MCP_ENABLED=github
 INSTRUCTION_STUBS=api.instructions.md
 STARTER_KITS_MATCHED=python
@@ -343,7 +344,7 @@ TEST_FRAMEWORK=bash
 SETUP_DATE=2026-04-04
 -->
 <!-- install-metadata
-MCP_AVAILABLE=github,fetch,context7,heartbeat,sequential-thinking,duckduckgo
+MCP_AVAILABLE=github,fetch,docs,heartbeat,sequential-thinking,duckduckgo
 MCP_ENABLED=github
 INSTRUCTION_STUBS=api.instructions.md
 STARTER_KITS_MATCHED=python

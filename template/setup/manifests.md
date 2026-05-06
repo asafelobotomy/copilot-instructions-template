@@ -161,7 +161,7 @@ Enable from base config when selected in E22a:
 |--------|----------------|
 | `github` | User selected GitHub integration |
 | `fetch` | User selected web/docs retrieval |
-| `context7` | User selected third-party library docs |
+| `docs` | User selected third-party library docs |
 | `playwright` | User selected browser automation for agent-driven website navigation |
 
 Add for detected dependencies:

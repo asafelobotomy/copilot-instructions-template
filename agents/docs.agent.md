@@ -6,7 +6,7 @@ model:
   - Claude Sonnet 4.6
   - GPT-5.2
 tools: [agent, editFiles, codebase, search, runCommands]
-mcp-servers: [filesystem, git, fetch, context7, duckduckgo]
+mcp-servers: [filesystem, git, fetch, docs, duckduckgo]
 user-invocable: true
 disable-model-invocation: false
 agents: ['Code', 'Researcher', 'Review', 'Explore']

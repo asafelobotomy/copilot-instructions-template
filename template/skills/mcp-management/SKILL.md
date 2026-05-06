@@ -33,7 +33,7 @@ Commands: `MCP: Open Workspace Configuration`, `MCP: Open User Configuration`
 |------|---------|------|--------|
 | Always-on | filesystem, git | Every project | Enabled by default |
 | External | github, fetch | GitHub/web access needed | `github` uses VS Code OAuth; `fetch` needs no creds |
-| Documentation | context7 | Third-party libraries | HTTP remote, free tier, optional API key |
+| Documentation | docs | Third-party libraries | Owned stdio server; queries DevDocs public API (devdocs.io) |
 
 ## Available servers
 
@@ -43,7 +43,7 @@ Commands: `MCP: Open Workspace Configuration`, `MCP: Open User Configuration`
 | `mcp-server-git` | Always-on | **`uvx`** (stdio, Python) | Git history, diffs, and branch operations |
 | `github/github-mcp-server` | Credentials | **HTTP remote** (`https://api.githubcopilot.com/mcp/`) | GitHub API — issues, PRs, repos, Actions, CI/CD, security alerts, Dependabot |
 | `mcp-server-fetch` | Credentials | **`uvx`** (stdio, Python) | HTTP fetch for web content and APIs |
-| `@upstash/context7-mcp` | Documentation | **HTTP remote** (`https://mcp.context7.com/mcp`) | Live, version-specific library documentation — prevents hallucinated or outdated APIs |
+| `mcp-docs-server` (owned) | Documentation | **`uvx`** (stdio, Python) | Library documentation from DevDocs (devdocs.io) — 794+ doc sets, all queries stay local |
 
 > **Removed (v3.2.0):** `@modelcontextprotocol/server-memory` — replaced by VS Code's built-in memory tool (`/memories/`). **Archived:** `@modelcontextprotocol/server-github` (npm) — replaced by `github/github-mcp-server` HTTP remote.
 
@@ -96,7 +96,7 @@ Before adding any MCP server:
 4. Add to `.vscode/mcp.json` (workspace) or profile `mcp.json` (user) with appropriate tier
 5. For credentials-required stdio servers, use `${input:}` or `${env:}` variable syntax — never hardcode secrets; HTTP remote servers use VS Code's built-in OAuth where supported
 6. For `npx`-based stdio servers on Linux/macOS, add `sandboxEnabled: true` with `sandbox.filesystem.denyRead` rules for credential directories (`~/.ssh`, `~/.gnupg`, `~/.aws`) as a defence-in-depth measure against prompt injection. Optionally add `sandbox.network.allowedDomains` to restrict outbound network access. Do not sandbox `uvx`-based servers: the VS Code sandbox proxy intercepts PyPI network access during the `uvx` launcher phase and triggers repeated domain-approval prompts that cannot be reliably suppressed via per-server `allowedDomains`. The M4 audit check enforces this by exempting servers with `command == "uvx"` automatically.
-7. In consumer template repos, keep optional servers such as `github`, `fetch`, and `context7` present in `.vscode/mcp.json` but disabled by default until setup or update explicitly enables them
+7. In consumer template repos, keep optional servers such as `github`, `fetch`, and `docs` present in `.vscode/mcp.json` but disabled by default until setup or update explicitly enables them
 8. Agent files can declare least-privilege MCP access using the `mcp-servers` frontmatter field. Treat this as forward-compatible policy metadata: GitHub Copilot cloud agents document support for the field today, while local VS Code agent support may lag behind
 
 ### Sandbox compatibility (Linux)

@@ -104,7 +104,7 @@
         "copilot/grok-code-fast-1"
       ]
     },
-    "copilot-instructions-template/.vscode/mcp.json: context7": {
+    "copilot-instructions-template/.vscode/mcp.json: docs": {
       "allowedModels": [
         "copilot/auto",
         "copilot/claude-haiku-4.5",

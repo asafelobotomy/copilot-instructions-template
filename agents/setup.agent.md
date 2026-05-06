@@ -7,7 +7,7 @@ model:
   - GPT-5.4 mini
   - GPT-5.2
 tools: [agent, editFiles, fetch, githubRepo, codebase, askQuestions, runCommands, search]
-mcp-servers: [filesystem, git, github, context7]
+mcp-servers: [filesystem, git, github, docs]
 user-invocable: true
 disable-model-invocation: true
 agents: ['Audit', 'Extensions', 'Organise', 'Researcher']

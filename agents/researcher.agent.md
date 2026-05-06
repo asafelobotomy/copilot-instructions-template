@@ -8,7 +8,7 @@ model:
   - Gemini 3.1 Pro
   - Gemini 2.5 Pro
 tools: [agent, fetch, webSearch, codebase, search, githubRepo, githubTextSearch, editFiles, runCommands]
-mcp-servers: [fetch, context7, filesystem, github, duckduckgo]
+mcp-servers: [fetch, docs, filesystem, github, duckduckgo]
 user-invocable: false
 disable-model-invocation: false
 agents: ['Code', 'Audit', 'Explore', 'Docs', 'Planner']

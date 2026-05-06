@@ -12,7 +12,7 @@ REQUIRED_FIELDS = ["name", "description", "model", "tools", "user-invocable"]
 # Canonical MCP server IDs — must match .vscode/mcp.json server keys
 KNOWN_MCP_SERVERS = {
     "filesystem", "git", "github", "fetch", "heartbeat",
-    "context7", "sequential-thinking", "duckduckgo",
+    "docs", "sequential-thinking", "duckduckgo",
 }
 
 errors = []

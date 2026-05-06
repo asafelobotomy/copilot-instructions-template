@@ -25,9 +25,20 @@
       "args": ["--with", "httpx[socks]>=0.28", "mcp-server-fetch"],
       "disabled": true
     },
-    "context7": {
-      "type": "http",
-      "url": "https://mcp.context7.com/mcp",
+    "docs": {
+      "type": "stdio",
+      "command": "uvx",
+      "env": {
+        "CLAUDE_TMPDIR": "${userHome}/.cache/uv",
+        "TMPDIR": "${userHome}/.cache/uv"
+      },
+      "args": [
+        "--from", "mcp[cli]",
+        "--with", "httpx>=0.27,<1",
+        "--with", "beautifulsoup4>=4.12",
+        "mcp", "run",
+        "${workspaceFolder}/.github/hooks/scripts/mcp-docs-server.py"
+      ],
       "disabled": true
     },
     "duckduckgo": {
