@@ -456,8 +456,7 @@
       "require_prompt_and_behavior": true,
       "hint": "Routing hint: Cleaner specialist — repo hygiene, cache pruning, or stale artefacts.",
       "prompt_patterns": [
-        "\\bclean up (?:repo|repository|workspace)\\b",
-        "\\bremove stale files?\\b",
+        "\\bclean up (?:repo|repository|workspace)\\b",          "\\bclean up (?:stale|old|dead|archive)\\b",        "\\bremove stale files?\\b",
         "\\bprune (?:caches?|archives?)\\b",
         "\\brepo hygiene\\b",
         "\\bstale (?:artefacts?|artifacts?)\\b",

@@ -687,6 +687,101 @@ def _run_tests_impl(
 
 
 # ---------------------------------------------------------------------------
+# Tool: suggest_delegation
+# ---------------------------------------------------------------------------
+
+_ROUTING_MANIFEST_PATH = ROOT / "agents" / "routing-manifest.json"
+
+
+@mcp.tool()
+def suggest_delegation(
+    task: str,
+    calling_agent: str = "",
+) -> dict:
+    """Match a task description against the agent routing manifest.
+
+    Call this before starting any non-trivial task. If a specialist agent
+    matches, delegate to it instead of handling the work inline.
+
+    Args:
+        task:          One-sentence description of the work to be done.
+        calling_agent: Name of the calling agent (e.g. "Code"), used to
+                       avoid self-routing in sub-agent delegation.
+    """
+    if not task or not task.strip():
+        return {"error": "task description is required"}
+
+    task_lower = task.lower()
+
+    try:
+        manifest = json.loads(_ROUTING_MANIFEST_PATH.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError) as exc:
+        return {"error": f"could not load routing manifest: {exc}"}
+
+    agents = manifest.get("agents", [])
+    matches: list[dict] = []
+
+    for agent in agents:
+        name = agent.get("name", "")
+        # Skip if this is the calling agent (avoid self-routing).
+        if calling_agent and name.lower() == calling_agent.lower():
+            continue
+        # Skip inactive routes.
+        if agent.get("route", "active") != "active":
+            continue
+
+        prompt_patterns: list[str] = agent.get("prompt_patterns", [])
+        suppress_patterns: list[str] = agent.get("suppress_patterns", [])
+
+        # Check if any suppress pattern fires — if so, skip.
+        suppressed = any(
+            re.search(p, task_lower, re.IGNORECASE) for p in suppress_patterns
+        )
+        if suppressed:
+            continue
+
+        # Count how many prompt_patterns match (for ranking).
+        hit_count = sum(
+            1 for p in prompt_patterns
+            if re.search(p, task_lower, re.IGNORECASE)
+        )
+        if hit_count > 0:
+            matches.append({
+                "name": name,
+                "summary": agent.get("summary", ""),
+                "hint": agent.get("hint", ""),
+                "hit_count": hit_count,
+                "visibility": agent.get("visibility", ""),
+            })
+
+    if not matches:
+        return {
+            "match": False,
+            "recommendation": "No specialist match — handle inline.",
+        }
+
+    # Sort by hit count descending; pick the top match.
+    matches.sort(key=lambda m: m["hit_count"], reverse=True)
+    top = matches[0]
+
+    return {
+        "match": True,
+        "agent": top["name"],
+        "summary": top["summary"],
+        "hint": top["hint"],
+        "delegate_instruction": (
+            f"Delegate to the {top['name']} agent. "
+            f"Do not absorb this workflow inline. "
+            f"Pass a one-sentence objective, scope, and acceptance criteria."
+        ),
+        "other_candidates": [
+            {"agent": m["name"], "summary": m["summary"]}
+            for m in matches[1:3]
+        ],
+    }
+
+
+# ---------------------------------------------------------------------------
 # Tool: run_check
 # ---------------------------------------------------------------------------
 

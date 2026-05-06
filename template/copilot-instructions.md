@@ -77,6 +77,7 @@ Apply to every non-trivial change.
 
 Before acting on any medium-to-complex task, apply this decision sequence to avoid loop traps and wasted tokens:
 
+0. **Route** — call `mcp_heartbeat_suggest_delegation(task="<one-sentence description>")`. If it returns `match: true`, delegate to the named agent immediately — do not absorb the specialist workflow inline. For sub-agent calls, also pass `calling_agent` to avoid self-routing. Skip only for trivial single-line lookups or read-only questions.
 1. **Frame** — state the problem in one sentence. If you cannot, the task needs decomposition before proceeding.
 2. **Intent-Gate** — if the prompt is ambiguous, compound, or lacks scope, ask one clarifying question before acting. Never start execution on a prompt that could plausibly mean two different things.
 3. **Gather** — identify the minimum information needed to act. Search once with broad terms; do not repeat the same search with minor variations.
@@ -246,7 +247,7 @@ Agent-scoped hooks: individual agents can define a `hooks:` section in their `.a
 
 When spawning subagents:
 
-- The parent/default agent follows this protocol too: if a request matches a named specialist workflow, delegate to the matching agent instead of absorbing the specialist workflow inline.
+- The parent/default agent follows this protocol too: call `mcp_heartbeat_suggest_delegation` before any non-trivial task (step 0 of the Structured Thinking Discipline). If it returns a match, delegate to the named agent — do not absorb the specialist workflow inline.
 - Do not keep specialist work inline because it seems small, quick, or manageable.
 - Trust the selected specialist to complete the task unless you know it is outside the specialist scope, allow-list, or capabilities, or the specialist reports a concrete blocker.
 - Each `.github/agents/*.agent.md` declares an `agents:` allow-list restricting which subagents it may invoke. Respect these boundaries.

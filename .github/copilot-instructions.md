@@ -106,6 +106,7 @@ Every non-trivial change:
 
 Before acting on any medium-to-complex task:
 
+0. **Route** — call `mcp_heartbeat_suggest_delegation(task="<one-sentence description>")`. If it returns `match: true`, delegate to the named agent immediately — do not absorb the specialist workflow inline. For sub-agent calls, also pass `calling_agent` to avoid self-routing. Skip this step only for trivial single-line lookups or read-only questions.
 1. **Frame** — state the problem in one sentence. Decompose if you cannot.
 2. **Intent-Gate** — if the prompt is ambiguous, compound, or lacks scope, ask one clarifying question before acting. Never start execution on a prompt that could plausibly mean two different things.
 3. **Gather** — search once with broad terms. Do not repeat with minor variations.
@@ -176,8 +177,7 @@ W1 Overproduction · W2 Waiting · W3 Transport · W4 Over-processing · W5 Inve
 
 - Skills: `skills/` — loaded on demand. Read `SKILL.md` when description matches task.
 - Agents: `agents/` — each pins a model.
-- Main/default agent delegation: when the request matches a named specialist
-  workflow, delegate instead of absorbing the workflow inline.
+- Main/default agent delegation: call `mcp_heartbeat_suggest_delegation` before any non-trivial task (step 0 of the Structured Thinking Discipline). If it returns a match, delegate — never absorb specialist workflows inline.
 - Do not keep specialist work inline because it seems small, quick, or
   manageable.
 - Trust the selected specialist to complete the task unless you know it is
